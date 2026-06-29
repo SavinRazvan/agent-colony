@@ -130,7 +130,20 @@ Expected: testing-artifact PASS, pytest green, governance PASS, debrand PASS.
 3. **MCP:** merged `.cursor/mcp.json` from `--with-mcp-json`. Kit fragment: `.cursor/mcp.json.kit.example`. External servers: [connect-external-mcp.md](connect-external-mcp.md).
 4. Start a slice: `.local/index-and-planning/current/session-pointer.md` → `plan.md`.
 
-Maintainer PR: [`.agents/skills/PR_WORKFLOW.md`](../../../.agents/skills/PR_WORKFLOW.md).
+### Subagent model (cost control)
+
+Kit agent cards use **`model: auto`** in frontmatter (Auto + Composer pool — avoids inheriting parent Composer fast routing).
+
+**Built-in Cursor subagents** (`explore`, `bash`, `browser`) are **not** in the repo. Configure in **Cursor → Settings → Agents → Subagents**:
+
+| Built-in | Recommended | Why |
+|----------|-------------|-----|
+| Explore | **Auto** | Default Explore uses a fast Composer variant; Auto routes cost-efficiently |
+| Bash / Browser | **Auto** or task-appropriate | Match your plan and task depth |
+
+Repo subagents (`enterprise-auditor`, `implementer`, …) load from `.cursor/agents/` after install or plugin activate.
+
+Maintainer PR: [`.agents/skills/pr-workflow/SKILL.md`](../../../.agents/skills/pr-workflow/SKILL.md).
 
 ---
 

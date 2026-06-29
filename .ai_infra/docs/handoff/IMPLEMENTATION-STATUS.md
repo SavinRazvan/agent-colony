@@ -23,7 +23,7 @@ Notes:
 | Area | Status | Location |
 |------|--------|----------|
 | Universal rules | 6 `.mdc` | `.cursor/rules/` |
-| Agents | 7 core; `model: auto` (Auto pool, not Composer inherit); audit agents `readonly: true` | `.cursor/agents/` |
+| Agents | 7 core; `model: auto`; audit agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` |
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
 | PR scripts + 2 default gates | Pattern A | `.ai_infra/scripts/pr/prepare.py` |

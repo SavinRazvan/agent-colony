@@ -1,7 +1,6 @@
 ---
 name: workflow-drift-guard
 model: auto
-readonly: true
 description: Operational workflow drift detection; plan/tracker/session coherence and handoff parity.
 ---
 
@@ -12,6 +11,8 @@ description: Operational workflow drift detection; plan/tracker/session coherenc
 **Entry:** Read `.local/index-and-planning/current/session-pointer.md` first.
 
 **Exit:** Write drift artifacts only; one line in `updates-log.md` when audit completes. Do **not** auto-edit `plan.md` or `work-tracker.md`.
+
+**Write scope:** `.local/workflow-artifacts/drift/` only — no product-code edits. (`readonly` not set so Task delegation can write drift artifacts.)
 
 1. Run `python -m cursor_workflow drift validate --directory .` **before** prose findings.
 2. Map script output to `drift-audit.md` and `drift-todos.md` per skill.

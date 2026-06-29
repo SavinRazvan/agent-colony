@@ -54,6 +54,19 @@ python payload/cursor_workflow activate --directory /path/to/project --source pa
 - Attach release notes: ADR index, activation flow, MCP optional profile
 - After publish: enterprise re-audit (Phase 7 EA-506)
 
+### Live marketplace (EA-v4-002 — manual when channel ready)
+
+Local pre-publish evidence: `.local/workflow-artifacts/enterprise-architecture-audit/marketplace-dry-run-2026-06-29.md` (PASS on kit tree).
+
+**Not yet exercised:** upload/publish to the live Cursor Marketplace channel. When credentials and channel are available:
+
+1. Complete **Pre-publish** steps above on a release tag
+2. Follow Cursor Marketplace maintainer docs for your account tier
+3. Record publish URL + version in `.local/workflow-artifacts/enterprise-architecture-audit/` (no secrets in git)
+4. Re-run `enterprise-auditor` focused pass on deployability category
+
+Until live publish, **deployability score remains capped** at local dry-run evidence (see enterprise audit v5 §7 EA-v4-002).
+
 ## Rollback
 
 - Re-publish previous plugin version

@@ -52,8 +52,8 @@ Launch concurrently:
 
 | Subagent | Mode | Deliverable |
 |----------|------|-------------|
-| `enterprise-auditor` | readonly | `enterprise-architecture-audit.md`, `enterprise-audit-actions.md` |
-| `audit-module-map` skill (optional) | readonly | `.local/module-map.md` summary for audit §3 |
+| `enterprise-auditor` | artifact-write (`.local/` only) | `enterprise-architecture-audit.md`, `enterprise-audit-actions.md` |
+| `audit-module-map` skill (optional) | artifact-write (`.local/` only) | `.local/module-map.md` summary for audit §3 |
 
 Parent **does not** duplicate inventory searches — consumes subagent outputs + preflight JSON.
 
