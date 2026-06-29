@@ -22,8 +22,8 @@ Depends On:
 
 ## Activation
 
-1. **CLI:** `python -m cursor_workflow install --target . --verify`
-2. **Marketplace (ADR-001):** Enable plugin → run `workflow-activate` skill → verify gates
+1. **Plugin / Marketplace (recommended):** Enable plugin → `python -m cursor_workflow activate --directory .` (or `workflow-activate` skill / MCP `workflow_activate`)
+2. **Kit clone / advanced:** `python -m cursor_workflow install --target . --verify`
 
 ## Pattern A (maintainer PR)
 

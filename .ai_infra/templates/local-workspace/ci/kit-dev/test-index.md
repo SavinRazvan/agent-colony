@@ -25,9 +25,9 @@
   - Notes: MCP tools and tracker read
 
 - Module: `install`
-  - Owned tests: `tests/modules/install/test_scaffold.py`, `tests/modules/install/test_install_contract.py`, `tests/modules/install/test_cursor_workflow.py`
+  - Owned tests: `tests/modules/install/test_scaffold.py`, `tests/modules/install/test_install_contract.py`, `tests/modules/install/test_cursor_workflow.py`, `tests/modules/install/test_plane_status.py`
   - Coverage status: `healthy`
-  - Notes: scaffold, install contract, CLI
+  - Notes: scaffold, install contract, CLI, three-plane activate
 
 - Module: `ai_infra`
   - Owned tests: `tests/modules/ai_infra/test_paths.py`

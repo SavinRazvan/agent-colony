@@ -26,7 +26,7 @@ Run when a PR changes kit architecture, install manifest, governance, workflow p
 - [ ] After `.ai_infra/docs/` or exemplar changes: run `make sync-plugin` and `make check-plugin`.
 - [ ] After agent roster, rules count, or IMPLEMENTATION-STATUS changes: run `make doc-validate`.
 - [ ] If alignment audit categories change: sync `.ai_infra/docs/roadmap/alignment-audit-schema.md` and enterprise-audit skill references.
-- [ ] If install manifest or scaffold changes: run `make install-dry-run` and update `consumer-quickstart.md`.
+- [ ] If install manifest, scaffold, or activate flow changes: run `make install-dry-run`, update `consumer-quickstart.md`, `PLUGIN-ARCHITECTURE.md`, and `workflow-activate` skill.
 - [ ] If ADRs change: update `.ai_infra/docs/decisions/README.md` index.
 - [ ] Verify no contradictions against `.cursor/rules/*.mdc` and `.agents/skills/PR_WORKFLOW.md`.
 - [ ] Run `python .ai_infra/scripts/architecture/check_governance_consistency.py`.

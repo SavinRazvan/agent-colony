@@ -42,6 +42,7 @@ import integrate_cli  # noqa: E402
 import drift_cli  # noqa: E402
 import doc_cli  # noqa: E402
 import verify_cli  # noqa: E402
+import activate_cli  # noqa: E402
 
 
 def _scaffold_script() -> Path:
@@ -279,6 +280,7 @@ def build_parser() -> argparse.ArgumentParser:
     drift_cli.register_drift_subparser(sub)
     doc_cli.register_doc_subparser(sub)
     verify_cli.register_verify_subparser(sub)
+    activate_cli.register_activate_subparser(sub)
 
     return parser
 

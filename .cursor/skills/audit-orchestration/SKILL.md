@@ -40,7 +40,7 @@ python -m cursor_workflow verify all --write-preflight
 python -m cursor_workflow doc validate --write-preflight
 ```
 
-**MCP (preferred in Cursor):** `workflow_verify_all`, `workflow_doc_facts_validate`, `workflow_drift_validate`, `workflow_integrate_validate`.
+**MCP (preferred in Cursor):** `workflow_verify_all`, `workflow_doc_facts_validate`, `workflow_drift_validate`, `workflow_integrate_validate`, `workflow_activate`.
 
 **Read:** `.local/workflow-artifacts/audit/preflight.json` and `doc-facts-preflight.json` if present.
 

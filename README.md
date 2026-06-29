@@ -71,6 +71,15 @@ See [`overlays/README.md`](overlays/README.md).
 
 ## Quick install
 
+**Plugin / Marketplace (recommended):**
+
+```bash
+cd /path/to/your-project
+python -m cursor_workflow activate --directory .
+```
+
+**Kit clone / advanced:**
+
 ```bash
 python -m cursor_workflow install --target /path/to/your-project --with-venv --verify
 python -m cursor_workflow gates
@@ -94,6 +103,9 @@ See [`AGENTS.md`](AGENTS.md). Maintainer PR: [`.agents/skills/PR_WORKFLOW.md`](.
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/python -m pytest -q
+make gates
+make doc-validate
+make verify-all
 .venv/bin/python .ai_infra/scripts/architecture/check_governance_consistency.py
 .venv/bin/python .ai_infra/scripts/architecture/check_debrand.py
 ```

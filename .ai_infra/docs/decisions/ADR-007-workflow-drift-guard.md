@@ -63,7 +63,7 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 | Concern | Owner |
 |---------|-------|
 | Bare paths, brand terms | `check_governance_consistency.py`, `check_debrand.py` |
-| Agent Anchor/MCP, registry parity | `integrate validate` INT-001…012 (incl. INT-011 drift-guard file, INT-012 drift P0 parity) |
+| Agent Anchor/MCP, registry parity | `integrate validate` INT-001…013 (incl. INT-011 drift-guard file, INT-012 drift P0 parity, INT-013 doc facts) |
 | test-plan/index existence | `check_testing_artifacts.py` |
 | Plugin/payload SHA drift | `sync_plugin_bundle.py --check` |
 | Slice claim verification | `verifier` |

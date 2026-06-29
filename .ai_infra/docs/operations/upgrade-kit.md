@@ -10,7 +10,14 @@ Re-run install from a **newer kit source** (git tag, plugin payload, or local cl
 
 ## Upgrade command
 
-From kit / payload root:
+**Plugin / payload (recommended):**
+
+```bash
+cd /path/to/your-project
+python -m cursor_workflow activate --directory . --force
+```
+
+**Kit clone / advanced** — from kit / payload root:
 
 ```bash
 cursor-workflow install \
