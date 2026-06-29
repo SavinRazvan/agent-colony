@@ -1,0 +1,40 @@
+version: 1
+kit_version: "0.3.0"
+profiles:
+  default:
+    copy_dirs:
+      - { src: .cursor, dst: .cursor }
+      - { src: .agents, dst: .agents }
+      - { src: cursor_workflow, dst: cursor_workflow }
+    copy_ai_infra:
+      - scripts/pr
+      - scripts/architecture
+      - scripts/integration
+      - install/cursor_workflow
+      - docs/operations
+      - docs/governance
+      - docs/roadmap
+      - docs/decisions
+      - docs/architecture
+      - templates/local-workspace
+      - templates/user-settings
+      - templates/agent-integration
+      - workflows
+    copy_files:
+      - bootstrap.py
+      - paths.py
+      - project.config.yaml.example
+      - manifest.yaml
+      - install-contract.json
+      - schemas/mcp-registry.schema.json
+      - schemas/github-collaboration.schema.json
+      - schemas/mcp-agents.schema.json
+    scaffold_local: true
+    agents_md: stub
+  with_mcp:
+    extends: default
+    copy_ai_infra:
+      - mcp_servers/workflow_mcp
+    copy_files:
+      - requirements-mcp.txt
+    mcp_json: true

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://workflow-kit.local/schemas/gate.json",
+  "title": "PrepareGate",
+  "description": "One entry in .ai_infra/scripts/pr/prepare.py GATES. Authoritative list lives only in prepare.py.",
+  "type": "array",
+  "items": {
+    "type": "string"
+  },
+  "minItems": 1,
+  "examples": [
+    ["python", ".ai_infra/scripts/pr/check_testing_artifacts.py"],
+    ["python", "-m", "pytest", "-q"]
+  ]
+}

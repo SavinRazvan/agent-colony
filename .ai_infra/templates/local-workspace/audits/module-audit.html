@@ -1,0 +1,35 @@
+<!--
+File: module-audit.html
+Path: docs/templates/local-workspace/audits/module-audit.html
+Role: Placeholder / shell for the module audit HTML report; copy to `.local/agents-control-center/audits/`.
+Used By:
+ - Local preview; replaced when a generator overwrites this file
+Depends On:
+ - ../dashboards/local-shell.css, ../dashboards/site-nav.js
+Notes:
+ - When an exporter overwrites this file, preserve `<html data-local-site="audits" …>`, `local-shell.css` link, and `site-nav.js` script.
+-->
+<!DOCTYPE html>
+<html lang="en" data-local-site="audits" data-local-active="audit">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module audit</title>
+  <link rel="stylesheet" href="../dashboards/local-shell.css" />
+</head>
+<body>
+  <div class="local-content">
+    <section class="local-surface local-page-head">
+      <h1>Module audit</h1>
+      <p class="local-sub">HTML export or stub. Use the <strong>Navigator</strong> above to switch to Home or the Control Center.</p>
+    </section>
+    <section class="local-panel">
+      <p><strong>No generated audit is present yet</strong>, or this file is the template stub.</p>
+      <p>When you run a module audit export, it may overwrite this file. Preserve the top-of-file HTML comment, the
+         <code>&lt;html data-local-site=&quot;audits&quot; …&gt;</code> attributes, the <code>local-shell.css</code> link,
+         and the <code>site-nav.js</code> <code>&lt;script&gt;</code> at the bottom so layout and navigation stay consistent.</p>
+    </section>
+  </div>
+  <script src="../dashboards/site-nav.js"></script>
+</body>
+</html>

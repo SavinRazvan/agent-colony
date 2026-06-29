@@ -1,0 +1,10 @@
+{
+  "_comment": "Copy to .cursor/mcp.user.json (gitignored). Add external MCP servers here.",
+  "mcpServers": {
+    "my-custom-server": {
+      "_comment": "Example — replace with your server command/args",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-example"]
+    }
+  }
+}

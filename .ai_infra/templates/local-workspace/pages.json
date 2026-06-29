@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "pages": [
+    {
+      "id": "session",
+      "title": "Session",
+      "file": "../../index-and-planning/current/session-pointer.md"
+    },
+    {
+      "id": "change-index",
+      "title": "Change Index",
+      "file": "../../index-and-planning/current/change-index.md"
+    },
+    {
+      "id": "plan",
+      "title": "Plan",
+      "file": "../../index-and-planning/current/plan.md"
+    },
+    {
+      "id": "workflow",
+      "title": "Workflows",
+      "file": "../../../docs/operations/workflow-complete.md"
+    },
+    {
+      "id": "procedures",
+      "title": "Procedures",
+      "file": "../../../docs/operations/agent-workflow-procedures.md"
+    },
+    {
+      "id": "architecture",
+      "title": "Architecture",
+      "file": "../../index-and-planning/current/architecture.md"
+    },
+    {
+      "id": "strategy-index",
+      "title": "Strategy index",
+      "file": "../../../docs/strategy/README.md"
+    },
+    {
+      "id": "control-plane-plan",
+      "title": "Control plane plan",
+      "file": "../../../docs/plans/control-plane-product-alignment-plan.md"
+    },
+    {
+      "id": "work",
+      "title": "Work Tracker",
+      "file": "../../index-and-planning/current/work-tracker.md"
+    },
+    {
+      "id": "archive",
+      "title": "Archive Agents",
+      "file": "../../../docs/archive/plans/archive-agents-research.md"
+    },
+    {
+      "id": "logging",
+      "title": "Logging and Errors",
+      "file": "../../../docs/operations/logging-and-errors.md"
+    },
+    {
+      "id": "test-plan",
+      "title": "Test Plan",
+      "file": "../../index-and-planning/current/test-plan.md"
+    },
+    {
+      "id": "test-index",
+      "title": "Test Index",
+      "file": "../../index-and-planning/current/test-index.md"
+    },
+    {
+      "id": "coverage",
+      "title": "Coverage",
+      "file": "../../index-and-planning/current/coverage-index.md"
+    },
+    {
+      "id": "governance-audit",
+      "title": "Governance Audit",
+      "file": "../../index-and-planning/audits/agent-governance-audit.md"
+    },
+    {
+      "id": "governance-todos",
+      "title": "Governance TODOs",
+      "file": "../../index-and-planning/audits/agent-governance-todos.md"
+    },
+    {
+      "id": "updates",
+      "title": "Updates Log",
+      "file": "../../index-and-planning/history/updates-log.md"
+    }
+  ]
+}

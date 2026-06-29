@@ -1,0 +1,27 @@
+# Gitignored per project — see docs/operations/local-workspace-layout.md
+.local/
+.local/**
+
+# Runtime / secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Research (optional overlay)
+_research_results/
+
+# Plugin bundle (generated — run make sync-plugin)
+/plugin/
+/payload/
+
+# Editor
+.DS_Store

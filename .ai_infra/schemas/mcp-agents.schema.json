@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://workflow-kit.local/schemas/mcp-agents.schema.json",
+  "title": "McpAgentsWorksheet",
+  "type": "object",
+  "required": ["version"],
+  "additionalProperties": true,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "kit": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "server_key": { "type": "string" },
+        "description": { "type": "string" },
+        "enabled": { "type": "boolean" },
+        "agents": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "tools_hint": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "external_servers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "enabled": { "type": "boolean" },
+          "tier": { "type": "string" },
+          "description": { "type": "string" },
+          "agents": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "tools_hint": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "transport": { "type": "object" },
+          "secrets_checklist": { "type": "array" },
+          "registry_notes": { "type": "string" }
+        }
+      }
+    },
+    "agent_defaults": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "primary_servers": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "optional_servers": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "fragments_dir": { "type": "string" }
+  }
+}

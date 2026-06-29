@@ -1,0 +1,63 @@
+# project.config.yaml.example — optional per-repository metadata (MAS Workflow Kit)
+#
+# Copy to project.config.yaml and edit for your repo.
+# Agents do NOT read this at runtime — they call scripts (one command per action).
+# Merge-prep gates: edit .ai_infra/scripts/pr/prepare.py GATES once at install; keep gate_labels in sync.
+
+project:
+  name: my-project
+  language: python # python | typescript | go | ...
+
+git:
+  author: "Your Name"
+  github_user: "@yourhandle"
+  default_branch: main
+  branch_prefixes: [feature, fix, chore]
+
+# Informational only — prepare.py GATES is the source of truth for merge prep.
+gates:
+  labels:
+    - check_testing_artifacts
+    - pytest
+  # Uncomment when you append product-specific gates in prepare.py:
+  # extra_labels:
+  #   - custom_gate
+
+local_artifact_protection:
+  paths:
+    - .coverage
+    - .env
+    # project-specific, e.g.:
+    # - .product_data/
+
+alignment_audit:
+  enabled: true
+  auditor_agent: enterprise-auditor
+  auditor_skill: enterprise-architecture-audit
+  schema: .ai_infra/docs/roadmap/alignment-audit-schema.md
+  artifact_paths:
+    audit: .local/workflow-artifacts/alignment/alignment-audit.md
+    todos: .local/workflow-artifacts/alignment/alignment-todos.md
+  triggers:
+    - arch_impacting_pr
+
+research:
+  enabled: false
+  output_dir: _research_results
+
+tests:
+  root: tests/modules
+  planning_dir: .local/index-and-planning/current
+  index_markers: ["Module:", "Coverage status:"]
+
+mcp:
+  registry_path: .cursor/mcp.registry.yaml
+  user_config: .cursor/mcp.user.json
+  kit_fragment: .cursor/mcp.json.kit.example
+  merged_config: .cursor/mcp.json
+  connect_doc: .ai_infra/docs/operations/connect-external-mcp.md
+
+project_rules:
+  directory: overlays
+  # Example overlay rules (copy from overlays/rules/ at install):
+  # - my-product-rule.mdc

@@ -1,0 +1,31 @@
+{
+  "name": "mas-workflow-kit",
+  "displayName": "MAS Workflow Kit",
+  "version": "0.3.0",
+  "description": "Universal multi-agent workflow infrastructure for Cursor — agents, skills, rules, PR scripts, .local/ anchoring, and optional MCP. Install infrastructure into any project via workflow-activate.",
+  "author": {
+    "name": "Savin I. Razvan"
+  },
+  "homepage": "https://github.com/SavinRazvan/mas-workflow-kit",
+  "repository": "https://github.com/SavinRazvan/mas-workflow-kit",
+  "license": "MIT",
+  "keywords": [
+    "mas-workflow-kit",
+    "multi-agent",
+    "cursor-workflow",
+    "pr-workflow",
+    "enterprise-audit",
+    "mcp"
+  ],
+  "category": "developer-tools",
+  "tags": [
+    "agents",
+    "workflow",
+    "governance",
+    "maintainer",
+    "automation"
+  ],
+  "agents": "./plugin/agents/",
+  "skills": "./plugin/skills/",
+  "rules": "./plugin/rules/"
+}
