@@ -225,6 +225,16 @@ def _collect_agent_mcp_block_violations() -> list[str]:
     return violations
 
 
+KIT_DEV_ONLY_PREFIXES = (
+    ".ai_infra/scripts/ci/",
+    ".ai_infra/scripts/release/",
+)
+
+
+def _is_kit_dev_only_path(candidate: str) -> bool:
+    return any(candidate.startswith(prefix) for prefix in KIT_DEV_ONLY_PREFIXES)
+
+
 def _collect_owner_path_violations() -> list[str]:
     owners = ROOT / ".ai_infra/docs/governance/workflow-source-owners.md"
     if not owners.is_file():
@@ -242,6 +252,8 @@ def _collect_owner_path_violations() -> list[str]:
         else:
             path = ROOT / candidate
             if not path.exists():
+                if _is_kit_dev_only_path(candidate):
+                    continue
                 violations.append(f"workflow-source-owners.md: missing path {candidate}")
     return violations
 

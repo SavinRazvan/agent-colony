@@ -34,8 +34,8 @@ Notes:
 | Git **commit** trailers | `.cursor/rules/commit-trailer-format.mdc` | `AGENTS.md` § Commits, implementer skills |
 | Governance drift scan | `.ai_infra/scripts/architecture/check_governance_consistency.py` | CI + local policy edits |
 | Operational drift validate | `.ai_infra/scripts/workflow/check_drift.py` | `make drift-validate`, implementer closure |
-| Infrastructure integrate validate | `.ai_infra/scripts/integration/validate.py` | `make integrate-validate`, INT-001…012 |
-| CI workspace seed | `.ai_infra/scripts/ci/seed_kit_workspace.py` | `.github/workflows/kit-quality.yml` |
+| Infrastructure integrate validate | `.ai_infra/scripts/integration/validate.py` | `make integrate-validate`, INT-001…013 |
+| CI workspace seed (kit-dev only) | `.ai_infra/scripts/ci/seed_kit_workspace.py` | `.github/workflows/kit-quality.yml` |
 | Maintainer gate matrix (non-prepare) | `.ai_infra/docs/operations/gate-matrix.md` | `make gates`, drift, integrate, check-plugin |
 | Path resolution | `.ai_infra/paths.py` | MCP, install scaffold, tests |
 | MCP registry mapping | `.cursor/mcp.registry.yaml` | Agents, `connect-external-mcp.md` |

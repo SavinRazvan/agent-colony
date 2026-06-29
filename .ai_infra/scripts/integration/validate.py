@@ -329,6 +329,15 @@ def _check_int013(root: Path) -> CheckResult:
             passed=False,
             detail=f"check_doc_facts import failed: {exc}",
         )
+    from doc_facts_checks import is_kit_dev
+
+    if not is_kit_dev(root):
+        return CheckResult(
+            check_id="INT-013",
+            severity=Severity.P1,
+            passed=True,
+            detail="consumer profile — doc facts skipped",
+        )
     results = check_doc_facts.run_checks(root)
     failures = [
         r for r in results if not r.passed and r.severity.value in ("P0", "P1")

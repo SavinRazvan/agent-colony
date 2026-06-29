@@ -35,11 +35,21 @@ from doc_facts_checks import (  # noqa: E402
     CheckResult,
     Severity,
     doc_facts_paths,
+    is_kit_dev,
 )
 
 
 def run_checks(root: Path | None = None) -> list[CheckResult]:
     project_root = (root or Path.cwd()).resolve()
+    if not is_kit_dev(project_root):
+        return [
+            CheckResult(
+                check_id="DOC-000",
+                severity=Severity.P2,
+                passed=True,
+                detail="consumer profile — doc facts skipped",
+            )
+        ]
     paths = doc_facts_paths(project_root)
     return [check(paths) for check in KIT_DEV_CHECKS]
 

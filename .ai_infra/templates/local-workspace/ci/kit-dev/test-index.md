@@ -15,9 +15,9 @@
   - Notes: PR script attribution + verify_publish smoke
 
 - Module: `architecture_scripts`
-  - Owned tests: `tests/modules/architecture_scripts/test_check_governance_consistency.py`, `tests/modules/architecture_scripts/test_check_debrand.py`, `tests/modules/architecture_scripts/test_path_drift_ban.py`
+  - Owned tests: `tests/modules/architecture_scripts/test_check_governance_consistency.py`, `tests/modules/architecture_scripts/test_check_debrand.py`, `tests/modules/architecture_scripts/test_path_drift_ban.py`, `tests/modules/architecture_scripts/test_check_doc_facts.py`
   - Coverage status: `healthy`
-  - Notes: governance, debrand, path-drift scanners
+  - Notes: governance, debrand, path-drift, doc-facts scanners
 
 - Module: `workflow_mcp`
   - Owned tests: `tests/modules/workflow_mcp/test_workflow_mcp.py`

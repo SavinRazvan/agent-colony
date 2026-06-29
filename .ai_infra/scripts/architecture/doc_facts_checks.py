@@ -69,6 +69,11 @@ def _read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
+def is_kit_dev(root: Path) -> bool:
+    """Doc-facts apply only on the kit dev repo (consumer stub lacks handoff docs)."""
+    return (root / ".ai_infra" / "docs" / "handoff" / "IMPLEMENTATION-STATUS.md").is_file()
+
+
 def list_agent_ids(paths: DocFactsPaths) -> list[str]:
     if not paths.agents_dir.is_dir():
         return []

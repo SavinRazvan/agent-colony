@@ -49,6 +49,16 @@ def test_starter_token_in_exemplar_fails_p0(tmp_path: Path) -> None:
     assert exit_code_for(results) == 1
 
 
+def test_consumer_profile_skips_doc_facts(tmp_path: Path) -> None:
+    _copy_minimal_kit(tmp_path)
+    (tmp_path / ".ai_infra" / "docs" / "handoff" / "IMPLEMENTATION-STATUS.md").unlink()
+    results = run_checks(tmp_path)
+    assert len(results) == 1
+    assert results[0].check_id == "DOC-000"
+    assert results[0].passed
+    assert exit_code_for(results) == 0
+
+
 def _copy_minimal_kit(target: Path) -> None:
     import shutil
 

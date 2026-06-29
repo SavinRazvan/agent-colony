@@ -77,7 +77,13 @@ my-app/
 └── .local/                   # scaffolded trackers
 ```
 
-**Not installed by default:** kit `tests/`, full `governance/`, product release scripts, `cursor_workflow` CLI, maintainer megadocs.
+**Not installed by default:** kit `tests/`, full `governance/`, product release scripts, maintainer megadocs.
+
+**Kit dev repo only (not in consumer `.ai_infra/`):** `scripts/ci/`, `scripts/release/`, `docs/handoff/`, root `Makefile`, full `tests/modules/`. Consumers use the slim bundle from `manifest.yaml` `copy_ai_infra` only.
+
+### `ci/kit-dev` local workspace fixtures
+
+The path `.ai_infra/templates/local-workspace/ci/kit-dev/` holds **kit-repository-only** tracker exemplars (e.g. full `test-index.md` with all `tests/modules/` owners). CI runs [`seed_kit_workspace.py`](../../scripts/ci/seed_kit_workspace.py) before gates because `.local/` is gitignored. **Consumers** receive neutral exemplars under `templates/local-workspace/exemplars/` — not the `ci/kit-dev/` tree. Do not reference `ci/kit-dev` paths in consumer onboarding docs.
 
 ---
 

@@ -225,7 +225,7 @@ def check_drift004(paths: DriftPaths) -> CheckResult:
     passed = phase_ok or next_ok or not focus.strip()
     detail_parts: list[str] = []
     if not passed:
-        detail_parts.append(f"Phase={phase!r} Next={next!r} not reflected in plan focus")
+        detail_parts.append(f"Phase={phase!r} Next={nxt!r} not reflected in plan focus")
     else:
         detail_parts.append("session-pointer aligns with plan focus")
     return CheckResult(
