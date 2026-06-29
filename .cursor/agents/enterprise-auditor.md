@@ -26,6 +26,8 @@ Act as a **Principal Enterprise Architect** using **strict evidence-only discipl
 
 **Deep module topology:** when the user wants a generated module map + HTML export, run `.cursor/skills/audit-module-map/SKILL.md` first or in parallel, then fold summarized evidence into the enterprise audit.
 
+**Full audit orchestration:** when running a phased audit with script preflight and Task delegation, follow `.cursor/skills/audit-orchestration/SKILL.md`.
+
 ## Write (mandatory for a full audit)
 
 1. **Primary report:** `.local/workflow-artifacts/enterprise-architecture-audit/enterprise-architecture-audit.md`

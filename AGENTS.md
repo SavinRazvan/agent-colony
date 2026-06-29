@@ -48,6 +48,8 @@ When adding or changing agents, skills, pipelines, or integration templates, als
 
 At slice closure, run **`python -m cursor_workflow drift validate`** (or `make drift-validate`) and hand off to **`workflow-drift-guard`** when P0/P1 findings need artifacts.
 
+After doc or agent roster changes, run **`make doc-validate`** (included in **`make gates`**). Before full audits, run **`make verify-all`** — see `.cursor/skills/audit-orchestration/SKILL.md`.
+
 ## Commits
 
 Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc`**):

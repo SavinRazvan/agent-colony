@@ -36,7 +36,7 @@ def test_install_dry_run(tmp_path: Path) -> None:
     assert code == 0
 
 
-def test_gates_invokes_three_steps(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_gates_invokes_five_steps(monkeypatch: pytest.MonkeyPatch) -> None:
     from cursor_workflow.cli import cmd_gates, kit_root
 
     calls: list[list[str]] = []
@@ -52,11 +52,12 @@ def test_gates_invokes_three_steps(monkeypatch: pytest.MonkeyPatch) -> None:
         directory = kit_root()
 
     assert cmd_gates(Args()) == 0
-    assert len(calls) == 4
+    assert len(calls) == 5
     assert "check_testing_artifacts.py" in calls[0][-1]
     assert calls[1][1:3] == ["-m", "pytest"]
     assert "check_governance_consistency.py" in calls[2][-1]
     assert "check_debrand.py" in calls[3][-1]
+    assert "check_doc_facts.py" in calls[4][-1]
 
 
 def test_version_in_package() -> None:

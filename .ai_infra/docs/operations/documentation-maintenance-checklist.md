@@ -24,6 +24,7 @@ Run when a PR changes kit architecture, install manifest, governance, workflow p
 - [ ] If drift guard or integrate validate changes: sync ADR-007, `drift-prevention.md`, `AGENTS.md`, and agent cards.
 - [ ] If CI or `.local` seeding changes: sync `gate-matrix.md`, `seed_kit_workspace.py` README, `kit-quality.yml`.
 - [ ] After `.ai_infra/docs/` or exemplar changes: run `make sync-plugin` and `make check-plugin`.
+- [ ] After agent roster, rules count, or IMPLEMENTATION-STATUS changes: run `make doc-validate`.
 - [ ] If alignment audit categories change: sync `.ai_infra/docs/roadmap/alignment-audit-schema.md` and enterprise-audit skill references.
 - [ ] If install manifest or scaffold changes: run `make install-dry-run` and update `consumer-quickstart.md`.
 - [ ] If ADRs change: update `.ai_infra/docs/decisions/README.md` index.

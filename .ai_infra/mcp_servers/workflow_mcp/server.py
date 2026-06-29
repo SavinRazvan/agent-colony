@@ -259,6 +259,46 @@ def workflow_drift_validate() -> str:
 
 
 @mcp.tool()
+def workflow_doc_facts_validate() -> str:
+    """Run doc validate (canonical README/AGENTS/status vs repo facts)."""
+    root = workspace_root()
+    arch_dir = root / ".ai_infra" / "scripts" / "architecture"
+    if not arch_dir.is_dir():
+        return "FAIL: missing .ai_infra/scripts/architecture"
+    import sys
+
+    arch_str = str(arch_dir)
+    if arch_str not in sys.path:
+        sys.path.insert(0, arch_str)
+    import check_doc_facts
+
+    results = check_doc_facts.run_checks(root)
+    report = check_doc_facts.format_report(results)
+    code = check_doc_facts.exit_code_for(results)
+    return f"exit={code}\n{report}"
+
+
+@mcp.tool()
+def workflow_verify_all() -> str:
+    """Run maintainer verify-all matrix (sync-plugin, gates, drift, integrate, check-plugin, health)."""
+    root = workspace_root()
+    arch_dir = root / ".ai_infra" / "scripts" / "architecture"
+    if not arch_dir.is_dir():
+        return "FAIL: missing .ai_infra/scripts/architecture"
+    import sys
+
+    arch_str = str(arch_dir)
+    if arch_str not in sys.path:
+        sys.path.insert(0, arch_str)
+    import verify_all
+
+    results = verify_all.run_verify_all(root, sys.executable)
+    report = verify_all.format_report(results)
+    code = verify_all.exit_code_for(results)
+    return f"exit={code}\n{report}"
+
+
+@mcp.tool()
 def workflow_contributors_validate(check_mcp: bool = False) -> str:
     """Validate .local/user_settings/github.collaboration.yaml (optional MCP worksheet)."""
     root = workspace_root()

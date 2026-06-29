@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (MAS Workflow Kit)
 
-**Last updated:** 2026-06-29 (workflow-drift-guard slice)  
-**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 79
+**Last updated:** 2026-06-29 (doc-facts automation slice)  
+**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 83
 
 ## Shipped (confirmed in repo)
 
@@ -27,6 +27,8 @@ Notes:
 | PR scripts + 2 default gates | Pattern A | `.ai_infra/scripts/pr/prepare.py` |
 | Governance + debrand scanners | CI-ready | `.ai_infra/scripts/architecture/` |
 | Workflow drift validate | ADR-007 | `.ai_infra/scripts/workflow/check_drift.py` |
+| Doc facts validate | DOC-001…005 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
+| Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
 | MCP tools + resources | P0 + P1 | `.ai_infra/mcp_servers/workflow_mcp/` |
 | Install scaffold + contract | `install-contract.json` | `.ai_infra/scripts/install/scaffold.py` |
@@ -34,13 +36,15 @@ Notes:
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Kit version on install | `kit_version` 0.3.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 79 | `tests/modules/` |
+| Tests | 83 | `tests/modules/` |
 
 ## Verification commands
 
 ```bash
 make gates
 make drift-validate
+make doc-validate
+make verify-all
 make install-dry-run
 make check-plugin
 cursor-workflow health

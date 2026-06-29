@@ -307,6 +307,44 @@ def _check_int012(root: Path) -> CheckResult:
     )
 
 
+def _import_check_doc_facts(root: Path):
+    arch_dir = ai_infra_dir(root) / "scripts" / "architecture"
+    if not arch_dir.is_dir():
+        raise FileNotFoundError(f"missing {arch_dir}")
+    arch_str = str(arch_dir)
+    if arch_str not in sys.path:
+        sys.path.insert(0, arch_str)
+    import check_doc_facts
+
+    return check_doc_facts
+
+
+def _check_int013(root: Path) -> CheckResult:
+    try:
+        check_doc_facts = _import_check_doc_facts(root)
+    except FileNotFoundError as exc:
+        return CheckResult(
+            check_id="INT-013",
+            severity=Severity.P0,
+            passed=False,
+            detail=f"check_doc_facts import failed: {exc}",
+        )
+    results = check_doc_facts.run_checks(root)
+    failures = [
+        r for r in results if not r.passed and r.severity.value in ("P0", "P1")
+    ]
+    return CheckResult(
+        check_id="INT-013",
+        severity=Severity.P1,
+        passed=not failures,
+        detail=(
+            "doc facts checks pass"
+            if not failures
+            else "; ".join(f"{r.check_id}: {r.detail}" for r in failures)
+        ),
+    )
+
+
 def run_checks(root: Path | None = None) -> list[CheckResult]:
     project_root = (root or Path.cwd()).resolve()
     paths = _paths(project_root)
@@ -331,6 +369,7 @@ def run_checks(root: Path | None = None) -> list[CheckResult]:
         _check_int010(paths),
         _check_int011(paths),
         _check_int012(project_root),
+        _check_int013(project_root),
     ]
 
 
