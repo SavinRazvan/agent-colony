@@ -13,6 +13,9 @@ Notes:
 
 from __future__ import annotations
 
+import argparse
+import io
+from contextlib import redirect_stdout
 from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
@@ -256,6 +259,76 @@ def workflow_drift_validate() -> str:
     report = check_drift.format_report(results, profile=profile)
     code = check_drift.exit_code_for(results)
     return f"exit={code}\nprofile={profile}\n{report}"
+
+
+@mcp.tool()
+def workflow_activate(force: bool = False) -> str:
+    """Ensure all three planes are installed (cursor_workflow activate)."""
+    root = workspace_root()
+    activate_pkg = root / ".ai_infra" / "install" / "cursor_workflow"
+    if not (activate_pkg / "activate_cli.py").is_file():
+        return "FAIL: missing activate_cli — run workflow-activate skill or install kit first"
+    import sys
+
+    pkg = str(activate_pkg)
+    if pkg not in sys.path:
+        sys.path.insert(0, pkg)
+    import activate_cli
+
+    args = argparse.Namespace(
+        directory=root,
+        source=None,
+        profile="with_mcp",
+        with_venv=True,
+        with_mcp_json=True,
+        verify=True,
+        force=force,
+        allow_settings_pending=True,
+    )
+    buffer = io.StringIO()
+    with redirect_stdout(buffer):
+        code = activate_cli.cmd_activate(args)
+    return f"exit={code}\n{buffer.getvalue()}"
+
+
+@mcp.tool()
+def workflow_doc_facts_validate() -> str:
+    """Run doc validate (canonical README/AGENTS/status vs repo facts)."""
+    root = workspace_root()
+    arch_dir = root / ".ai_infra" / "scripts" / "architecture"
+    if not arch_dir.is_dir():
+        return "FAIL: missing .ai_infra/scripts/architecture"
+    import sys
+
+    arch_str = str(arch_dir)
+    if arch_str not in sys.path:
+        sys.path.insert(0, arch_str)
+    import check_doc_facts
+
+    results = check_doc_facts.run_checks(root)
+    report = check_doc_facts.format_report(results)
+    code = check_doc_facts.exit_code_for(results)
+    return f"exit={code}\n{report}"
+
+
+@mcp.tool()
+def workflow_verify_all() -> str:
+    """Run maintainer verify-all matrix (sync-plugin, gates, drift, integrate, check-plugin, health)."""
+    root = workspace_root()
+    arch_dir = root / ".ai_infra" / "scripts" / "architecture"
+    if not arch_dir.is_dir():
+        return "FAIL: missing .ai_infra/scripts/architecture"
+    import sys
+
+    arch_str = str(arch_dir)
+    if arch_str not in sys.path:
+        sys.path.insert(0, arch_str)
+    import verify_all
+
+    results = verify_all.run_verify_all(root, sys.executable)
+    report = verify_all.format_report(results)
+    code = verify_all.exit_code_for(results)
+    return f"exit={code}\n{report}"
 
 
 @mcp.tool()

@@ -48,6 +48,8 @@ When adding or changing agents, skills, pipelines, or integration templates, als
 
 At slice closure, run **`python -m cursor_workflow drift validate`** (or `make drift-validate`) and hand off to **`workflow-drift-guard`** when P0/P1 findings need artifacts.
 
+After doc or agent roster changes, run **`make doc-validate`** (included in **`make gates`**). Before full audits, run **`make verify-all`** — see `.cursor/skills/audit-orchestration/SKILL.md`.
+
 ## Commits
 
 Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc`**):
@@ -70,6 +72,7 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 
 | Role | Entry |
 |------|--------|
+| Plugin activation | `workflow-activate` skill or `python -m cursor_workflow activate --directory .` — see [PLUGIN-ARCHITECTURE.md](.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md) § Automated activation |
 | Implement | `.cursor/agents/implementer.md` + `.cursor/skills/implementation-execution-loop/SKILL.md` |
 | Integrate infrastructure | `.cursor/agents/integrator-mas-agent.md` + `.cursor/skills/mas-infrastructure-integration/SKILL.md` — validate with `python -m cursor_workflow integrate validate` |
 | Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-module-coverage/SKILL.md` |

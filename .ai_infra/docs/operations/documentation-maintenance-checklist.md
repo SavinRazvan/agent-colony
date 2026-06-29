@@ -20,9 +20,13 @@ Run when a PR changes kit architecture, install manifest, governance, workflow p
 ## PR Checklist (required)
 
 - [ ] Confirm impacted canonical docs are updated (`README`, `AGENTS.md`, `.ai_infra/docs/`).
-- [ ] If workflow gates or `.cursor/rules` change: sync `workflow-source-owners.md`, `drift-prevention.md`, `rules-overlap-matrix.md`.
+- [ ] If workflow gates or `.cursor/rules` change: sync `workflow-source-owners.md`, `drift-prevention.md`, `rules-overlap-matrix.md`, `gate-matrix.md`.
+- [ ] If drift guard or integrate validate changes: sync ADR-007, `drift-prevention.md`, `AGENTS.md`, and agent cards.
+- [ ] If CI or `.local` seeding changes: sync `gate-matrix.md`, `seed_kit_workspace.py` README, `kit-quality.yml`.
+- [ ] After `.ai_infra/docs/` or exemplar changes: run `make sync-plugin` and `make check-plugin`.
+- [ ] After agent roster, rules count, or IMPLEMENTATION-STATUS changes: run `make doc-validate`.
 - [ ] If alignment audit categories change: sync `.ai_infra/docs/roadmap/alignment-audit-schema.md` and enterprise-audit skill references.
-- [ ] If install manifest or scaffold changes: run `make install-dry-run` and update `consumer-quickstart.md`.
+- [ ] If install manifest, scaffold, or activate flow changes: run `make install-dry-run`, update `consumer-quickstart.md`, `PLUGIN-ARCHITECTURE.md`, and `workflow-activate` skill.
 - [ ] If ADRs change: update `.ai_infra/docs/decisions/README.md` index.
 - [ ] Verify no contradictions against `.cursor/rules/*.mdc` and `.agents/skills/PR_WORKFLOW.md`.
 - [ ] Run `python .ai_infra/scripts/architecture/check_governance_consistency.py`.
@@ -34,3 +38,4 @@ Run when a PR changes kit architecture, install manifest, governance, workflow p
 | Kit governance docs | Maintainer | Per REFACTOR slice |
 | Consumer ops runbooks | Maintainer | Before kit release |
 | Agent surfaces | Maintainer | With path-drift scanner green |
+| Drift / integrate / CI seed docs | Maintainer | When ADR-007 slices or `kit-quality.yml` change |

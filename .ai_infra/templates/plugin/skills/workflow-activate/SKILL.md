@@ -7,56 +7,58 @@ description: Install MAS Workflow Kit infrastructure into the current workspace 
 
 ## When
 
-First use after enabling the **MAS Workflow Kit** plugin in a project workspace.
+First use after enabling the **MAS Workflow Kit** plugin in a project workspace — or when any of the three planes is missing on disk.
 
-## Command
+## One command (agent or human)
 
-From the **distribution root** (directory containing `payload/` and `.cursor-plugin/`):
+From the **open workspace** (Pattern A — one script command):
 
 ```bash
-python payload/cursor_workflow install \
-  --target /path/to/your-project \
-  --source payload \
-  --profile with_mcp \
-  --with-mcp-json \
-  --verify
+python -m cursor_workflow activate --directory .
 ```
 
-`--source payload` resolves against the distribution root even when the CLI shim lives under `payload/`.
+**Auto source resolution:** `WORKFLOW_KIT_PAYLOAD` env → `./payload/` → kit `payload/` (plugin bundle). Override with `--source /path/to/payload`.
 
-Use the open workspace path for `--target` when activating in place.
+**MCP:** `workflow_activate` on the `workflow-kit` server (same behavior).
 
-## Post-install (required before first PR)
+## What `activate` does
 
-1. **Personalize** `.local/user_settings/`:
-   - `github.collaboration.yaml` — owner, pipelines, commit provenance
-   - `mcp.agents.yaml` — optional MCP worksheet
-2. **Validate settings:**
-   ```bash
-   python payload/cursor_workflow contributors validate --directory /path/to/your-project
-   python payload/cursor_workflow integrate validate --directory /path/to/your-project
-   ```
-3. **Gates:**
-   ```bash
-   python payload/cursor_workflow gates --directory /path/to/your-project
-   ```
+| Plane | Paths installed | Cursor loads? |
+|-------|-----------------|---------------|
+| Cursor contract | `.cursor/`, `.agents/`, `AGENTS.md` | Yes |
+| Infrastructure | `.ai_infra/`, `cursor_workflow/` | No — scripts/CLI |
+| Runtime | `.local/` trackers + `user_settings/` exemplars | No — gitignored |
 
-## Adding agents, skills, or MCP later
+- Idempotent: skips install when all planes already pass `install-contract.json`
+- Creates `.venv`, merges MCP json, runs verify gates
+- Prints **settings-only** next steps (no re-install)
 
-Invoke **`integrator-mas-agent`** with skill **`mas-infrastructure-integration`**.
+## Post-activate (user focus — not automated)
 
-- ADR: `.ai_infra/docs/decisions/ADR-006-agent-integration-model.md`
-- Ops: `.ai_infra/docs/operations/mas-infrastructure-integration.md`
-- Checklist: `.ai_infra/templates/agent-integration/INTEGRATION-CHECKLIST.md`
+1. Edit `.local/user_settings/github.collaboration.yaml` (owner, pipelines, provenance)
+2. Optional: `.local/user_settings/mcp.agents.yaml`
+3. `python -m cursor_workflow contributors validate`
+4. `python -m cursor_workflow integrate validate`
+
+## Adding agents/skills/MCP later
+
+Invoke Cursor agent **`integrator-mas-agent`** (chat / @ picker — **not** a shell command) with skill **`mas-infrastructure-integration`**.
+
+## Agent delegation
+
+After plugin enable, parent agent or user should:
+
+1. Run **`workflow_activate`** or `cursor_workflow activate`
+2. Hand user to personalize `user_settings/`
+3. Optionally delegate **`integrator-mas-agent`** for extensions
 
 ## Success
 
-- `.ai_infra/scripts/pr/prepare.py` exists in the target workspace
-- `.local/index-and-planning/current/session-pointer.md` scaffolded
-- `contributors validate` and `integrate validate` exit 0
-- `python payload/cursor_workflow gates --directory /path/to/your-project` exits 0
+- All three planes `ready` in activate output
+- `contributors validate` exit 0 (after user edits placeholders)
+- `integrate validate` exit 0
 
 ## Reference
 
-- `.ai_infra/docs/decisions/ADR-001-distribution-activation.md` (after install)
-- `.ai_infra/docs/operations/consumer-quickstart.md`
+- ADR-001 Option B · `PLUGIN-ARCHITECTURE.md` § Automated activation
+- `consumer-quickstart.md`

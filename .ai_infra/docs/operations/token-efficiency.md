@@ -1,6 +1,6 @@
 <!--
 File: token-efficiency.md
-Path: docs/operations/token-efficiency.md
+Path: .ai_infra/docs/operations/token-efficiency.md
 Role: Token-saving contract for agents — what to read, write, and never paste.
 Used By:
  - AGENTS.md, .cursor/agents/*.md, agent-workflow-procedures.md
@@ -44,7 +44,9 @@ Notes:
 | Action | Command |
 |--------|---------|
 | Full prepare | `python .ai_infra/scripts/pr/prepare.py --pr … --actor … --agents …` |
-| Governance drift | `python scripts/architecture/check_governance_consistency.py` |
+| Governance drift | `python .ai_infra/scripts/architecture/check_governance_consistency.py` |
+| Operational drift | `make drift-validate` or `python -m cursor_workflow drift validate` |
+| Infrastructure parity | `make integrate-validate` or `python -m cursor_workflow integrate validate` |
 | Test artifacts guard | (inside prepare) `check_testing_artifacts.py` |
 
 Do **not** run individual gates in chat when `prepare.py` exists unless `verifier` needs a targeted disproof.

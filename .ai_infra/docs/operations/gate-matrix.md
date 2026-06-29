@@ -17,10 +17,12 @@ Three gate surfaces exist by design (Pattern A).
 | Surface | When | Steps | Source of truth |
 |---------|------|-------|-----------------|
 | **`prepare.py` GATES** | PR merge prep on consumer project | 2: testing artifacts + pytest | `.ai_infra/scripts/pr/prepare.py` |
-| **`cursor-workflow gates`** | Kit dev / maintainer hygiene | 4: above + governance + debrand | `.ai_infra/install/cursor_workflow/cli.py` |
-| **`scaffold --verify`** | Post-install smoke on consumer | Same 4 as kit gates | `.ai_infra/scripts/install/scaffold.py` `_run_verify` |
+| **`cursor-workflow gates`** | Kit dev / maintainer hygiene | 5: testing artifacts + pytest + governance + debrand + doc facts | `.ai_infra/install/cursor_workflow/cli.py` |
+| **`make doc-validate`** | After doc/agent/rule changes | DOC-001…005 canonical fact checks | `.ai_infra/scripts/architecture/check_doc_facts.py` |
+| **`make verify-all`** | Pre-audit / release readiness | 7 (+ optional ci-seed): sync-plugin → gates → drift → integrate → check-plugin → health → contributors | `.ai_infra/scripts/architecture/verify_all.py` |
+| **`scaffold --verify`** | Post-install smoke on consumer | 4: testing artifacts + pytest + governance + debrand (no doc facts) | `.ai_infra/scripts/install/scaffold.py` `_run_verify` |
 | **`make drift-validate`** | Slice closure / maintainer hygiene | Operational drift (DRIFT-001…008) | `.ai_infra/scripts/workflow/check_drift.py` |
-| **`kit-quality.yml` (CI)** | Push/PR on kit repo | seed CI workspace → gates + drift + integrate + plugin + health | `.github/workflows/kit-quality.yml` |
+| **`kit-quality.yml` (CI)** | Push/PR on kit repo | seed → sync-plugin → gates → drift → integrate → check-plugin → health → contributors → governance (redundant with gates) → install-dry-run | `.github/workflows/kit-quality.yml` |
 
 **Rule:** Agents preparing a PR run **`prepare.py`** (or MCP `workflow_run_prepare`). Maintainers validating the kit repo run **`make gates`**, **`make drift-validate`**, or **`cursor-workflow gates`**. GitHub Actions runs **`seed_kit_workspace.py`** first because `.local/` is gitignored.
 

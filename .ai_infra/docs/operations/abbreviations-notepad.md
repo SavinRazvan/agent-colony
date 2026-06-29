@@ -17,7 +17,7 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs.
 
 ## MAS Workflow Kit flow (plain language)
 
-1. Install kit via `cursor_workflow install` or Marketplace plugin activation.
+1. Install kit via `cursor_workflow activate` (plugin) or `cursor_workflow install` (kit clone).
 2. Agents read `.local/` trackers (`session-pointer.md` → `plan.md` → `work-tracker.md`).
 3. Maintainer PR workflow runs via `.ai_infra/scripts/pr/*` (Pattern A).
 4. Optional MCP (`workflow-kit`) wraps the same scripts.

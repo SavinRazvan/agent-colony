@@ -11,7 +11,7 @@ Depends On:
  - .ai_infra/docs/operations/documentation-maintenance-checklist.md
 Notes:
  - Run governance consistency when changing rules, skills headers, or merge.py expectations.
- - Last reviewed: 2026-06-14
+ - Last reviewed: 2026-06-29
 -->
 
 # Drift prevention (lightweight)
@@ -52,13 +52,18 @@ Script-first checks for plan ↔ tracker ↔ session-pointer coherence and hando
 | Concern | Owner | Do NOT duplicate in drift |
 |---------|-------|---------------------------|
 | Bare paths, brand terms | `check_governance_consistency.py`, `check_debrand.py` | Path/brand scans |
-| Agent Anchor/MCP, registry parity | `integrate validate` INT-001…010 | Agent file structure |
+| Agent Anchor/MCP, registry parity | `integrate validate` INT-001…013 | Agent file structure |
+| Canonical doc facts (roster, counts) | `check_doc_facts.py` / INT-013 | Path/brand scans |
 | test-plan/index existence | `check_testing_artifacts.py` | File exists checks |
 | Plugin/payload SHA drift | `sync_plugin_bundle.py --check` | Bundle sync |
 | Slice claim verification | `verifier` | Subjective verification |
 | Architecture scorecard | `enterprise-auditor` | Module deep-dive |
 
 **Command:** `python -m cursor_workflow drift validate --directory .` or `make drift-validate`.
+
+**Doc facts:** `python -m cursor_workflow doc validate --directory .` or `make doc-validate` (also in `make gates` and INT-013).
+
+**Verify-all:** `make verify-all` — CI-aligned maintainer matrix with optional `--write-preflight`.
 
 **Artifacts:** `.local/workflow-artifacts/drift/drift-audit.md`, `drift-todos.md`.
 

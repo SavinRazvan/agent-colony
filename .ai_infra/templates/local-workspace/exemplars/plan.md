@@ -1,47 +1,40 @@
 <!--
 File: plan.md
-Path: .local/index-and-planning/current/plan.md
-Role: Living implementation plan for the active slice and next slices.
+Path: .ai_infra/templates/local-workspace/exemplars/plan.md
+Role: Exemplar for install → .local/index-and-planning/current/plan.md
 Used By:
- - implementer agent
- - agents-control-center UI
+ - .ai_infra/templates/local-workspace/README.md
 Depends On:
- - .local/index-and-planning/current/work-tracker.md
+ - work-tracker.md exemplar
 Notes:
- - Keep concise; update before changing execution scope.
+ - Neutral consumer stub; kit-dev CI fixtures live under ci/kit-dev/.
 -->
 
 # Implementation Plan
 
-## Mission
-
-- Deliver incremental, reversible slices with clear acceptance criteria.
-- Track architecture, work progress, and governance in `.local/` trackers.
-
 ## Current focus
 
-- **STARTER-001** (sole `in_progress`) — Phase 1: universal core extraction (see `work-tracker.md`).
-- Align kit with [`.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md`](../../../.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md).
+- **SLICE-ID** — describe the active slice (see `work-tracker.md`)
+
+## Policy
+
+PR-first workflow; update trackers before changing execution scope.
 
 ## Active slice
 
 ### Scope
 
-Refactor staging into installable **MAS Workflow Kit**: README, overlays, 2-gate `prepare.py`, decontaminated agents, `.local/` exemplars.
+(brief scope statement)
 
 ### Acceptance criteria
 
-- [ ] Six universal rules in `.cursor/rules/`; product rules in `overlays/rules/`
-- [ ] `prepare.py` `GATES` = 2 universal defaults
-- [ ] Generic `AGENTS.md` and agent prompts (no product first-reads in core)
-- [ ] `.local/` structure kept; runtime noise removed per [local-anchoring-patterns.md](../../../.ai_infra/docs/maintainer/local-anchoring-patterns.md)
+- [ ] criterion 1
+- [ ] criterion 2
 
 ### Implementer slice closure
 
-Before handoff: update `work-tracker.md`, `history/updates-log.md`, and test trackers if tests changed.
+Before handoff: update `work-tracker.md`, `history/updates-log.md`, test trackers if tests changed, and run `make drift-validate` when the kit provides it.
 
 ## Next queued
 
-- Phase 2: skill dedupe, minimal `tests/`, governance CI path optional
-- Phase 3: consumer overlay validation
-- Phase 4: MCP server wrapping PR scripts
+- (optional follow-on slices)

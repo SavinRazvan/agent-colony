@@ -22,8 +22,8 @@ Depends On:
 
 ## Activation
 
-1. **CLI:** `python -m cursor_workflow install --target . --verify`
-2. **Marketplace (ADR-001):** Enable plugin → run `workflow-activate` skill → verify gates
+1. **Plugin / Marketplace (recommended):** Enable plugin → `python -m cursor_workflow activate --directory .` (or `workflow-activate` skill / MCP `workflow_activate`)
+2. **Kit clone / advanced:** `python -m cursor_workflow install --target . --verify`
 
 ## Pattern A (maintainer PR)
 
@@ -45,7 +45,9 @@ Every session: `.local/index-and-planning/current/session-pointer.md` → `plan.
 | `enterprise-auditor` | Architecture audits |
 | `researcher` | Research corpus (local) |
 | `integrator-mas-agent` | Add agents/skills/MCP to infrastructure |
+| `workflow-drift-guard` | Operational drift (plan ↔ tracker ↔ docs) — [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) |
 
-Integration procedure: [mas-infrastructure-integration.md](../operations/mas-infrastructure-integration.md).
+Integration procedure: [mas-infrastructure-integration.md](../operations/mas-infrastructure-integration.md).  
+Drift validation: `make drift-validate` — see [gate-matrix.md](../operations/gate-matrix.md).
 
 See [folder-charter.md](../governance/folder-charter.md) and [decisions/README.md](../decisions/README.md).

@@ -23,6 +23,7 @@ from drift_checks import (  # noqa: E402
     check_drift001,
     check_drift002,
     check_drift003,
+    check_drift004,
     check_drift005,
     check_drift008,
     detect_profile,
@@ -139,6 +140,19 @@ def test_drift008_requires_scaffold_trackers(tmp_path: Path) -> None:
 def test_detect_profile_consumer_on_starter_exemplar() -> None:
     assert detect_profile("STARTER-001 placeholder") == "consumer"
     assert detect_profile("normal kit work") == "kit-dev"
+
+
+def test_drift004_reports_next_field_not_builtin(tmp_path: Path) -> None:
+    _write_planning(tmp_path)
+    planning = tmp_path / ".local" / "index-and-planning" / "current"
+    (planning / "session-pointer.md").write_text(
+        "| **Phase** | unrelated-phase |\n| **Next** | unrelated-next |\n",
+        encoding="utf-8",
+    )
+    result = check_drift004(drift_paths(tmp_path))
+    assert not result.passed
+    assert "unrelated-next" in result.detail
+    assert "built-in function next" not in result.detail
 
 
 def test_drift_validate_passes_p0_on_kit_repo() -> None:

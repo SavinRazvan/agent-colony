@@ -36,7 +36,19 @@ External servers: [connect-external-mcp.md](../../docs/operations/connect-extern
 | `workflow_render_pr_body` | PR body for named pipeline |
 | `workflow_contributors_validate` | validate user settings YAML |
 | `workflow_list_session_agents` | change-index + session-pointer → merged Agent/s |
+| `workflow_integrate_validate` | `.ai_infra/scripts/integration/validate.py` (INT-001…013) |
+| `workflow_drift_validate` | `.ai_infra/scripts/workflow/check_drift.py` (DRIFT-001…008) |
+| `workflow_activate` | `.ai_infra/install/cursor_workflow/activate_cli.py` (three-plane install) |
+| `workflow_doc_facts_validate` | `.ai_infra/scripts/architecture/check_doc_facts.py` (DOC-001…005) |
+| `workflow_verify_all` | `.ai_infra/scripts/architecture/verify_all.py` (maintainer matrix) |
 
 ## P1 resources
 
-`workflow://inventory`, `workflow://agents/{id}`, `workflow://skills/{id}`, `workflow://trackers/{name}`, `workflow://mcp/registry`
+| URI | Content |
+|-----|---------|
+| `workflow://inventory` | Agent ids, skill ids, gate count (JSON) |
+| `workflow://agents/{agent_id}` | Agent prompt markdown |
+| `workflow://skills/{skill_id}` | Skill body from `.cursor/skills` or `.agents/skills` |
+| `workflow://artifacts/pr/{phase}` | PR artifact (`review` \| `prep` \| `prepare` \| `merge`) |
+| `workflow://trackers/{name}` | Tracker markdown from `.local/.../current/` |
+| `workflow://mcp/registry` | Merged MCP registry JSON |

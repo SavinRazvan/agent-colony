@@ -40,12 +40,10 @@ payload/         # ADR-001 install source (.ai_infra + cursor_workflow shim)
 4. Run **workflow-activate** skill command:
 
 ```bash
-python payload/cursor_workflow install \
-  --target /path/to/project \
-  --source payload \
-  --profile with_mcp \
-  --with-venv \
-  --verify
+cd /path/to/project
+python -m cursor_workflow activate --directory .
+# Or from kit repo without opening target in Cursor:
+python payload/cursor_workflow activate --directory /path/to/project --source payload
 ```
 
 5. In target: `python payload/cursor_workflow gates --directory /path/to/project` (or installed `cursor_workflow` if on PATH)

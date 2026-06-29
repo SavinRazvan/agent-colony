@@ -40,6 +40,9 @@ import mcp_manage  # noqa: E402
 import contributors_cli  # noqa: E402
 import integrate_cli  # noqa: E402
 import drift_cli  # noqa: E402
+import doc_cli  # noqa: E402
+import verify_cli  # noqa: E402
+import activate_cli  # noqa: E402
 
 
 def _scaffold_script() -> Path:
@@ -108,6 +111,7 @@ def cmd_gates(args: argparse.Namespace) -> int:
         [py, "-m", "pytest", "-q"],
         [py, str(arch / "check_governance_consistency.py")],
         [py, str(arch / "check_debrand.py")],
+        [py, str(arch / "check_doc_facts.py")],
     ]
     for cmd in steps:
         code = _run(cmd, root)
@@ -274,6 +278,9 @@ def build_parser() -> argparse.ArgumentParser:
     contributors_cli.register_contributors_subparser(sub)
     integrate_cli.register_integrate_subparser(sub)
     drift_cli.register_drift_subparser(sub)
+    doc_cli.register_doc_subparser(sub)
+    verify_cli.register_verify_subparser(sub)
+    activate_cli.register_activate_subparser(sub)
 
     return parser
 

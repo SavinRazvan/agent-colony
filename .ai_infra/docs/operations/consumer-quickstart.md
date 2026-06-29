@@ -52,6 +52,17 @@ Confirm the copy plan lists `.cursor/`, `.ai_infra/`, `AGENTS.md`, and `.ai_infr
 
 ## 2. Install (~2 min)
 
+**Plugin / Marketplace (recommended):**
+
+```bash
+cd /path/to/your-project
+python -m cursor_workflow activate --directory .
+```
+
+One command installs all **three planes** (`.cursor/` + `.agents/`, `.ai_infra/`, `.local/`). Then edit settings only — see §3.
+
+**Kit clone / advanced:**
+
 ```bash
 TARGET=/path/to/your-project
 
@@ -72,7 +83,7 @@ TARGET=/path/to/your-project
 
 **Kit dev only:** `--with-tests` copies the full kit `tests/` tree.
 
-**Marketplace / plugin:** see `workflow-activate` skill — `payload/cursor_workflow install --source payload`.
+**Marketplace / plugin:** see `workflow-activate` skill — `python -m cursor_workflow activate --directory .` (uses plugin `payload/` as source).
 
 ---
 
@@ -150,6 +161,6 @@ your-project/
 
 **Ongoing CLI** (`gates`, `health`, `mcp`): run **`python -m cursor_workflow`** from the consumer project (shim copied at install) or from kit/payload with `--directory "$TARGET"`.
 
-See [gate-matrix.md](gate-matrix.md) for prepare GATES (2) vs kit gates (4).
+See [gate-matrix.md](gate-matrix.md) for prepare GATES (2) vs kit gates (5) vs consumer scaffold verify (4).
 
 **Pattern A:** one script command per agent action. `GATES` in `.ai_infra/scripts/pr/prepare.py`.

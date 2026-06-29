@@ -1,6 +1,6 @@
 <!--
 File: change-index.md
-Path: docs/templates/local-workspace/exemplars/change-index.md
+Path: .ai_infra/templates/local-workspace/exemplars/change-index.md
 Role: Exemplar for install → .local/index-and-planning/current/change-index.md
 Used By:
  - docs/templates/local-workspace/README.md

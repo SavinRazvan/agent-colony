@@ -1,7 +1,7 @@
 <!--
 File: test-index.md
-Path: .local/index-and-planning/current/test-index.md
-Role: Module-to-test ownership index (required by check_testing_artifacts.py).
+Path: .ai_infra/templates/local-workspace/exemplars/test-index.md
+Role: Exemplar for install → .local/index-and-planning/current/test-index.md
 Used By:
  - test-runner agent
  - scripts/pr/check_testing_artifacts.py
@@ -9,6 +9,7 @@ Depends On:
  - tests/ tree (project-specific)
 Notes:
  - Update when tests are added, moved, renamed, or removed.
+ - Kit repo uses ci/kit-dev/ fixtures for CI; this file is a neutral consumer template.
 -->
 
 # Test Index
@@ -20,17 +21,9 @@ Notes:
 - Coverage status: `healthy | partial | gap`
 - Notes: cleanup tasks, migration notes
 
-## Current index (MAS Workflow Kit — exemplar)
+## Current index
 
-- Module: `pr_workflow`
-  - Owned tests: `tests/modules/pr_workflow/` (Phase 2 — not yet created)
-  - Coverage status: `gap`
-  - Notes: minimal tests for `scripts/pr/*` helpers planned in STARTER-003
-
-- Module: `architecture_scripts`
-  - Owned tests: `tests/modules/architecture_scripts/` (Phase 2)
-  - Coverage status: `gap`
-  - Notes: `check_governance_consistency.py` smoke tests when CI paths optional
+(copy the template row below for each module in your project)
 
 ## Template row (copy per module)
 

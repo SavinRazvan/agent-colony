@@ -1,12 +1,11 @@
 <!--
 File: work-tracker.md
-Path: .local/index-and-planning/current/work-tracker.md
-Role: Actionable task tracker for implementation and validation work.
+Path: .ai_infra/templates/local-workspace/exemplars/work-tracker.md
+Role: Exemplar for install → .local/index-and-planning/current/work-tracker.md
 Used By:
- - implementer agent
- - agents-control-center UI
+ - .ai_infra/templates/local-workspace/README.md
 Depends On:
- - .local/index-and-planning/current/plan.md
+ - plan.md exemplar
 Notes:
  - Statuses: planned, in_progress, blocked, done, deferred.
  - Exactly one primary in_progress in Active.
@@ -18,14 +17,12 @@ Notes:
 
 ## Active
 
-- [ ] `planned` **STARTER-004**: MCP Phase 4 skeleton
+- [ ] `planned` **SLICE-ID**: brief description
 
 ## Completed
 
-- [x] `done` **STARTER-003**: Anchoring + drift sync (2026-06-14)
-- [x] `done` **STARTER-002**: templates, tests, overlay pattern (2026-06-14)
-- [x] `done` **STARTER-001**: README, overlays, 2-gate prepare (2026-06-14)
+(none yet)
 
 ## Deferred
 
-- [ ] `deferred` MCP Phase 4 — after Phase 1–2 green
+- [ ] `deferred` optional future work

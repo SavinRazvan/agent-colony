@@ -12,7 +12,7 @@ Universal, installable **Multi-Agent System (MAS) workflow** infrastructure for 
 
 | Layer | Contents |
 |-------|----------|
-| **Agents** | `implementer`, `test-runner`, `verifier`, `enterprise-auditor`, optional `researcher` |
+| **Agents** | `implementer`, `test-runner`, `verifier`, `enterprise-auditor`, `integrator-mas-agent`, `workflow-drift-guard`, optional `researcher` — see [`AGENTS.md`](AGENTS.md) |
 | **Skills** | Implementation, test, audit protocols + maintainer PR slash commands |
 | **Rules** | **6 universal** always-applied `.cursor/rules/*.mdc` |
 | **Scripts** | `.ai_infra/scripts/pr/*` (review → prepare → merge) + governance checks |
@@ -71,6 +71,15 @@ See [`overlays/README.md`](overlays/README.md).
 
 ## Quick install
 
+**Plugin / Marketplace (recommended):**
+
+```bash
+cd /path/to/your-project
+python -m cursor_workflow activate --directory .
+```
+
+**Kit clone / advanced:**
+
 ```bash
 python -m cursor_workflow install --target /path/to/your-project --with-venv --verify
 python -m cursor_workflow gates
@@ -94,6 +103,9 @@ See [`AGENTS.md`](AGENTS.md). Maintainer PR: [`.agents/skills/PR_WORKFLOW.md`](.
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/python -m pytest -q
+make gates
+make doc-validate
+make verify-all
 .venv/bin/python .ai_infra/scripts/architecture/check_governance_consistency.py
 .venv/bin/python .ai_infra/scripts/architecture/check_debrand.py
 ```

@@ -28,7 +28,6 @@ Notes:
 
 ## Active priorities
 
-- [ ] Add minimal `tests/` so universal `pytest -q` gate passes on greenfield install
 - [ ] Keep `test-index.md` current when tests move or modules rename
 - [ ] High-risk flows: retry/timeout/replay where state-changing
 

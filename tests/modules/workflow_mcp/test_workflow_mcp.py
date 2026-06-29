@@ -140,3 +140,12 @@ def test_workflow_mcp_connection_guide() -> None:
 
     text = workflow_mcp_connection_guide()
     assert "external MCP" in text or "Connect external" in text
+
+
+def test_workflow_doc_facts_validate() -> None:
+    os.environ["WORKFLOW_KIT_ROOT"] = str(REPO_ROOT)
+    from workflow_mcp.server import workflow_doc_facts_validate
+
+    text = workflow_doc_facts_validate()
+    assert "exit=0" in text
+    assert "DOC-001" in text

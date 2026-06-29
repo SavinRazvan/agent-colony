@@ -1,6 +1,6 @@
 <!--
 File: alignment-audit-schema.md
-Path: docs/roadmap/alignment-audit-schema.md
+Path: .ai_infra/docs/roadmap/alignment-audit-schema.md
 Role: Required fields and taxonomy for advisory alignment audit findings (.local/workflow-artifacts/alignment/).
 Used By:
  - .cursor/skills/enterprise-architecture-audit/SKILL.md

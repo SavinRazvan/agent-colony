@@ -9,7 +9,7 @@ The kit ships via CLI (`cursor_workflow install`) and will ship as a Cursor Mark
 
 ## Decision
 
-**Option B (locked):** Marketplace plugin ships `payload/.ai_infra/` plus a `workflow-activate` skill that runs install/verify into `${workspace}`. Plugin is self-contained without requiring a separate kit clone.
+**Option B (locked):** Marketplace plugin ships `payload/.ai_infra/` plus a `workflow-activate` skill that runs `cursor_workflow activate` (install/verify into `${workspace}`). Plugin is self-contained without requiring a separate kit clone.
 
 ## Consequences
 
