@@ -1,6 +1,6 @@
 ---
 name: researcher
-model: inherit
+model: auto
 description: Optional local research corpus; hard-stop on product code without explicit scope.
 ---
 

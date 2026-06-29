@@ -1,6 +1,6 @@
 ---
 name: workflow-drift-guard
-model: inherit
+model: auto
 readonly: true
 description: Operational workflow drift detection; plan/tracker/session coherence and handoff parity.
 ---

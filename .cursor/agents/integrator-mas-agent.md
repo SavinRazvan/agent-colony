@@ -1,6 +1,6 @@
 ---
 name: integrator-mas-agent
-model: inherit
+model: auto
 description: Integrates new agents, skills, MCP, and infrastructure expansions into the MAS Workflow Kit — procedural, evidence-only, Pattern A compliant.
 ---
 

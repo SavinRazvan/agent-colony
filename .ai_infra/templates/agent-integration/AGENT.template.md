@@ -1,6 +1,6 @@
 ---
 name: {{AGENT_ID}}
-model: inherit
+model: auto
 description: {{ONE_LINE_DESCRIPTION}}
 ---
 

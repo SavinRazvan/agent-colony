@@ -68,7 +68,7 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 
 | Root | Role |
 |------|------|
-| `.cursor/agents/` | Subagent cards (7) — Task delegation, Anchor entry/exit |
+| `.cursor/agents/` | Subagent cards (7) — Task delegation; **`model: auto`** on each (Auto pool; avoids Composer fast inherit) |
 | `.cursor/skills/` | **Canonical protocols** (audit, drift, implement loop, activate, …) |
 | `.agents/skills/` | **Maintainer slash skills only** (`review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`) — additive in plugin sync |
 | `.cursor/rules/` | Six universal `alwaysApply` rules — high context cost by design |

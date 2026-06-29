@@ -1,6 +1,6 @@
 ---
 name: test-runner
-model: inherit
+model: auto
 description: Module-focused tests, regressions, coverage.
 ---
 

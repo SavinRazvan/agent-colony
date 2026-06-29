@@ -1,6 +1,6 @@
 ---
 name: verifier
-model: inherit
+model: auto
 description: Claims vs evidence; minimal high-signal checks.
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: enterprise-auditor
-model: inherit
+model: auto
 readonly: true
 description: Evidence-only enterprise architecture audit; writes workflow artifacts and tracker hooks for other agents.
 ---

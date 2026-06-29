@@ -1,6 +1,6 @@
 ---
 name: implementer
-model: inherit
+model: auto
 description: Disciplined implementation slices with trackers and Pattern A gates.
 ---
 
