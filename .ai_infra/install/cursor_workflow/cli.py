@@ -20,6 +20,7 @@ import sys
 from pathlib import Path
 
 for _candidate in (Path(__file__).resolve(), *Path(__file__).resolve().parents):
+    # Walk up to kit root whether invoked via editable install or payload copy.
     bootstrap = _candidate / ".ai_infra" / "bootstrap.py"
     if bootstrap.is_file():
         if str(_candidate / ".ai_infra") not in sys.path:

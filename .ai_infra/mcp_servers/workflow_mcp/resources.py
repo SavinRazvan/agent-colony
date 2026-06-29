@@ -1,6 +1,6 @@
 """
 File: resources.py
-Path: workflow_mcp/resources.py
+Path: .ai_infra/mcp_servers/workflow_mcp/resources.py
 Role: Resolve workflow:// MCP resource URIs to repo files (read-only).
 Used By:
  - workflow_mcp/server.py

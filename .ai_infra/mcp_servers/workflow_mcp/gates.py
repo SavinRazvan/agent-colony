@@ -1,6 +1,6 @@
 """
 File: gates.py
-Path: workflow_mcp/gates.py
+Path: .ai_infra/mcp_servers/workflow_mcp/gates.py
 Role: Load GATES from `.ai_infra/scripts/pr/prepare.py` — never duplicate gate lists in MCP.
 Used By:
  - workflow_mcp/server.py
