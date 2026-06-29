@@ -4,7 +4,6 @@ Path: .cursor/skills/enterprise-architecture-audit/SKILL.md
 Role: Enterprise-grade, evidence-only repository architecture audit protocol and workflow hooks.
 Used By:
  - .cursor/agents/enterprise-auditor.md
- - .agents/skills/enterprise-architecture-audit/SKILL.md
 Depends On:
  - .ai_infra/docs/roadmap/alignment-audit-schema.md
  - .ai_infra/docs/operations/local-workspace-layout.md

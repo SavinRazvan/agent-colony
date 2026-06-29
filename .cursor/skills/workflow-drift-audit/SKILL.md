@@ -4,7 +4,6 @@ Path: .cursor/skills/workflow-drift-audit/SKILL.md
 Role: Operational workflow drift audit protocol for plan/tracker/session coherence.
 Used By:
  - .cursor/agents/workflow-drift-guard.md
- - .agents/skills/workflow-drift-audit/SKILL.md
 Depends On:
  - .ai_infra/docs/decisions/ADR-007-workflow-drift-guard.md
  - .ai_infra/scripts/workflow/check_drift.py

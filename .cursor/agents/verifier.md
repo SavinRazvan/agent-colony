@@ -1,6 +1,6 @@
 ---
 name: verifier
-model: composer-2.5[]
+model: inherit
 description: Claims vs evidence; minimal high-signal checks.
 ---
 

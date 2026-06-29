@@ -1,6 +1,6 @@
 # `.agents/skills`
 
-Standards-friendly skills location (alongside `.cursor/skills/`, which Cursor loads from git).
+Maintainer slash-command skills and workflow docs. **Canonical protocols** live under [`.cursor/skills/`](../.cursor/skills/) — Cursor discovers both roots; do not duplicate folder names here.
 
 ## Layout
 
@@ -10,11 +10,14 @@ Each skill: **`<skill-name>/SKILL.md`**.
 
 | Area | Where |
 |------|--------|
-| Implementation loop | `.cursor/skills/implementation-execution-loop/`, `.cursor/agents/implementer.md`, `implementation-workflow-governance.mdc` |
+| Implementation loop | `.cursor/skills/implementation-execution-loop/`, `.cursor/agents/implementer.md` |
 | Tests | `.cursor/skills/test-module-coverage/`, `.cursor/agents/test-runner.md` |
-| **Maintainer PR** | **`PR_WORKFLOW.md`** + `review-pr` / `prepare-pr` / `merge-pr`; audits via **`enterprise-auditor`** (see `.cursor/agents/enterprise-auditor.md`); commit trailers: **`.cursor/rules/commit-trailer-format.mdc`** (`Author` / `GitHub-User`, optional `Assisted-by`) |
-| **Research corpus** | **`RESEARCH_WORKFLOW.md`** + `.cursor/skills/research-corpus-execution/` + `.cursor/agents/researcher.md`; output gitignored: **`_research_results/`** |
-| **Enterprise architecture audit** | `.cursor/skills/enterprise-architecture-audit/SKILL.md` + entry stub `enterprise-architecture-audit/` here (`audit-alignment/` is a deprecated redirect) |
-| Scripts | `.ai_infra/scripts/pr/review.py`, `prepare.py`, `merge.py`, `finalize.py`, `verify_publish.py` |
+| **Maintainer PR** | **`pr-workflow/`** or `PR_WORKFLOW.md` + `review-pr` / `prepare-pr` / `merge-pr` |
+| **Research corpus** | `RESEARCH_WORKFLOW.md` + `.cursor/skills/research-corpus-execution/` |
+| **Enterprise audit** | `.cursor/skills/enterprise-architecture-audit/SKILL.md` + `.cursor/agents/enterprise-auditor.md` |
+| **Drift guard** | `.cursor/skills/workflow-drift-audit/SKILL.md` + `.cursor/agents/workflow-drift-guard.md` |
+| **Audit orchestration** | `.cursor/skills/audit-orchestration/SKILL.md` |
+| Deprecated redirect | `audit-alignment/` → use `enterprise-auditor` |
+| Scripts | `.ai_infra/scripts/pr/review.py`, `prepare.py`, `merge.py`, `finalize.py` |
 
-Live trackers (gitignored): **`.local/index-and-planning/current/*.md`**. Full map: **`docs/operations/local-workspace-layout.md`**. Handoff checklist: **`docs/operations/workflow-complete.md`** §F (not a duplicate file under `.local/`).
+Plugin sync: `.cursor/skills/` wins; maintainer skills here are **additive only** (see `sync_plugin_bundle.py`).

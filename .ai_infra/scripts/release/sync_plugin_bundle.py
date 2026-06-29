@@ -115,6 +115,7 @@ def _copy_file(src: Path, dst: Path) -> None:
 
 
 def _merge_maintainer_skills(plugin_skills: Path) -> None:
+    """Add maintainer-only skills from .agents/skills without overwriting .cursor/skills."""
     maintainer = KIT_ROOT / ".agents" / "skills"
     if not maintainer.is_dir():
         return
@@ -122,6 +123,8 @@ def _merge_maintainer_skills(plugin_skills: Path) -> None:
         if not skill_dir.is_dir():
             continue
         dest = plugin_skills / skill_dir.name
+        if dest.exists():
+            continue
         _copy_tree(skill_dir, dest)
 
 
@@ -136,14 +139,18 @@ def sync_plugin_surface(plugin_dir: Path) -> None:
     _copy_tree(skills_src, plugin_dir / "skills")
     _merge_maintainer_skills(plugin_dir / "skills")
 
-    if not ACTIVATE_SKILL_SRC.is_file():
-        raise FileNotFoundError(f"missing activation skill template: {ACTIVATE_SKILL_SRC}")
+    activate_src = skills_src / "workflow-activate" / "SKILL.md"
+    if not activate_src.is_file():
+        activate_src = ACTIVATE_SKILL_SRC
+    if not activate_src.is_file():
+        raise FileNotFoundError(f"missing activation skill: {ACTIVATE_SKILL_SRC}")
     activate_dest = plugin_dir / "skills" / "workflow-activate" / "SKILL.md"
-    activate_dest.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(ACTIVATE_SKILL_SRC, activate_dest)
+    if not activate_dest.parent.exists() or not activate_dest.is_file():
+        activate_dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(activate_src, activate_dest)
 
-    if CONNECT_SKILL_SRC.is_file():
-        connect_dest = plugin_dir / "skills" / "connect-external-mcp" / "SKILL.md"
+    connect_dest = plugin_dir / "skills" / "connect-external-mcp" / "SKILL.md"
+    if not connect_dest.is_file() and CONNECT_SKILL_SRC.is_file():
         connect_dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(CONNECT_SKILL_SRC, connect_dest)
 

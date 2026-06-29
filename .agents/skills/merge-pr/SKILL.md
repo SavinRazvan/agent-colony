@@ -23,4 +23,4 @@ disable-model-invocation: true
    (same `--arch-impacting` if used above). Enrich `merge.md` with method + follow-ups.
 8. **Finalize:** `git checkout main`; `python .ai_infra/scripts/pr/finalize.py --branch <branch>`; prune remotes; confirm feature branch gone on origin.
 
-**Detail:** `.agents/skills/PR_WORKFLOW.md`.
+**Detail:** `.agents/skills/pr-workflow/SKILL.md`.

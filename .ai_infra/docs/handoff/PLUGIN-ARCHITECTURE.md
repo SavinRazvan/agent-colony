@@ -123,6 +123,8 @@ The path `.ai_infra/templates/local-workspace/ci/kit-dev/` holds **kit-repositor
 
 Product rules: copy `overlays/rules/*.mdc` into `.cursor/rules/` after install (not a separate profile).
 
+**Skill merge policy:** `sync_plugin_bundle.py` copies `.cursor/skills/` first, then merges `.agents/skills/` **only for folder names not already present**. Canonical protocols must never be replaced by maintainer stubs in `plugin/` or consumer `payload/.cursor/skills/`.
+
 ---
 
 

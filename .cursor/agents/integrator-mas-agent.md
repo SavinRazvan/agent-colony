@@ -1,6 +1,6 @@
 ---
 name: integrator-mas-agent
-model: composer-2.5[]
+model: inherit
 description: Integrates new agents, skills, MCP, and infrastructure expansions into the MAS Workflow Kit — procedural, evidence-only, Pattern A compliant.
 ---
 

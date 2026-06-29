@@ -87,3 +87,27 @@ def test_payload_install_dry_run(tmp_path: Path) -> None:
     assert ".ai_infra" in joined
     assert ".cursor" in joined
     assert "SCAFFOLD DONE" in joined
+
+
+def test_plugin_canonical_skills_not_overwritten_by_stubs(tmp_path: Path) -> None:
+    mod = _load_sync()
+    plugin_dir = tmp_path / "plugin"
+    mod.sync_plugin_surface(plugin_dir)
+
+    enterprise = (plugin_dir / "skills" / "enterprise-architecture-audit" / "SKILL.md").read_text(
+        encoding="utf-8"
+    )
+    assert "Evidence contract" in enterprise
+    assert len(enterprise.splitlines()) > 200
+
+    orchestration = (plugin_dir / "skills" / "audit-orchestration" / "SKILL.md").read_text(
+        encoding="utf-8"
+    )
+    assert "verify-all" in orchestration or "enterprise-auditor" in orchestration
+
+    drift = (plugin_dir / "skills" / "workflow-drift-audit" / "SKILL.md").read_text(encoding="utf-8")
+    assert "drift validate" in drift.lower()
+
+    assert (plugin_dir / "skills" / "review-pr" / "SKILL.md").is_file()
+    assert (plugin_dir / "skills" / "workflow-activate" / "SKILL.md").is_file()
+    assert (plugin_dir / "skills" / "pr-workflow" / "SKILL.md").is_file()

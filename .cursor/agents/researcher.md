@@ -1,6 +1,7 @@
 ---
 name: researcher
-model: composer-2.5[]
+model: inherit
+description: Optional local research corpus; hard-stop on product code without explicit scope.
 ---
 
 # Researcher (optional)

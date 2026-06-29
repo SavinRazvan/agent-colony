@@ -1,6 +1,7 @@
 ---
 name: enterprise-auditor
-model: composer-2.5[]
+model: inherit
+readonly: true
 description: Evidence-only enterprise architecture audit; writes workflow artifacts and tracker hooks for other agents.
 ---
 

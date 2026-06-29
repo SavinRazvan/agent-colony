@@ -62,7 +62,20 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 
 **AI-assisted work:** optional `Assisted-by:` when AI materially shaped the change. Do **not** add **`Made-with:`** (redundant). You stay accountable for the result.
 
-**PR workflow artifacts** use `Action-By` / `GitHub-User` / `Agent/s` — resolved from the same YAML when scripts run with `--pipeline` (see **`.agents/skills/PR_WORKFLOW.md`**).
+**PR workflow artifacts** use `Action-By` / `GitHub-User` / `Agent/s` — resolved from the same YAML when scripts run with `--pipeline` (see **`.agents/skills/pr-workflow/SKILL.md`**).
+
+## Skills and agents (Cursor contract)
+
+| Root | Role |
+|------|------|
+| `.cursor/agents/` | Subagent cards (7) — Task delegation, Anchor entry/exit |
+| `.cursor/skills/` | **Canonical protocols** (audit, drift, implement loop, activate, …) |
+| `.agents/skills/` | **Maintainer slash skills only** (`review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`) — additive in plugin sync |
+| `.cursor/rules/` | Six universal `alwaysApply` rules — high context cost by design |
+
+**Plugin sync:** `.cursor/skills/` wins; `.agents/skills/` never overwrites same folder name (`sync_plugin_bundle.py`).
+
+Do not duplicate skill folder names across `.cursor/skills/` and `.agents/skills/`.
 
 ## Branching
 
@@ -79,7 +92,7 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 | Verify claims | `.cursor/agents/verifier.md` |
 | Operational drift | **`workflow-drift-guard`** — `.cursor/agents/workflow-drift-guard.md` + `.cursor/skills/workflow-drift-audit/SKILL.md` — validate with `python -m cursor_workflow drift validate` |
 | Audits (canonical) | **`enterprise-auditor`** — `.cursor/agents/enterprise-auditor.md` + `.cursor/skills/enterprise-architecture-audit/SKILL.md` |
-| Maintainer PR | `.agents/skills/PR_WORKFLOW.md` → `review-pr` → `prepare-pr` → `merge-pr` |
+| Maintainer PR | `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` → `merge-pr` |
 | Research corpus (optional) | `.cursor/agents/researcher.md` — off by default |
 | MCP | `.ai_infra/mcp_servers/workflow_mcp/` — `python -m workflow_mcp`; [`.cursor/mcp.json.kit.example`](.cursor/mcp.json.kit.example) + [connect-external-mcp](.ai_infra/docs/operations/connect-external-mcp.md) |
 
