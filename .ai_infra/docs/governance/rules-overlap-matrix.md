@@ -1,6 +1,6 @@
 <!--
 File: rules-overlap-matrix.md
-Path: docs/governance/rules-overlap-matrix.md
+Path: .ai_infra/docs/governance/rules-overlap-matrix.md
 Role: Inventory of `.cursor/rules/*.mdc` overlaps and merge posture (Track D).
 Used By:
  - Maintainers changing Cursor rules

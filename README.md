@@ -12,7 +12,7 @@ Universal, installable **Multi-Agent System (MAS) workflow** infrastructure for 
 
 | Layer | Contents |
 |-------|----------|
-| **Agents** | `implementer`, `test-runner`, `verifier`, `enterprise-auditor`, optional `researcher` |
+| **Agents** | `implementer`, `test-runner`, `verifier`, `enterprise-auditor`, `integrator-mas-agent`, `workflow-drift-guard`, optional `researcher` — see [`AGENTS.md`](AGENTS.md) |
 | **Skills** | Implementation, test, audit protocols + maintainer PR slash commands |
 | **Rules** | **6 universal** always-applied `.cursor/rules/*.mdc` |
 | **Scripts** | `.ai_infra/scripts/pr/*` (review → prepare → merge) + governance checks |

@@ -11,7 +11,7 @@ Depends On:
  - .ai_infra/scripts/pr/local_workflow_paths.py
 Notes:
  - Executable behavior wins over prose; prose must link to scripts instead of copying steps.
- - Last reviewed: 2026-06-14
+ - Last reviewed: 2026-06-29
 -->
 
 # Workflow source owners
@@ -33,6 +33,10 @@ Notes:
 | Always-on enforcement | `.cursor/rules/*.mdc` | Cursor agents |
 | Git **commit** trailers | `.cursor/rules/commit-trailer-format.mdc` | `AGENTS.md` § Commits, implementer skills |
 | Governance drift scan | `.ai_infra/scripts/architecture/check_governance_consistency.py` | CI + local policy edits |
+| Operational drift validate | `.ai_infra/scripts/workflow/check_drift.py` | `make drift-validate`, implementer closure |
+| Infrastructure integrate validate | `.ai_infra/scripts/integration/validate.py` | `make integrate-validate`, INT-001…012 |
+| CI workspace seed | `.ai_infra/scripts/ci/seed_kit_workspace.py` | `.github/workflows/kit-quality.yml` |
+| Maintainer gate matrix (non-prepare) | `.ai_infra/docs/operations/gate-matrix.md` | `make gates`, drift, integrate, check-plugin |
 | Path resolution | `.ai_infra/paths.py` | MCP, install scaffold, tests |
 | MCP registry mapping | `.cursor/mcp.registry.yaml` | Agents, `connect-external-mcp.md` |
 | External MCP connect procedure | `.ai_infra/docs/operations/connect-external-mcp.md` | Users + agents |

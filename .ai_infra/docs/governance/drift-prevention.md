@@ -11,7 +11,7 @@ Depends On:
  - .ai_infra/docs/operations/documentation-maintenance-checklist.md
 Notes:
  - Run governance consistency when changing rules, skills headers, or merge.py expectations.
- - Last reviewed: 2026-06-14
+ - Last reviewed: 2026-06-29
 -->
 
 # Drift prevention (lightweight)
@@ -52,7 +52,7 @@ Script-first checks for plan ↔ tracker ↔ session-pointer coherence and hando
 | Concern | Owner | Do NOT duplicate in drift |
 |---------|-------|---------------------------|
 | Bare paths, brand terms | `check_governance_consistency.py`, `check_debrand.py` | Path/brand scans |
-| Agent Anchor/MCP, registry parity | `integrate validate` INT-001…010 | Agent file structure |
+| Agent Anchor/MCP, registry parity | `integrate validate` INT-001…012 | Agent file structure |
 | test-plan/index existence | `check_testing_artifacts.py` | File exists checks |
 | Plugin/payload SHA drift | `sync_plugin_bundle.py --check` | Bundle sync |
 | Slice claim verification | `verifier` | Subjective verification |

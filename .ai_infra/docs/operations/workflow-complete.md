@@ -1,6 +1,6 @@
 <!--
 File: workflow-complete.md
-Path: docs/operations/workflow-complete.md
+Path: .ai_infra/docs/operations/workflow-complete.md
 Role: End-to-end maintainer workflow checklist (durable); complements gitignored `.agents/skills/PR_WORKFLOW.md`.
 Used By:
  - Maintainers / local agents
@@ -80,6 +80,7 @@ This is the **implementation agent** end-of-loop on top of sections **C** and **
 4. **`coverage-index.md`** — regenerate after any coverage run that matters for the slice (project-specific tooling; see overlay pack if applicable).
 5. **`implementation-control-center.html`** — under `.local/agents-control-center/dashboards/`; if you add a tracker, update **`../config/pages.json`** and header **Depends On** comments; keep **Coverage** in sync with **`coverage-index.md`**.
 6. **`module-audit.html`** — under `.local/agents-control-center/audits/`; touch only when deliberately refreshing a deep module audit export, not per slice.
+7. **`make drift-validate`** — run before handoff; on P0/P1 findings, hand off to **`workflow-drift-guard`** (`.cursor/agents/workflow-drift-guard.md`).
 
 Canonical detail: **`.local/index-and-planning/current/plan.md`** section **Implementer slice closure (mandatory end-of-loop)**.
 
