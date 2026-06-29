@@ -210,6 +210,35 @@ def _collect_brand_drift_violations() -> list[str]:
     return violations
 
 
+def _collect_agent_description_violations() -> list[str]:
+    violations: list[str] = []
+    agents_dir = ROOT / ".cursor" / "agents"
+    if not agents_dir.is_dir():
+        return violations
+    for path in sorted(agents_dir.glob("*.md")):
+        text = _read_text(path)
+        rel = path.relative_to(ROOT).as_posix()
+        if not re.search(r"^description:\s*.+", text, re.MULTILINE):
+            violations.append(f"{rel}: missing YAML frontmatter description")
+    return violations
+
+
+def _collect_duplicate_skill_folder_violations() -> list[str]:
+    cursor_skills = ROOT / ".cursor" / "skills"
+    agents_skills = ROOT / ".agents" / "skills"
+    if not cursor_skills.is_dir() or not agents_skills.is_dir():
+        return []
+    cursor_names = {p.name for p in cursor_skills.iterdir() if p.is_dir()}
+    agents_names = {p.name for p in agents_skills.iterdir() if p.is_dir()}
+    overlap = sorted(cursor_names & agents_names)
+    if overlap:
+        return [
+            "duplicate skill folder names between .cursor/skills and .agents/skills: "
+            + ", ".join(overlap)
+        ]
+    return []
+
+
 def _collect_agent_mcp_block_violations() -> list[str]:
     violations: list[str] = []
     agents_dir = ROOT / ".cursor" / "agents"
@@ -279,6 +308,8 @@ def main() -> int:
     violations.extend(_collect_contract_parity_violations())
     violations.extend(_collect_path_drift_violations())
     violations.extend(_collect_brand_drift_violations())
+    violations.extend(_collect_agent_description_violations())
+    violations.extend(_collect_duplicate_skill_folder_violations())
     violations.extend(_collect_agent_mcp_block_violations())
     violations.extend(_collect_owner_path_violations())
     violations.extend(_collect_integration_validate_violations())

@@ -1,6 +1,6 @@
 ---
 name: {{AGENT_ID}}
-model: composer-2.5[]
+model: inherit
 description: {{ONE_LINE_DESCRIPTION}}
 ---
 

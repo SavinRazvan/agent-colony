@@ -1,6 +1,7 @@
 ---
 name: implementer
-model: composer-2.5[]
+model: inherit
+description: Disciplined implementation slices with trackers and Pattern A gates.
 ---
 
 # Implementer

@@ -1,6 +1,6 @@
 ---
 name: test-runner
-model: composer-2.5[]
+model: inherit
 description: Module-focused tests, regressions, coverage.
 ---
 

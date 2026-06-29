@@ -1,0 +1,44 @@
+---
+name: pr-workflow
+description: Maintainer merge path — review-pr, prepare-pr, merge-pr with Pattern A gates.
+disable-model-invocation: true
+---
+
+# PR workflow (maintainer)
+
+**Implementer work** (trackers, slices) uses `.local/index-and-planning/current/*`, `.cursor/agents/implementer.md`, and `.cursor/rules/implementation-workflow-governance.mdc`. Slice closure: `.ai_infra/docs/operations/workflow-complete.md` §F.
+
+This skill is the **merge path** only: **review → prepare → merge** (slash skills: `review-pr`, `prepare-pr`, `merge-pr`).
+
+## Order
+
+1. `review-pr` — findings only; optional **`make drift-validate`** before review when trackers changed. When scope is architecture-impacting, run **`enterprise-auditor`** and write alignment artifacts per `.cursor/rules/advisory-audit-alignment-enforcement.mdc`.
+2. `prepare-pr` — fixes + `prepare.py` (runs `GATES` from `.ai_infra/scripts/pr/prepare.py`).
+3. `merge-pr` — `merge.py` check, `gh pr merge`, finalize repo state.
+
+Per-step detail: `.agents/skills/review-pr/`, `prepare-pr/`, `merge-pr/`.
+
+## After push (before merge)
+
+- `python .ai_infra/scripts/pr/verify_publish.py --branch "$(git branch --show-current)"`
+- `gh pr view --json number,url,headRefName,state`
+
+## Gates
+
+Authoritative list: **`GATES` in `.ai_infra/scripts/pr/prepare.py`**. Add **`check_governance_consistency.py`** when changing governance or `.cursor/` policy.
+
+## Artifacts (under `.local/`)
+
+| Phase | Path |
+|-------|------|
+| Review | `workflow-artifacts/pr/review.md` |
+| Prepare | `workflow-artifacts/pr/prep.md` |
+| Merge | `workflow-artifacts/pr/merge.md` |
+| Alignment | `workflow-artifacts/alignment/alignment-audit.md`, `alignment-todos.md` |
+
+## After merge
+
+1. `git checkout main` && `git fetch --prune origin`
+2. `python .ai_infra/scripts/pr/finalize.py --branch <feature-branch>`
+
+Full detail: `.agents/skills/PR_WORKFLOW.md` (reference).
