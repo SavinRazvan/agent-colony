@@ -1,4 +1,4 @@
-.PHONY: install-dry-run test gates sync-plugin check-plugin integrate-validate drift-validate
+.PHONY: install-dry-run test gates sync-plugin check-plugin integrate-validate drift-validate ci-seed
 
 install-dry-run:
 	rm -rf /tmp/workflow-kit-dry-run
@@ -25,3 +25,6 @@ integrate-validate:
 
 drift-validate:
 	.venv/bin/python -m cursor_workflow drift validate --directory .
+
+ci-seed:
+	.venv/bin/python .ai_infra/scripts/ci/seed_kit_workspace.py --directory .

@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
 
+concurrency:
+  group: kit-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality:
     runs-on: ubuntu-latest
@@ -21,17 +25,23 @@ jobs:
           .venv/bin/pip install -q -r requirements-dev.txt
           .venv/bin/pip install -q jsonschema
 
-      - name: make gates
-        run: make gates
+      - name: Seed CI workspace
+        run: .venv/bin/python .ai_infra/scripts/ci/seed_kit_workspace.py --directory .
 
-      - name: governance consistency
-        run: .venv/bin/python .ai_infra/scripts/architecture/check_governance_consistency.py
+      - name: Sync plugin bundle
+        run: make sync-plugin
 
-      - name: make install-dry-run
+      - name: Gate matrix
+        run: |
+          set -euo pipefail
+          # make gates includes check_testing_artifacts, pytest, check_governance_consistency.py, check_debrand.py
+          make gates
+          make drift-validate
+          make integrate-validate
+          make check-plugin
+          .venv/bin/python -m cursor_workflow health
+          .venv/bin/python -m cursor_workflow contributors validate
+          .venv/bin/python .ai_infra/scripts/architecture/check_governance_consistency.py
+
+      - name: Install dry-run
         run: make install-dry-run
-
-      - name: make check-plugin
-        run: make check-plugin
-
-      - name: check_debrand
-        run: .venv/bin/python .ai_infra/scripts/architecture/check_debrand.py
