@@ -8,7 +8,7 @@
   },
   "homepage": "https://github.com/SavinRazvan/mas-workflow-kit",
   "repository": "https://github.com/SavinRazvan/mas-workflow-kit",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": [
     "mas-workflow-kit",
     "multi-agent",

@@ -238,6 +238,27 @@ def workflow_integrate_validate() -> str:
 
 
 @mcp.tool()
+def workflow_drift_validate() -> str:
+    """Run drift validate (plan/tracker/session coherence and handoff parity)."""
+    root = workspace_root()
+    workflow_dir = root / ".ai_infra" / "scripts" / "workflow"
+    if not workflow_dir.is_dir():
+        return "FAIL: missing .ai_infra/scripts/workflow"
+    import sys
+
+    workflow_str = str(workflow_dir)
+    if workflow_str not in sys.path:
+        sys.path.insert(0, workflow_str)
+    import check_drift
+
+    results = check_drift.run_checks(root)
+    profile = check_drift.resolve_profile(root, None)
+    report = check_drift.format_report(results, profile=profile)
+    code = check_drift.exit_code_for(results)
+    return f"exit={code}\nprofile={profile}\n{report}"
+
+
+@mcp.tool()
 def workflow_contributors_validate(check_mcp: bool = False) -> str:
     """Validate .local/user_settings/github.collaboration.yaml (optional MCP worksheet)."""
     root = workspace_root()

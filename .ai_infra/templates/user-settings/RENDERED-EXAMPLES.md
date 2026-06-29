@@ -1,6 +1,6 @@
 # Rendered examples — GitHub collaboration
 
-Side-by-side: **legacy eXo-style** vs **MAS Workflow Kit default** (from `github.collaboration.yaml`).
+Side-by-side: **legacy external-product style** vs **MAS Workflow Kit default** (from `github.collaboration.yaml`).
 
 ---
 
@@ -27,8 +27,8 @@ Only enable if your org requires Git `Co-authored-by` for tools:
 ```text
 docs(adapters): close PyPI extraction handoff and update strategy references
 
-Replace in-tree packages/eXo_adapters references with SavinRazvan/eXo_adapters
-and lockstep 0.1.2 pins across handoffs, strategy, operations, and architecture docs.
+Replace in-tree adapter package references with external repo pins
+and lockstep version pins across handoffs, strategy, operations, and architecture docs.
 
 Author: Savin I. Razvan
 GitHub-User: @SavinRazvan

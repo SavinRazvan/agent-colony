@@ -46,6 +46,8 @@ Full handoff checklist: [`.ai_infra/docs/operations/workflow-complete.md`](.ai_i
 
 When adding or changing agents, skills, pipelines, or integration templates, also run **`python -m cursor_workflow integrate validate`** (included in governance consistency on kit dev repo).
 
+At slice closure, run **`python -m cursor_workflow drift validate`** (or `make drift-validate`) and hand off to **`workflow-drift-guard`** when P0/P1 findings need artifacts.
+
 ## Commits
 
 Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc`**):
@@ -72,6 +74,7 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 | Integrate infrastructure | `.cursor/agents/integrator-mas-agent.md` + `.cursor/skills/mas-infrastructure-integration/SKILL.md` — validate with `python -m cursor_workflow integrate validate` |
 | Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-module-coverage/SKILL.md` |
 | Verify claims | `.cursor/agents/verifier.md` |
+| Operational drift | **`workflow-drift-guard`** — `.cursor/agents/workflow-drift-guard.md` + `.cursor/skills/workflow-drift-audit/SKILL.md` — validate with `python -m cursor_workflow drift validate` |
 | Audits (canonical) | **`enterprise-auditor`** — `.cursor/agents/enterprise-auditor.md` + `.cursor/skills/enterprise-architecture-audit/SKILL.md` |
 | Maintainer PR | `.agents/skills/PR_WORKFLOW.md` → `review-pr` → `prepare-pr` → `merge-pr` |
 | Research corpus (optional) | `.cursor/agents/researcher.md` — off by default |

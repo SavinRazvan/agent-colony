@@ -39,6 +39,7 @@ if str(_MCP_PKG) not in sys.path:
 import mcp_manage  # noqa: E402
 import contributors_cli  # noqa: E402
 import integrate_cli  # noqa: E402
+import drift_cli  # noqa: E402
 
 
 def _scaffold_script() -> Path:
@@ -157,6 +158,16 @@ def cmd_health(args: argparse.Namespace) -> int:
                 issues.append(f"integrate {result.check_id}: {result.detail}")
         except FileNotFoundError:
             issues.append("integrate validate: missing .ai_infra/scripts/integration")
+        try:
+            check_drift = drift_cli._import_check_drift(root)
+            p0_drift = [
+                r for r in check_drift.run_checks(root)
+                if not r.passed and r.severity.value == "P0"
+            ]
+            for result in p0_drift:
+                issues.append(f"drift {result.check_id}: {result.detail}")
+        except FileNotFoundError:
+            issues.append("drift validate: missing .ai_infra/scripts/workflow")
     except FileNotFoundError:
         issues.append("user_settings: missing .ai_infra/scripts/pr (kit incomplete)")
 
@@ -262,6 +273,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     contributors_cli.register_contributors_subparser(sub)
     integrate_cli.register_integrate_subparser(sub)
+    drift_cli.register_drift_subparser(sub)
 
     return parser
 

@@ -79,6 +79,7 @@ def _paths(root: Path) -> dict[str, Path]:
         "ops_doc": infra / "docs" / "operations" / "mas-infrastructure-integration.md",
         "checklist": infra / "templates" / "agent-integration" / "INTEGRATION-CHECKLIST.md",
         "plugin_integrator": root / "plugin" / "agents" / "integrator-mas-agent.md",
+        "plugin_drift_guard": root / "plugin" / "agents" / "workflow-drift-guard.md",
     }
 
 
@@ -241,6 +242,71 @@ def _check_int010(paths: dict[str, Path]) -> CheckResult:
     )
 
 
+def _import_check_drift(root: Path):
+    workflow_dir = ai_infra_dir(root) / "scripts" / "workflow"
+    workflow_str = str(workflow_dir)
+    if workflow_str not in sys.path:
+        sys.path.insert(0, workflow_str)
+    import check_drift
+
+    return check_drift
+
+
+def _check_int011(paths: dict[str, Path]) -> CheckResult:
+    agent_source = paths["agents_dir"] / "workflow-drift-guard.md"
+    plugin_copy = paths["plugin_drift_guard"]
+    if not agent_source.is_file():
+        return CheckResult(
+            check_id="INT-011",
+            severity=Severity.P0,
+            passed=False,
+            detail="missing .cursor/agents/workflow-drift-guard.md",
+        )
+    exists = plugin_copy.is_file()
+    return CheckResult(
+        check_id="INT-011",
+        severity=Severity.P2,
+        passed=exists,
+        detail=(
+            "plugin/agents/workflow-drift-guard.md present"
+            if exists
+            else "missing plugin/agents/workflow-drift-guard.md — run make sync-plugin"
+        ),
+    )
+
+
+def _check_int012(root: Path) -> CheckResult:
+    workflow_dir = ai_infra_dir(root) / "scripts" / "workflow"
+    if not workflow_dir.is_dir():
+        return CheckResult(
+            check_id="INT-012",
+            severity=Severity.P0,
+            passed=False,
+            detail="missing .ai_infra/scripts/workflow",
+        )
+    try:
+        check_drift = _import_check_drift(root)
+    except ImportError as exc:
+        return CheckResult(
+            check_id="INT-012",
+            severity=Severity.P0,
+            passed=False,
+            detail=f"check_drift import failed: {exc}",
+        )
+    results = check_drift.run_checks(root)
+    p0_failures = [r for r in results if not r.passed and r.severity == Severity.P0]
+    return CheckResult(
+        check_id="INT-012",
+        severity=Severity.P0,
+        passed=not p0_failures,
+        detail=(
+            "drift P0 checks pass"
+            if not p0_failures
+            else "; ".join(f"{r.check_id}: {r.detail}" for r in p0_failures)
+        ),
+    )
+
+
 def run_checks(root: Path | None = None) -> list[CheckResult]:
     project_root = (root or Path.cwd()).resolve()
     paths = _paths(project_root)
@@ -263,6 +329,8 @@ def run_checks(root: Path | None = None) -> list[CheckResult]:
         _check_int008(paths),
         _check_int009(paths),
         _check_int010(paths),
+        _check_int011(paths),
+        _check_int012(project_root),
     ]
 
 

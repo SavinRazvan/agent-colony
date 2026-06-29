@@ -50,6 +50,7 @@ PAYLOAD_EXTRA_AI_INFRA = ("install/cursor_workflow", "scripts/install")
 CONNECT_SKILL_SRC = (
     ai_infra_dir() / "templates" / "plugin" / "skills" / "connect-external-mcp" / "SKILL.md"
 )
+LICENSE_FILES = ("LICENSE", "NOTICE")
 
 _SKIP_DIR_NAMES = frozenset({"__pycache__", ".pytest_cache", ".mypy_cache"})
 _SKIP_FILE_SUFFIXES = (".pyc", ".pyo")
@@ -184,6 +185,9 @@ def sync_payload(payload_dir: Path, plugin_dir: Path, profile: str = "with_mcp")
 
     _copy_tree(CURSOR_WORKFLOW_SRC, payload_dir / "cursor_workflow")
 
+    for name in LICENSE_FILES:
+        _copy_file(KIT_ROOT / name, payload_dir / name)
+
 
 def _collect_files(root: Path) -> dict[str, str]:
     out: dict[str, str] = {}
@@ -234,6 +238,8 @@ def check_bundle(profile: str = "with_mcp") -> list[str]:
         PAYLOAD_DIR / ".ai_infra" / "scripts" / "pr" / "prepare.py",
         PAYLOAD_DIR / ".ai_infra" / "scripts" / "install" / "scaffold.py",
         PAYLOAD_DIR / "cursor_workflow" / "__main__.py",
+        PAYLOAD_DIR / "LICENSE",
+        PAYLOAD_DIR / "NOTICE",
     ]
     for path in required:
         if not path.is_file():

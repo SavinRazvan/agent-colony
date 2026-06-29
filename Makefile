@@ -1,4 +1,4 @@
-.PHONY: install-dry-run test gates sync-plugin check-plugin integrate-validate
+.PHONY: install-dry-run test gates sync-plugin check-plugin integrate-validate drift-validate
 
 install-dry-run:
 	rm -rf /tmp/workflow-kit-dry-run
@@ -22,3 +22,6 @@ check-plugin:
 
 integrate-validate:
 	.venv/bin/python -m cursor_workflow integrate validate --directory .
+
+drift-validate:
+	.venv/bin/python -m cursor_workflow drift validate --directory .

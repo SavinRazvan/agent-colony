@@ -31,7 +31,7 @@ When the slice touches tests or ownership: `test-plan.md`, `test-index.md`. Afte
 4. **Commits:** complete **`.local/user_settings/github.collaboration.yaml`**; append trailers via  
    `python -m cursor_workflow contributors commit-trailers` (policy: `.cursor/rules/commit-trailer-format.mdc`).  
    Optional `Assisted-by:` when AI materially helped. No tool-generated human sign-off.
-5. **Close:** `session-pointer.md`, `change-index.md`, `work-tracker.md`, `history/updates-log.md` (short — no pasted gate lists; see `.ai_infra/docs/operations/token-efficiency.md`), test trackers + `coverage-index.md` + `agents-control-center/config/pages.json` when applicable.
+5. **Close:** `session-pointer.md`, `change-index.md`, `work-tracker.md`, `history/updates-log.md` (short — no pasted gate lists; see `.ai_infra/docs/operations/token-efficiency.md`), test trackers + `coverage-index.md` + `agents-control-center/config/pages.json` when applicable. Run **`make drift-validate`**; hand off to **`workflow-drift-guard`** when P0/P1 drift findings need artifacts.
 
 ## Architecture
 

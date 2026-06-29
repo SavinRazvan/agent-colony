@@ -38,6 +38,7 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 | `workflow-artifacts/pr/` | `review.md`, `prep.md`, `merge.md` |
 | `workflow-artifacts/alignment/` | `alignment-audit.md`, `alignment-todos.md` |
 | `workflow-artifacts/enterprise-architecture-audit/` | Full audit report + actions |
+| `workflow-artifacts/drift/` | `drift-audit.md`, `drift-todos.md` (workflow-drift-guard) |
 | `user_settings/` | Gitignored YAML worksheets: GitHub collaboration + MCP agent wiring (from kit exemplars) |
 | `generated-data/` | Coverage JSON and similar machine output |
 
@@ -66,4 +67,4 @@ Copy from **`.ai_infra/templates/local-workspace/`** into `.local/agents-control
 
 **User settings:** copy from **`.ai_infra/templates/user-settings/exemplars/`** into **`.local/user_settings/`** (`github.collaboration.yaml`, `mcp.agents.yaml`). See [RENDERED-EXAMPLES.md](../../templates/user-settings/RENDERED-EXAMPLES.md).
 
-Historical layout migrations: **`.ai_infra/docs/maintainer/eXo-path-migration-map.md`** (kit dev only).
+Path canon for kit layout: [ADR-002-path-canon.md](../decisions/ADR-002-path-canon.md).
