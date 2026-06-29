@@ -78,5 +78,5 @@ Product fixes → **implementer** · L4 refresh → **enterprise-auditor** (opti
 
 | Workflow | Path |
 |----------|------|
-| PR merge | `PR_WORKFLOW.md` |
+| PR merge | `pr-workflow/SKILL.md` |
 | Implementation | `implementer` |

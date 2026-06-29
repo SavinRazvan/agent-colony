@@ -37,7 +37,7 @@ Research manifest/enrichment scripts live in **project overlays** (pack-specific
 | Need | Use |
 |------|-----|
 | Implement features | `implementer` |
-| PR merge | `PR_WORKFLOW.md` |
+| PR merge | `pr-workflow/SKILL.md` |
 | Full enterprise audit | `enterprise-auditor` |
 | Verify a claim | `verifier` |
 

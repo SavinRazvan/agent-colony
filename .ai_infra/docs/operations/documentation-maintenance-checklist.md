@@ -3,7 +3,7 @@ File: documentation-maintenance-checklist.md
 Path: .ai_infra/docs/operations/documentation-maintenance-checklist.md
 Role: Recurring checklist to prevent documentation drift in the MAS Workflow Kit.
 Used By:
- - .agents/skills/PR_WORKFLOW.md
+ - .agents/skills/pr-workflow/SKILL.md
  - Maintainers during PR preparation
 Depends On:
  - .ai_infra/docs/governance/workflow-source-owners.md
@@ -28,7 +28,7 @@ Run when a PR changes kit architecture, install manifest, governance, workflow p
 - [ ] If alignment audit categories change: sync `.ai_infra/docs/roadmap/alignment-audit-schema.md` and enterprise-audit skill references.
 - [ ] If install manifest, scaffold, or activate flow changes: run `make install-dry-run`, update `consumer-quickstart.md`, `PLUGIN-ARCHITECTURE.md`, and `workflow-activate` skill.
 - [ ] If ADRs change: update `.ai_infra/docs/decisions/README.md` index.
-- [ ] Verify no contradictions against `.cursor/rules/*.mdc` and `.agents/skills/PR_WORKFLOW.md`.
+- [ ] Verify no contradictions against `.cursor/rules/*.mdc` and `.agents/skills/pr-workflow/SKILL.md`.
 - [ ] Run `python .ai_infra/scripts/architecture/check_governance_consistency.py`.
 
 ## Ownership and Cadence

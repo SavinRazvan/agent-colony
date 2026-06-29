@@ -1,11 +1,11 @@
 <!--
 File: workflow-complete.md
 Path: .ai_infra/docs/operations/workflow-complete.md
-Role: End-to-end maintainer workflow checklist (durable); complements gitignored `.agents/skills/PR_WORKFLOW.md`.
+Role: End-to-end maintainer workflow checklist (durable); complements `.agents/skills/pr-workflow/SKILL.md`.
 Used By:
  - Maintainers / local agents
 Depends On:
- - .agents/skills/PR_WORKFLOW.md (canonical narrative + skill order; local copy when present)
+ - .agents/skills/pr-workflow/SKILL.md (canonical maintainer merge path + skill order)
  - docs/operations/agent-workflow-procedures.md (enterprise-auditor + dedup contract)
  - .ai_infra/scripts/pr/README.md (PR scripts vs git commit trailers)
  - .ai_infra/scripts/pr/review.py, .ai_infra/scripts/pr/prepare.py, .ai_infra/scripts/pr/merge.py, .ai_infra/scripts/pr/finalize.py, .ai_infra/scripts/pr/verify_publish.py
@@ -26,7 +26,7 @@ Notes:
    - `python .ai_infra/scripts/pr/verify_publish.py --branch "$(git branch --show-current)"`
    - `gh pr view --json number,url,headRefName,state,mergeStateStatus`
 5. **Prepare gates (before merge / push)** — run **`python .ai_infra/scripts/pr/prepare.py`** (executes all `GATES` — see `.ai_infra/scripts/pr/prepare.py` for the canonical list). Additionally run **`python .ai_infra/scripts/architecture/check_governance_consistency.py`** when changing governance/workflows.
-6. **Skills order (do not skip)** — see `.agents/skills/PR_WORKFLOW.md`:
+6. **Skills order (do not skip)** — see `.agents/skills/pr-workflow/SKILL.md`:
    - `review-pr` → `prepare-pr` → `merge-pr`
 7. **Artifacts** (must exist before merge; fill with real content):
    - `.local/workflow-artifacts/pr/review.md` — `python .ai_infra/scripts/pr/review.py --pr <id|url> --actor "<name>" --agents "review-pr"` then edit findings.
@@ -41,7 +41,7 @@ Notes:
 
 Before `/prepare-pr` / final merge:
 
-1. Run **`enterprise-auditor`** with a **focused alignment pass** (`.cursor/skills/enterprise-architecture-audit/SKILL.md`; see `.agents/skills/PR_WORKFLOW.md`).
+1. Run **`enterprise-auditor`** with a **focused alignment pass** (`.cursor/skills/enterprise-architecture-audit/SKILL.md`; merge path in `.agents/skills/pr-workflow/SKILL.md`).
 2. Ensure **both** exist (merge script enforces with `--arch-impacting`):
    - `.local/workflow-artifacts/alignment/alignment-audit.md`
    - `.local/workflow-artifacts/alignment/alignment-todos.md`
@@ -92,8 +92,8 @@ Canonical detail: **`.local/index-and-planning/current/plan.md`** section **Impl
 ## Canonical copies (avoid drift)
 
 - Procedures + dedup rules: **`agent-workflow-procedures.md`**
-- Skill order + finalization: **`.agents/skills/PR_WORKFLOW.md`**
+- Skill order + finalization: **`.agents/skills/pr-workflow/SKILL.md`**
 - Prepare gate list: **`.ai_infra/scripts/pr/prepare.py`** (`GATES`)
 - CI shape: **`.github/workflows/kit-quality.yml`**
 
-If this file and `PR_WORKFLOW.md` or `prepare.py` disagree, **fix this file** to match the script/workflow truth.
+If this file and `pr-workflow/SKILL.md` or `prepare.py` disagree, **fix this file** to match the script/workflow truth.

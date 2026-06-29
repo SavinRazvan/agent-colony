@@ -17,7 +17,7 @@ Notes:
 
 | Rule file | Purpose | Overlap with | Posture |
 |-----------|---------|--------------|---------|
-| `pr-workflow-enforcement.mdc` | PR-first, artifacts, merge gates | `workflow-complete.md`, `PR_WORKFLOW.md` | **Short pointer** to `local_workflow_paths.py` + `prepare.py` `GATES` |
+| `pr-workflow-enforcement.mdc` | PR-first, artifacts, merge gates | `workflow-complete.md`, `pr-workflow/SKILL.md` | **Short pointer** to `local_workflow_paths.py` + `prepare.py` `GATES` |
 | `implementation-workflow-governance.mdc` | Slice lifecycle, planning discipline, testing, anchoring | `implementer.md`, `token-efficiency.md` | **Keep** |
 | `advisory-audit-alignment-enforcement.mdc` | Alignment artifacts (authored via `enterprise-auditor`) | `agent-workflow-procedures.md` | **Keep** |
 | `commit-trailer-format.mdc` | Required commit trailers + optional `Assisted-by` (no `Made-with:`) | `README.md`, `AGENTS.md` § Commits | **Keep separate** |

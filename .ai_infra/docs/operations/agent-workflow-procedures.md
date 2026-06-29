@@ -34,7 +34,7 @@ Notes:
 
 **Order:** `review-pr` → `prepare-pr` → `merge-pr` → **`finalize.py`**.
 
-**Canonical narrative:** **`.agents/skills/PR_WORKFLOW.md`**  
+**Canonical narrative:** **`.agents/skills/pr-workflow/SKILL.md`** (redirect stub: `PR_WORKFLOW.md`)  
 **Executable stubs:** **`.ai_infra/scripts/pr/`** (`prepare.py`, `merge.py`, `review.py`, `finalize.py`, `verify_publish.py`)
 
 ---
@@ -53,9 +53,9 @@ Notes:
 
 **Git commits** use **`.cursor/rules/commit-trailer-format.mdc`**: required `Author:` + `GitHub-User:`; optional `Assisted-by:` when disclosure applies. No **`Made-with:`**.
 
-**PR phase markdown** uses `Action-By` / `GitHub-User` / `Agent/s` per **`.agents/skills/PR_WORKFLOW.md`**.
+**PR phase markdown** uses `Action-By` / `GitHub-User` / `Agent/s` per **`.agents/skills/pr-workflow/SKILL.md`**.
 
-When trailer policy changes, sync: **`AGENTS.md`**, **`README.md`**, **`.cursor/rules/pr-workflow-enforcement.mdc`**, **`.cursor/agents/implementer.md`**, **`.agents/skills/PR_WORKFLOW.md`**, **`workflow-source-owners.md`**, **`rules-overlap-matrix.md`**, and this §3b.
+When trailer policy changes, sync: **`AGENTS.md`**, **`README.md`**, **`.cursor/rules/pr-workflow-enforcement.mdc`**, **`.cursor/agents/implementer.md`**, **`.agents/skills/pr-workflow/SKILL.md`**, **`PR_WORKFLOW.md`** (redirect), **`workflow-source-owners.md`**, **`rules-overlap-matrix.md`**, and this §3b.
 
 ---
 
@@ -68,7 +68,7 @@ When **`GATES`** in `prepare.py` change, update in the **same slice**:
 | Always-applied rule | `.cursor/rules/pr-workflow-enforcement.mdc` |
 | Onboarding | `README.md`, `AGENTS.md` |
 | Checklist | `.ai_infra/docs/operations/workflow-complete.md` |
-| Maintainer skills | `.agents/skills/PR_WORKFLOW.md`, `prepare-pr/SKILL.md` |
+| Maintainer skills | `.agents/skills/pr-workflow/SKILL.md`, `prepare-pr/SKILL.md`, `review-pr/SKILL.md`, `merge-pr/SKILL.md` |
 
 Do not paste full gate blocks into **`updates-log.md`** — log *gate list synced per §4*.
 

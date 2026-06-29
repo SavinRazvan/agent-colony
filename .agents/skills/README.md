@@ -12,7 +12,7 @@ Each skill: **`<skill-name>/SKILL.md`**.
 |------|--------|
 | Implementation loop | `.cursor/skills/implementation-execution-loop/`, `.cursor/agents/implementer.md` |
 | Tests | `.cursor/skills/test-module-coverage/`, `.cursor/agents/test-runner.md` |
-| **Maintainer PR** | **`pr-workflow/`** or `PR_WORKFLOW.md` + `review-pr` / `prepare-pr` / `merge-pr` |
+| **Maintainer PR** | **`pr-workflow/`** + `review-pr` / `prepare-pr` / `merge-pr` (`PR_WORKFLOW.md` = legacy redirect) |
 | **Research corpus** | `RESEARCH_WORKFLOW.md` + `.cursor/skills/research-corpus-execution/` |
 | **Enterprise audit** | `.cursor/skills/enterprise-architecture-audit/SKILL.md` + `.cursor/agents/enterprise-auditor.md` |
 | **Drift guard** | `.cursor/skills/workflow-drift-audit/SKILL.md` + `.cursor/agents/workflow-drift-guard.md` |

@@ -94,7 +94,7 @@ Full path: [`.ai_infra/docs/operations/consumer-quickstart.md`](.ai_infra/docs/o
 
 ## Agent routing
 
-See [`AGENTS.md`](AGENTS.md). Maintainer PR: [`.agents/skills/PR_WORKFLOW.md`](.agents/skills/PR_WORKFLOW.md).
+See [`AGENTS.md`](AGENTS.md). Maintainer PR: [`.agents/skills/pr-workflow/SKILL.md`](.agents/skills/pr-workflow/SKILL.md) → `review-pr` / `prepare-pr` / `merge-pr`.
 
 ---
 

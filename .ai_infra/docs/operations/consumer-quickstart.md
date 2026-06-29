@@ -165,7 +165,7 @@ Deep checklist: [install-dry-run.md](install-dry-run.md). Upgrade: [upgrade-kit.
 your-project/
 ├── AGENTS.md
 ├── .cursor/          agents, skills, rules, mcp.json
-├── .agents/skills/   review-pr, prepare-pr, merge-pr
+├── .agents/skills/   review-pr, prepare-pr, merge-pr, pr-workflow
 ├── .ai_infra/        scripts, docs, manifest, .kit-version
 ├── .local/           gitignored trackers + PR artifacts
 ├── cursor_workflow/  python -m cursor_workflow (install|gates|health|mcp)

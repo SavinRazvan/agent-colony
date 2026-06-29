@@ -4,7 +4,7 @@ Path: .ai_infra/scripts/pr/check_testing_artifacts.py
 Role: Validate required testing planning/index artifacts before PR prepare.
 Used By:
  - scripts/pr/prepare.py
- - .agents/skills/PR_WORKFLOW.md
+ - .agents/skills/pr-workflow/SKILL.md
 Depends On:
  - pathlib
  - argparse

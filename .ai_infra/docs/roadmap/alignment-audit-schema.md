@@ -65,7 +65,7 @@ Standardize advisory audit findings so outputs from skills, rules checks, and ma
 ## Precedence Rule (When Sources Conflict)
 
 1. `.cursor/rules/*` and `AGENTS.md`
-2. `.agents/skills/PR_WORKFLOW.md` and phase skills
+2. `.agents/skills/pr-workflow/SKILL.md` and phase skills (`review-pr`, `prepare-pr`, `merge-pr`)
 3. `.ai_infra/scripts/pr/prepare.py` (`GATES`) and `.ai_infra/scripts/pr/local_workflow_paths.py`
 4. `docs/governance/*`, `docs/operations/*`
 5. `docs/roadmap/*`

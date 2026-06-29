@@ -1,6 +1,6 @@
 # Workflows index
 
-Maintainer PR lane hub: [`.agents/skills/PR_WORKFLOW.md`](../../.agents/skills/PR_WORKFLOW.md)
+Maintainer PR lane hub: [`.agents/skills/pr-workflow/SKILL.md`](../../.agents/skills/pr-workflow/SKILL.md)
 
 Slash skills: `review-pr`, `prepare-pr`, `merge-pr` under `.agents/skills/`.
 

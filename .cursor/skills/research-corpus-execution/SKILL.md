@@ -10,7 +10,7 @@ description: Pure deep research for _research_results — DEPTH_BACKLOG slices, 
 - Deepening `_research_results/` for refactor-ready inventory.
 - Picking work from [DEPTH_BACKLOG.md](../../../_research_results/DEPTH_BACKLOG.md).
 
-**Not for:** code changes, PR merge, `.local/` implementation — use `implementer` / `PR_WORKFLOW.md`.
+**Not for:** code changes, PR merge, `.local/` implementation — use `implementer` / `.agents/skills/pr-workflow/SKILL.md`.
 
 ## Agent
 

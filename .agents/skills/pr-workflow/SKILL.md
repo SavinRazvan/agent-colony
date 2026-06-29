@@ -41,4 +41,4 @@ Authoritative list: **`GATES` in `.ai_infra/scripts/pr/prepare.py`**. Add **`che
 1. `git checkout main` && `git fetch --prune origin`
 2. `python .ai_infra/scripts/pr/finalize.py --branch <feature-branch>`
 
-Full detail: `.agents/skills/PR_WORKFLOW.md` (reference).
+Durable checklist: `.ai_infra/docs/operations/workflow-complete.md`. Legacy redirect: `PR_WORKFLOW.md`.

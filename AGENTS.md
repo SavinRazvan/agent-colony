@@ -69,8 +69,8 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 | Root | Role |
 |------|------|
 | `.cursor/agents/` | Subagent cards (7) — Task delegation; **`model: auto`**; audit agents write `.local/` artifacts only |
-| `.cursor/skills/` | **Canonical protocols** (audit, drift, implement loop, activate, …) |
-| `.agents/skills/` | **Maintainer slash skills only** (`review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`) — additive in plugin sync |
+| `.cursor/skills/` | **Canonical protocols** (10 folders: audit, drift, implement loop, activate, …) |
+| `.agents/skills/` | **Maintainer slash skills** (5 folders: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `audit-alignment`) — additive in plugin sync |
 | `.cursor/rules/` | Six universal `alwaysApply` rules — high context cost by design |
 
 **Plugin sync:** `.cursor/skills/` wins; `.agents/skills/` never overwrites same folder name (`sync_plugin_bundle.py`).

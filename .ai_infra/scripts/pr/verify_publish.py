@@ -3,7 +3,7 @@ File: verify_publish.py
 Path: .ai_infra/scripts/pr/verify_publish.py
 Role: Verifies local branch publication and upstream linkage before merge workflow.
 Used By:
- - .agents/skills/PR_WORKFLOW.md
+ - .agents/skills/pr-workflow/SKILL.md
 Depends On:
  - argparse
  - subprocess

@@ -15,7 +15,7 @@ Notes:
 
 # Implementation status (MAS Workflow Kit)
 
-**Last updated:** 2026-06-29 (cursor contract slice)  
+**Last updated:** 2026-06-29 (doc sync — pr-workflow canonical, skill counts)  
 **Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 103
 
 ## Shipped (confirmed in repo)
@@ -24,6 +24,8 @@ Notes:
 |------|--------|----------|
 | Universal rules | 6 `.mdc` | `.cursor/rules/` |
 | Agents | 7 core; `model: auto`; audit agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` |
+| Canonical skills | 10 folders | `.cursor/skills/` |
+| Maintainer skills | 5 folders (additive plugin merge) | `.agents/skills/` |
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
 | PR scripts + 2 default gates | Pattern A | `.ai_infra/scripts/pr/prepare.py` |
