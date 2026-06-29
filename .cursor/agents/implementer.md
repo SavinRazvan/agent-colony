@@ -16,6 +16,7 @@ Deliver **small, reversible** slices with production quality: clear module bound
 
 ## Read first (do not load the whole `.local/` tree)
 
+- `.cursor/skills/implementation-execution-loop/SKILL.md` — slice lifecycle protocol
 - `.local/index-and-planning/current/session-pointer.md`
 - `.local/index-and-planning/current/plan.md` (includes **Implementer slice closure**)
 - `.local/index-and-planning/current/work-tracker.md`
