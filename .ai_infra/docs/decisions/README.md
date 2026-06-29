@@ -8,5 +8,6 @@
 | [ADR-004](ADR-004-user-mcp-registry.md) | User MCP registry (two-tier) | accepted |
 | [ADR-005](ADR-005-docs-split.md) | Consumer vs maintainer docs split | accepted |
 | [ADR-006](ADR-006-agent-integration-model.md) | Agent integration model (MAS vs independent) | accepted |
+| [ADR-007](ADR-007-workflow-drift-guard.md) | Workflow drift guard (operational drift detection) | accepted |
 
 New decisions: add `ADR-NNN-short-title.md` and update this index.

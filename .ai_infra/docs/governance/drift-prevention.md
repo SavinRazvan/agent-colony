@@ -45,8 +45,25 @@ Additionally when changing governance, workflows, `.cursor/`, `.agents/`, or tra
 
 Follow **`agent-workflow-procedures.md` §3b**. Includes **`AGENTS.md`**, **`rules-overlap-matrix.md`**, **`workflow-source-owners.md`**, PR scripts, and mirrored `.cursor/` / `.agents/` skills. Run **`check_governance_consistency.py`** when tracked policy paths change.
 
+## Operational drift (workflow-drift-guard)
+
+Script-first checks for plan ↔ tracker ↔ session-pointer coherence and handoff doc parity. See [ADR-007](../decisions/ADR-007-workflow-drift-guard.md).
+
+| Concern | Owner | Do NOT duplicate in drift |
+|---------|-------|---------------------------|
+| Bare paths, brand terms | `check_governance_consistency.py`, `check_debrand.py` | Path/brand scans |
+| Agent Anchor/MCP, registry parity | `integrate validate` INT-001…010 | Agent file structure |
+| test-plan/index existence | `check_testing_artifacts.py` | File exists checks |
+| Plugin/payload SHA drift | `sync_plugin_bundle.py --check` | Bundle sync |
+| Slice claim verification | `verifier` | Subjective verification |
+| Architecture scorecard | `enterprise-auditor` | Module deep-dive |
+
+**Command:** `python -m cursor_workflow drift validate --directory .` or `make drift-validate`.
+
+**Artifacts:** `.local/workflow-artifacts/drift/drift-audit.md`, `drift-todos.md`.
+
 ## Quarterly (or before kit releases)
 
 - Confirm **`rules-overlap-matrix.md`** still lists all **`.cursor/rules/*.mdc`** files.
 - Skim **`IMPLEMENTATION-STATUS.md`** vs shipped manifest profiles.
-- Re-run **`make gates`** and **`make install-dry-run`** on the kit repo.
+- Re-run **`make gates`**, **`make drift-validate`**, and **`make install-dry-run`** on the kit repo.

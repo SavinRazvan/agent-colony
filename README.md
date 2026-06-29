@@ -105,3 +105,9 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 - Not a product application (`src/`, domain adapters, product strategy docs)
 - Not a runtime YAML gate orchestrator for agents
 - Not a copy-paste rename of another product repo
+
+---
+
+## License
+
+Licensed under the **Apache License, Version 2.0**. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).

@@ -10,6 +10,7 @@ profiles:
       - scripts/pr
       - scripts/architecture
       - scripts/integration
+      - scripts/workflow
       - install/cursor_workflow
       - docs/operations
       - docs/governance

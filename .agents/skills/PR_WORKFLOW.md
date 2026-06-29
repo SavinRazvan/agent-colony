@@ -6,7 +6,7 @@ This file is the **merge path** only: **review → prepare → merge** (skills u
 
 ## Order
 
-1. `review-pr` — findings only; when scope is architecture-impacting, run **`enterprise-auditor`** (`.cursor/agents/enterprise-auditor.md` + `.cursor/skills/enterprise-architecture-audit/SKILL.md`) and write alignment artifacts per `.cursor/rules/advisory-audit-alignment-enforcement.mdc`.
+1. `review-pr` — findings only; optional **`make drift-validate`** before review when trackers changed. When scope is architecture-impacting, run **`enterprise-auditor`** (`.cursor/agents/enterprise-auditor.md` + `.cursor/skills/enterprise-architecture-audit/SKILL.md`) and write alignment artifacts per `.cursor/rules/advisory-audit-alignment-enforcement.mdc`.
 2. `prepare-pr` — fixes + `prepare.py` (runs `GATES` from `.ai_infra/scripts/pr/prepare.py`).
 3. `merge-pr` — `merge.py` check, `gh pr merge`, finalize repo state.
 

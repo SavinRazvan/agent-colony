@@ -44,6 +44,8 @@ def test_sync_builds_plugin_and_payload(tmp_path: Path) -> None:
     assert (payload_dir / ".ai_infra" / "scripts" / "pr" / "prepare.py").is_file()
     assert (payload_dir / "cursor_workflow" / "__main__.py").is_file()
     assert (payload_dir / ".cursor" / "agents" / "implementer.md").is_file()
+    assert (payload_dir / "LICENSE").is_file()
+    assert (payload_dir / "NOTICE").is_file()
 
 
 def test_check_bundle_passes_after_sync(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
