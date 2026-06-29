@@ -1,7 +1,7 @@
 <!--
 File: workflow-architecture.md
 Path: .ai_infra/docs/architecture/workflow-architecture.md
-Role: Consumer-facing architecture overview (stub; expanded in REFACTOR Phase 4).
+Role: Canonical consumer-facing architecture overview (three planes, agents, Pattern A gates).
 Used By:
  - README.md
  - Onboarding

@@ -101,7 +101,7 @@ See [`AGENTS.md`](AGENTS.md). Maintainer PR: [`.agents/skills/PR_WORKFLOW.md`](.
 ## Verification
 
 ```bash
-python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
+python3 -m venv .venv && .venv/bin/pip install -e ".[dev,mcp]"
 .venv/bin/python -m pytest -q
 make gates
 make doc-validate

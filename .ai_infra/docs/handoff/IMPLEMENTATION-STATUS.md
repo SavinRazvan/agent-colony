@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (MAS Workflow Kit)
 
-**Last updated:** 2026-06-29 (activate + doc alignment slice)  
-**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 87
+**Last updated:** 2026-06-29 (score-improvement slice)  
+**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 102
 
 ## Shipped (confirmed in repo)
 
@@ -33,15 +33,17 @@ Notes:
 | MCP tools + resources | 19 tools + 6 resources | `.ai_infra/mcp_servers/workflow_mcp/` |
 | Install scaffold + contract | `install-contract.json` | `.ai_infra/scripts/install/scaffold.py` |
 | Install CLI | install, **activate**, gates, health, mcp, drift, verify | `.ai_infra/install/cursor_workflow/cli.py` |
+| Editable install | `pyproject.toml` — `pip install -e ".[dev,mcp]"` | repo root |
 | Three-plane activate | Idempotent plugin consumer setup | `.ai_infra/install/cursor_workflow/activate_cli.py`, `plane_status.py` |
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Kit version on install | `kit_version` 0.3.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 87 | `tests/modules/` |
+| Tests | 102 | `tests/modules/` |
 
 ## Verification commands
 
 ```bash
+pip install -e ".[dev,mcp]"
 make gates
 make drift-validate
 make doc-validate
@@ -58,7 +60,7 @@ cursor-workflow drift validate
 
 | Item | Target |
 |------|--------|
-| PyPI `cursor-workflow` package | out of scope |
+| PyPI publish (`cursor-workflow` on PyPI) | out of scope — editable install via `pyproject.toml` is shipped |
 
 ## Maintainer doc sync
 

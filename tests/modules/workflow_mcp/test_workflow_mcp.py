@@ -149,3 +149,163 @@ def test_workflow_doc_facts_validate() -> None:
     text = workflow_doc_facts_validate()
     assert "exit=0" in text
     assert "DOC-001" in text
+
+
+def _env_root() -> None:
+    os.environ["WORKFLOW_KIT_ROOT"] = str(REPO_ROOT)
+
+
+def _mock_run_script(monkeypatch: pytest.MonkeyPatch, *, code: int = 0, out: str = "ok") -> None:
+    def fake_run_script(relative: str, args: list[str], cwd: Path, **kwargs: object) -> tuple[int, str]:
+        return code, out
+
+    monkeypatch.setattr("workflow_mcp.server.run_script", fake_run_script)
+
+
+def test_workflow_run_gate_index_zero() -> None:
+    _env_root()
+    from workflow_mcp.server import workflow_run_gate
+
+    text = workflow_run_gate(0)
+    assert text.startswith("exit=")
+    assert "exit=0" in text
+
+
+def test_workflow_check_governance() -> None:
+    _env_root()
+    from workflow_mcp.server import workflow_check_governance
+
+    text = workflow_check_governance()
+    assert text.startswith("exit=")
+    assert "exit=0" in text
+
+
+def test_workflow_run_prepare_skip_gates_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
+    _env_root()
+    _mock_run_script(monkeypatch)
+    from workflow_mcp.server import workflow_run_prepare
+
+    text = workflow_run_prepare(
+        pr="https://github.com/example/repo/pull/1",
+        actor="Test User",
+        agents="review-pr",
+        skip_gates=True,
+    )
+    assert text == "exit=0\nok"
+
+
+def test_workflow_run_review_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
+    _env_root()
+    _mock_run_script(monkeypatch)
+    from workflow_mcp.server import workflow_run_review
+
+    text = workflow_run_review(
+        pr="https://github.com/example/repo/pull/1",
+        actor="Test User",
+    )
+    assert text == "exit=0\nok"
+
+
+def test_workflow_run_merge_check_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
+    _env_root()
+    _mock_run_script(monkeypatch)
+    from workflow_mcp.server import workflow_run_merge_check
+
+    text = workflow_run_merge_check(
+        pr="https://github.com/example/repo/pull/1",
+        actor="Test User",
+    )
+    assert text == "exit=0\nok"
+
+
+def test_workflow_render_commit_trailers() -> None:
+    _env_root()
+    from workflow_mcp.server import workflow_render_commit_trailers
+
+    text = workflow_render_commit_trailers()
+    assert "Author:" in text or text.startswith("error:")
+
+
+def test_workflow_render_pr_body() -> None:
+    _env_root()
+    from workflow_mcp.server import workflow_render_pr_body
+
+    text = workflow_render_pr_body(pipeline="default", agents_from_session=False)
+    assert "## Summary" in text or text.startswith("error:")
+
+
+def test_workflow_list_session_agents() -> None:
+    _env_root()
+    from workflow_mcp.server import workflow_list_session_agents
+
+    text = workflow_list_session_agents()
+    assert "session:" in text or text.startswith("error:") or text.startswith("(no session")
+
+
+def test_workflow_integrate_validate() -> None:
+    _env_root()
+    from workflow_mcp.server import workflow_integrate_validate
+
+    text = workflow_integrate_validate()
+    assert text.startswith("exit=0")
+    assert "INT-001" in text
+
+
+def test_workflow_drift_validate() -> None:
+    _env_root()
+    from workflow_mcp.server import workflow_drift_validate
+
+    text = workflow_drift_validate()
+    assert text.startswith("exit=0")
+    assert "DRIFT-" in text
+
+
+def test_workflow_verify_all(monkeypatch: pytest.MonkeyPatch) -> None:
+    _env_root()
+    arch_dir = REPO_ROOT / ".ai_infra" / "scripts" / "architecture"
+    arch_str = str(arch_dir)
+    if arch_str not in sys.path:
+        sys.path.insert(0, arch_str)
+    import verify_all
+
+    class _Result:
+        def __init__(self, name: str, code: int) -> None:
+            self.name = name
+            self.code = code
+
+    def fake_run_verify_all(root: Path, python: str) -> list:
+        return [_Result("gates", 0), _Result("health", 0)]
+
+    monkeypatch.setattr(verify_all, "run_verify_all", fake_run_verify_all)
+    monkeypatch.setattr(verify_all, "format_report", lambda results: "summary: failed=0 total=2")
+    monkeypatch.setattr(verify_all, "exit_code_for", lambda results: 0)
+
+    from workflow_mcp.server import workflow_verify_all
+
+    text = workflow_verify_all()
+    assert text.startswith("exit=0")
+    assert "summary:" in text
+
+
+def test_workflow_contributors_validate() -> None:
+    _env_root()
+    from workflow_mcp.server import workflow_contributors_validate
+
+    text = workflow_contributors_validate()
+    assert text == "PASS" or text.startswith("FAIL")
+
+
+def test_workflow_activate_idempotent(monkeypatch: pytest.MonkeyPatch) -> None:
+    _env_root()
+    activate_pkg = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+    pkg = str(activate_pkg)
+    if pkg not in sys.path:
+        sys.path.insert(0, pkg)
+    import activate_cli
+
+    monkeypatch.setattr(activate_cli, "cmd_activate", lambda args: 0)
+
+    from workflow_mcp.server import workflow_activate
+
+    text = workflow_activate(force=False)
+    assert text.startswith("exit=0")

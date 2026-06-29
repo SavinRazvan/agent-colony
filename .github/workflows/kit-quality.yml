@@ -22,8 +22,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m venv .venv
-          .venv/bin/pip install -q -r requirements-dev.txt
-          .venv/bin/pip install -q jsonschema
+          .venv/bin/pip install -q -e ".[dev,mcp]"
 
       - name: Seed CI workspace
         run: .venv/bin/python .ai_infra/scripts/ci/seed_kit_workspace.py --directory .

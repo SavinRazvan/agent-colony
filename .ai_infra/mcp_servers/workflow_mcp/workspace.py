@@ -1,6 +1,6 @@
 """
 File: workspace.py
-Path: workflow_mcp/workspace.py
+Path: .ai_infra/mcp_servers/workflow_mcp/workspace.py
 Role: Resolve target repository root for MCP tools (install workspace).
 Used By:
  - workflow_mcp/gates.py

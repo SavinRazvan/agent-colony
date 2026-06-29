@@ -1,6 +1,6 @@
 """
 File: server.py
-Path: workflow_mcp/server.py
+Path: .ai_infra/mcp_servers/workflow_mcp/server.py
 Role: MCP server (stdio) — P0 tools wrap `.ai_infra/scripts/pr/*` and read trackers/agents.
 Used By:
  - workflow_mcp/__main__.py
