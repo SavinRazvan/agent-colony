@@ -27,6 +27,18 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 
 **Usually skip:** `generated-data/**`, long `history/` unless investigating regressions.
 
+## Artifact tiers
+
+| Tier | Location | Who writes | Examples |
+|------|----------|------------|----------|
+| **0 — Product** | `docs/`, `src/`, overlays | Humans + merged PRs | `docs/architecture/`, ADRs |
+| **1 — Base** | `.local/` at install | `scaffold.py` / `activate` | Neutral trackers, empty `workflow-artifacts/*` buckets, README stubs |
+| **2 — Runtime** | `.local/` during work | Agents + PR scripts | Filled trackers, `review.md`, drift/alignment/EA artifacts |
+
+**Rule:** Tier 1 paths are stable across projects. Tier 2 content is project-unique. Do not store product truth only in `.local` when it belongs in `docs/`.
+
+**Bucket SSOT:** `.ai_infra/scripts/pr/local_workflow_paths.py` (`WORKFLOW_ARTIFACT_BUCKETS`, `ensure_workflow_artifacts_tree`).
+
 ## Top-level buckets
 
 | Path | Purpose |
@@ -39,6 +51,8 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 | `workflow-artifacts/alignment/` | `alignment-audit.md`, `alignment-todos.md` |
 | `workflow-artifacts/enterprise-architecture-audit/` | Full audit report + actions |
 | `workflow-artifacts/drift/` | `drift-audit.md`, `drift-todos.md` (workflow-drift-guard) |
+| `workflow-artifacts/release/` | Optional RC sign-off (`rc-signoff.md`) |
+| `workflow-artifacts/audit/` | `preflight.json`, `doc-facts-preflight.json` (verify-all / doc validate) |
 | `user_settings/` | Gitignored YAML worksheets: GitHub collaboration + MCP agent wiring (from kit exemplars) |
 | `generated-data/` | Coverage JSON and similar machine output |
 
@@ -60,10 +74,12 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 |--------|----------|
 | `.ai_infra/scripts/pr/check_testing_artifacts.py` | Default `--planning-dir`: `.local/index-and-planning/current` |
 | `.ai_infra/scripts/pr/review.py`, `prepare.py`, `merge.py` | Artifacts via `local_workflow_paths.py` |
+| `.ai_infra/scripts/install/scaffold.py` | Tier 1: exemplar trackers, all artifact buckets, README stubs, `pages.json`, optional dashboards |
+| `.ai_infra/scripts/ci/seed_kit_workspace.py` | CI fixture seed; same bucket set as scaffold |
 
 ## Templates (versioned in git)
 
-Copy from **`.ai_infra/templates/local-workspace/`** into `.local/agents-control-center/` at scaffold.
+Copy from **`.ai_infra/templates/local-workspace/`** into `.local/` at scaffold (`exemplars/`, `artifact-stubs/`, `pages.json`, optional dashboard HTML).
 
 **User settings:** copy from **`.ai_infra/templates/user-settings/exemplars/`** into **`.local/user_settings/`** (`github.collaboration.yaml`, `mcp.agents.yaml`). See [RENDERED-EXAMPLES.md](../../templates/user-settings/RENDERED-EXAMPLES.md).
 

@@ -76,6 +76,7 @@ TARGET=/path/to/your-project
 **What this does**
 
 - Copies agents, skills, rules, slim `.ai_infra/`, exemplar `.local/` trackers
+- Creates all `workflow-artifacts/*` buckets with README stubs (Tier 1 base); runtime `.md` files appear on first use (Tier 2)
 - Writes `.ai_infra/.kit-version` (semver from manifest)
 - Scaffolds minimal `tests/modules/smoke/test_kit_installed.py` (not full kit `tests/`)
 - Merges `.cursor/mcp.json` from `mcp.json.kit.example` (+ optional `mcp.user.json`)
@@ -88,6 +89,8 @@ TARGET=/path/to/your-project
 ---
 
 ## 3. Customize once (~1 min)
+
+**What `.local` contains:** Tier 1 base artifacts (neutral trackers + empty artifact buckets) from install; Tier 2 runtime files (PR review/prep/merge, drift, alignment, audits) filled during work. See [local-workspace-layout.md](local-workspace-layout.md) § Artifact tiers.
 
 ```bash
 cd "$TARGET"

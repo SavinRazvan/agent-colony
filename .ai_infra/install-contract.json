@@ -19,6 +19,14 @@
         "examples",
         "tests/modules/install/test_scaffold.py",
         ".cursor/agents/workflow-intelligence-mapper.md"
+      ],
+      "recommended_paths": [
+        ".local/workflow-artifacts/pr/README.md",
+        ".local/workflow-artifacts/alignment/README.md",
+        ".local/workflow-artifacts/drift/README.md",
+        ".local/workflow-artifacts/enterprise-architecture-audit/README.md",
+        ".local/workflow-artifacts/release/README.md",
+        ".local/workflow-artifacts/audit/README.md"
       ]
     },
     "with_mcp": {

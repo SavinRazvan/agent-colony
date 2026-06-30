@@ -10,6 +10,7 @@ Depends On:
 
 from __future__ import annotations
 
+import shutil
 import sys
 from pathlib import Path
 
@@ -44,6 +45,30 @@ def test_seed_kit_workspace_creates_planning_artifacts(tmp_path: Path) -> None:
     assert (current / "test-index.md").is_file()
     assert "Module:" in (current / "test-index.md").read_text(encoding="utf-8")
     assert (tmp_path / ".local/user_settings/github.collaboration.yaml").is_file()
+
+
+def test_seed_kit_workspace_creates_artifact_buckets(tmp_path: Path) -> None:
+    _copy_ci_fixture_tree(tmp_path)
+    stubs_src = REPO_ROOT / ".ai_infra/templates/local-workspace/artifact-stubs"
+    stubs_dst = tmp_path / ".ai_infra/templates/local-workspace/artifact-stubs"
+    shutil.copytree(stubs_src, stubs_dst)
+    pr_scripts = REPO_ROOT / ".ai_infra/scripts/pr"
+    pr_dst = tmp_path / ".ai_infra/scripts/pr"
+    pr_dst.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(pr_scripts / "local_workflow_paths.py", pr_dst / "local_workflow_paths.py")
+
+    seed_kit_workspace(tmp_path)
+
+    for bucket in (
+        "pr",
+        "alignment",
+        "drift",
+        "enterprise-architecture-audit",
+        "release",
+        "audit",
+    ):
+        assert (tmp_path / ".local/workflow-artifacts" / bucket).is_dir()
+    assert (tmp_path / ".local/workflow-artifacts/drift/README.md").is_file()
 
 
 def test_seed_passes_check_testing_artifacts(tmp_path: Path) -> None:

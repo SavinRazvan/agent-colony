@@ -13,6 +13,7 @@ Notes:
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 
 import pytest
@@ -53,6 +54,42 @@ def test_scaffold_creates_core_layout(tmp_path: Path) -> None:
     assert not (target / "examples").exists()
     assert (target / "tests" / "modules" / "smoke" / "test_kit_installed.py").is_file()
     assert not (target / "tests" / "modules" / "install" / "test_scaffold.py").exists()
+    smoke = (target / "tests" / "modules" / "smoke" / "test_kit_installed.py").read_text(
+        encoding="utf-8"
+    )
+    assert "workflow-artifacts/drift" in smoke
+
+
+def test_scaffold_creates_workflow_artifact_buckets(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    for bucket in mod.ARTIFACT_STUB_BUCKETS:
+        assert (target / ".local" / "workflow-artifacts" / bucket).is_dir()
+        assert (target / ".local" / "workflow-artifacts" / bucket / "README.md").is_file()
+
+
+def test_scaffold_creates_tracker_extras(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    current = target / ".local" / "index-and-planning" / "current"
+    history = target / ".local" / "index-and-planning" / "history"
+    assert (current / "coverage-index.md").is_file()
+    assert (history / "updates-log.md").is_file()
+
+
+def test_scaffold_pages_json_includes_artifact_tabs(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    pages = json.loads(
+        (target / ".local" / "agents-control-center" / "config" / "pages.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    page_ids = {page["id"] for page in pages["pages"]}
+    assert {"pr-review", "drift-audit", "ea-audit"}.issubset(page_ids)
 
 
 def test_scaffold_creates_user_settings_worksheets(tmp_path: Path) -> None:

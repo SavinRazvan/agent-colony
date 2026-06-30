@@ -55,7 +55,18 @@ EXEMPLAR_TRACKERS = [
     "work-tracker.md",
     "test-plan.md",
     "test-index.md",
+    "coverage-index.md",
 ]
+ARTIFACT_STUB_BUCKETS = (
+    "pr",
+    "alignment",
+    "drift",
+    "enterprise-architecture-audit",
+    "release",
+    "audit",
+)
+DASHBOARD_HTML = ("index.html", "implementation-control-center.html")
+DASHBOARD_ASSETS = ("site-nav.js", "local-shell.css")
 ADAPTER_WALL_RULE = "provider-neutral-adapter-wall.mdc"
 PREPARE_REL = Path(".ai_infra") / "scripts" / "pr" / "prepare.py"
 KIT_TESTS_MARKER = Path("tests") / "modules" / "install" / "test_scaffold.py"
@@ -78,6 +89,7 @@ def test_core_layout_installed() -> None:
     assert Path(".cursor/agents/implementer.md").is_file()
     assert Path(".ai_infra/scripts/pr/prepare.py").is_file()
     assert Path(".local/index-and-planning/current/session-pointer.md").is_file()
+    assert Path(".local/workflow-artifacts/drift").is_dir()
 '''
 
 
@@ -140,23 +152,89 @@ def _copy_file(src: Path, dst: Path, dry_run: bool, log: list[str]) -> None:
     _log(log, f"COPY {src} -> {dst}")
 
 
+def _copy_file_if_missing(src: Path, dst: Path, dry_run: bool, log: list[str]) -> None:
+    if not src.is_file():
+        raise FileNotFoundError(f"Missing source file: {src}")
+    if dst.exists():
+        return
+    _copy_file(src, dst, dry_run, log)
+
+
+def _load_local_workflow_paths(source: Path):
+    pr_scripts = source / ".ai_infra" / "scripts" / "pr"
+    pr_str = str(pr_scripts)
+    if pr_str not in sys.path:
+        sys.path.insert(0, pr_str)
+    import local_workflow_paths
+
+    return local_workflow_paths
+
+
+def _scaffold_workflow_artifact_buckets(
+    source: Path, target: Path, dry_run: bool, log: list[str]
+) -> None:
+    lwp = _load_local_workflow_paths(source)
+    if dry_run:
+        for bucket in lwp.WORKFLOW_ARTIFACT_BUCKETS:
+            _log(log, f"DRY-RUN mkdir {target / bucket}")
+        return
+    lwp.ensure_workflow_artifacts_tree(root=target)
+
+
+def _scaffold_artifact_readme_stubs(
+    ui_root: Path, target: Path, dry_run: bool, log: list[str]
+) -> None:
+    stubs_root = ui_root / "artifact-stubs"
+    for bucket in ARTIFACT_STUB_BUCKETS:
+        src = stubs_root / bucket / "README.md"
+        dst = target / ".local" / "workflow-artifacts" / bucket / "README.md"
+        if not src.is_file():
+            continue
+        _copy_file_if_missing(src, dst, dry_run, log)
+
+
+def _scaffold_dashboards(ui_root: Path, target: Path, dry_run: bool, log: list[str]) -> None:
+    dash = target / ".local" / "agents-control-center" / "dashboards"
+    if dry_run:
+        _log(log, f"DRY-RUN mkdir {dash}")
+    else:
+        dash.mkdir(parents=True, exist_ok=True)
+    for name in DASHBOARD_HTML:
+        src = ui_root / name
+        dst = dash / name
+        if src.is_file():
+            _copy_file_if_missing(src, dst, dry_run, log)
+    for name in DASHBOARD_ASSETS:
+        src = ui_root / name
+        dst = dash / name
+        if src.is_file():
+            _copy_file(src, dst, dry_run, log)
+
+
 def _scaffold_local(source: Path, target: Path, dry_run: bool, log: list[str]) -> None:
     ui_root = ui_local_workspace(source)
     exemplars = ui_root / "exemplars"
     pages_src = ui_root / "pages.json"
     current = target / ".local" / "index-and-planning" / "current"
     history = target / ".local" / "index-and-planning" / "history"
-    pr_dir = target / ".local" / "workflow-artifacts" / "pr"
     acc_config = target / ".local" / "agents-control-center" / "config"
 
-    for path in (current, history, pr_dir, acc_config):
+    for path in (current, history, acc_config):
         if dry_run:
             _log(log, f"DRY-RUN mkdir {path}")
         else:
             path.mkdir(parents=True, exist_ok=True)
 
+    _scaffold_workflow_artifact_buckets(source, target, dry_run, log)
+    _scaffold_artifact_readme_stubs(ui_root, target, dry_run, log)
+
     for name in EXEMPLAR_TRACKERS:
         _copy_file(exemplars / name, current / name, dry_run, log)
+
+    updates_src = exemplars / "updates-log.md"
+    updates_dst = history / "updates-log.md"
+    if updates_src.is_file():
+        _copy_file_if_missing(updates_src, updates_dst, dry_run, log)
 
     arch_stub = target / ".local" / "index-and-planning" / "current" / "architecture.md"
     if not arch_stub.exists() and not dry_run:
@@ -168,6 +246,8 @@ def _scaffold_local(source: Path, target: Path, dry_run: bool, log: list[str]) -
 
     if pages_src.is_file():
         _copy_file(pages_src, acc_config / "pages.json", dry_run, log)
+
+    _scaffold_dashboards(ui_root, target, dry_run, log)
 
 
 def _scaffold_user_settings(source: Path, target: Path, dry_run: bool, log: list[str]) -> None:
