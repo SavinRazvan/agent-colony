@@ -33,14 +33,8 @@ USER_SETTINGS_FILES = (
     "mcp.agents.yaml",
 )
 
-ARTIFACT_STUB_BUCKETS = (
-    "pr",
-    "alignment",
-    "drift",
-    "enterprise-architecture-audit",
-    "release",
-    "audit",
-)
+DASHBOARD_HTML = ("index.html", "implementation-control-center.html")
+DASHBOARD_ASSETS = ("site-nav.js", "local-shell.css")
 
 
 def _import_local_workflow_paths(root: Path):
@@ -60,9 +54,9 @@ def fixture_root(root: Path, profile: str) -> Path:
     return path
 
 
-def _copy_artifact_readme_stubs(root: Path, log: list[str]) -> None:
+def _copy_artifact_readme_stubs(root: Path, bucket_names: tuple[str, ...], log: list[str]) -> None:
     stubs_root = root / ".ai_infra" / "templates" / "local-workspace" / "artifact-stubs"
-    for bucket in ARTIFACT_STUB_BUCKETS:
+    for bucket in bucket_names:
         src = stubs_root / bucket / "README.md"
         dst = root / ".local" / "workflow-artifacts" / bucket / "README.md"
         if not src.is_file():
@@ -72,6 +66,25 @@ def _copy_artifact_readme_stubs(root: Path, log: list[str]) -> None:
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
         log.append(f"copy {src.relative_to(root)} -> {dst.relative_to(root)}")
+
+
+def _seed_dashboards(root: Path, log: list[str]) -> None:
+    ui_root = root / ".ai_infra" / "templates" / "local-workspace"
+    dash = root / ".local" / "agents-control-center" / "dashboards"
+    dash.mkdir(parents=True, exist_ok=True)
+    log.append(f"mkdir {dash.relative_to(root)}")
+    for name in DASHBOARD_HTML:
+        src = ui_root / name
+        dst = dash / name
+        if src.is_file() and not dst.exists():
+            shutil.copy2(src, dst)
+            log.append(f"copy {src.relative_to(root)} -> {dst.relative_to(root)}")
+    for name in DASHBOARD_ASSETS:
+        src = ui_root / name
+        dst = dash / name
+        if src.is_file():
+            shutil.copy2(src, dst)
+            log.append(f"copy+ {src.relative_to(root)} -> {dst.relative_to(root)}")
 
 
 def seed_kit_workspace(root: Path, profile: str = "kit-dev") -> list[str]:
@@ -91,7 +104,8 @@ def seed_kit_workspace(root: Path, profile: str = "kit-dev") -> list[str]:
     for bucket in lwp.WORKFLOW_ARTIFACT_BUCKETS:
         log.append(f"mkdir {bucket}")
 
-    _copy_artifact_readme_stubs(root, log)
+    _copy_artifact_readme_stubs(root, lwp.ARTIFACT_STUB_BUCKET_NAMES, log)
+    _seed_dashboards(root, log)
 
     for name in FIXTURE_TRACKERS:
         src = fixtures / name
@@ -132,8 +146,9 @@ def seed_kit_workspace(root: Path, profile: str = "kit-dev") -> list[str]:
     if pages.is_file():
         dst = root / ".local" / "agents-control-center" / "config" / "pages.json"
         dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(pages, dst)
-        log.append(f"copy {pages.relative_to(root)} -> {dst.relative_to(root)}")
+        if not dst.exists():
+            shutil.copy2(pages, dst)
+            log.append(f"copy {pages.relative_to(root)} -> {dst.relative_to(root)}")
 
     arch_stub = current / "architecture.md"
     if not arch_stub.is_file():

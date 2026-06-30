@@ -74,7 +74,7 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 |--------|----------|
 | `.ai_infra/scripts/pr/check_testing_artifacts.py` | Default `--planning-dir`: `.local/index-and-planning/current` |
 | `.ai_infra/scripts/pr/review.py`, `prepare.py`, `merge.py` | Artifacts via `local_workflow_paths.py` |
-| `.ai_infra/scripts/install/scaffold.py` | Tier 1: exemplar trackers, all artifact buckets, README stubs, `pages.json`, optional dashboards |
+| `.ai_infra/scripts/install/scaffold.py` | Tier 1: exemplar trackers (if missing), all artifact buckets, README stubs, `pages.json` (if missing), `AGENTS.md` (if missing), optional dashboards |
 | `.ai_infra/scripts/ci/seed_kit_workspace.py` | CI fixture seed; same bucket set as scaffold |
 
 ## Templates (versioned in git)

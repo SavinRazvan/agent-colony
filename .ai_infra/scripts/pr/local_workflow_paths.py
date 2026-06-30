@@ -47,6 +47,9 @@ WORKFLOW_ARTIFACT_BUCKETS: tuple[Path, ...] = (
     WORKFLOW_AUDIT_DIR,
 )
 
+# Directory names under workflow-artifacts/ (for README stubs; derived from bucket paths).
+ARTIFACT_STUB_BUCKET_NAMES: tuple[str, ...] = tuple(p.name for p in WORKFLOW_ARTIFACT_BUCKETS)
+
 # Default live planning trackers (index-and-planning/current/)
 PLANNING_CURRENT_DIR = Path(".local/index-and-planning/current")
 

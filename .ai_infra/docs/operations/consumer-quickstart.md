@@ -75,7 +75,7 @@ TARGET=/path/to/your-project
 
 **What this does**
 
-- Copies agents, skills, rules, slim `.ai_infra/`, exemplar `.local/` trackers
+- Copies agents, skills, rules, slim `.ai_infra/`, exemplar `.local/` trackers, **`AGENTS.md`** (from kit stub, first install only)
 - Creates all `workflow-artifacts/*` buckets with README stubs (Tier 1 base); runtime `.md` files appear on first use (Tier 2)
 - Writes `.ai_infra/.kit-version` (semver from manifest)
 - Scaffolds minimal `tests/modules/smoke/test_kit_installed.py` (not full kit `tests/`)

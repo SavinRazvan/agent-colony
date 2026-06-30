@@ -22,6 +22,16 @@ if str(CI_DIR) not in sys.path:
 from seed_kit_workspace import seed_kit_workspace
 
 
+def _import_local_workflow_paths_for_test(root: Path):
+    pr_scripts = root / ".ai_infra" / "scripts" / "pr"
+    pr_str = str(pr_scripts)
+    if pr_str not in sys.path:
+        sys.path.insert(0, pr_str)
+    import local_workflow_paths
+
+    return local_workflow_paths
+
+
 def _copy_ci_fixture_tree(tmp_path: Path) -> None:
     import shutil
 
@@ -52,6 +62,15 @@ def test_seed_kit_workspace_creates_artifact_buckets(tmp_path: Path) -> None:
     stubs_src = REPO_ROOT / ".ai_infra/templates/local-workspace/artifact-stubs"
     stubs_dst = tmp_path / ".ai_infra/templates/local-workspace/artifact-stubs"
     shutil.copytree(stubs_src, stubs_dst)
+    ui_src = REPO_ROOT / ".ai_infra/templates/local-workspace"
+    ui_dst = tmp_path / ".ai_infra/templates/local-workspace"
+    for name in (
+        "index.html",
+        "implementation-control-center.html",
+        "site-nav.js",
+        "local-shell.css",
+    ):
+        shutil.copy2(ui_src / name, ui_dst / name)
     pr_scripts = REPO_ROOT / ".ai_infra/scripts/pr"
     pr_dst = tmp_path / ".ai_infra/scripts/pr"
     pr_dst.mkdir(parents=True, exist_ok=True)
@@ -59,16 +78,13 @@ def test_seed_kit_workspace_creates_artifact_buckets(tmp_path: Path) -> None:
 
     seed_kit_workspace(tmp_path)
 
-    for bucket in (
-        "pr",
-        "alignment",
-        "drift",
-        "enterprise-architecture-audit",
-        "release",
-        "audit",
-    ):
-        assert (tmp_path / ".local/workflow-artifacts" / bucket).is_dir()
-    assert (tmp_path / ".local/workflow-artifacts/drift/README.md").is_file()
+    lwp = _import_local_workflow_paths_for_test(tmp_path)
+    for bucket in lwp.ARTIFACT_STUB_BUCKET_NAMES:
+        assert (tmp_path / ".local" / "workflow-artifacts" / bucket).is_dir()
+        assert (tmp_path / ".local" / "workflow-artifacts" / bucket / "README.md").is_file()
+
+    dash = tmp_path / ".local" / "agents-control-center" / "dashboards"
+    assert (dash / "index.html").is_file()
 
 
 def test_seed_passes_check_testing_artifacts(tmp_path: Path) -> None:

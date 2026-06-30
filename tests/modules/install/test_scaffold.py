@@ -64,9 +64,45 @@ def test_scaffold_creates_workflow_artifact_buckets(tmp_path: Path) -> None:
     mod = _load_scaffold()
     target = tmp_path / "project"
     mod.scaffold(target, REPO_ROOT)
-    for bucket in mod.ARTIFACT_STUB_BUCKETS:
+    lwp = mod._load_local_workflow_paths(REPO_ROOT)
+    for bucket in lwp.ARTIFACT_STUB_BUCKET_NAMES:
         assert (target / ".local" / "workflow-artifacts" / bucket).is_dir()
         assert (target / ".local" / "workflow-artifacts" / bucket / "README.md").is_file()
+
+
+def test_scaffold_creates_agents_md(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    agents = target / "AGENTS.md"
+    assert agents.is_file()
+    text = agents.read_text(encoding="utf-8")
+    assert "local-workspace-layout" in text
+    assert "Artifact tiers" in text or "artifact tiers" in text.lower()
+
+
+def test_scaffold_creates_dashboards(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    dash = target / ".local" / "agents-control-center" / "dashboards"
+    assert (dash / "index.html").is_file()
+    assert (dash / "implementation-control-center.html").is_file()
+    assert (dash / "site-nav.js").is_file()
+    assert (dash / "local-shell.css").is_file()
+
+
+def test_scaffold_reactivate_preserves_trackers(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    plan = target / ".local" / "index-and-planning" / "current" / "plan.md"
+    plan.write_text("# Custom plan\n\nLive slice content.\n", encoding="utf-8")
+    agents = target / "AGENTS.md"
+    agents.write_text("# Custom AGENTS\n", encoding="utf-8")
+    mod.scaffold(target, REPO_ROOT)
+    assert "Custom plan" in plan.read_text(encoding="utf-8")
+    assert "Custom AGENTS" in agents.read_text(encoding="utf-8")
 
 
 def test_scaffold_creates_tracker_extras(tmp_path: Path) -> None:

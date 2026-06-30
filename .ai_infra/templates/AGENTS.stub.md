@@ -7,7 +7,7 @@
 ## First reads
 
 1. [`.ai_infra/docs/operations/consumer-quickstart.md`](.ai_infra/docs/operations/consumer-quickstart.md)
-2. [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md)
+2. [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md) — **Artifact tiers** (base scaffold vs runtime `workflow-artifacts/`)
 3. [`.ai_infra/docs/operations/token-efficiency.md`](.ai_infra/docs/operations/token-efficiency.md)
 4. `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 

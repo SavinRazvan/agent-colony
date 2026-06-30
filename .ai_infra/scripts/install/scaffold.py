@@ -57,14 +57,6 @@ EXEMPLAR_TRACKERS = [
     "test-index.md",
     "coverage-index.md",
 ]
-ARTIFACT_STUB_BUCKETS = (
-    "pr",
-    "alignment",
-    "drift",
-    "enterprise-architecture-audit",
-    "release",
-    "audit",
-)
 DASHBOARD_HTML = ("index.html", "implementation-control-center.html")
 DASHBOARD_ASSETS = ("site-nav.js", "local-shell.css")
 ADAPTER_WALL_RULE = "provider-neutral-adapter-wall.mdc"
@@ -88,6 +80,7 @@ from pathlib import Path
 def test_core_layout_installed() -> None:
     assert Path(".cursor/agents/implementer.md").is_file()
     assert Path(".ai_infra/scripts/pr/prepare.py").is_file()
+    assert Path("AGENTS.md").is_file()
     assert Path(".local/index-and-planning/current/session-pointer.md").is_file()
     assert Path(".local/workflow-artifacts/drift").is_dir()
 '''
@@ -182,10 +175,10 @@ def _scaffold_workflow_artifact_buckets(
 
 
 def _scaffold_artifact_readme_stubs(
-    ui_root: Path, target: Path, dry_run: bool, log: list[str]
+    ui_root: Path, target: Path, dry_run: bool, log: list[str], bucket_names: tuple[str, ...]
 ) -> None:
     stubs_root = ui_root / "artifact-stubs"
-    for bucket in ARTIFACT_STUB_BUCKETS:
+    for bucket in bucket_names:
         src = stubs_root / bucket / "README.md"
         dst = target / ".local" / "workflow-artifacts" / bucket / "README.md"
         if not src.is_file():
@@ -226,10 +219,13 @@ def _scaffold_local(source: Path, target: Path, dry_run: bool, log: list[str]) -
             path.mkdir(parents=True, exist_ok=True)
 
     _scaffold_workflow_artifact_buckets(source, target, dry_run, log)
-    _scaffold_artifact_readme_stubs(ui_root, target, dry_run, log)
+    lwp = _load_local_workflow_paths(source)
+    _scaffold_artifact_readme_stubs(
+        ui_root, target, dry_run, log, lwp.ARTIFACT_STUB_BUCKET_NAMES
+    )
 
     for name in EXEMPLAR_TRACKERS:
-        _copy_file(exemplars / name, current / name, dry_run, log)
+        _copy_file_if_missing(exemplars / name, current / name, dry_run, log)
 
     updates_src = exemplars / "updates-log.md"
     updates_dst = history / "updates-log.md"
@@ -245,7 +241,7 @@ def _scaffold_local(source: Path, target: Path, dry_run: bool, log: list[str]) -
         _log(log, f"WRITE {arch_stub}")
 
     if pages_src.is_file():
-        _copy_file(pages_src, acc_config / "pages.json", dry_run, log)
+        _copy_file_if_missing(pages_src, acc_config / "pages.json", dry_run, log)
 
     _scaffold_dashboards(ui_root, target, dry_run, log)
 
@@ -413,7 +409,7 @@ def scaffold(
 
     if spec.get("agents_md") == "stub":
         stub = ai_src / "templates" / "AGENTS.stub.md"
-        _copy_file(stub, target / "AGENTS.md", dry_run, log)
+        _copy_file_if_missing(stub, target / "AGENTS.md", dry_run, log)
 
     if with_readme:
         _copy_file(source / "README.md", target / "README.md", dry_run, log)

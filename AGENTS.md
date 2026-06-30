@@ -10,7 +10,7 @@
 2. [`.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md`](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) — shipped vs spec
 3. [`.ai_infra/docs/architecture/workflow-architecture.md`](.ai_infra/docs/architecture/workflow-architecture.md) — three planes
 4. [`.ai_infra/docs/decisions/README.md`](.ai_infra/docs/decisions/README.md) — ADR index
-5. [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md) — `.local/` contract
+5. [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md) — `.local/` contract (**Artifact tiers**: base scaffold vs runtime artifacts)
 6. [`.ai_infra/docs/governance/workflow-source-owners.md`](.ai_infra/docs/governance/workflow-source-owners.md) — scripts win over prose
 
 **Optional product overlays:** copy rules from [`overlays/rules/`](overlays/README.md) into the target `.cursor/rules/` at install.
