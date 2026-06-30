@@ -16,6 +16,15 @@ Notes:
 
 The `.local/` directory is **gitignored**. It holds live execution state — not durable workflow doctrine (that lives under `.ai_infra/docs/operations/`).
 
+## Artifact tiers
+
+| Tier | When | Examples |
+|------|------|----------|
+| **1 — Base** | `activate` / `install` scaffold | Neutral trackers, six `workflow-artifacts/*` buckets + README stubs, `pages.json`, `AGENTS.md` |
+| **2 — Runtime** | Agents and PR scripts during work | Filled `plan.md`, `review.md`, drift/alignment/EA artifacts |
+
+Path SSOT: `.ai_infra/scripts/pr/local_workflow_paths.py`.
+
 ## Session entry (every agent slice)
 
 1. `.local/index-and-planning/current/session-pointer.md` — what to read next
@@ -31,7 +40,11 @@ The `.local/` directory is **gitignored**. It holds live execution state — not
 | `index-and-planning/audits/` | Local governance audit snapshots |
 | `workflow-artifacts/pr/` | PR phase files: review.md, prep.md, merge.md |
 | `workflow-artifacts/alignment/` | alignment-audit.md, alignment-todos.md |
-| `agents-control-center/` | Dashboard config and optional HTML exports |
+| `workflow-artifacts/drift/` | drift-audit.md, drift-todos.md |
+| `workflow-artifacts/enterprise-architecture-audit/` | enterprise-architecture-audit.md, enterprise-audit-actions.md |
+| `workflow-artifacts/release/` | Optional RC sign-off |
+| `workflow-artifacts/audit/` | preflight.json, doc-facts-preflight.json |
+| `agents-control-center/` | Dashboard config (`pages.json`) and optional HTML |
 | `generated-data/` | Coverage JSON and machine output — skip unless tasked |
 
 ## Agent efficiency
@@ -42,7 +55,7 @@ The `.local/` directory is **gitignored**. It holds live execution state — not
 
 ## Scaffold source
 
-Copy exemplars from `.ai_infra/templates/local-workspace/exemplars/` into `.local/index-and-planning/current/` at install.
+`scaffold.py` copies exemplars from `.ai_infra/templates/local-workspace/exemplars/` into `.local/index-and-planning/current/` (if missing), creates all artifact buckets, README stubs, optional dashboards, and `AGENTS.md` from stub (if missing).
 
 Full contract: [local-workspace-layout.md](../operations/local-workspace-layout.md).
 

@@ -170,7 +170,7 @@ your-project/
 ├── .cursor/          agents, skills, rules, mcp.json
 ├── .agents/skills/   review-pr, prepare-pr, merge-pr, pr-workflow
 ├── .ai_infra/        scripts, docs, manifest, .kit-version
-├── .local/           gitignored trackers + PR artifacts
+├── .local/           gitignored — Tier 1 trackers + workflow-artifacts buckets (Tier 2 at runtime)
 ├── cursor_workflow/  python -m cursor_workflow (install|gates|health|mcp)
 └── tests/modules/smoke/test_kit_installed.py
 ```

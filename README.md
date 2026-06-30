@@ -60,12 +60,12 @@ See [`overlays/README.md`](overlays/README.md).
 
 ## `.local/` — agent anchoring
 
-`.local/` is **gitignored** per project. Contract: [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md).
+`.local/` is **gitignored** per project. Contract: [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md) (**Artifact tiers**: Tier 1 base scaffold at install; Tier 2 runtime files during work).
 
 | Read often | Write per phase |
 |------------|-----------------|
 | `.local/index-and-planning/current/session-pointer.md` | `change-index.md`, `history/updates-log.md` |
-| `plan.md`, `work-tracker.md`, `test-plan.md`, `test-index.md` | PR artifacts via scripts |
+| `plan.md`, `work-tracker.md`, `test-plan.md`, `test-index.md` | `workflow-artifacts/*` via agents and PR scripts |
 
 ---
 
