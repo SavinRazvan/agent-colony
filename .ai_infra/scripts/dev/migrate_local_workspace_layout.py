@@ -14,6 +14,7 @@ Notes:
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
 import sys
 from pathlib import Path
@@ -92,6 +93,49 @@ Enduring workspace architecture: **[docs/architecture/workspace-architecture.md]
 """
 
 
+def _import_local_workflow_paths() -> object:
+    pr_scripts = REPO / ".ai_infra" / "scripts" / "pr"
+    pr_str = str(pr_scripts)
+    if pr_str not in sys.path:
+        sys.path.insert(0, pr_str)
+    import local_workflow_paths
+
+    return local_workflow_paths
+
+
+def _copy_artifact_readme_stubs(dry_run: bool, log: list[str]) -> None:
+    lwp = _import_local_workflow_paths()
+    stubs_root = TEMPLATE / "artifact-stubs"
+    for bucket in lwp.ARTIFACT_STUB_BUCKET_NAMES:
+        src = stubs_root / bucket / "README.md"
+        dst = LOCAL / "workflow-artifacts" / bucket / "README.md"
+        if not src.is_file():
+            continue
+        if dst.exists():
+            continue
+        log.append(f"[COPY] {src.relative_to(REPO)} -> {dst.relative_to(REPO)}")
+        if not dry_run:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+
+
+def _pages_json_needs_artifact_tabs(pages_path: Path) -> bool:
+    if not pages_path.is_file():
+        return True
+    data = json.loads(pages_path.read_text(encoding="utf-8"))
+    ids = {page["id"] for page in data.get("pages", [])}
+    return not {"pr-review", "drift-audit", "ea-audit"}.issubset(ids)
+
+
+def _ensure_workflow_artifact_buckets(dry_run: bool, log: list[str]) -> None:
+    lwp = _import_local_workflow_paths()
+    if dry_run:
+        for bucket in lwp.WORKFLOW_ARTIFACT_BUCKETS:
+            log.append(f"[MKDIR] {LOCAL / bucket}")
+        return
+    lwp.ensure_workflow_artifacts_tree(root=REPO)
+
+
 def _move(src: Path, dst: Path, dry_run: bool, log: list[str]) -> None:
     if not src.exists():
         return
@@ -144,6 +188,9 @@ def main() -> int:
     for rel_src, rel_dst in ROOT_MOVES:
         _move(LOCAL / rel_src, LOCAL / rel_dst, dry_run, log)
 
+    _ensure_workflow_artifact_buckets(dry_run, log)
+    _copy_artifact_readme_stubs(dry_run, log)
+
     arch_dst = LOCAL / "index-and-planning" / "current" / "architecture.md"
     arch_legacy = LOCAL / "index-and-planning" / "architecture.md"
     arch_snap = LOCAL / "index-and-planning" / "history" / "architecture-legacy-snapshot.md"
@@ -156,7 +203,10 @@ def main() -> int:
             arch_dst.write_text(ARCHITECTURE_STUB, encoding="utf-8")
 
     cfg = LOCAL / "agents-control-center" / "config" / "pages.json"
-    _copy_template("pages.json", cfg, dry_run, log)
+    if _pages_json_needs_artifact_tabs(cfg):
+        _copy_template_overwrite("pages.json", cfg, dry_run, log)
+    else:
+        _copy_template("pages.json", cfg, dry_run, log)
     landing = LOCAL / "agents-control-center" / "dashboards" / "index.html"
     _copy_template("index.html", landing, dry_run, log)
     nav_js = LOCAL / "agents-control-center" / "dashboards" / "site-nav.js"

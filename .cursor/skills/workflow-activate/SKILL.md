@@ -39,7 +39,9 @@ python -m cursor_workflow activate --directory .
 |-------|-----------------|---------------|
 | Cursor contract | `.cursor/`, `.agents/`, `AGENTS.md` | Yes |
 | Infrastructure | `.ai_infra/`, `cursor_workflow/` | No — scripts/CLI |
-| Runtime | `.local/` trackers + `user_settings/` exemplars | No — gitignored |
+| Runtime | `.local/` Tier 1 scaffold: trackers, six `workflow-artifacts/*` buckets + README stubs, `pages.json`, dashboards; `user_settings/` exemplars | No — gitignored |
+
+Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear when agents/scripts run. See [local-workspace-layout.md](../../.ai_infra/docs/operations/local-workspace-layout.md) § Artifact tiers. Re-activate does not overwrite existing trackers, `AGENTS.md`, or `pages.json`.
 
 - Idempotent: skips install when all planes already pass `install-contract.json`
 - Creates `.venv`, merges MCP json, runs verify gates

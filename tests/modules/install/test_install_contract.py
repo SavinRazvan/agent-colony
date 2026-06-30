@@ -38,9 +38,11 @@ def _resolve_contract_profile(contract: dict, name: str) -> dict:
     merged = {
         "required_paths": list(base.get("required_paths", [])),
         "forbidden_paths": list(base.get("forbidden_paths", [])),
+        "recommended_paths": list(base.get("recommended_paths", [])),
     }
     merged["required_paths"].extend(raw.get("required_paths", []))
     merged["forbidden_paths"].extend(raw.get("forbidden_paths", []))
+    merged["recommended_paths"].extend(raw.get("recommended_paths", []))
     return merged
 
 
@@ -51,6 +53,8 @@ def _assert_contract(target: Path, profile: str) -> None:
         assert (target / rel).exists(), f"missing required path: {rel}"
     for rel in spec["forbidden_paths"]:
         assert not (target / rel).exists(), f"forbidden path present: {rel}"
+    for rel in spec.get("recommended_paths", []):
+        assert (target / rel).exists(), f"missing recommended path: {rel}"
 
 
 @pytest.mark.parametrize("profile", ("default", "with_mcp"))

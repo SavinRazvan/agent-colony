@@ -10,6 +10,8 @@ description: Disciplined implementation slices with trackers and Pattern A gates
 
 **Entry:** Read `.local/index-and-planning/current/session-pointer.md` first, then files it lists.
 
+**Tier 1 (base):** neutral trackers under `.local/index-and-planning/current/` — scaffolded at install. **Tier 2 (runtime):** project-unique files under `.local/workflow-artifacts/` — written during slices. See `.ai_infra/docs/operations/local-workspace-layout.md` § Artifact tiers.
+
 **Exit:** Update `session-pointer.md`, append one row to `change-index.md`, one line in `history/updates-log.md`. Say *prepare gates green* — do not paste full `GATES`.
 
 Deliver **small, reversible** slices with production quality: clear module boundaries, tests, and **up-to-date trackers**.

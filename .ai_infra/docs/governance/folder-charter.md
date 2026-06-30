@@ -61,7 +61,10 @@ Notes:
 | `user_settings/` | GitHub + MCP worksheets (gitignored) |
 | `workflow-artifacts/pr/` | `review.md`, `prep.md`, `merge.md` (PR phase headers) |
 | `workflow-artifacts/alignment/` | `alignment-audit.md`, `alignment-todos.md` |
+| `workflow-artifacts/drift/` | `drift-audit.md`, `drift-todos.md` |
 | `workflow-artifacts/enterprise-architecture-audit/` | Full enterprise audit report + actions |
+| `workflow-artifacts/release/` | Optional RC sign-off |
+| `workflow-artifacts/audit/` | Preflight JSON from verify-all / doc validate |
 | `generated-data/` | Coverage JSON and similar machine output |
 
 Full layout: [local-workspace-layout.md](../operations/local-workspace-layout.md).
@@ -72,7 +75,7 @@ Per [local-artifact-protection.mdc](../../../.cursor/rules/local-artifact-protec
 
 ## What does not belong in consumer install
 
-- PR phase artifacts — **`.local/workflow-artifacts/pr/`** only.
+- **Tier 2 runtime content** — filled under `.local/workflow-artifacts/*` during slices (PR, alignment, drift, enterprise audit, release, audit preflight).
 - Live slice trackers — **`.local/index-and-planning/current/`** (summarize in `updates-log.md`).
 - Generated coverage/CI JSON — **`.local/generated-data/`**.
 - Product application code — out of scope for **mas-workflow-kit**; use consumer `overlays/rules/` when needed.

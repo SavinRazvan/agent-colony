@@ -76,20 +76,28 @@ cp -r "$SOURCE/docs/templates" "$TARGET/docs/"
 cp -r "$SOURCE/overlays" "$SOURCE/project-rules" "$TARGET/"
 ```
 
-## 2. Scaffold `.local/`
+## 2. Scaffold `.local/` (prefer automated)
+
+**Recommended:** use `scaffold.py` / `cursor_workflow install` — do not hand-mkdir buckets.
 
 ```bash
-mkdir -p "$TARGET/.local/index-and-planning/current"
-mkdir -p "$TARGET/.local/index-and-planning/history"
-mkdir -p "$TARGET/.local/workflow-artifacts/pr"
-
-cp "$SOURCE/docs/templates/local-workspace/exemplars/"*.md \
-   "$TARGET/.local/index-and-planning/current/"
-cp "$SOURCE/.local/agents-control-center/config/pages.json" \
-   "$TARGET/.local/agents-control-center/config/" 2>/dev/null || true
+python -m cursor_workflow install --target "$TARGET" --source "$SOURCE"
 ```
 
-Edit `session-pointer.md` and `plan.md` for the target project name.
+Tier 1 base layout created by scaffold (see [local-workspace-layout.md](local-workspace-layout.md) § Artifact tiers):
+
+| Path | Created |
+|------|---------|
+| `.local/index-and-planning/current/` | Exemplar trackers (if missing), including `coverage-index.md` |
+| `.local/index-and-planning/history/` | `updates-log.md` (if missing) |
+| `.local/workflow-artifacts/{pr,alignment,drift,enterprise-architecture-audit,release,audit}/` | Dirs + README stubs (if missing) |
+| `.local/agents-control-center/config/pages.json` | Cockpit tabs (if missing) |
+| `.local/agents-control-center/dashboards/` | Optional HTML/CSS (if missing) |
+| `AGENTS.md` | From `.ai_infra/templates/AGENTS.stub.md` (if missing) |
+
+Re-activate is idempotent: existing trackers, `AGENTS.md`, and `pages.json` are not overwritten.
+
+Edit `session-pointer.md` and `plan.md` for the target project name after first install.
 
 ## 3. Python environment
 
@@ -140,7 +148,7 @@ In Cursor: enable MCP server; call `workflow_list_agents` and `workflow_gate_cou
 
 ## 7. Cursor agents
 
-- [ ] Five agent files under `.cursor/agents/` (no mapper)
+- [ ] Seven agent files under `.cursor/agents/` (no mapper)
 - [ ] Six universal rules under `.cursor/rules/*.mdc`
 - [ ] Maintainer skills under `.agents/skills/`
 
@@ -150,7 +158,9 @@ In Cursor: enable MCP server; call `workflow_list_agents` and `workflow_gate_cou
 |-------|------|
 | `prepare.py` has 2 default gates | |
 | No product overlay rules in core `.cursor/rules/` (6 universal only) | |
-| `.local/current/session-pointer.md` exists | |
+| `.local/index-and-planning/current/session-pointer.md` exists | |
+| All six `workflow-artifacts/*/README.md` stubs (recommended_paths) | |
+| `AGENTS.md` present | |
 | `pytest -q` green | |
 | `workflow_mcp` imports and `workflow_gate_count` → `2` | |
 

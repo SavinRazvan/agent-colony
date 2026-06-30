@@ -29,6 +29,8 @@ Authoritative list: **`resolve_gates()` in `.ai_infra/scripts/pr/prepare.py`** (
 
 ## Artifacts (under `.local/`)
 
+Tier 1 buckets are scaffolded at install; Tier 2 files are written during work. Layout: [local-workspace-layout.md](../../.ai_infra/docs/operations/local-workspace-layout.md) § Artifact tiers. Path SSOT: `.ai_infra/scripts/pr/local_workflow_paths.py`.
+
 | Phase | Path |
 |-------|------|
 | Review | `workflow-artifacts/pr/review.md` |

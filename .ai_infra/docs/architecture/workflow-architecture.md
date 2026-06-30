@@ -18,7 +18,9 @@ Depends On:
 |-------|------|---------|
 | Cursor contract | `.cursor/`, `.agents/` | Agents, skills, rules |
 | Infrastructure | `.ai_infra/` | Scripts, docs, templates, MCP |
-| Runtime | `.local/` | Trackers, PR artifacts, audits |
+| Runtime | `.local/` | Trackers, PR artifacts, audits (see [Artifact tiers](../operations/local-workspace-layout.md#artifact-tiers)) |
+
+**Install** scaffolds Tier 1 base paths (trackers, `workflow-artifacts/*` buckets, README stubs). Agents and PR scripts write Tier 2 runtime content during work. Path SSOT: `.ai_infra/scripts/pr/local_workflow_paths.py`.
 
 ## Activation
 
