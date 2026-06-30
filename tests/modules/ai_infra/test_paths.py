@@ -41,7 +41,7 @@ def test_workflow_mcp_import() -> None:
     from workflow_mcp.gates import load_gates
 
     gates = load_gates(REPO_ROOT)
-    assert len(gates) == 2
+    assert len(gates) == 4
 
 
 def test_docs_dir_canonical() -> None:

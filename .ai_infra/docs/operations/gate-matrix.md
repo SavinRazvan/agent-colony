@@ -16,7 +16,7 @@ Three gate surfaces exist by design (Pattern A).
 
 | Surface | When | Steps | Source of truth |
 |---------|------|-------|-----------------|
-| **`prepare.py` GATES** | PR merge prep on consumer project | 2: testing artifacts + pytest | `.ai_infra/scripts/pr/prepare.py` |
+| **`prepare.py` GATES** | PR merge prep | **2** universal (testing artifacts + pytest); **4** on kit-dev (auto-appends drift + doc facts) | `.ai_infra/scripts/pr/prepare.py` `resolve_gates()` |
 | **`cursor-workflow gates`** | Kit dev / maintainer hygiene | 5: testing artifacts + pytest + governance + debrand + doc facts | `.ai_infra/install/cursor_workflow/cli.py` |
 | **`make doc-validate`** | After doc/agent/rule changes | DOC-001…005 canonical fact checks | `.ai_infra/scripts/architecture/check_doc_facts.py` |
 | **`make verify-all`** | Pre-audit / release readiness | 7 (+ optional ci-seed): sync-plugin → gates → drift → integrate → check-plugin → health → contributors | `.ai_infra/scripts/architecture/verify_all.py` |
@@ -24,6 +24,6 @@ Three gate surfaces exist by design (Pattern A).
 | **`make drift-validate`** | Slice closure / maintainer hygiene | Operational drift (DRIFT-001…008) | `.ai_infra/scripts/workflow/check_drift.py` |
 | **`kit-quality.yml` (CI)** | Push/PR on kit repo | seed → sync-plugin → gates → drift → integrate → check-plugin → health → contributors → governance (redundant with gates) → install-dry-run | `.github/workflows/kit-quality.yml` |
 
-**Rule:** Agents preparing a PR run **`prepare.py`** (or MCP `workflow_run_prepare`). Maintainers validating the kit repo run **`make gates`**, **`make drift-validate`**, or **`cursor-workflow gates`**. GitHub Actions runs **`seed_kit_workspace.py`** first because `.local/` is gitignored.
+**Rule:** Agents preparing a PR run **`prepare.py`** (or MCP `workflow_run_prepare`). Kit-dev `prepare.py` runs drift + doc facts automatically; consumers keep universal gates unless extended at install. Maintainers validating the kit repo may also run **`make gates`**, **`make drift-validate`**, or **`cursor-workflow gates`**. GitHub Actions runs **`seed_kit_workspace.py`** first because `.local/` is gitignored.
 
 Optional product gates: append once to consumer `prepare.py` at install; document in overlay README.
