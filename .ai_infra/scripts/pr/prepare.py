@@ -11,9 +11,10 @@ Depends On:
  - scripts/pr/local_workflow_paths.py
 Notes:
  - Gate subprocesses use `sys.executable` (same interpreter as this script), not a bare `python` on PATH.
- - By default runs all gates in `GATES` (universal default: check_testing_artifacts, pytest)
-   and writes `.local/workflow-artifacts/pr/prep.md`.
- - Projects append gates at install time — edit this list once, not per agent turn.
+ - By default runs `resolve_gates()` (universal: check_testing_artifacts, pytest).
+ - Kit-dev repos auto-append drift validate + doc facts when
+   `.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md` exists (see `GATES_KIT_DEV_APPEND`).
+ - Consumer projects keep universal gates only; append more at install time if needed.
  - Pass --skip-gates when the agent has already run and verified gates independently; the script
    then only writes the attribution/stamp block and marks gates as externally verified.
  - The script is the canonical source of the prep artifact; agent writes resolved findings,
@@ -35,10 +36,32 @@ from local_workflow_paths import PREP_MD, ensure_workflow_artifacts_dir
 from user_settings import add_pr_attribution_arguments, resolve_pr_attribution
 
 
-GATES = [
+GATES_UNIVERSAL = [
     ["python", ".ai_infra/scripts/pr/check_testing_artifacts.py"],
     ["python", "-m", "pytest", "-q"],
 ]
+
+# Kit-dev only — appended when `is_kit_dev_root()` (same signal as doc-facts DOC-000 skip).
+GATES_KIT_DEV_APPEND = [
+    ["python", "-m", "cursor_workflow", "drift", "validate", "--directory", "."],
+    ["python", ".ai_infra/scripts/architecture/check_doc_facts.py"],
+]
+
+# Back-compat alias for doc parsers and overlays that reference `GATES`.
+GATES = GATES_UNIVERSAL
+
+
+def is_kit_dev_root(root: Path) -> bool:
+    return (root / ".ai_infra" / "docs" / "handoff" / "IMPLEMENTATION-STATUS.md").is_file()
+
+
+def resolve_gates(root: Path | None = None) -> list[list[str]]:
+    """Universal gates plus kit-dev append when IMPLEMENTATION-STATUS is present."""
+    base = root or Path.cwd()
+    gates = list(GATES_UNIVERSAL)
+    if is_kit_dev_root(base):
+        gates.extend(GATES_KIT_DEV_APPEND)
+    return gates
 
 
 def _resolve_gate_cmd(cmd: list[str]) -> list[str]:
@@ -119,7 +142,7 @@ def main() -> int:
     if args.skip_gates:
         lines.append("- gates: externally verified by agent before this script call")
     else:
-        for gate in GATES:
+        for gate in resolve_gates(Path.cwd()):
             code, output = _run(gate)
             label = "PASS" if code == 0 else "FAIL"
             lines.append(f"- `{ ' '.join(_resolve_gate_cmd(gate)) }` -> {label}")

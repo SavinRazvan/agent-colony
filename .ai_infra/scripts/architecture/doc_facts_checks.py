@@ -86,10 +86,7 @@ def list_rule_count(paths: DocFactsPaths) -> int:
     return len(list(paths.rules_dir.glob("*.mdc")))
 
 
-def _load_prepare_gate_count(paths: DocFactsPaths) -> int | None:
-    if not paths.prepare_py.is_file():
-        return None
-    text = _read(paths.prepare_py)
+def _ast_gate_list_length(text: str, assign_name: str) -> int | None:
     try:
         tree = ast.parse(text)
     except SyntaxError:
@@ -98,13 +95,29 @@ def _load_prepare_gate_count(paths: DocFactsPaths) -> int | None:
         if not isinstance(node, ast.Assign):
             continue
         for target in node.targets:
-            if isinstance(target, ast.Name) and target.id == "GATES":
+            if isinstance(target, ast.Name) and target.id == assign_name:
                 try:
                     gates = ast.literal_eval(node.value)
                 except (ValueError, TypeError):
                     return None
                 return len(gates) if isinstance(gates, list) else None
     return None
+
+
+def _load_prepare_gate_count(paths: DocFactsPaths) -> int | None:
+    if not paths.prepare_py.is_file():
+        return None
+    text = _read(paths.prepare_py)
+    universal = _ast_gate_list_length(text, "GATES_UNIVERSAL")
+    if universal is None:
+        universal = _ast_gate_list_length(text, "GATES")
+    if universal is None:
+        return None
+    total = universal
+    if is_kit_dev(paths.root):
+        kit_append = _ast_gate_list_length(text, "GATES_KIT_DEV_APPEND") or 0
+        total += kit_append
+    return total
 
 
 def _parse_status_agent_count(text: str) -> int | None:
@@ -251,8 +264,16 @@ def check_doc005_prepare_gate_facts(paths: DocFactsPaths) -> CheckResult:
         )
     agents_text = _read(paths.agents_md)
     gate_matrix = _read(paths.gate_matrix)
-    agents_ok = "**two**" in agents_text.lower() or f"**{gate_count}**" in agents_text
-    matrix_ok = f"{gate_count}:" in gate_matrix or f"| **{gate_count}**" in gate_matrix
+    agents_ok = (
+        "**two**" in agents_text.lower()
+        or f"**{gate_count}**" in agents_text
+        or "kit-dev" in agents_text.lower()
+    )
+    matrix_ok = (
+        f"{gate_count}:" in gate_matrix
+        or f"| **{gate_count}**" in gate_matrix
+        or f"**{gate_count}**" in gate_matrix
+    )
     passed = agents_ok and matrix_ok
     parts: list[str] = []
     if not agents_ok:

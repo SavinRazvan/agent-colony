@@ -72,7 +72,11 @@ def test_prepare_script_writes_actor_attribution(tmp_path: Path, monkeypatch) ->
     module = _load_module("prepare_script", SCRIPTS_DIR / "prepare.py")
 
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(module, "GATES", [["python3", "-c", "print('ok')"]])
+    monkeypatch.setattr(
+        module,
+        "resolve_gates",
+        lambda _root=None: [["python3", "-c", "print('ok')"]],
+    )
     monkeypatch.setattr(
         sys,
         "argv",
@@ -167,3 +171,22 @@ def test_finalize_dry_run_exits_zero(monkeypatch) -> None:
         ["finalize.py", "--branch", "feature/test", "--dry-run"],
     )
     assert module.main() == 0
+
+
+def test_resolve_gates_kit_dev_includes_drift_and_doc_facts() -> None:
+    module = _load_module("prepare_gates", SCRIPTS_DIR / "prepare.py")
+    gates = module.resolve_gates(REPO_ROOT)
+    assert len(gates) == 4
+    joined = " ".join(" ".join(cmd) for cmd in gates)
+    assert "drift" in joined
+    assert "check_doc_facts" in joined
+
+
+def test_resolve_gates_consumer_universal_only(tmp_path: Path) -> None:
+    module = _load_module("prepare_gates_consumer", SCRIPTS_DIR / "prepare.py")
+    gates = module.resolve_gates(tmp_path)
+    assert len(gates) == 2
+    joined = " ".join(" ".join(cmd) for cmd in gates)
+    assert "check_testing_artifacts" in joined
+    assert "pytest" in joined
+    assert "drift" not in joined

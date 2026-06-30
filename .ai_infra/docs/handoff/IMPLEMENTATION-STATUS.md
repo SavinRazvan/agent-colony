@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (MAS Workflow Kit)
 
-**Last updated:** 2026-06-29 (doc sync — pr-workflow canonical, skill counts)  
-**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 103
+**Last updated:** 2026-06-29 (kit-dev prepare gates — Option A; resolve_gates 4-step)  
+**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 105
 
 ## Shipped (confirmed in repo)
 
@@ -28,7 +28,7 @@ Notes:
 | Maintainer skills | 5 folders (additive plugin merge) | `.agents/skills/` |
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
-| PR scripts + 2 default gates | Pattern A | `.ai_infra/scripts/pr/prepare.py` |
+| PR scripts + prepare gates | Pattern A — **2** universal; **4** on kit-dev (drift + doc facts) | `.ai_infra/scripts/pr/prepare.py` |
 | Governance + debrand scanners | CI-ready | `.ai_infra/scripts/architecture/` |
 | Workflow drift validate | ADR-007 | `.ai_infra/scripts/workflow/check_drift.py` |
 | Doc facts validate | DOC-001…005 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
@@ -42,7 +42,7 @@ Notes:
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Kit version on install | `kit_version` 0.3.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 103 | `tests/modules/` |
+| Tests | 105 | `tests/modules/` |
 
 ## Verification commands
 

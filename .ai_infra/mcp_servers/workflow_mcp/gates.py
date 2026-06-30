@@ -34,9 +34,12 @@ def _load_prepare_module(root: Path) -> ModuleType:
 
 
 def load_gates(root: Path | None = None) -> list[list[str]]:
-    """Return GATES from prepare.py (copy so callers cannot mutate module state)."""
+    """Return resolved prepare gates for the workspace (kit-dev append when applicable)."""
     repo = root or workspace_root()
     module = _load_prepare_module(repo)
+    resolve = getattr(module, "resolve_gates", None)
+    if callable(resolve):
+        return [list(cmd) for cmd in resolve(repo)]
     gates = getattr(module, "GATES", None)
     if not isinstance(gates, list):
         raise ValueError("prepare.py GATES must be a list")

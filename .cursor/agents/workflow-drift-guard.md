@@ -17,7 +17,8 @@ description: Operational workflow drift detection; plan/tracker/session coherenc
 1. Run `python -m cursor_workflow drift validate --directory .` **before** prose findings.
 2. Map script output to `drift-audit.md` and `drift-todos.md` per skill.
 3. P0 failures block prepare-pr handoff; P1 fix in same slice; P2 → backlog.
-4. Do not duplicate governance, integrate, or enterprise-auditor scope (ADR-007).
+4. On kit-dev, `prepare.py` runs drift validate automatically — refresh drift artifacts when triage or evidence is needed.
+5. Do not duplicate governance, integrate, or enterprise-auditor scope (ADR-007).
 
 ## Read first
 

@@ -49,6 +49,8 @@ Follow **`agent-workflow-procedures.md` §3b**. Includes **`AGENTS.md`**, **`rul
 
 Script-first checks for plan ↔ tracker ↔ session-pointer coherence and handoff doc parity. See [ADR-007](../decisions/ADR-007-workflow-drift-guard.md).
 
+**Kit-dev PR prep:** `prepare.py` `resolve_gates()` auto-runs `drift validate` before merge (with doc facts). Optional: Task **`workflow-drift-guard`** after pass to refresh `.local/workflow-artifacts/drift/` artifacts.
+
 | Concern | Owner | Do NOT duplicate in drift |
 |---------|-------|---------------------------|
 | Bare paths, brand terms | `check_governance_consistency.py`, `check_debrand.py` | Path/brand scans |
