@@ -4,7 +4,7 @@
   "version": "0.3.0",
   "description": "Universal multi-agent workflow infrastructure for Cursor — agents, skills, rules, PR scripts, .local/ anchoring, and optional MCP. Install infrastructure into any project via workflow-activate.",
   "author": {
-    "name": "Savin I. Razvan"
+    "name": "Savin Ionuț Răzvan"
   },
   "homepage": "https://github.com/SavinRazvan/mas-workflow-kit",
   "repository": "https://github.com/SavinRazvan/mas-workflow-kit",

@@ -8,9 +8,9 @@ alwaysApply: true
 ## Required (git commits)
 
 - Every commit message body **must** include these two lines **in this order**, with **no other lines between them**:
-  - `Author: Savin I. Razvan`
+  - `Author: Savin Ionuț Răzvan`
   - `GitHub-User: @SavinRazvan`
-- `Author` display name must be exactly `Savin I. Razvan`. `GitHub-User` must be exactly `@SavinRazvan`.
+- `Author` display name must be exactly `Savin Ionuț Răzvan`. `GitHub-User` must be exactly `@SavinRazvan`.
 
 ## Optional provenance (after the required pair)
 
@@ -29,7 +29,7 @@ alwaysApply: true
 Typical tail (required lines first, then optional):
 
 ```text
-Author: Savin I. Razvan
+Author: Savin Ionuț Răzvan
 GitHub-User: @SavinRazvan
 Assisted-by: <tool>[:<model>]
 ```

@@ -13,7 +13,7 @@ version: 1
 
 # ── Human owner (required) ───────────────────────────────────────────────────
 owner:
-  display_name: "Savin I. Razvan"
+  display_name: "Savin Ionuț Răzvan"
   github_user: "@SavinRazvan"
 
 # ── Git commit provenance ────────────────────────────────────────────────────

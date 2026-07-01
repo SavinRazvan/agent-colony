@@ -92,6 +92,8 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 | Verify claims | `.cursor/agents/verifier.md` |
 | Operational drift | **`workflow-drift-guard`** — `.cursor/agents/workflow-drift-guard.md` + `.cursor/skills/workflow-drift-audit/SKILL.md` — validate with `python -m cursor_workflow drift validate` |
 | Audits (canonical) | **`enterprise-auditor`** — `.cursor/agents/enterprise-auditor.md` + `.cursor/skills/enterprise-architecture-audit/SKILL.md` |
+| Audit orchestration | `.cursor/skills/audit-orchestration/SKILL.md` — parent runs verify-all + Task delegation (no dedicated agent) |
+| Audit module map | `.cursor/skills/audit-module-map/SKILL.md` — optional deep map; invoke via **`enterprise-auditor`** |
 | Maintainer PR | `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` → `merge-pr` |
 | Research corpus (optional) | `.cursor/agents/researcher.md` — off by default |
 | MCP | `.ai_infra/mcp_servers/workflow_mcp/` — `python -m workflow_mcp`; [`.cursor/mcp.json.kit.example`](.cursor/mcp.json.kit.example) + [connect-external-mcp](.ai_infra/docs/operations/connect-external-mcp.md) |

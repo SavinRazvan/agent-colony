@@ -15,7 +15,7 @@ Update root README, architecture docs, notebook standards, and evaluator
 guides to describe hardened tutorial/check outputs, flagship proof paths, and
 what governed vs live notebooks demonstrate for reviewers.
 
-Author: Savin I. Razvan
+Author: Savin Ionuț Răzvan
 GitHub-User: @SavinRazvan
 Assisted-by: Cursor
 ```
@@ -30,7 +30,7 @@ docs(adapters): close PyPI extraction handoff and update strategy references
 Replace in-tree adapter package references with external repo pins
 and lockstep version pins across handoffs, strategy, operations, and architecture docs.
 
-Author: Savin I. Razvan
+Author: Savin Ionuț Răzvan
 GitHub-User: @SavinRazvan
 Assisted-by: Cursor
 Co-authored-by: Cursor <cursoragent@cursor.com>
@@ -52,7 +52,7 @@ Co-authored-by: Cursor <cursoragent@cursor.com>
 - [ ] make gates
 
 ## Collaboration
-- Action-By: Savin I. Razvan
+- Action-By: Savin Ionuț Răzvan
 - GitHub-User: @SavinRazvan
 - Agent/s: review-pr | prepare-pr | merge-pr
 ```
@@ -61,7 +61,7 @@ Co-authored-by: Cursor <cursoragent@cursor.com>
 
 ```markdown
 ## Collaboration
-- Action-By: Savin I. Razvan
+- Action-By: Savin Ionuț Răzvan
 - GitHub-User: @SavinRazvan
 - Agent/s: enterprise-auditor | review-pr | prepare-pr | merge-pr
 - Alignment: `.local/workflow-artifacts/alignment/`
@@ -75,8 +75,8 @@ Scripts stamp this; values should match `.local/user_settings/github.collaborati
 
 ```markdown
 ## Attribution
-- Action-By: Savin I. Razvan
-- Prepared-By: Savin I. Razvan
+- Action-By: Savin Ionuț Răzvan
+- Prepared-By: Savin Ionuț Răzvan
 - GitHub-User: @SavinRazvan
 - Agent/s: review-pr | prepare-pr | merge-pr
 - Branch: feature/my-branch

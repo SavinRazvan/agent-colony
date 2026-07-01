@@ -14,7 +14,7 @@ Notes:
 # Governance documentation
 
 **Status:** active  
-**Owner:** Savin I. Razvan
+**Owner:** Savin Ionuț Răzvan
 
 This folder defines **where kit docs live**, **who owns workflow truth** (scripts vs prose), and **how to prevent drift** between rules, skills, and operations runbooks.
 
