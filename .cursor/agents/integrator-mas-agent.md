@@ -24,7 +24,7 @@ You **extend the multi-agent system** without breaking planes, gates, or procedu
 |-------|------|-----|
 | 1 | `.cursor/skills/mas-infrastructure-integration/SKILL.md` | Integration procedure (canonical) |
 | 2 | `.ai_infra/docs/operations/mas-infrastructure-integration.md` | Consumer ops mirror |
-| 3 | `.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md` | Three planes + install profiles |
+| 3 | `.ai_infra/docs/architecture/workflow-architecture.md` | Three planes + install profiles |
 | 4 | `.ai_infra/docs/governance/folder-charter.md` | What belongs where |
 | 5 | `.ai_infra/docs/governance/module-boundaries.md` | Layer rules |
 | 6 | `.ai_infra/manifest.yaml` + `install-contract.json` | Consumer copy set |

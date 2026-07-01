@@ -19,12 +19,12 @@
     {
       "id": "workflow",
       "title": "Workflows",
-      "file": "../../../docs/operations/workflow-complete.md"
+      "file": "../../../.ai_infra/docs/operations/workflow-complete.md"
     },
     {
       "id": "procedures",
       "title": "Procedures",
-      "file": "../../../docs/operations/agent-workflow-procedures.md"
+      "file": "../../../.ai_infra/docs/operations/agent-workflow-procedures.md"
     },
     {
       "id": "architecture",
@@ -34,12 +34,7 @@
     {
       "id": "strategy-index",
       "title": "Strategy index",
-      "file": "../../../docs/strategy/README.md"
-    },
-    {
-      "id": "control-plane-plan",
-      "title": "Control plane plan",
-      "file": "../../../docs/plans/control-plane-product-alignment-plan.md"
+      "file": "../../../.ai_infra/docs/roadmap/README.md"
     },
     {
       "id": "work",
@@ -92,14 +87,9 @@
       "file": "../../workflow-artifacts/enterprise-architecture-audit/enterprise-audit-actions.md"
     },
     {
-      "id": "archive",
-      "title": "Archive Agents",
-      "file": "../../../docs/archive/plans/archive-agents-research.md"
-    },
-    {
       "id": "logging",
       "title": "Logging and Errors",
-      "file": "../../../docs/operations/logging-and-errors.md"
+      "file": "../../../.ai_infra/docs/operations/logging-and-errors.md"
     },
     {
       "id": "test-plan",

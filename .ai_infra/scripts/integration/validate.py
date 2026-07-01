@@ -354,6 +354,31 @@ def _check_int013(root: Path) -> CheckResult:
     )
 
 
+def _check_int014(root: Path) -> CheckResult:
+    violations: list[str] = []
+    rule = root / ".cursor" / "rules" / "file-docstring-header-relations.mdc"
+    if not rule.is_file():
+        violations.append("missing .cursor/rules/file-docstring-header-relations.mdc")
+    elif "alwaysApply: true" not in rule.read_text(encoding="utf-8"):
+        violations.append("file-docstring-header-relations.mdc missing alwaysApply: true")
+    implementer = root / ".cursor" / "agents" / "implementer.md"
+    if implementer.is_file():
+        text = implementer.read_text(encoding="utf-8")
+        if "file-docstring-header-relations" not in text:
+            violations.append("implementer.md missing file-docstring-header-relations reference")
+    loop_skill = root / ".cursor" / "skills" / "implementation-execution-loop" / "SKILL.md"
+    if loop_skill.is_file():
+        text = loop_skill.read_text(encoding="utf-8")
+        if "file-docstring-header-relations" not in text:
+            violations.append("implementation-execution-loop/SKILL.md missing file-docstring-header reference")
+    return CheckResult(
+        check_id="INT-014",
+        severity=Severity.P0,
+        passed=not violations,
+        detail="; ".join(violations) if violations else "file header rule + implementer anchors present",
+    )
+
+
 def run_checks(root: Path | None = None) -> list[CheckResult]:
     project_root = (root or Path.cwd()).resolve()
     paths = _paths(project_root)
@@ -379,6 +404,7 @@ def run_checks(root: Path | None = None) -> list[CheckResult]:
         _check_int011(paths),
         _check_int012(project_root),
         _check_int013(project_root),
+        _check_int014(project_root),
     ]
 
 

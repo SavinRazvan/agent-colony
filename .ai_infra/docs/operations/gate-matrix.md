@@ -12,6 +12,8 @@ Depends On:
 
 # Gate matrix
 
+> **Consumer installs:** use `scaffold --verify` or `cursor-workflow gates` on your project. Sections mentioning `make gates`, `make verify-all`, `kit-quality.yml`, or `IMPLEMENTATION-STATUS.md` apply to **kit repository maintainers** only.
+
 Three gate surfaces exist by design (Pattern A).
 
 | Surface | When | Steps | Source of truth |

@@ -17,7 +17,7 @@ Notes:
 
 Adopt the **MAS Workflow Kit** in a fresh directory or existing repo. No git remote required for local validation.
 
-**Shipped state:** [`.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md`](../handoff/IMPLEMENTATION-STATUS.md)
+**Architecture overview:** [`.ai_infra/docs/architecture/workflow-architecture.md`](../architecture/workflow-architecture.md) (shipped with install).
 
 ---
 

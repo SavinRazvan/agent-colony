@@ -7,7 +7,7 @@ Used By:
 Depends On:
  - work-tracker.md exemplar
 Notes:
- - Neutral consumer stub; kit-dev CI fixtures live under ci/kit-dev/.
+ - Neutral consumer stub; maintainer CI fixtures are not copied to consumer installs.
 -->
 
 # Implementation Plan

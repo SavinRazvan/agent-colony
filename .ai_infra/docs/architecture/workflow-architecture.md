@@ -6,8 +6,9 @@ Used By:
  - README.md
  - Onboarding
 Depends On:
- - .ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md
  - .ai_infra/docs/decisions/README.md
+Notes:
+ - Consumer-facing; maintainer deep-dive: `.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md` (kit-dev only).
 -->
 
 # Workflow architecture (MAS Workflow Kit)

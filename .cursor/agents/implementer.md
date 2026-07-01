@@ -30,7 +30,7 @@ When the slice touches tests or ownership: `test-plan.md`, `test-index.md`. Afte
 ## Loop
 
 1. One primary task `in_progress` in `work-tracker.md`; scope in `plan.md`.
-2. Contracts → implementation → tests.
+2. Contracts → implementation → tests. **New sources** (Python and other code): top-of-file header per `.cursor/rules/file-docstring-header-relations.mdc`.
 3. **Gates:** run `python .ai_infra/scripts/pr/prepare.py` (or its `GATES` when validating before handoff). Add `python .ai_infra/scripts/architecture/check_governance_consistency.py` if governance/workflows/policy docs changed.
 4. **Commits:** complete **`.local/user_settings/github.collaboration.yaml`**; append trailers via  
    `python -m cursor_workflow contributors commit-trailers` (policy: `.cursor/rules/commit-trailer-format.mdc`).  

@@ -9,7 +9,7 @@ Depends On:
  - tests/ tree (project-specific)
 Notes:
  - Update when tests are added, moved, renamed, or removed.
- - Kit repo uses ci/kit-dev/ fixtures for CI; this file is a neutral consumer template.
+ - Neutral consumer template; maintainer test inventory is seeded in the kit repo CI only.
 -->
 
 # Test Index

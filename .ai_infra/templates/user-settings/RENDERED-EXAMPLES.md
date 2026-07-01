@@ -2,6 +2,8 @@
 
 Side-by-side: **legacy external-product style** vs **MAS Workflow Kit default** (from `github.collaboration.yaml`).
 
+Replace `Your Full Name` and `@yourhandle` with values from `.local/user_settings/github.collaboration.yaml`.
+
 ---
 
 ## Commit message
@@ -15,8 +17,8 @@ Update root README, architecture docs, notebook standards, and evaluator
 guides to describe hardened tutorial/check outputs, flagship proof paths, and
 what governed vs live notebooks demonstrate for reviewers.
 
-Author: Savin Ionuț Răzvan
-GitHub-User: @SavinRazvan
+Author: Your Full Name
+GitHub-User: @yourhandle
 Assisted-by: Cursor
 ```
 
@@ -30,8 +32,8 @@ docs(adapters): close PyPI extraction handoff and update strategy references
 Replace in-tree adapter package references with external repo pins
 and lockstep version pins across handoffs, strategy, operations, and architecture docs.
 
-Author: Savin Ionuț Răzvan
-GitHub-User: @SavinRazvan
+Author: Your Full Name
+GitHub-User: @yourhandle
 Assisted-by: Cursor
 Co-authored-by: Cursor <cursoragent@cursor.com>
 ```
@@ -52,8 +54,8 @@ Co-authored-by: Cursor <cursoragent@cursor.com>
 - [ ] make gates
 
 ## Collaboration
-- Action-By: Savin Ionuț Răzvan
-- GitHub-User: @SavinRazvan
+- Action-By: Your Full Name
+- GitHub-User: @yourhandle
 - Agent/s: review-pr | prepare-pr | merge-pr
 ```
 
@@ -61,8 +63,8 @@ Co-authored-by: Cursor <cursoragent@cursor.com>
 
 ```markdown
 ## Collaboration
-- Action-By: Savin Ionuț Răzvan
-- GitHub-User: @SavinRazvan
+- Action-By: Your Full Name
+- GitHub-User: @yourhandle
 - Agent/s: enterprise-auditor | review-pr | prepare-pr | merge-pr
 - Alignment: `.local/workflow-artifacts/alignment/`
 ```
@@ -75,9 +77,9 @@ Scripts stamp this; values should match `.local/user_settings/github.collaborati
 
 ```markdown
 ## Attribution
-- Action-By: Savin Ionuț Răzvan
-- Prepared-By: Savin Ionuț Răzvan
-- GitHub-User: @SavinRazvan
+- Action-By: Your Full Name
+- Prepared-By: Your Full Name
+- GitHub-User: @yourhandle
 - Agent/s: review-pr | prepare-pr | merge-pr
 - Branch: feature/my-branch
 - HEAD SHA: abc123...
