@@ -1,5 +1,16 @@
 # AGENTS.md
 
+## Just installed?
+
+1. Edit `.local/user_settings/github.collaboration.yaml` → your name + `@handle`
+2. `python3 -m cursor_workflow contributors validate`
+3. Read `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
+4. **@ implementer** to start your first slice
+
+Full walkthrough: [consumer-quickstart.md](.ai_infra/docs/operations/consumer-quickstart.md)
+
+---
+
 ## Project intent
 
 **MAS Workflow Kit** — multi-agent workflow installed via plugin. Agents call **one script command** per maintainer action; `GATES` live in `.ai_infra/scripts/pr/prepare.py`.
@@ -7,7 +18,7 @@
 ## First reads
 
 1. [`.ai_infra/docs/operations/consumer-quickstart.md`](.ai_infra/docs/operations/consumer-quickstart.md)
-2. [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md) — **Artifact tiers** (base scaffold vs runtime `workflow-artifacts/`)
+2. [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md) — artifact tiers
 3. [`.ai_infra/docs/operations/token-efficiency.md`](.ai_infra/docs/operations/token-efficiency.md)
 4. `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 

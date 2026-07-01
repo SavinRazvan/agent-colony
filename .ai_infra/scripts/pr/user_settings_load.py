@@ -48,7 +48,10 @@ def project_root(root: Path | None) -> Path:
 def load_yaml(path: Path) -> dict[str, Any] | None:
     if not path.is_file():
         return None
-    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    try:
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as exc:
+        raise ValueError(f"YAML syntax error in {path}: {exc}") from exc
     if not isinstance(data, dict):
         return None
     return data

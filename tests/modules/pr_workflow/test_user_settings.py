@@ -178,3 +178,18 @@ pr_collaboration:
     )
     errors = us.validate_github_collaboration(tmp_path)
     assert any("incomplete owner" in err for err in errors)
+
+
+def test_validate_github_collaboration_reports_yaml_syntax_error(tmp_path: Path) -> None:
+    us = _load_user_settings()
+    dest = tmp_path / ".local" / "user_settings" / "github.collaboration.yaml"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(
+        "version: 1\nowner:\n  display_name: Test\n  github_user: '@t'\n"
+        "commit_provenance:\n  human_coauthors: []\n"
+        "  - display_name: Broken\n",
+        encoding="utf-8",
+    )
+    errors = us.validate_github_collaboration(tmp_path)
+    assert len(errors) == 1
+    assert "YAML syntax error" in errors[0]

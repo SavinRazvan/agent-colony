@@ -30,6 +30,7 @@ commit_provenance:
     #   agent: test-runner
 
   # Real human co-authors only (Git Co-authored-by: convention)
+  # Keep [] unless adding entries UNDER human_coauthors (do not uncomment lines below as siblings of []).
   human_coauthors: []
   # - display_name: "Alice Example"
   #   email: alice@example.com

@@ -19,9 +19,18 @@ description: Install MAS Workflow Kit infrastructure into the current workspace 
 
 ## When
 
-First use after enabling the **MAS Workflow Kit** plugin in a project workspace — or when any of the three planes is missing on disk.
+User enabled the **MAS Workflow Kit** plugin and opened **their project** (not the kit repo). Run on first use or when planes are missing.
 
-## One command (agent or human)
+## Guide the user (keep it simple)
+
+1. Confirm the open folder is **their app**, not `mas-workflow-kit`.
+2. Run activate (below).
+3. Tell them to edit `.local/user_settings/github.collaboration.yaml` → `contributors validate`.
+4. Point them to **@ implementer** and `session-pointer.md`.
+
+Do **not** dump gate lists or maintainer `make` commands.
+
+## One command
 
 From the **open workspace** (Pattern A — one script command):
 
@@ -49,12 +58,13 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 
 **MCP config files:** The Marketplace `plugin/` tree loads agents, skills, and rules only. MCP examples (`mcp.json.kit.example`, `mcp.registry.yaml.example`, `mcp.user.example.json`, `MCP-CONFIG.md`) install under `.cursor/` from **payload** when `activate` runs — not before. Use skill **`connect-external-mcp`** after activate.
 
-## Post-activate (user focus — not automated)
+## Post-activate (tell the user)
 
-1. Edit `.local/user_settings/github.collaboration.yaml` (owner, pipelines, provenance)
-2. Optional: `.local/user_settings/mcp.agents.yaml`
-3. `python3 -m cursor_workflow contributors validate`
-4. `python3 -m cursor_workflow integrate validate`
+1. Open `.local/user_settings/github.collaboration.yaml` — set **display_name** and **github_user**
+2. `python3 -m cursor_workflow contributors validate` (must PASS before git/PR)
+3. **@ implementer** to start · read `session-pointer.md` first each session
+
+Optional: `integrate validate`, `health`. Add infrastructure later: **@ integrator-mas-agent**.
 
 ## Adding agents/skills/MCP later
 

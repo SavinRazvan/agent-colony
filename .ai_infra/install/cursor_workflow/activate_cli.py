@@ -79,13 +79,16 @@ def _run_settings_validate(root: Path) -> tuple[int, str]:
 
 def _print_post_activate_hints(root: Path) -> None:
     settings = root / ".local" / "user_settings"
-    print("\nNext — personalize settings (required before first PR):")
-    print(f"  1. Edit {settings / 'github.collaboration.yaml'}")
-    print(f"  2. Optional: {settings / 'mcp.agents.yaml'}")
-    print("  3. Run: python -m cursor_workflow contributors validate")
-    print("  4. Run: python -m cursor_workflow integrate validate")
-    print("\nAgents are Cursor chat agents (e.g. integrator-mas-agent), not shell commands.")
-    print("Invoke via @ agent picker or Task delegation after planes are ready.")
+    yaml_path = settings / "github.collaboration.yaml"
+    print("\nYou're almost done — 3 quick steps:")
+    print(f"  1. Edit {yaml_path}")
+    print('     Set owner.display_name and owner.github_user (replace placeholders).')
+    print("  2. Run: python3 -m cursor_workflow contributors validate")
+    print("  3. In Cursor chat: @ implementer — read .local/index-and-planning/current/session-pointer.md")
+    print("\nOptional:")
+    print("  python3 -m cursor_workflow integrate validate")
+    print("  python3 -m cursor_workflow health")
+    print("Add agents/skills later: @ integrator-mas-agent (chat agent, not a shell command).")
 
 
 def cmd_activate(args: argparse.Namespace) -> int:

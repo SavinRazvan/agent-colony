@@ -63,11 +63,11 @@ payload/           # ADR-001 install source (.ai_infra + cursor_workflow shim)
 
 ## Local smoke (`/add-plugin` from repo path)
 
-### Maintainer dogfood (real project — not the kit repo)
+### Consumer trial (maintainer — separate project, not the kit repo)
 
 ```bash
 export KIT=~/Projects/mas-workflow-kit
-export TARGET=~/Projects/mas-dogfood
+export TARGET=~/Projects/mas-consumer-trial
 mkdir -p "$TARGET"
 
 # 1. Plugin in Cursor: /add-plugin → "$KIT" (repo root with .cursor-plugin/plugin.json)

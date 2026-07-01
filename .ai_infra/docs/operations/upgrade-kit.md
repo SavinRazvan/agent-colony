@@ -38,7 +38,8 @@ Use `--source payload` when running from the distribution root (see `workflow-ac
 | `.ai_infra/scripts/` | Overwritten from manifest profile |
 | `.cursor/agents`, rules, skills | Overwritten from kit |
 | `.local/` exemplars | Re-copied; **review** `plan.md` / `work-tracker.md` for merge |
-| `mcp.user.json` | **Not** overwritten — merge via `cursor-workflow mcp validate` |
+| `AGENTS.md` | **Not** overwritten if present — delete to refresh from stub, or merge manually |
+| `mcp.user.json` | **Not** overwritten — merge via `python3 -m cursor_workflow mcp validate` |
 | `.kit-version` | Updated to manifest `kit_version` |
 
 ## After upgrade

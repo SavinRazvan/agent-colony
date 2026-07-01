@@ -80,7 +80,12 @@ def validate_github_collaboration(root: Path | None = None) -> list[str]:
         errors.append(f"missing {GITHUB_COLLAB_REL} (re-run install scaffold or copy exemplars)")
         return errors
 
-    cfg = load_github_collaboration(root)
+    cfg = None
+    try:
+        cfg = load_github_collaboration(root)
+    except ValueError as exc:
+        errors.append(str(exc))
+        return errors
     if cfg is None:
         errors.append(f"invalid YAML in {GITHUB_COLLAB_REL}")
         return errors

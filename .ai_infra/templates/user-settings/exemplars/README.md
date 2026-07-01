@@ -13,12 +13,12 @@ Fill in the YAML files below once after install. They stay on your machine — n
 
 ## GitHub flow (after you edit `github.collaboration.yaml`)
 
-1. **Validate:** `python -m cursor_workflow contributors validate`
-2. **Commits** — append rendered block: `python -m cursor_workflow contributors commit-trailers`
+1. **Validate:** `python3 -m cursor_workflow contributors validate`
+2. **Commits** — append rendered block: `python3 -m cursor_workflow contributors commit-trailers`
 3. **PR scripts** — use pipeline from YAML:  
    `python .ai_infra/scripts/pr/prepare.py --pr <id> --pipeline default`  
    (`--actor` / `--agents` optional when YAML is complete)
-4. **PR body** — `python -m cursor_workflow contributors pr-body --summary "your bullet" --pipeline default`
+4. **PR body** — `python3 -m cursor_workflow contributors pr-body --summary "your bullet" --pipeline default`
 
 Kit rule: **`Author:` / `GitHub-User:`** on commits; **`Action-By:` / `Agent/s:`** on PR artifacts — do not mix the two.
 
@@ -26,6 +26,6 @@ Kit rule: **`Author:` / `GitHub-User:`** on commits; **`Action-By:` / `Agent/s:`
 
 1. Copy fragments into `.cursor/mcp.user.json` (or use `cursor-workflow mcp link`).
 2. Sync agent ↔ server rows into `.cursor/mcp.registry.yaml`.
-3. Run `cursor-workflow mcp validate` and reload Cursor MCP.
+3. Run `python3 -m cursor_workflow mcp validate` and reload Cursor MCP.
 
 Guide: [connect-external-mcp.md](../../../docs/operations/connect-external-mcp.md)
