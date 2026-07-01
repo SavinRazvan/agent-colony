@@ -50,7 +50,35 @@ cd /path/to/project
 
 5. In target: `.venv/bin/python -m cursor_workflow gates --directory /path/to/project` (or installed `cursor-workflow` if on PATH)
 
-## Publish
+### Automated smoke (kit repo)
+
+Full Track A (direct install) + Track B (payload activate) with dashboard path checks and idempotency:
+
+```bash
+make smoke-consumer
+# or:
+bash .ai_infra/scripts/install/smoke_marketplace.sh
+```
+
+**Pass criteria (2026-07-01 evidence):**
+
+| Check | Track A (kit install) | Track B (payload activate) |
+|-------|----------------------|----------------------------|
+| `install --verify` / `activate --verify` | `VERIFY PASS` | `VERIFY PASS` |
+| `check_consumer_purity.py` | PASS | PASS |
+| No `ci/kit-dev` in templates | PASS | PASS |
+| Tier-1 `pages.json` paths | All PASS | (same layout) |
+| `gates` / governance | PASS | PASS |
+| `user_settings` idempotency | PASS (valid exemplar + re-install) | N/A |
+| `contributors validate` | N/A until personalized | **FAIL expected** until placeholders replaced |
+
+**Operator notes:**
+
+- Export `KIT` is not required when using `make smoke-consumer` (script resolves kit root).
+- Idempotency test must patch the **full** exemplar YAML (`sed` on `Your Full Name`), not a minimal invalid stub.
+- Pre-activate `cursor_contract: missing` on an empty target is **no longer shown** — activate prints `Pre-activate: planes not installed yet` then scaffolds.
+- `payload/.cursor/skills/` must not duplicate `.agents/skills/` folder names (see `PLUGIN-ARCHITECTURE.md` skill merge table).
+
 
 - Document target channel (Cursor Marketplace vs local `/add-plugin` only) before first publish
 - Attach release notes: ADR index, activation flow, MCP optional profile

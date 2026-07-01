@@ -95,9 +95,8 @@ def cmd_activate(args: argparse.Namespace) -> int:
     plane_status = _import_plane_status()
     status = plane_status.assess_planes(target, profile=args.profile)
 
-    print(plane_status.format_plane_report(status))
-
     if status.all_ready and not args.force:
+        print(plane_status.format_plane_report(status))
         print("\nAll three planes ready — skipping install.")
         code, out = _run_settings_validate(target)
         if out:
@@ -108,6 +107,11 @@ def cmd_activate(args: argparse.Namespace) -> int:
             return 0 if args.allow_settings_pending else 1
         _print_post_activate_hints(target)
         return 0
+
+    if not status.all_ready:
+        print("Pre-activate: planes not installed yet — proceeding with scaffold.")
+    else:
+        print(plane_status.format_plane_report(status))
 
     try:
         source = resolve_activate_source(args.source, target, kit_root())

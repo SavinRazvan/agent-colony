@@ -62,6 +62,50 @@ def test_check_bundle_passes_after_sync(tmp_path: Path, monkeypatch: pytest.Monk
     assert errors == []
 
 
+def test_payload_skills_do_not_overlap_agents_skills(tmp_path: Path) -> None:
+    mod = _load_sync()
+    plugin_dir = tmp_path / "plugin"
+    payload_dir = tmp_path / "payload"
+    mod.sync_plugin_surface(plugin_dir)
+    mod.sync_payload(payload_dir, plugin_dir, profile="with_mcp")
+
+    cursor_names = {
+        p.name for p in (payload_dir / ".cursor" / "skills").iterdir() if p.is_dir()
+    }
+    agents_names = {
+        p.name for p in (payload_dir / ".agents" / "skills").iterdir() if p.is_dir()
+    }
+    overlap = sorted(cursor_names & agents_names)
+    assert overlap == [], f"payload must not duplicate skill folders: {overlap}"
+    assert (plugin_dir / "skills" / "review-pr" / "SKILL.md").is_file()
+    assert not (payload_dir / ".cursor" / "skills" / "review-pr").exists()
+
+
+def test_payload_install_verify_green(tmp_path: Path) -> None:
+    mod = _load_sync()
+    plugin_dir = tmp_path / "plugin"
+    payload_dir = tmp_path / "payload"
+    target = tmp_path / "consumer"
+    mod.sync_plugin_surface(plugin_dir)
+    mod.sync_payload(payload_dir, plugin_dir, profile="with_mcp")
+
+    scaffold_path = REPO_ROOT / ".ai_infra" / "scripts" / "install" / "scaffold.py"
+    spec = importlib.util.spec_from_file_location("scaffold", scaffold_path)
+    assert spec is not None and spec.loader is not None
+    scaffold = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(scaffold)
+
+    log = scaffold.scaffold(
+        target,
+        payload_dir,
+        profile="with_mcp",
+        with_venv=True,
+        with_mcp_json=True,
+        verify=True,
+    )
+    assert "VERIFY PASS: all gates green" in "\n".join(log)
+
+
 def test_payload_install_dry_run(tmp_path: Path) -> None:
     mod = _load_sync()
     plugin_dir = tmp_path / "plugin"

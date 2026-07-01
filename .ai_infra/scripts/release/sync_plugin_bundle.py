@@ -204,7 +204,10 @@ def sync_payload(payload_dir: Path, plugin_dir: Path, profile: str = "with_mcp")
     _copy_tree(KIT_ROOT / ".agents", payload_dir / ".agents")
     _copy_tree(plugin_dir / "agents", payload_dir / ".cursor" / "agents")
     _copy_tree(plugin_dir / "rules", payload_dir / ".cursor" / "rules")
-    _copy_tree(plugin_dir / "skills", payload_dir / ".cursor" / "skills")
+    # Consumer parity: canonical skills only under .cursor/skills; maintainer slash
+    # skills live in .agents/skills. plugin/ merges both for IDE loading — do not
+    # copy merged plugin/skills into payload or install --verify fails governance.
+    _copy_tree(KIT_ROOT / ".cursor" / "skills", payload_dir / ".cursor" / "skills")
 
     mcp_kit = KIT_ROOT / ".cursor" / "mcp.json.kit.example"
     if mcp_kit.is_file() and profile == "with_mcp":
