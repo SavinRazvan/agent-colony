@@ -6,7 +6,7 @@ Used By:
  - .cursor/agents/integrator-mas-agent.md
  - .cursor/skills/mas-infrastructure-integration/SKILL.md
 Depends On:
- - .ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md
+ - .ai_infra/docs/architecture/workflow-architecture.md
  - .ai_infra/docs/operations/agent-workflow-procedures.md
 Notes:
  - Pattern A; scripts over prose; facts only.

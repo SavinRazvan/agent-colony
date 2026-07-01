@@ -127,15 +127,44 @@ def _resolve_profile(manifest: dict[str, Any], name: str) -> dict[str, Any]:
     return raw
 
 
-def _copy_tree(src: Path, dst: Path, dry_run: bool, log: list[str]) -> None:
+def _copy_tree(
+    src: Path,
+    dst: Path,
+    dry_run: bool,
+    log: list[str],
+    *,
+    ignore: Any | None = None,
+) -> None:
     if not src.is_dir():
         raise FileNotFoundError(f"Missing source directory: {src}")
     if dry_run:
         _log(log, f"DRY-RUN copytree {src} -> {dst}")
         return
     dst.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(src, dst, dirs_exist_ok=True)
+    shutil.copytree(src, dst, dirs_exist_ok=True, ignore=ignore)
     _log(log, f"COPY {src} -> {dst}")
+
+
+def _load_consumer_bundle_paths(source: Path):
+    arch = source / ".ai_infra" / "scripts" / "architecture"
+    arch_str = str(arch)
+    if arch_str not in sys.path:
+        sys.path.insert(0, arch_str)
+    import consumer_bundle_paths
+
+    return consumer_bundle_paths
+
+
+def _copy_ai_infra_rel(
+    source: Path, ai_src: Path, ai_dst: Path, rel: str, dry_run: bool, log: list[str]
+) -> None:
+    src = ai_src / rel
+    dst = ai_dst / rel
+    cbp = _load_consumer_bundle_paths(source)
+    if cbp.is_local_workspace_copy(rel):
+        _copy_tree(src, dst, dry_run, log, ignore=cbp.ignore_local_workspace_ci)
+        return
+    _copy_tree(src, dst, dry_run, log)
 
 
 def _copy_file(src: Path, dst: Path, dry_run: bool, log: list[str]) -> None:
@@ -399,7 +428,7 @@ def scaffold(
         _copy_tree(source / rel_src, target / rel_dst, dry_run, log)
 
     for rel in spec.get("copy_ai_infra", []):
-        _copy_tree(ai_src / rel, ai_dst / rel, dry_run, log)
+        _copy_ai_infra_rel(source, ai_src, ai_dst, rel, dry_run, log)
 
     for rel in spec.get("copy_files", []):
         if rel == "requirements-mcp.txt":

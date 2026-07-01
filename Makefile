@@ -7,6 +7,7 @@ install-dry-run:
 		--with-venv \
 		--with-mcp-json \
 		--verify
+	.venv/bin/python .ai_infra/scripts/architecture/check_consumer_purity.py --target /tmp/workflow-kit-dry-run
 
 test:
 	.venv/bin/python -m pytest -q

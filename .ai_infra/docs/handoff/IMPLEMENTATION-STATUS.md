@@ -16,7 +16,7 @@ Notes:
 # Implementation status (MAS Workflow Kit)
 
 **Last updated:** 2026-06-30 (local artifact tiers scaffold)  
-**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 116
+**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 119
 
 ## Shipped (confirmed in repo)
 
@@ -43,7 +43,7 @@ Notes:
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Kit version on install | `kit_version` 0.3.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 116 | `tests/modules/` |
+| Tests | 119 | `tests/modules/` |
 
 ## Verification commands
 

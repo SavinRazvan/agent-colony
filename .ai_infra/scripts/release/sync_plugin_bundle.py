@@ -99,12 +99,32 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _copy_tree(src: Path, dst: Path) -> None:
+def _copy_tree(src: Path, dst: Path, *, ignore: Any | None = None) -> None:
     if not src.is_dir():
         raise FileNotFoundError(f"missing source directory: {src}")
     if dst.exists():
         shutil.rmtree(dst)
-    shutil.copytree(src, dst, ignore=_ignore_bundle_artifacts)
+    shutil.copytree(src, dst, ignore=ignore or _ignore_bundle_artifacts)
+
+
+def _load_consumer_bundle_paths() -> Any:
+    arch = KIT_ROOT / ".ai_infra" / "scripts" / "architecture"
+    arch_str = str(arch)
+    if arch_str not in sys.path:
+        sys.path.insert(0, arch_str)
+    import consumer_bundle_paths
+
+    return consumer_bundle_paths
+
+
+def _copy_ai_infra_rel(ai_src: Path, ai_dst: Path, rel: str) -> None:
+    src = ai_src / rel
+    dst = ai_dst / rel
+    cbp = _load_consumer_bundle_paths()
+    if cbp.is_local_workspace_copy(rel):
+        _copy_tree(src, dst, ignore=cbp.ignore_local_workspace_ci)
+        return
+    _copy_tree(src, dst)
 
 
 def _copy_file(src: Path, dst: Path) -> None:
@@ -166,7 +186,7 @@ def sync_payload(payload_dir: Path, plugin_dir: Path, profile: str = "with_mcp")
     payload_dir.mkdir(parents=True)
 
     for rel in spec.get("copy_ai_infra", []):
-        _copy_tree(ai_src / rel, ai_dst / rel)
+        _copy_ai_infra_rel(ai_src, ai_dst, rel)
 
     for rel in PAYLOAD_EXTRA_AI_INFRA:
         _copy_tree(ai_src / rel, ai_dst / rel)

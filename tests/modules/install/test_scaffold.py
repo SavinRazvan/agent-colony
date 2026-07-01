@@ -154,6 +154,14 @@ def test_scaffold_reactivate_preserves_user_settings(tmp_path: Path) -> None:
     assert "Custom User" in github.read_text(encoding="utf-8")
 
 
+def test_scaffold_does_not_ship_ci_kit_dev_fixtures(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    ci = target / ".ai_infra" / "templates" / "local-workspace" / "ci"
+    assert not ci.exists(), "ci/kit-dev fixtures must not ship to consumer installs"
+
+
 def test_scaffold_creates_user_settings_worksheets(tmp_path: Path) -> None:
     mod = _load_scaffold()
     target = tmp_path / "project"

@@ -50,7 +50,7 @@ Ask (or infer from request):
 
 Minimum read set:
 
-1. `.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md` — three planes
+1. `.ai_infra/docs/architecture/workflow-architecture.md` — three planes
 2. `.ai_infra/docs/operations/agent-workflow-procedures.md` — Pattern A
 3. `.ai_infra/docs/operations/local-workspace-layout.md` — `.local/` contract
 4. `.local/user_settings/github.collaboration.yaml` — pipelines + attribution

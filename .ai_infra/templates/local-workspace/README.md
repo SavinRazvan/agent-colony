@@ -25,4 +25,4 @@ Scaffold copies exemplars into `.local/index-and-planning/current/`, `pages.json
 | `index.html`, `implementation-control-center.html` | `.local/agents-control-center/dashboards/` (if missing) |
 | `site-nav.js`, `local-shell.css` | `.local/agents-control-center/dashboards/` (refresh on install) |
 
-Maintainer migrate helper: `.ai_infra/scripts/dev/migrate_local_workspace_layout.py`
+> **Maintainer-only:** layout migration helper (`.ai_infra/scripts/dev/migrate_local_workspace_layout.py`) exists in the kit development repo only — not shipped to consumer installs.
