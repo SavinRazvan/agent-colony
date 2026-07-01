@@ -25,13 +25,15 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 4. `make check-plugin` — bundle parity green
 5. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
 6. Bump `version` in `.cursor-plugin/plugin.json` and `cursor_workflow.__version__` together
+7. Add `assets/logo.png` (1:1, background plate) — see `assets/README.md`
 
 ## Bundle layout
 
 ```text
 .cursor-plugin/plugin.json
-plugin/          # Cursor-loaded agents, skills, rules
-payload/         # ADR-001 install source (.ai_infra + cursor_workflow shim)
+assets/logo.png    # Marketplace logotype (commit before publisher submit)
+plugin/            # Cursor-loaded agents, skills, rules
+payload/           # ADR-001 install source (.ai_infra + cursor_workflow shim)
 ```
 
 ## Local smoke (`/add-plugin` from repo path)
@@ -79,6 +81,24 @@ bash .ai_infra/scripts/install/smoke_marketplace.sh
 - Pre-activate `cursor_contract: missing` on an empty target is **no longer shown** — activate prints `Pre-activate: planes not installed yet` then scaffolds.
 - `payload/.cursor/skills/` must not duplicate `.agents/skills/` folder names (see `PLUGIN-ARCHITECTURE.md` skill merge table).
 
+## Publisher application (Cursor Marketplace)
+
+Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace/publish) (verify before submit).
+
+| Field | Value |
+|-------|--------|
+| Organization name | Savin Ionuț Răzvan |
+| Organization handle | `savin-razvan` (or `mas-workflow-kit`) |
+| Contact email | razvan.i.savin@gmail.com |
+| Logotype URL | `https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit/main/assets/logo.png` |
+| Description | MAS Workflow Kit installs multi-agent workflow infrastructure into any Cursor project: agents, skills, rules, PR lifecycle scripts, `.local/` trackers, and optional MCP. Run **workflow-activate** once to scaffold three planes. Pattern A: one script per maintainer action. For teams using agents, audits, and PR-first governance. |
+| GitHub repository | https://github.com/SavinRazvan/mas-workflow-kit |
+| Owner | Individual · razvan.i.savin@gmail.com |
+| Website URL | https://razvansavin.com/ |
+
+**Manifest:** `.cursor-plugin/plugin.json` — `author`, `homepage`, `repository`, `logo` aligned with the table above.
+
+## Publish
 
 - Document target channel (Cursor Marketplace vs local `/add-plugin` only) before first publish
 - Attach release notes: ADR index, activation flow, MCP optional profile
