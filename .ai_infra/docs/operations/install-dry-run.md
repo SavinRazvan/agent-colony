@@ -46,6 +46,8 @@ python .ai_infra/scripts/install/scaffold.py \
 
 See [`scripts/install/README.md`](../../scripts/install/README.md).
 
+**Marketplace / plugin smoke (Track A + B):** [`marketplace-publish.md`](../handoff/marketplace-publish.md) § Automated smoke, or `make smoke-consumer` from kit repo.
+
 ## Manual steps
 
 Use the sections below if you prefer hand-copying or need to debug scaffold behavior.

@@ -123,7 +123,15 @@ The path `.ai_infra/templates/local-workspace/ci/kit-dev/` holds **kit-repositor
 
 Product rules: copy `overlays/rules/*.mdc` into `.cursor/rules/` after install (not a separate profile).
 
-**Skill merge policy:** `sync_plugin_bundle.py` copies `.cursor/skills/` first, then merges `.agents/skills/` **only for folder names not already present**. Canonical protocols must never be replaced by maintainer stubs in `plugin/` or consumer `payload/.cursor/skills/`.
+**Skill merge policy:**
+
+| Tree | Skills source | Purpose |
+|------|---------------|---------|
+| `plugin/skills/` | `.cursor/skills/` then additive merge from `.agents/skills/` | Cursor IDE loads slash skills from plugin |
+| `payload/.cursor/skills/` | **Kit `.cursor/skills/` only** (no maintainer merge) | Consumer disk must not duplicate `.agents/skills/` folder names |
+| `payload/.agents/skills/` | Kit `.agents/skills/` | Maintainer PR slash skills on consumer disk |
+
+`sync_plugin_bundle.py` merges `.agents/skills/` into `plugin/skills/` only when the folder name is absent from `.cursor/skills/`. Canonical protocols must never be replaced by maintainer stubs. **Do not** copy merged `plugin/skills/` into `payload/.cursor/skills/` — governance `check_governance_consistency.py` fails on duplicate folder names.
 
 ---
 

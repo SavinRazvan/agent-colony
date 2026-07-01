@@ -1,4 +1,4 @@
-.PHONY: install-dry-run test gates sync-plugin check-plugin integrate-validate drift-validate ci-seed verify-all doc-validate
+.PHONY: install-dry-run smoke-consumer test gates sync-plugin check-plugin integrate-validate drift-validate ci-seed verify-all doc-validate
 
 install-dry-run:
 	rm -rf /tmp/workflow-kit-dry-run
@@ -8,6 +8,9 @@ install-dry-run:
 		--with-mcp-json \
 		--verify
 	.venv/bin/python .ai_infra/scripts/architecture/check_consumer_purity.py --target /tmp/workflow-kit-dry-run
+
+smoke-consumer:
+	bash .ai_infra/scripts/install/smoke_marketplace.sh
 
 test:
 	.venv/bin/python -m pytest -q
