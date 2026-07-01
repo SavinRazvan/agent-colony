@@ -1,4 +1,15 @@
-"""Root shim — re-export install CLI for `python -m cursor_workflow` and tests."""
+"""
+File: cli.py
+Path: cursor_workflow/cli.py
+Role: Root shim re-exporting install CLI for python -m cursor_workflow.
+Used By:
+ - python -m cursor_workflow
+ - tests/modules/install/test_cursor_workflow.py
+Depends On:
+ - .ai_infra/install/cursor_workflow/cli.py
+Notes:
+ - importlib load; keep in sync with install package entrypoints.
+"""
 from __future__ import annotations
 
 import importlib.util

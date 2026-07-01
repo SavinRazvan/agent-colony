@@ -1,4 +1,14 @@
-"""Root shim — run cursor_workflow CLI from .ai_infra/install/."""
+"""
+File: __main__.py
+Path: cursor_workflow/__main__.py
+Role: Entry for python -m cursor_workflow delegating to install CLI.
+Used By:
+ - python -m cursor_workflow
+Depends On:
+ - .ai_infra/install/cursor_workflow/cli.py
+Notes:
+ - importlib load of install package cli module.
+"""
 from __future__ import annotations
 
 import importlib.util

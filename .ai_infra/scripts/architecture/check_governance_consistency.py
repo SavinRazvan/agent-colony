@@ -287,6 +287,18 @@ def _collect_owner_path_violations() -> list[str]:
     return violations
 
 
+def _collect_file_header_violations() -> list[str]:
+    arch_dir = ROOT / ".ai_infra" / "scripts" / "architecture"
+    if not arch_dir.is_dir():
+        return [".ai_infra/scripts/architecture: missing"]
+    arch_str = str(arch_dir)
+    if arch_str not in sys.path:
+        sys.path.insert(0, arch_str)
+    from check_file_headers import collect_file_header_violations
+
+    return [f"file header: {v}" for v in collect_file_header_violations(ROOT)]
+
+
 def _collect_integration_validate_violations() -> list[str]:
     integration_dir = ROOT / ".ai_infra" / "scripts" / "integration"
     if not integration_dir.is_dir():
@@ -312,6 +324,7 @@ def main() -> int:
     violations.extend(_collect_duplicate_skill_folder_violations())
     violations.extend(_collect_agent_mcp_block_violations())
     violations.extend(_collect_owner_path_violations())
+    violations.extend(_collect_file_header_violations())
     violations.extend(_collect_integration_validate_violations())
     if violations:
         print("Governance consistency check failed:")

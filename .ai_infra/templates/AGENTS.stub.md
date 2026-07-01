@@ -11,9 +11,18 @@
 3. [`.ai_infra/docs/operations/token-efficiency.md`](.ai_infra/docs/operations/token-efficiency.md)
 4. `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 
-## Rules
+## Rules (always applied in Cursor)
 
-Six universal rules under `.cursor/rules/`. Product overlays: `overlays/rules/` at install time.
+| Rule | Topic |
+|------|--------|
+| `.cursor/rules/implementation-workflow-governance.mdc` | Slice lifecycle, trackers, tests |
+| `.cursor/rules/pr-workflow-enforcement.mdc` | PR-first, artifacts, branch safety |
+| `.cursor/rules/commit-trailer-format.mdc` | Commit trailers + optional `Assisted-by` |
+| `.cursor/rules/file-docstring-header-relations.mdc` | **File headers** on new sources |
+| `.cursor/rules/local-artifact-protection.mdc` | Protected paths (`.coverage`, `.env`) |
+| `.cursor/rules/advisory-audit-alignment-enforcement.mdc` | Architecture audits → alignment artifacts |
+
+Product overlays: `overlays/rules/` at install time.
 
 ## Quality gates
 
