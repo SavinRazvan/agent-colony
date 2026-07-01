@@ -13,15 +13,16 @@ Re-run install from a **newer kit source** (git tag, plugin payload, or local cl
 **Plugin / payload (recommended):**
 
 ```bash
-cd /path/to/your-project
-python -m cursor_workflow activate --directory . --force
+cd ~/Projects/my-app    # your activated project
+python3 -m cursor_workflow activate --directory . --force
 ```
 
-**Kit clone / advanced** — from kit / payload root:
+**Kit clone / advanced** — from kit repo:
 
 ```bash
-cursor-workflow install \
-  --target /path/to/your-project \
+export TARGET=~/Projects/my-app
+.venv/bin/python -m cursor_workflow install \
+  --target "$TARGET" \
   --source . \
   --profile with_mcp \
   --with-mcp-json \
@@ -43,9 +44,10 @@ Use `--source payload` when running from the distribution root (see `workflow-ac
 ## After upgrade
 
 ```bash
-cursor-workflow gates --directory /path/to/your-project
-cursor-workflow health --directory /path/to/your-project
-cursor-workflow mcp validate
+cd ~/Projects/my-app
+python3 -m cursor_workflow gates
+python3 -m cursor_workflow health
+python3 -m cursor_workflow mcp validate
 ```
 
 ## Rollback

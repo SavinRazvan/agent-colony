@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (MAS Workflow Kit)
 
-**Last updated:** 2026-06-30 (local artifact tiers scaffold)  
-**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 123
+**Last updated:** 2026-07-01 (consumer onboarding docs + integrate validate consumer skip)  
+**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 124
 
 ## Shipped (confirmed in repo)
 
@@ -37,13 +37,14 @@ Notes:
 | MCP tools + resources | 19 tools + 6 resources | `.ai_infra/mcp_servers/workflow_mcp/` |
 | Install scaffold + contract | `install-contract.json`; idempotent trackers/`AGENTS.md`/`pages.json` on re-activate | `.ai_infra/scripts/install/scaffold.py` |
 | Local artifact tiers | Tier 1 scaffold: all `workflow-artifacts/*` buckets + README stubs; SSOT `local_workflow_paths.py` | `.ai_infra/templates/local-workspace/`, `pages.json` |
-| Install CLI | install, **activate**, gates, health, mcp, drift, verify | `.ai_infra/install/cursor_workflow/cli.py` |
+| Integrate validate | INT-001…014; INT-009/011 plugin parity **kit-dev only** | `.ai_infra/scripts/integration/validate.py` |
+| Install CLI | install, **activate**, gates, health, mcp, contributors, integrate, drift, doc, verify | `.ai_infra/install/cursor_workflow/cli.py` |
 | Editable install | `pyproject.toml` — `pip install -e ".[dev,mcp]"` | repo root |
 | Three-plane activate | Idempotent plugin consumer setup | `.ai_infra/install/cursor_workflow/activate_cli.py`, `plane_status.py` |
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Kit version on install | `kit_version` 0.3.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 123 | `tests/modules/` |
+| Tests | 124 | `tests/modules/` |
 
 ## Verification commands
 

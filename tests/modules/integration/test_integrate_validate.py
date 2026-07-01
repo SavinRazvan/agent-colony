@@ -62,6 +62,17 @@ def test_invalid_github_collaboration_schema_fails_p0(tmp_path: Path) -> None:
     assert not int006.passed
 
 
+def test_plugin_parity_skipped_on_consumer_profile(tmp_path: Path) -> None:
+    _copy_minimal_kit(tmp_path)
+    results = run_checks(tmp_path)
+    int009 = next(r for r in results if r.check_id == "INT-009")
+    int011 = next(r for r in results if r.check_id == "INT-011")
+    assert int009.passed
+    assert "consumer profile" in int009.detail
+    assert int011.passed
+    assert "consumer profile" in int011.detail
+
+
 def _copy_minimal_kit(target: Path) -> None:
     import shutil
 

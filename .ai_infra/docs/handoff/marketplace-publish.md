@@ -24,8 +24,33 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 3. `make sync-plugin` — rebuild `plugin/` + `payload/`
 4. `make check-plugin` — bundle parity green
 5. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
-6. Bump `version` in `.cursor-plugin/plugin.json` and `cursor_workflow.__version__` together
+6. Bump **all version SSOT fields together** (see [Versioning](#versioning) below)
 7. Add `assets/logo.png` (1:1, background plate) — see `assets/README.md`
+
+## Versioning
+
+**Current release:** `0.3.0` (git tag `v0.3.0`).
+
+On every release, bump **in lockstep**:
+
+| File | Field |
+|------|--------|
+| `.cursor-plugin/plugin.json` | `version` |
+| `pyproject.toml` | `version` |
+| `cursor_workflow/__init__.py` | `__version__` |
+| `cursor_workflow/cli.py` | `__version__` |
+| `.ai_infra/install/cursor_workflow/__init__.py` | `__version__` |
+| `.ai_infra/install/cursor_workflow/cli.py` | `--version` string |
+| `.ai_infra/__init__.py` | `__version__` |
+| `.ai_infra/manifest.yaml` | `kit_version` |
+| `.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md` | header + kit version row |
+| `tests/modules/install/test_install_contract.py` | `.kit-version` assertion |
+| `tests/modules/install/test_editable_install.py` | `__version__` assertion |
+| `tests/modules/install/test_cursor_workflow.py` | `__version__` assertion |
+
+**Consumer installs** receive version via `.ai_infra/.kit-version` (written from manifest `kit_version` at scaffold/activate). **Not versioned with kit:** `workflow_mcp.__version__` (MCP server package semver).
+
+After bump: `make sync-plugin && make check-plugin`, tag `vX.Y.Z`, optional GitHub Release notes.
 
 ## Bundle layout
 
@@ -38,19 +63,49 @@ payload/           # ADR-001 install source (.ai_infra + cursor_workflow shim)
 
 ## Local smoke (`/add-plugin` from repo path)
 
-1. Run `make sync-plugin`
-2. In Cursor: add plugin from kit repo root (must contain `.cursor-plugin/plugin.json`)
-3. Confirm agents load: `implementer`, `enterprise-auditor`, maintainer slash skills
-4. Run **workflow-activate** skill command (use `python3` or `.venv/bin/python` from kit repo — not bare `python` on many Linux images):
+### Maintainer dogfood (real project — not the kit repo)
 
 ```bash
-cd /path/to/project
-.venv/bin/python -m cursor_workflow activate --directory .
-# Or from kit repo without opening target in Cursor:
-.venv/bin/python payload/cursor_workflow activate --directory /path/to/project --source payload
+export KIT=~/Projects/mas-workflow-kit
+export TARGET=~/Projects/mas-dogfood
+mkdir -p "$TARGET"
+
+# 1. Plugin in Cursor: /add-plugin → "$KIT" (repo root with .cursor-plugin/plugin.json)
+# 2. Open "$TARGET" as the workspace in Cursor (File → Open Folder)
+
+"$KIT/.venv/bin/python" "$KIT/payload/cursor_workflow" activate \
+  --directory "$TARGET" \
+  --source "$KIT/payload"
+
+cd "$TARGET"
+# Edit .local/user_settings/github.collaboration.yaml (placeholders → your name / @handle)
+python3 -m cursor_workflow contributors validate
+python3 -m cursor_workflow integrate validate
+python3 -m cursor_workflow gates
 ```
 
-5. In target: `.venv/bin/python -m cursor_workflow gates --directory /path/to/project` (or installed `cursor-workflow` if on PATH)
+Pass: `VERIFY PASS` on activate; `contributors validate: PASS` (after editing placeholders); `integrate validate` P0 = 0 (plugin parity skipped on consumer); `gates` green.
+
+### Quick plugin smoke (from kit repo)
+
+1. Run `make sync-plugin`
+2. In Cursor: `/add-plugin` → kit repo root
+3. Confirm agents: `implementer`, `enterprise-auditor`, maintainer slash skills
+4. Run **workflow-activate** in chat with a **non-kit** project folder open
+
+```bash
+cd "$TARGET"
+python3 -m cursor_workflow activate --directory .
+```
+
+Or from kit repo without opening target in Cursor:
+
+```bash
+"$KIT/.venv/bin/python" "$KIT/payload/cursor_workflow" activate \
+  --directory "$TARGET" --source "$KIT/payload"
+```
+
+5. In target: `python3 -m cursor_workflow gates --directory "$TARGET"`
 
 ### Automated smoke (kit repo)
 
@@ -71,6 +126,7 @@ bash .ai_infra/scripts/install/smoke_marketplace.sh
 | No `ci/kit-dev` in templates | PASS | PASS |
 | Tier-1 `pages.json` paths | All PASS | (same layout) |
 | `gates` / governance | PASS | PASS |
+| `integrate validate` | P0 = 0 (kit-dev) | P0 = 0; INT-009/011 skipped on consumer |
 | `user_settings` idempotency | PASS (valid exemplar + re-install) | N/A |
 | `contributors validate` | N/A until personalized | **FAIL expected** until placeholders replaced |
 
