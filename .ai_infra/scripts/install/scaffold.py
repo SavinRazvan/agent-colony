@@ -57,6 +57,10 @@ EXEMPLAR_TRACKERS = [
     "test-index.md",
     "coverage-index.md",
 ]
+AUDIT_EXEMPLARS = (
+    "agent-governance-audit.md",
+    "agent-governance-todos.md",
+)
 DASHBOARD_HTML = ("index.html", "implementation-control-center.html")
 DASHBOARD_ASSETS = ("site-nav.js", "local-shell.css")
 ADAPTER_WALL_RULE = "provider-neutral-adapter-wall.mdc"
@@ -210,9 +214,10 @@ def _scaffold_local(source: Path, target: Path, dry_run: bool, log: list[str]) -
     pages_src = ui_root / "pages.json"
     current = target / ".local" / "index-and-planning" / "current"
     history = target / ".local" / "index-and-planning" / "history"
+    audits = target / ".local" / "index-and-planning" / "audits"
     acc_config = target / ".local" / "agents-control-center" / "config"
 
-    for path in (current, history, acc_config):
+    for path in (current, history, audits, acc_config):
         if dry_run:
             _log(log, f"DRY-RUN mkdir {path}")
         else:
@@ -226,6 +231,10 @@ def _scaffold_local(source: Path, target: Path, dry_run: bool, log: list[str]) -
 
     for name in EXEMPLAR_TRACKERS:
         _copy_file_if_missing(exemplars / name, current / name, dry_run, log)
+
+    audit_exemplars = exemplars / "audits"
+    for name in AUDIT_EXEMPLARS:
+        _copy_file_if_missing(audit_exemplars / name, audits / name, dry_run, log)
 
     updates_src = exemplars / "updates-log.md"
     updates_dst = history / "updates-log.md"
@@ -258,7 +267,7 @@ def _scaffold_user_settings(source: Path, target: Path, dry_run: bool, log: list
     else:
         dest_root.mkdir(parents=True, exist_ok=True)
     for name in USER_SETTINGS_FILES:
-        _copy_file(exemplars / name, dest_root / name, dry_run, log)
+        _copy_file_if_missing(exemplars / name, dest_root / name, dry_run, log)
 
 
 def _scaffold_minimal_tests(target: Path, dry_run: bool, log: list[str]) -> None:

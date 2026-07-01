@@ -129,6 +129,31 @@ def test_scaffold_pages_json_includes_artifact_tabs(tmp_path: Path) -> None:
     assert {"pr-review", "drift-audit", "ea-audit"}.issubset(page_ids)
 
 
+def test_scaffold_pages_json_tier1_paths_resolve(tmp_path: Path) -> None:
+    """Tier 1 dashboard tabs must resolve after scaffold; Tier 2 artifact .md files are runtime-only."""
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    config = target / ".local" / "agents-control-center" / "config"
+    pages = json.loads((config / "pages.json").read_text(encoding="utf-8"))
+    for page in pages["pages"]:
+        rel = page["file"]
+        if rel.startswith("../../workflow-artifacts/"):
+            continue
+        resolved = (config / rel).resolve()
+        assert resolved.is_file(), f"{page['id']}: {rel} -> missing at {resolved}"
+
+
+def test_scaffold_reactivate_preserves_user_settings(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    github = target / ".local" / "user_settings" / "github.collaboration.yaml"
+    github.write_text("owner:\n  display_name: Custom User\n", encoding="utf-8")
+    mod.scaffold(target, REPO_ROOT)
+    assert "Custom User" in github.read_text(encoding="utf-8")
+
+
 def test_scaffold_creates_user_settings_worksheets(tmp_path: Path) -> None:
     mod = _load_scaffold()
     target = tmp_path / "project"
