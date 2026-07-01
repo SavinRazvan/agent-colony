@@ -91,7 +91,7 @@ Pass: `VERIFY PASS` on activate; `contributors validate: PASS` (after editing pl
 1. Run `make sync-plugin`
 2. In Cursor: `/add-plugin` → kit repo root
 3. Confirm agents: `implementer`, `enterprise-auditor`, maintainer slash skills
-4. Run **workflow-activate** in chat with a **non-kit** project folder open
+4. Run **`/workflow-activate`** in Agent chat with a **non-kit** project folder open
 
 ```bash
 cd "$TARGET"
@@ -147,7 +147,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 | Organization handle | `savin-razvan` (or `mas-workflow-kit`) |
 | Contact email | razvan.i.savin@gmail.com |
 | Logotype URL | `https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit/main/assets/logo.png` |
-| Description | MAS Workflow Kit installs multi-agent workflow infrastructure into any Cursor project: agents, skills, rules, PR lifecycle scripts, `.local/` trackers, and optional MCP. Run **workflow-activate** once to scaffold three planes. Pattern A: one script per maintainer action. For teams using agents, audits, and PR-first governance. |
+| Description | MAS Workflow Kit installs multi-agent workflow infrastructure into any Cursor project: agents, skills, rules, PR lifecycle scripts, `.local/` trackers, and optional MCP. Run **`/workflow-activate`** once to scaffold three planes. Pattern A: one script per maintainer action. For teams using agents, audits, and PR-first governance. |
 | GitHub repository | https://github.com/SavinRazvan/mas-workflow-kit |
 | Owner | Individual · razvan.i.savin@gmail.com |
 | Website URL | https://razvansavin.com/ |

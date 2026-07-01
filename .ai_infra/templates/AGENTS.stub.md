@@ -5,7 +5,7 @@
 1. Edit `.local/user_settings/github.collaboration.yaml` → your name + `@handle`
 2. `python3 -m cursor_workflow contributors validate`
 3. Read `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
-4. **@ implementer** to start your first slice
+4. **`/implementer`** (or pick `/test-runner`, `/verifier`, `/enterprise-auditor` from the **`/`** menu)
 
 Full walkthrough: [consumer-quickstart.md](.ai_infra/docs/operations/consumer-quickstart.md)
 

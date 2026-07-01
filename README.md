@@ -22,10 +22,10 @@ Multi-agent workflow for Cursor — agents, skills, rules, PR scripts, and `.loc
 ### 2. Activate into your project
 
 1. **File → Open Folder** → your app (e.g. `~/Projects/my-app`)
-2. In chat, run skill **`workflow-activate`**
+2. In Agent chat, run **`/workflow-activate`**
 3. Wait for **`VERIFY PASS: all gates green`** and all planes **ready**
 
-The plugin gives you agents in chat; **activate** copies the full kit into that folder (`.cursor/`, `.ai_infra/`, `.local/`, CLI).
+The plugin gives you subagents and skills in chat; **activate** copies the full kit into that folder (`.cursor/`, `.ai_infra/`, `.local/`, CLI).
 
 ### 3. Add your name (~1 min)
 
@@ -52,10 +52,12 @@ Expected: `contributors validate: PASS`. Required before your first git commit o
 
 | Do this | How |
 |---------|-----|
-| Implement a feature | **@ implementer** in chat |
-| Run tests / coverage | **@ test-runner** |
-| Add your own agent or skill | **@ integrator-mas-agent** |
+| Implement a feature | **`/implementer`** in Agent chat ([subagents](https://cursor.com/docs/subagents)) |
+| Run tests / coverage | **`/test-runner`** |
+| Add your own agent or skill | **`/integrator-mas-agent`** |
 | Check install health | `python3 -m cursor_workflow health` |
+
+> **In Agent chat:** type **`/`** — Cursor shows **subagents**, **skills**, and **commands** in one menu ([Customize](https://cursor.com/docs/customize-cursor)). Pick **`/workflow-activate`**, **`/implementer`**, **`/review-pr`**, etc. Use **`@`** only to attach files, docs, or git context — not to start kit workflows ([Prompting](https://cursor.com/docs/agent/prompting)).
 
 Each session, read first: `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 
@@ -70,7 +72,7 @@ Each session, read first: `.local/index-and-planning/current/session-pointer.md`
 <details>
 <summary><strong>Pre-launch: terminal activate (consumer trial)</strong></summary>
 
-Skip this if Marketplace + **`workflow-activate`** in chat works for you.
+Skip this if Marketplace + **`/workflow-activate`** in chat works for you.
 
 ```bash
 export KIT=~/Projects/mas-workflow-kit
@@ -104,7 +106,7 @@ Optional product rules: [`overlays/rules/`](overlays/README.md)
 ## Git / PR workflow (when you use git)
 
 1. Create a branch (`feature/…`, `fix/…`, or `chore/…`)
-2. Work with **@ implementer**; trackers live in `.local/index-and-planning/current/`
+2. Work with **`/implementer`**; trackers live in `.local/index-and-planning/current/`
 3. Before merge: `python3 .ai_infra/scripts/pr/prepare.py --pr <url> --pipeline default`
 
 Details after activate: `AGENTS.md` and `.agents/skills/pr-workflow/`

@@ -84,11 +84,11 @@ def _print_post_activate_hints(root: Path) -> None:
     print(f"  1. Edit {yaml_path}")
     print('     Set owner.display_name and owner.github_user (replace placeholders).')
     print("  2. Run: python3 -m cursor_workflow contributors validate")
-    print("  3. In Cursor chat: @ implementer — read .local/index-and-planning/current/session-pointer.md")
+    print("  3. In Agent chat: /implementer — read .local/index-and-planning/current/session-pointer.md")
     print("\nOptional:")
     print("  python3 -m cursor_workflow integrate validate")
     print("  python3 -m cursor_workflow health")
-    print("Add agents/skills later: @ integrator-mas-agent (chat agent, not a shell command).")
+    print("Add agents/skills later: /integrator-mas-agent (subagent, not a shell command).")
 
 
 def cmd_activate(args: argparse.Namespace) -> int:

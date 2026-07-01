@@ -26,17 +26,32 @@ Install the **MAS Workflow Kit** into your project in a few minutes. No special 
 | Step | Action |
 |------|--------|
 | **1. Plugin** | Cursor → Marketplace → **MAS Workflow Kit** → Install *(or `/add-plugin` → kit repo while waiting)* |
-| **2. Activate** | In chat: skill **`workflow-activate`** → wait for **`VERIFY PASS`** |
+| **2. Activate** | In Agent chat: **`/workflow-activate`** → wait for **`VERIFY PASS`** |
 | **3. Your name** | Edit `.local/user_settings/github.collaboration.yaml` → set `display_name` + `github_user` → `python3 -m cursor_workflow contributors validate` |
-| **4. Build** | **@ implementer** · read `session-pointer.md` → `plan.md` → `work-tracker.md` |
+| **4. Build** | **`/implementer`** · read `session-pointer.md` → `plan.md` → `work-tracker.md` |
 
 **Healthy install?** `python3 -m cursor_workflow health`
+
+### In Agent chat — type `/`
+
+Cursor lists **subagents**, **skills**, and **commands** in the same **`/`** menu ([Customize Cursor](https://cursor.com/docs/customize-cursor)). Names match the `name:` field in each file.
+
+| What you want | Type in chat | Lives on disk |
+|---------------|--------------|---------------|
+| Activate the kit | **`/workflow-activate`** | `.cursor/skills/workflow-activate/` |
+| Implement a slice | **`/implementer`** | `.cursor/agents/implementer.md` |
+| Run tests | **`/test-runner`** | `.cursor/agents/test-runner.md` |
+| PR review / prepare / merge | **`/review-pr`**, `/prepare-pr`, `/merge-pr` | `.agents/skills/` (loaded as skills) |
+| Extend agents/skills/MCP | **`/integrator-mas-agent`** + `/mas-infrastructure-integration` | agent + skill |
+| Attach a file or doc | **`@`** + pick context | — ([Prompting](https://cursor.com/docs/agent/prompting)) |
+
+Agent may also **auto-delegate** subagents or **auto-apply** skills when the task matches their `description` — explicit **`/name`** is the reliable manual path.
 
 ---
 
 ## Step 2 detail — activate
 
-**In chat (recommended):** skill **`workflow-activate`** on the open workspace.
+**In Agent chat (recommended):** **`/workflow-activate`** on the open workspace.
 
 **What it does:** copies three planes into your project:
 
@@ -83,7 +98,7 @@ python3 -m cursor_workflow health
 
 > **YAML tip:** Edit only `owner` at first. Do not uncomment `# - display_name: Alice Example` under `human_coauthors: []` — that causes a YAML syntax error. To add a co-author, replace `[]` with a proper list (see exemplar comments).
 
-Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → skill **`connect-external-mcp`**
+Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → **`/connect-external-mcp`**
 
 ---
 
@@ -91,10 +106,10 @@ Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → skill **`co
 
 1. Open `.local/index-and-planning/current/session-pointer.md`
 2. Update `plan.md` and `work-tracker.md` for your slice
-3. **@ implementer** (or **test-runner**, **verifier**, **enterprise-auditor**)
+3. **`/implementer`** (or `/test-runner`, `/verifier`, `/enterprise-auditor`)
 4. Dashboard (optional): `.local/agents-control-center/dashboards/`
 
-**Add your own agent/skill/MCP:** **@ integrator-mas-agent** + skill **`mas-infrastructure-integration`**
+**Add your own agent/skill/MCP:** **`/integrator-mas-agent`** + **`/mas-infrastructure-integration`**
 
 ---
 
@@ -103,7 +118,7 @@ Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → skill **`co
 | Do | Don't |
 |----|-------|
 | Open **your app** in Cursor | Activate while inside `mas-workflow-kit` |
-| **`workflow-activate`** in chat | Run `make gates` (kit-dev only) |
+| **`/workflow-activate`** in chat | Run `make gates` (kit-dev only) |
 | Real paths like `~/Projects/my-app` | Literal `/path/to/your-project` |
 
 ---
@@ -144,9 +159,9 @@ Architecture: [workflow-architecture.md](../architecture/workflow-architecture.m
 | `contributors validate` FAIL | Replace placeholders in `github.collaboration.yaml` |
 | YAML `ParserError` / traceback | Fix `human_coauthors` — keep `[]` or use a proper list; don't uncomment example lines as siblings of `[]` |
 | Validate passes from kit repo but fails in your app | Run commands from **your project** (`cd ~/Projects/my-app`), not `mas-workflow-kit` |
-| `pytest` not found | Re-run **`workflow-activate`** (creates `.venv`) |
+| `pytest` not found | Re-run **`/workflow-activate`** (creates `.venv`) |
 | Permission denied on `/path` | You used a placeholder path — create a real folder |
-| Agents missing in @ picker | Open **your activated project**, not the kit repo |
+| Subagents/skills missing in **`/`** menu | Open **your activated project**, not the kit repo; re-run **`/workflow-activate`** if planes are incomplete |
 
 ---
 
@@ -156,7 +171,7 @@ Architecture: [workflow-architecture.md](../architecture/workflow-architecture.m
 your-project/
 ├── AGENTS.md
 ├── .cursor/       agents, skills, rules
-├── .agents/skills/   PR slash commands (review-pr, prepare-pr, …)
+├── .agents/skills/   PR skills (/review-pr, /prepare-pr, …)
 ├── .ai_infra/     scripts + docs
 ├── .local/        trackers (gitignored)
 ├── cursor_workflow/

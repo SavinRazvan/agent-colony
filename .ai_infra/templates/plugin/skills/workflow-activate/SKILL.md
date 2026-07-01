@@ -42,7 +42,7 @@ python -m cursor_workflow activate --directory .
 
 ## Adding agents/skills/MCP later
 
-Invoke Cursor agent **`integrator-mas-agent`** (chat / @ picker — **not** a shell command) with skill **`mas-infrastructure-integration`**.
+Invoke subagent **`/integrator-mas-agent`** with skill **`/mas-infrastructure-integration`** — not shell commands.
 
 ## Agent delegation
 
@@ -50,7 +50,7 @@ After plugin enable, parent agent or user should:
 
 1. Run **`workflow_activate`** or `cursor_workflow activate`
 2. Hand user to personalize `user_settings/`
-3. Optionally delegate **`integrator-mas-agent`** for extensions
+3. Optionally delegate **`/integrator-mas-agent`** for extensions
 
 ## Success
 
