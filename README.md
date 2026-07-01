@@ -37,7 +37,15 @@ Universal **multi-agent workflow** infrastructure for Cursor — agents, skills,
 
 ### 2. Activate the full bundle (three planes)
 
-The plugin loads agents and skills into Cursor. **Activate** copies infrastructure into **your project**: `.cursor/`, `.ai_infra/`, `.local/`, `cursor_workflow/`.
+The plugin loads agents and skills into Cursor. **`workflow-activate`** (or `cursor_workflow activate`) copies infrastructure into **your project**.
+
+| Plane | Installed paths | Loaded by Cursor? |
+|-------|-----------------|-------------------|
+| **Cursor contract** | `.cursor/`, `.agents/`, `AGENTS.md` | Yes — agents, skills, rules |
+| **Infrastructure** | `.ai_infra/`, `cursor_workflow/` | No — scripts and CLI |
+| **Runtime** | `.local/` Tier 1 scaffold (trackers, six `workflow-artifacts/*` buckets, dashboards) | No — gitignored |
+
+Default profile: **`with_mcp`** (includes MCP server + merged `.cursor/mcp.json` + `.venv`).
 
 **Recommended — in Cursor chat:**
 
@@ -86,7 +94,13 @@ python3 -m cursor_workflow gates
 python3 -m cursor_workflow health
 ```
 
-Expected: testing artifacts PASS, smoke pytest PASS, governance PASS.
+Expected on a **consumer** project:
+
+- **Activate verify / `gates`:** testing artifacts, pytest, governance, debrand (doc facts auto-skipped when not kit-dev)
+- **`integrate validate`:** P0 = 0 (14 checks; plugin bundle parity skipped on consumer)
+- **`health`:** required paths present; reports `kit_version`
+
+See [gate matrix](.ai_infra/docs/operations/gate-matrix.md) for prepare (2 universal) vs kit-dev (4) vs scaffold verify (4).
 
 ### 5. Start working
 
@@ -127,13 +141,14 @@ Checklist: `.ai_infra/templates/agent-integration/INTEGRATION-CHECKLIST.md`
 
 | Layer | Contents |
 |-------|----------|
-| **Agents** | `implementer`, `test-runner`, `verifier`, `enterprise-auditor`, `integrator-mas-agent`, `workflow-drift-guard`, optional `researcher` |
-| **Skills** | Implementation, audit, activate, integration protocols + maintainer PR slash skills (`.agents/skills/`) |
+| **Agents (7)** | `implementer`, `test-runner`, `verifier`, `enterprise-auditor`, `integrator-mas-agent`, `workflow-drift-guard`, `researcher` |
+| **Skills (10)** | `workflow-activate`, `implementation-execution-loop`, `test-module-coverage`, `enterprise-architecture-audit`, `audit-orchestration`, `audit-module-map`, `workflow-drift-audit`, `mas-infrastructure-integration`, `connect-external-mcp`, `research-corpus-execution` |
+| **Maintainer slash skills (5)** | `.agents/skills/`: `pr-workflow`, `review-pr`, `prepare-pr`, `merge-pr`, `audit-alignment` (redirect) |
 | **Rules** | **6 universal** always-applied `.cursor/rules/*.mdc` |
-| **Scripts** | `.ai_infra/scripts/pr/*` (review → prepare → merge) + governance checks |
-| **`.local/`** | Gitignored workspace — trackers, PR/drift/alignment artifacts, dashboards |
-| **CLI** | `python3 -m cursor_workflow` — `activate`, `install`, `gates`, `health`, `mcp`, `integrate`, `contributors` |
-| **MCP** | Optional `workflow-kit` server (`.venv` created on activate with MCP profile) |
+| **Scripts** | `.ai_infra/scripts/pr/*` (review → prepare → merge) + governance, integration, drift checks |
+| **`.local/`** | Gitignored — Tier 1 trackers + six `workflow-artifacts/*` buckets (Tier 2 filled at runtime) |
+| **CLI** | `python3 -m cursor_workflow` — `activate`, `install`, `gates`, `health`, `mcp`, `contributors`, `integrate`, `drift`, `doc`, `verify` |
+| **MCP** | `workflow-kit` server (profile `with_mcp`; `.venv` created on activate) |
 
 Product-specific Cursor rules: copy from [`overlays/rules/`](overlays/README.md) into `.cursor/rules/` if needed.
 
@@ -141,7 +156,7 @@ Product-specific Cursor rules: copy from [`overlays/rules/`](overlays/README.md)
 
 ## Pattern A — one script per maintainer action
 
-Agents run **one command** per action; gates live in `prepare.py` only.
+Agents run **one command** per action; merge gates live in `prepare.py` only (**2** universal on consumer projects).
 
 ```bash
 python3 .ai_infra/scripts/pr/prepare.py --pr <id|url> --pipeline default
@@ -153,7 +168,7 @@ See project `AGENTS.md` and `.agents/skills/pr-workflow/` after activate. Do not
 
 ## Advanced install (no Marketplace)
 
-For teams that clone the kit repo and install without the plugin UI (same bundle as `payload/`):
+For teams that clone the kit repo and install without the plugin UI (same bundle as generated `payload/`):
 
 ```bash
 git clone https://github.com/SavinRazvan/mas-workflow-kit.git
@@ -185,8 +200,8 @@ For contributors to **mas-workflow-kit** (not consumer projects):
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -e ".[dev,mcp]"
-make gates
-make smoke-consumer          # Track A + B consumer smoke
+make gates                    # 5 steps incl. doc facts on kit-dev
+make smoke-consumer           # Track A + B consumer smoke
 make sync-plugin && make check-plugin
 ```
 

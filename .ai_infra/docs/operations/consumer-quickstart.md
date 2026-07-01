@@ -37,9 +37,9 @@ Adopt the **MAS Workflow Kit** in a fresh directory or existing repo. No git rem
 1. **Cursor → Marketplace** → search **MAS Workflow Kit** → Install.  
    (Pre-launch: `/add-plugin` → kit repo root with `.cursor-plugin/plugin.json`.)
 2. Open your **target project** in Cursor (**not** the kit repo).
-3. Run skill **`workflow-activate`** in chat.
+3. Run skill **`workflow-activate`** in chat (runs `python3 -m cursor_workflow activate --directory .` with profile **`with_mcp`**).
 
-**Terminal — pre-launch dogfood only** (skip if Marketplace + chat activate work):
+**Terminal — pre-launch dogfood only** (skip when chat activate works):
 
 ```bash
 export KIT=~/Projects/mas-workflow-kit
@@ -51,139 +51,143 @@ cd "$TARGET"
 ```
 
 4. Edit `.local/user_settings/github.collaboration.yaml` → `python3 -m cursor_workflow contributors validate`.
-5. `python3 -m cursor_workflow gates`
+5. `python3 -m cursor_workflow integrate validate` (expect P0 = 0).
+6. `python3 -m cursor_workflow gates`
 
 **Add agents/skills/MCP later:** @ **`integrator-mas-agent`** + skill **`mas-infrastructure-integration`** → `integrate validate`.
 
 ---
 
-## 0. Prerequisites
+## Kit clone path (advanced)
+
+Use when installing without the plugin UI. Requires cloning **mas-workflow-kit** once.
+
+### Prerequisites
 
 | Need | Notes |
 |------|--------|
 | Python 3.11+ | `python3 --version` |
-| Kit source | Clone **mas-workflow-kit** locally (or use plugin `payload/`) |
+| Kit source | Clone repo or use generated `payload/` after `make sync-plugin` |
 | Cursor IDE | For agents, rules, optional MCP |
 
-From the **kit repo root**, create a venv once:
+From the **kit repo root**:
 
 ```bash
+git clone https://github.com/SavinRazvan/mas-workflow-kit.git
+cd mas-workflow-kit
 python3 -m venv .venv
 .venv/bin/pip install -q -r requirements-dev.txt
 ```
 
----
-
-## 1. Preview (optional, ~30 s)
+### Preview (optional)
 
 ```bash
+export TARGET=~/Projects/my-app
+mkdir -p "$TARGET"
 .venv/bin/python -m cursor_workflow install \
-  --target /tmp/my-project \
+  --target "$TARGET" \
   --dry-run
 ```
 
-Confirm the copy plan lists `.cursor/`, `.ai_infra/`, `AGENTS.md`, and `.ai_infra/project.config.yaml.example`.
+Confirm the copy plan lists `.cursor/`, `.agents/`, `.ai_infra/`, `AGENTS.md`, and `.ai_infra/project.config.yaml.example`.
 
----
-
-## 2. Install (~2 min)
-
-**Plugin / Marketplace (recommended):**
+### Install
 
 ```bash
-cd /path/to/your-project
-python3 -m cursor_workflow activate --directory .
-# Or from kit repo venv: .venv/bin/python -m cursor_workflow activate --directory .
-```
-
-One command installs all **three planes** (`.cursor/` + `.agents/`, `.ai_infra/`, `.local/`). Then edit settings only — see §3.
-
-**Kit clone / advanced:**
-
-```bash
-TARGET=/path/to/your-project
+export TARGET=~/Projects/my-app
+mkdir -p "$TARGET"
 
 .venv/bin/python -m cursor_workflow install \
   --target "$TARGET" \
   --with-venv \
   --with-mcp-json \
   --verify
+
+cd "$TARGET"
 ```
 
-**What this does**
+**What install / activate does**
 
-- Copies agents, skills, rules, slim `.ai_infra/`, exemplar `.local/` trackers, **`AGENTS.md`** (from kit stub, first install only)
-- Creates all `workflow-artifacts/*` buckets with README stubs (Tier 1 base); runtime `.md` files appear on first use (Tier 2)
-- Writes `.ai_infra/.kit-version` (semver from manifest)
-- Scaffolds minimal `tests/modules/smoke/test_kit_installed.py` (not full kit `tests/`)
-- Merges `.cursor/mcp.json` from `mcp.json.kit.example` (+ optional `mcp.user.json`)
-- Creates `.venv` and runs verify gates (artifacts + pytest + governance + debrand)
+- Copies **three planes**: `.cursor/` + `.agents/`, `.ai_infra/` + `cursor_workflow/`, `.local/` Tier 1 scaffold
+- Writes **`AGENTS.md`** from kit stub (first install only; not overwritten on re-activate)
+- Creates six **`workflow-artifacts/*`** buckets with README stubs (Tier 1); runtime `.md` files appear on first use (Tier 2)
+- Writes `.ai_infra/.kit-version` (currently **0.3.0** from manifest)
+- Scaffolds `tests/modules/smoke/test_kit_installed.py` (not the full kit `tests/` tree)
+- Merges `.cursor/mcp.json` from kit example (+ optional `mcp.user.json`)
+- Creates `.venv` and runs verify gates (4 checks: artifacts + pytest + governance + debrand)
 
 **Kit dev only:** `--with-tests` copies the full kit `tests/` tree.
 
-**Marketplace / plugin:** see `workflow-activate` skill — `python3 -m cursor_workflow activate --directory .` (uses plugin `payload/` as source; kit dev: `.venv/bin/python -m cursor_workflow activate …`).
-
 ---
 
-## 3. Customize once (~1 min)
+## Customize once (~1 min)
 
-**What `.local` contains:** Tier 1 base artifacts (neutral trackers + empty artifact buckets) from install; Tier 2 runtime files (PR review/prep/merge, drift, alignment, audits) filled during work. See [local-workspace-layout.md](local-workspace-layout.md) § Artifact tiers.
+**Artifact tiers:** Tier 1 base at install; Tier 2 runtime under `workflow-artifacts/` during work. See [local-workspace-layout.md](local-workspace-layout.md) § Artifact tiers.
 
 ```bash
-cd "$TARGET"
-cp .ai_infra/project.config.yaml.example project.config.yaml
-# Personal settings (GitHub + MCP worksheets — edit placeholders):
+cd ~/Projects/my-app   # your activated project
+
+cp .ai_infra/project.config.yaml.example project.config.yaml   # optional
+
+# Personal settings — replace placeholders:
 #   .local/user_settings/github.collaboration.yaml
 #   .local/user_settings/mcp.agents.yaml
+
 python3 -m cursor_workflow contributors validate
 python3 -m cursor_workflow integrate validate
+
 # Optional external MCP:
 cp .cursor/mcp.registry.yaml.example .cursor/mcp.registry.yaml
 cp .cursor/mcp.user.example.json .cursor/mcp.user.json
+python3 -m cursor_workflow mcp validate
 ```
 
-**Extend infrastructure later:** use agent **`integrator-mas-agent`** + skill **`mas-infrastructure-integration`** (see `.ai_infra/docs/operations/mas-infrastructure-integration.md`, ADR-006).
+**Extend infrastructure later:** @ **`integrator-mas-agent`** + skill **`mas-infrastructure-integration`** — see [mas-infrastructure-integration.md](mas-infrastructure-integration.md), ADR-006.
 
-Product overlay: `cp overlays/rules/*.mdc .cursor/rules/` (from kit repo).
+Product overlay rules (from kit repo at install time): `cp overlays/rules/*.mdc .cursor/rules/`.
 
 ---
 
-## 4. Verify (~1 min)
+## Verify (~1 min)
 
-From **kit repo** (consumer has no `cursor_workflow` shim unless installed via plugin payload):
+**From your activated project** (preferred):
+
+```bash
+python3 -m cursor_workflow gates
+python3 -m cursor_workflow health
+python3 -m cursor_workflow integrate validate
+python3 -m cursor_workflow mcp validate    # after registry setup
+```
+
+**From kit repo** (alternative — pass target explicitly):
 
 ```bash
 .venv/bin/python -m cursor_workflow gates --directory "$TARGET"
 .venv/bin/python -m cursor_workflow health --directory "$TARGET"
-.venv/bin/python -m cursor_workflow integrate validate --directory "$TARGET"
-.venv/bin/python -m cursor_workflow mcp validate --directory "$TARGET"  # after registry setup
 ```
 
-Expected: testing-artifact PASS, pytest green, governance PASS, debrand PASS.
+Expected: testing-artifact PASS, pytest green, governance PASS, debrand PASS; doc facts auto-skipped on consumer (`DOC-000`).
+
+Gate surfaces: [gate-matrix.md](gate-matrix.md) — prepare **2** universal; scaffold verify **4**; kit-dev `make gates` **5**.
 
 ---
 
-## 5. Cursor setup
+## Cursor setup
 
-1. Open `$TARGET` in Cursor.
-2. Agents: `.cursor/agents/`; rules: `.cursor/rules/`.
-3. **MCP:** merged `.cursor/mcp.json` from `--with-mcp-json`. Kit fragment: `.cursor/mcp.json.kit.example`. External servers: [connect-external-mcp.md](connect-external-mcp.md).
+1. Open your project folder in Cursor.
+2. Agents: `.cursor/agents/` (7); rules: `.cursor/rules/` (6 universal).
+3. **MCP:** merged `.cursor/mcp.json` from activate (profile `with_mcp`). External servers: [connect-external-mcp.md](connect-external-mcp.md).
 4. Start a slice: `.local/index-and-planning/current/session-pointer.md` → `plan.md`.
 
 ### Subagent model (cost control)
 
-Kit agent cards use **`model: auto`** in frontmatter (Auto + Composer pool — avoids inheriting parent Composer fast routing).
+Kit agent cards use **`model: auto`** in frontmatter.
 
-**Built-in Cursor subagents** (`explore`, `bash`, `browser`) are **not** in the repo. Configure in **Cursor → Settings → Agents → Subagents**:
+**Built-in Cursor subagents** (`explore`, `bash`, `browser`) are **not** in the repo. Configure in **Cursor → Settings → Agents → Subagents** — **Auto** recommended for Explore.
 
-| Built-in | Recommended | Why |
-|----------|-------------|-----|
-| Explore | **Auto** | Default Explore uses a fast Composer variant; Auto routes cost-efficiently |
-| Bash / Browser | **Auto** or task-appropriate | Match your plan and task depth |
+Repo subagents load from `.cursor/agents/` after install or plugin activate.
 
-Repo subagents (`enterprise-auditor`, `implementer`, …) load from `.cursor/agents/` after install or plugin activate.
-
-Maintainer PR: [`.agents/skills/pr-workflow/SKILL.md`](../../../.agents/skills/pr-workflow/SKILL.md).
+Maintainer PR flow: `.agents/skills/pr-workflow/SKILL.md`.
 
 ---
 
@@ -191,7 +195,9 @@ Maintainer PR: [`.agents/skills/pr-workflow/SKILL.md`](../../../.agents/skills/p
 
 | Symptom | Fix |
 |---------|-----|
-| `pytest` not found | Re-run with `--with-venv` |
+| `pytest` not found | Re-run activate/install with venv (default on `with_mcp`) |
+| `contributors validate` FAIL | Replace placeholders in `github.collaboration.yaml` |
+| `integrate validate` P2 on `plugin/agents/` | Fixed in kit ≥ 0.3.0 — consumer skips plugin parity; upgrade or ignore if P0 = 0 |
 | `mcp validate` fails | Registry server keys must exist in merged `mcp.json` |
 | Governance warns on CI | Normal when `.github/` absent in greenfield consumer |
 
@@ -204,16 +210,14 @@ Deep checklist: [install-dry-run.md](install-dry-run.md). Upgrade: [upgrade-kit.
 ```text
 your-project/
 ├── AGENTS.md
-├── .cursor/          agents, skills, rules, mcp.json
-├── .agents/skills/   review-pr, prepare-pr, merge-pr, pr-workflow
+├── .cursor/          agents (7), skills (10), rules (6), mcp.json
+├── .agents/skills/   pr-workflow, review-pr, prepare-pr, merge-pr
 ├── .ai_infra/        scripts, docs, manifest, .kit-version
-├── .local/           gitignored — Tier 1 trackers + workflow-artifacts buckets (Tier 2 at runtime)
-├── cursor_workflow/  python -m cursor_workflow (install|gates|health|mcp)
+├── .local/           gitignored — Tier 1 trackers + workflow-artifacts buckets
+├── cursor_workflow/  python3 -m cursor_workflow
 └── tests/modules/smoke/test_kit_installed.py
 ```
 
-**Ongoing CLI** (`gates`, `health`, `mcp`): run **`python -m cursor_workflow`** from the consumer project (shim copied at install) or from kit/payload with `--directory "$TARGET"`.
+**Ongoing CLI:** run **`python3 -m cursor_workflow`** from the consumer project, or from kit/payload with `--directory "$TARGET"`.
 
-See [gate-matrix.md](gate-matrix.md) for prepare GATES (2) vs kit gates (5) vs consumer scaffold verify (4).
-
-**Pattern A:** one script command per agent action. `GATES` in `.ai_infra/scripts/pr/prepare.py`.
+**Pattern A:** one script command per agent action. `GATES` in `.ai_infra/scripts/pr/prepare.py` — **2** universal on consumer projects.

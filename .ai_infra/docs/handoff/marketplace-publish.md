@@ -59,7 +59,7 @@ python3 -m cursor_workflow integrate validate
 python3 -m cursor_workflow gates
 ```
 
-Pass: `VERIFY PASS` on activate; `contributors validate: PASS`; `gates` green.
+Pass: `VERIFY PASS` on activate; `contributors validate: PASS` (after editing placeholders); `integrate validate` P0 = 0 (plugin parity skipped on consumer); `gates` green.
 
 ### Quick plugin smoke (from kit repo)
 
@@ -101,6 +101,7 @@ bash .ai_infra/scripts/install/smoke_marketplace.sh
 | No `ci/kit-dev` in templates | PASS | PASS |
 | Tier-1 `pages.json` paths | All PASS | (same layout) |
 | `gates` / governance | PASS | PASS |
+| `integrate validate` | P0 = 0 (kit-dev) | P0 = 0; INT-009/011 skipped on consumer |
 | `user_settings` idempotency | PASS (valid exemplar + re-install) | N/A |
 | `contributors validate` | N/A until personalized | **FAIL expected** until placeholders replaced |
 

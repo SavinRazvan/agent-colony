@@ -2,7 +2,7 @@
 
 ## Project intent
 
-**Cursor Agent Infrastructure** — multi-agent workflow installed via plugin. Agents call **one script command** per maintainer action; `GATES` live in `.ai_infra/scripts/pr/prepare.py`.
+**MAS Workflow Kit** — multi-agent workflow installed via plugin. Agents call **one script command** per maintainer action; `GATES` live in `.ai_infra/scripts/pr/prepare.py`.
 
 ## First reads
 

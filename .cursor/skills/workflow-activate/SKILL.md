@@ -26,7 +26,7 @@ First use after enabling the **MAS Workflow Kit** plugin in a project workspace 
 From the **open workspace** (Pattern A — one script command):
 
 ```bash
-python -m cursor_workflow activate --directory .
+python3 -m cursor_workflow activate --directory .
 ```
 
 **Auto source resolution:** `WORKFLOW_KIT_PAYLOAD` env → `./payload/` → kit `payload/` (plugin bundle). Override with `--source /path/to/payload`.
@@ -53,8 +53,8 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 
 1. Edit `.local/user_settings/github.collaboration.yaml` (owner, pipelines, provenance)
 2. Optional: `.local/user_settings/mcp.agents.yaml`
-3. `python -m cursor_workflow contributors validate`
-4. `python -m cursor_workflow integrate validate`
+3. `python3 -m cursor_workflow contributors validate`
+4. `python3 -m cursor_workflow integrate validate`
 
 ## Adding agents/skills/MCP later
 
