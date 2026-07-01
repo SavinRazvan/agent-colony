@@ -205,7 +205,7 @@ make smoke-consumer           # Track A + B consumer smoke
 make sync-plugin && make check-plugin
 ```
 
-Status and roadmap: [IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) · Marketplace: [marketplace-publish](.ai_infra/docs/handoff/marketplace-publish.md)
+Status and roadmap: [IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) · Marketplace: [marketplace-publish](.ai_infra/docs/handoff/marketplace-publish.md) (includes [versioning SSOT](.ai_infra/docs/handoff/marketplace-publish.md#versioning))
 
 ---
 

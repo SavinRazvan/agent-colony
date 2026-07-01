@@ -24,8 +24,33 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 3. `make sync-plugin` — rebuild `plugin/` + `payload/`
 4. `make check-plugin` — bundle parity green
 5. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
-6. Bump `version` in `.cursor-plugin/plugin.json` and `cursor_workflow.__version__` together
+6. Bump **all version SSOT fields together** (see [Versioning](#versioning) below)
 7. Add `assets/logo.png` (1:1, background plate) — see `assets/README.md`
+
+## Versioning
+
+**Current release:** `0.3.0` (git tag `v0.3.0`).
+
+On every release, bump **in lockstep**:
+
+| File | Field |
+|------|--------|
+| `.cursor-plugin/plugin.json` | `version` |
+| `pyproject.toml` | `version` |
+| `cursor_workflow/__init__.py` | `__version__` |
+| `cursor_workflow/cli.py` | `__version__` |
+| `.ai_infra/install/cursor_workflow/__init__.py` | `__version__` |
+| `.ai_infra/install/cursor_workflow/cli.py` | `--version` string |
+| `.ai_infra/__init__.py` | `__version__` |
+| `.ai_infra/manifest.yaml` | `kit_version` |
+| `.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md` | header + kit version row |
+| `tests/modules/install/test_install_contract.py` | `.kit-version` assertion |
+| `tests/modules/install/test_editable_install.py` | `__version__` assertion |
+| `tests/modules/install/test_cursor_workflow.py` | `__version__` assertion |
+
+**Consumer installs** receive version via `.ai_infra/.kit-version` (written from manifest `kit_version` at scaffold/activate). **Not versioned with kit:** `workflow_mcp.__version__` (MCP server package semver).
+
+After bump: `make sync-plugin && make check-plugin`, tag `vX.Y.Z`, optional GitHub Release notes.
 
 ## Bundle layout
 
