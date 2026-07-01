@@ -38,19 +38,49 @@ payload/           # ADR-001 install source (.ai_infra + cursor_workflow shim)
 
 ## Local smoke (`/add-plugin` from repo path)
 
-1. Run `make sync-plugin`
-2. In Cursor: add plugin from kit repo root (must contain `.cursor-plugin/plugin.json`)
-3. Confirm agents load: `implementer`, `enterprise-auditor`, maintainer slash skills
-4. Run **workflow-activate** skill command (use `python3` or `.venv/bin/python` from kit repo — not bare `python` on many Linux images):
+### Maintainer dogfood (real project — not the kit repo)
 
 ```bash
-cd /path/to/project
-.venv/bin/python -m cursor_workflow activate --directory .
-# Or from kit repo without opening target in Cursor:
-.venv/bin/python payload/cursor_workflow activate --directory /path/to/project --source payload
+export KIT=~/Projects/mas-workflow-kit
+export TARGET=~/Projects/mas-dogfood
+mkdir -p "$TARGET"
+
+# 1. Plugin in Cursor: /add-plugin → "$KIT" (repo root with .cursor-plugin/plugin.json)
+# 2. Open "$TARGET" as the workspace in Cursor (File → Open Folder)
+
+"$KIT/.venv/bin/python" "$KIT/payload/cursor_workflow" activate \
+  --directory "$TARGET" \
+  --source "$KIT/payload"
+
+cd "$TARGET"
+# Edit .local/user_settings/github.collaboration.yaml (placeholders → your name / @handle)
+python3 -m cursor_workflow contributors validate
+python3 -m cursor_workflow integrate validate
+python3 -m cursor_workflow gates
 ```
 
-5. In target: `.venv/bin/python -m cursor_workflow gates --directory /path/to/project` (or installed `cursor-workflow` if on PATH)
+Pass: `VERIFY PASS` on activate; `contributors validate: PASS`; `gates` green.
+
+### Quick plugin smoke (from kit repo)
+
+1. Run `make sync-plugin`
+2. In Cursor: `/add-plugin` → kit repo root
+3. Confirm agents: `implementer`, `enterprise-auditor`, maintainer slash skills
+4. Run **workflow-activate** in chat with a **non-kit** project folder open
+
+```bash
+cd "$TARGET"
+python3 -m cursor_workflow activate --directory .
+```
+
+Or from kit repo without opening target in Cursor:
+
+```bash
+"$KIT/.venv/bin/python" "$KIT/payload/cursor_workflow" activate \
+  --directory "$TARGET" --source "$KIT/payload"
+```
+
+5. In target: `python3 -m cursor_workflow gates --directory "$TARGET"`
 
 ### Automated smoke (kit repo)
 

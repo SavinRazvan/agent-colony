@@ -21,6 +21,42 @@ Adopt the **MAS Workflow Kit** in a fresh directory or existing repo. No git rem
 
 ---
 
+## Before you start — do and don't
+
+| Do | Don't |
+|----|-------|
+| Open **your app project** in Cursor | Use `mas-workflow-kit` as your day-to-day workspace |
+| Run **`workflow-activate`** in chat (recommended) | Run `make sync-plugin`, `make smoke-consumer`, or `make gates` — **kit-dev only** |
+| Use a **real path** you created (e.g. `~/Projects/my-app`) | Copy `/path/to/your-project` literally |
+| Run CLI commands **from your project** after activate | Run `activate --directory .` while cwd is the kit repo |
+
+---
+
+## Marketplace path (recommended)
+
+1. **Cursor → Marketplace** → search **MAS Workflow Kit** → Install.  
+   (Pre-launch: `/add-plugin` → kit repo root with `.cursor-plugin/plugin.json`.)
+2. Open your **target project** in Cursor (**not** the kit repo).
+3. Run skill **`workflow-activate`** in chat.
+
+**Terminal — pre-launch dogfood only** (skip if Marketplace + chat activate work):
+
+```bash
+export KIT=~/Projects/mas-workflow-kit
+export TARGET=~/Projects/my-app
+mkdir -p "$TARGET"
+"$KIT/.venv/bin/python" "$KIT/payload/cursor_workflow" activate \
+  --directory "$TARGET" --source "$KIT/payload"
+cd "$TARGET"
+```
+
+4. Edit `.local/user_settings/github.collaboration.yaml` → `python3 -m cursor_workflow contributors validate`.
+5. `python3 -m cursor_workflow gates`
+
+**Add agents/skills/MCP later:** @ **`integrator-mas-agent`** + skill **`mas-infrastructure-integration`** → `integrate validate`.
+
+---
+
 ## 0. Prerequisites
 
 | Need | Notes |

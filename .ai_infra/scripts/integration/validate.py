@@ -69,6 +69,11 @@ def _import_user_settings(root: Path):
     return user_settings
 
 
+def _is_kit_dev_root(root: Path) -> bool:
+    """Kit-dev profile: handoff docs ship only in the maintainer repo."""
+    return (root / ".ai_infra" / "docs" / "handoff" / "IMPLEMENTATION-STATUS.md").is_file()
+
+
 def _paths(root: Path) -> dict[str, Path]:
     infra = ai_infra_dir(root)
     return {
@@ -204,7 +209,14 @@ def _check_int008(paths: dict[str, Path]) -> CheckResult:
     )
 
 
-def _check_int009(paths: dict[str, Path]) -> CheckResult:
+def _check_int009(root: Path, paths: dict[str, Path]) -> CheckResult:
+    if not _is_kit_dev_root(root):
+        return CheckResult(
+            check_id="INT-009",
+            severity=Severity.P2,
+            passed=True,
+            detail="consumer profile — plugin bundle parity skipped",
+        )
     exists = paths["plugin_integrator"].is_file()
     return CheckResult(
         check_id="INT-009",
@@ -252,7 +264,7 @@ def _import_check_drift(root: Path):
     return check_drift
 
 
-def _check_int011(paths: dict[str, Path]) -> CheckResult:
+def _check_int011(root: Path, paths: dict[str, Path]) -> CheckResult:
     agent_source = paths["agents_dir"] / "workflow-drift-guard.md"
     plugin_copy = paths["plugin_drift_guard"]
     if not agent_source.is_file():
@@ -261,6 +273,13 @@ def _check_int011(paths: dict[str, Path]) -> CheckResult:
             severity=Severity.P0,
             passed=False,
             detail="missing .cursor/agents/workflow-drift-guard.md",
+        )
+    if not _is_kit_dev_root(root):
+        return CheckResult(
+            check_id="INT-011",
+            severity=Severity.P2,
+            passed=True,
+            detail="consumer profile — plugin bundle parity skipped",
         )
     exists = plugin_copy.is_file()
     return CheckResult(
@@ -399,9 +418,9 @@ def run_checks(root: Path | None = None) -> list[CheckResult]:
         _check_int006(us, project_root),
         _check_int007(us, project_root),
         _check_int008(paths),
-        _check_int009(paths),
+        _check_int009(project_root, paths),
         _check_int010(paths),
-        _check_int011(paths),
+        _check_int011(project_root, paths),
         _check_int012(project_root),
         _check_int013(project_root),
         _check_int014(project_root),
