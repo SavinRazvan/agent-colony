@@ -56,7 +56,8 @@ Confirm the copy plan lists `.cursor/`, `.ai_infra/`, `AGENTS.md`, and `.ai_infr
 
 ```bash
 cd /path/to/your-project
-python -m cursor_workflow activate --directory .
+python3 -m cursor_workflow activate --directory .
+# Or from kit repo venv: .venv/bin/python -m cursor_workflow activate --directory .
 ```
 
 One command installs all **three planes** (`.cursor/` + `.agents/`, `.ai_infra/`, `.local/`). Then edit settings only — see §3.
@@ -84,7 +85,7 @@ TARGET=/path/to/your-project
 
 **Kit dev only:** `--with-tests` copies the full kit `tests/` tree.
 
-**Marketplace / plugin:** see `workflow-activate` skill — `python -m cursor_workflow activate --directory .` (uses plugin `payload/` as source).
+**Marketplace / plugin:** see `workflow-activate` skill — `python3 -m cursor_workflow activate --directory .` (uses plugin `payload/` as source; kit dev: `.venv/bin/python -m cursor_workflow activate …`).
 
 ---
 
@@ -98,8 +99,8 @@ cp .ai_infra/project.config.yaml.example project.config.yaml
 # Personal settings (GitHub + MCP worksheets — edit placeholders):
 #   .local/user_settings/github.collaboration.yaml
 #   .local/user_settings/mcp.agents.yaml
-python -m cursor_workflow contributors validate
-python -m cursor_workflow integrate validate
+python3 -m cursor_workflow contributors validate
+python3 -m cursor_workflow integrate validate
 # Optional external MCP:
 cp .cursor/mcp.registry.yaml.example .cursor/mcp.registry.yaml
 cp .cursor/mcp.user.example.json .cursor/mcp.user.json

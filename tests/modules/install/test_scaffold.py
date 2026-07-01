@@ -48,6 +48,7 @@ def test_scaffold_creates_core_layout(tmp_path: Path) -> None:
     mod.scaffold(target, REPO_ROOT)
     assert (target / ".cursor" / "agents" / "implementer.md").is_file()
     assert (target / ".ai_infra" / "scripts" / "pr" / "prepare.py").is_file()
+    assert (target / ".ai_infra" / "scripts" / "install" / "scaffold.py").is_file()
     assert (target / ".local" / "index-and-planning" / "current" / "session-pointer.md").is_file()
     assert not (target / ".cursor" / "agents" / "workflow-intelligence-mapper.md").exists()
     assert not (target / ".cursor" / "rules" / mod.ADAPTER_WALL_RULE).exists()

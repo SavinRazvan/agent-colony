@@ -17,11 +17,13 @@ Notes:
 
 ## Pre-publish (kit repo)
 
+Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python` is not guaranteed on Linux/WSL.
+
 1. `make gates` — kit repo green
 2. `make install-dry-run` — consumer install green
 3. `make sync-plugin` — rebuild `plugin/` + `payload/`
 4. `make check-plugin` — bundle parity green
-5. `python .ai_infra/scripts/architecture/check_debrand.py`
+5. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
 6. Bump `version` in `.cursor-plugin/plugin.json` and `cursor_workflow.__version__` together
 
 ## Bundle layout
@@ -37,16 +39,16 @@ payload/         # ADR-001 install source (.ai_infra + cursor_workflow shim)
 1. Run `make sync-plugin`
 2. In Cursor: add plugin from kit repo root (must contain `.cursor-plugin/plugin.json`)
 3. Confirm agents load: `implementer`, `enterprise-auditor`, maintainer slash skills
-4. Run **workflow-activate** skill command:
+4. Run **workflow-activate** skill command (use `python3` or `.venv/bin/python` from kit repo — not bare `python` on many Linux images):
 
 ```bash
 cd /path/to/project
-python -m cursor_workflow activate --directory .
+.venv/bin/python -m cursor_workflow activate --directory .
 # Or from kit repo without opening target in Cursor:
-python payload/cursor_workflow activate --directory /path/to/project --source payload
+.venv/bin/python payload/cursor_workflow activate --directory /path/to/project --source payload
 ```
 
-5. In target: `python payload/cursor_workflow gates --directory /path/to/project` (or installed `cursor_workflow` if on PATH)
+5. In target: `.venv/bin/python -m cursor_workflow gates --directory /path/to/project` (or installed `cursor-workflow` if on PATH)
 
 ## Publish
 
