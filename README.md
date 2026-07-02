@@ -206,7 +206,7 @@ After activate, your project includes:
 | **Onboarding doc**        | copied on activate | `AGENTS.md` + `consumer-quickstart.md` under `.ai_infra/docs/operations/`                                                          |
 
 
-Optional product rules: `[overlays/rules/](overlays/README.md)`
+Optional product rules: [overlays/rules/](overlays/README.md)
 
 **Verify anytime** (from **your activated project** — e.g. `~/Projects/my-app` — not the `mas-workflow-kit` kit repo; `tests/modules/smoke/` only exists after activate/install):
 
@@ -274,10 +274,6 @@ make gates && make smoke-consumer && make sync-plugin && make check-plugin
 
 [IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) · [Marketplace / versioning](.ai_infra/docs/handoff/marketplace-publish.md)
 
----
-
-
-
 ## License
 
-Apache 2.0 — `[LICENSE](LICENSE)` · `[NOTICE](NOTICE)`
+Apache 2.0 — [LICENSE](LICENSE) · [NOTICE](NOTICE)
