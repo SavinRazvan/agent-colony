@@ -59,3 +59,27 @@ def test_consumer_purity_fails_when_ci_fixtures_ship(tmp_path: Path) -> None:
     )
     assert proc.returncode != 0
     assert "ci" in proc.stdout.lower() or "ci" in proc.stderr.lower()
+
+
+def test_consumer_purity_fails_when_maintainer_ops_doc_ships(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "consumer"
+    mod.scaffold(target, REPO_ROOT)
+    leaked = (
+        target
+        / ".ai_infra"
+        / "docs"
+        / "operations"
+        / "documentation-maintenance-checklist.md"
+    )
+    leaked.parent.mkdir(parents=True, exist_ok=True)
+    leaked.write_text("# maintainer only\n", encoding="utf-8")
+    proc = subprocess.run(
+        [sys.executable, str(PURITY), "--target", str(target)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert proc.returncode != 0
+    assert "documentation-maintenance-checklist" in proc.stdout

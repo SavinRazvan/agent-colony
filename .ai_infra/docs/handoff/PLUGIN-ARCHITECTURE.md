@@ -91,16 +91,18 @@ my-app/
 ├── .agents/                  # maintainer slash skills
 ├── .ai_infra/                # slim infrastructure bundle
 │   ├── manifest.yaml
-│   ├── scripts/pr/
-│   ├── scripts/architecture/
-│   ├── docs/operations/      # agent-facing ops docs only
-│   ├── templates/local-workspace/
-│   └── project.config.yaml.example
+│   ├── install-contract.json
+│   ├── scripts/pr|architecture|integration|workflow|install/
+│   ├── install/cursor_workflow/
+│   ├── docs/operations|governance|roadmap|decisions|architecture/
+│   ├── templates/local-workspace|user-settings|agent-integration/
+│   ├── mcp_servers/workflow_mcp/   # with_mcp profile
+│   └── workflows/
 ├── overlays/                 # product rules source (copy → .cursor/rules/)
 └── .local/                   # scaffolded trackers
 ```
 
-**Not installed by default:** kit `tests/`, full `governance/`, product release scripts, maintainer megadocs.
+**Not installed by default:** kit full `tests/`, `Makefile`, `docs/handoff/`, CI/release scripts, maintainer megadocs under `docs/maintainer/`.
 
 **Kit dev repo only (not in consumer** `.ai_infra/`**):** `scripts/ci/`, `scripts/release/`, `docs/handoff/`, root `Makefile`, full `tests/modules/`. Consumers use the slim bundle from `manifest.yaml` `copy_ai_infra` only.
 

@@ -29,7 +29,7 @@ Notes:
 | Kit subagent model policy | `.cursor/agents/*.md` frontmatter `model: auto` | Task delegation cost control |
 | Durable maintainer checklist | `.ai_infra/docs/operations/workflow-complete.md` | Everyone (versioned) |
 | Audit / dedup rules | `.ai_infra/docs/operations/agent-workflow-procedures.md` | Alignment + governance |
-| Maintainer doc sync checklist | `.ai_infra/docs/operations/documentation-maintenance-checklist.md` | Slice/PR doc updates |
+| Maintainer doc sync checklist | `.ai_infra/docs/operations/documentation-maintenance-checklist.md` (kit-dev copy; excluded from consumer install) | Slice/PR doc updates |
 | Alignment finding shape | `.ai_infra/docs/roadmap/alignment-audit-schema.md` | `enterprise-auditor` focused pass |
 | Full enterprise audit outputs | `.cursor/skills/enterprise-architecture-audit/SKILL.md` → `.local/workflow-artifacts/enterprise-architecture-audit/` | Deep audits |
 | Focused alignment outputs | Same skill § focused pass → `.local/workflow-artifacts/alignment/` | Architecture-impacting PRs |

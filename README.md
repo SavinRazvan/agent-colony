@@ -5,6 +5,7 @@ Multi-agent workflow for Cursor — subagents, skills, rules, PR scripts, and `.
 | If you are… | Start here |
 |-------------|------------|
 | **New user** | [Get started in 4 steps](#get-started-most-users) below |
+| **Plugin user manual** | [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) — architecture, file tree, use cases |
 | **Full `/` menu + verify commands** | [Consumer quickstart](.ai_infra/docs/operations/consumer-quickstart.md) (copied into your project after activate) |
 | **Kit maintainer** | [Developing the kit](#developing-the-kit-repo-only) |
 

@@ -78,5 +78,6 @@ Invoke subagent **`/integrator-mas-agent`** with skill **`/mas-infrastructure-in
 
 ## Reference
 
-- ADR-001 Option B · `PLUGIN-ARCHITECTURE.md` § Automated activation
-- `consumer-quickstart.md`
+- [PLUGIN-USER-GUIDE.md](../../.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) — unified consumer manual
+- [ADR-001 Option B](../../.ai_infra/docs/decisions/ADR-001-distribution-activation.md)
+- [consumer-quickstart.md](../../.ai_infra/docs/operations/consumer-quickstart.md)

@@ -161,6 +161,11 @@ def _copy_ai_infra_rel(
             src, dst, dry_run, log, ignore=consumer_bundle_paths.ignore_local_workspace_ci
         )
         return
+    if consumer_bundle_paths.is_operations_copy(rel):
+        _copy_tree(
+            src, dst, dry_run, log, ignore=consumer_bundle_paths.ignore_operations_maintainer
+        )
+        return
     _copy_tree(src, dst, dry_run, log)
 
 

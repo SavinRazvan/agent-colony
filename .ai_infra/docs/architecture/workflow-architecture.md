@@ -25,8 +25,12 @@ Notes:
 
 ## Activation
 
-1. **Plugin / Marketplace (recommended):** Enable plugin → `python -m cursor_workflow activate --directory .` (or `workflow-activate` skill / MCP `workflow_activate`)
+Enabling the **plugin** loads agents/skills/rules in the IDE only — it does **not** write files to your project. Run activate to install all three planes on disk:
+
+1. **Plugin / Marketplace (recommended):** Enable plugin → **`/workflow-activate`** or `python -m cursor_workflow activate --directory .` (MCP: `workflow_activate`)
 2. **Kit clone / advanced:** `python -m cursor_workflow install --target . --verify`
+
+See [PLUGIN-USER-GUIDE.md](../operations/PLUGIN-USER-GUIDE.md) §1 for the plugin-vs-disk diagram and file tree.
 
 ## Pattern A (maintainer PR)
 

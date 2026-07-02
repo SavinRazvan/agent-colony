@@ -15,7 +15,18 @@ Notes:
 from __future__ import annotations
 
 LOCAL_WORKSPACE_REL = "templates/local-workspace"
+OPERATIONS_REL = "docs/operations"
 CI_FIXTURE_DIRNAME = "ci"
+
+# Maintainer-only files under docs/operations (ADR-005); excluded from consumer copy.
+OPERATIONS_MAINTAINER_ONLY: frozenset[str] = frozenset(
+    {"documentation-maintenance-checklist.md"}
+)
+
+# Repo-relative paths excluded from consumer installs (for governance/purity checks).
+CONSUMER_EXCLUDED_REL_PATHS: frozenset[str] = frozenset(
+    f".ai_infra/{OPERATIONS_REL}/{name}" for name in OPERATIONS_MAINTAINER_ONLY
+)
 
 # Maintainer handles that must not appear in consumer-facing install surfaces.
 MAINTAINER_IDENTITY_MARKERS: tuple[str, ...] = (
@@ -34,6 +45,10 @@ def is_local_workspace_copy(rel: str) -> bool:
     return rel.replace("\\", "/").rstrip("/") == LOCAL_WORKSPACE_REL
 
 
+def is_operations_copy(rel: str) -> bool:
+    return rel.replace("\\", "/").rstrip("/") == OPERATIONS_REL
+
+
 def ignore_local_workspace_ci(directory: str, names: list[str]) -> set[str]:
     """shutil.copytree ignore: drop maintainer ci/ subtree from local-workspace templates."""
     if CI_FIXTURE_DIRNAME not in names:
@@ -42,3 +57,8 @@ def ignore_local_workspace_ci(directory: str, names: list[str]) -> set[str]:
     if norm.endswith("/local-workspace") or norm.endswith(LOCAL_WORKSPACE_REL):
         return {CI_FIXTURE_DIRNAME}
     return set()
+
+
+def ignore_operations_maintainer(_directory: str, names: list[str]) -> set[str]:
+    """shutil.copytree ignore: drop kit-maintainer-only ops docs from consumer bundle."""
+    return {n for n in names if n in OPERATIONS_MAINTAINER_ONLY}

@@ -22,6 +22,7 @@ Depends On:
 
 ## Universal runbooks
 
+- [`PLUGIN-USER-GUIDE.md`](PLUGIN-USER-GUIDE.md) — **start here** — plugin vs activate, file tree, use-case matrix
 - [`consumer-quickstart.md`](consumer-quickstart.md) — adopt the kit in under five minutes
 - [`install-dry-run.md`](install-dry-run.md) — detailed install verification checklist
 - [`connect-external-mcp.md`](connect-external-mcp.md) — link external MCP servers
@@ -29,9 +30,12 @@ Depends On:
 - [`upgrade-kit.md`](upgrade-kit.md) — reinstall / semver upgrade
 - [`project-config.md`](project-config.md) — optional `project.config.yaml` metadata
 - [`token-efficiency.md`](token-efficiency.md) — agent read/write contract
-- [`documentation-maintenance-checklist.md`](documentation-maintenance-checklist.md) — doc sync when policy changes
 - [`logging-and-errors.md`](logging-and-errors.md) — logging baseline
 - [`abbreviations-notepad.md`](abbreviations-notepad.md) — shared abbreviations
+
+## Kit maintainers (not copied to consumer projects)
+
+- [`documentation-maintenance-checklist.md`](documentation-maintenance-checklist.md) — doc sync when policy changes ([kit repo only](https://github.com/SavinRazvan/mas-workflow-kit/blob/main/.ai_infra/docs/operations/documentation-maintenance-checklist.md))
 
 ## Product overlays (not in core)
 

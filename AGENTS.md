@@ -85,7 +85,7 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 
 | Role | Entry |
 |------|--------|
-| Plugin activation | `workflow-activate` skill or `python -m cursor_workflow activate --directory .` — see [PLUGIN-ARCHITECTURE.md](.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md) § Automated activation |
+| Plugin activation | [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) or `workflow-activate` skill / `python -m cursor_workflow activate --directory .` |
 | Implement | `.cursor/agents/implementer.md` + `.cursor/skills/implementation-execution-loop/SKILL.md` |
 | Integrate infrastructure | `.cursor/agents/integrator-mas-agent.md` + `.cursor/skills/mas-infrastructure-integration/SKILL.md` — validate with `python -m cursor_workflow integrate validate` |
 | Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-module-coverage/SKILL.md` |

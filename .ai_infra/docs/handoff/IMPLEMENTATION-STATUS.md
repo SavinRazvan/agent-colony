@@ -16,7 +16,7 @@ Notes:
 # Implementation status (MAS Workflow Kit)
 
 **Last updated:** 2026-07-02 (COV-100 merged; enterprise re-audit doc-sync)  
-**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 583
+**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 584
 
 ## Shipped (confirmed in repo)
 
@@ -34,7 +34,7 @@ Notes:
 | Doc facts validate | DOC-001…006 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
-| MCP tools + resources | 19 tools + 6 resources | `.ai_infra/mcp_servers/workflow_mcp/` |
+| MCP tools + resources | 20 tools + 6 resources | `.ai_infra/mcp_servers/workflow_mcp/` |
 | Install scaffold + contract | `install-contract.json`; idempotent trackers/`AGENTS.md`/`pages.json` on re-activate | `.ai_infra/scripts/install/scaffold.py` |
 | Local artifact tiers | Tier 1 scaffold: all `workflow-artifacts/*` buckets + README stubs; SSOT `local_workflow_paths.py` | `.ai_infra/templates/local-workspace/`, `pages.json` |
 | Integrate validate | INT-001…014; INT-009/011 plugin parity **kit-dev only** | `.ai_infra/scripts/integration/validate.py` |
@@ -44,7 +44,7 @@ Notes:
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Kit version on install | `kit_version` 0.3.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 583 | `tests/modules/` |
+| Tests | 584 | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

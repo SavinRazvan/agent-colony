@@ -264,6 +264,16 @@ def _is_kit_dev_only_path(candidate: str) -> bool:
     return any(candidate.startswith(prefix) for prefix in KIT_DEV_ONLY_PREFIXES)
 
 
+def _is_consumer_excluded_path(candidate: str) -> bool:
+    arch = ROOT / ".ai_infra" / "scripts" / "architecture"
+    arch_str = str(arch)
+    if arch_str not in sys.path:
+        sys.path.insert(0, arch_str)
+    from consumer_bundle_paths import CONSUMER_EXCLUDED_REL_PATHS
+
+    return candidate in CONSUMER_EXCLUDED_REL_PATHS
+
+
 def _collect_owner_path_violations() -> list[str]:
     owners = ROOT / ".ai_infra/docs/governance/workflow-source-owners.md"
     if not owners.is_file():
@@ -282,6 +292,8 @@ def _collect_owner_path_violations() -> list[str]:
             path = ROOT / candidate
             if not path.exists():
                 if _is_kit_dev_only_path(candidate):
+                    continue
+                if _is_consumer_excluded_path(candidate):
                     continue
                 violations.append(f"workflow-source-owners.md: missing path {candidate}")
     return violations

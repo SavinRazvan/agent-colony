@@ -124,6 +124,9 @@ def _copy_ai_infra_rel(ai_src: Path, ai_dst: Path, rel: str) -> None:
     if cbp.is_local_workspace_copy(rel):
         _copy_tree(src, dst, ignore=cbp.ignore_local_workspace_ci)
         return
+    if cbp.is_operations_copy(rel):
+        _copy_tree(src, dst, ignore=cbp.ignore_operations_maintainer)
+        return
     _copy_tree(src, dst)
 
 

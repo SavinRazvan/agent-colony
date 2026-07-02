@@ -38,6 +38,8 @@ from consumer_bundle_paths import (  # noqa: E402
     KIT_DEV_SLICE_MARKERS,
     LOCAL_WORKSPACE_REL,
     MAINTAINER_IDENTITY_MARKERS,
+    OPERATIONS_MAINTAINER_ONLY,
+    OPERATIONS_REL,
 )
 
 TEXT_SUFFIXES = {".md", ".mdc", ".py", ".yaml", ".yml", ".txt", ".json", ".jsonc"}
@@ -75,6 +77,13 @@ def check_consumer_purity(target: Path) -> list[str]:
     ci_path = target / ".ai_infra" / LOCAL_WORKSPACE_REL / CI_FIXTURE_DIRNAME
     if ci_path.exists():
         violations.append(f"{ci_path.relative_to(target)}: kit-dev ci fixtures must not ship")
+
+    for maintainer_doc in OPERATIONS_MAINTAINER_ONLY:
+        leaked = target / ".ai_infra" / OPERATIONS_REL / maintainer_doc
+        if leaked.is_file():
+            violations.append(
+                f"{leaked.relative_to(target)}: kit-maintainer-only doc must not ship"
+            )
 
     commit_rule = target / ".cursor" / "rules" / "commit-trailer-format.mdc"
     if commit_rule.is_file():

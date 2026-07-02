@@ -17,6 +17,8 @@ Notes:
 
 Install the **MAS Workflow Kit** into your project in a few minutes. No special git setup required.
 
+> **Full manual:** [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) — plugin vs activate, complete file tree, use-case matrix, PR and audit chapters.
+
 ---
 
 ## First run (4 steps)
@@ -110,6 +112,28 @@ Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → **`/connect
 4. Dashboard (optional): `.local/agents-control-center/dashboards/`
 
 **Add your own agent/skill/MCP:** **`/integrator-mas-agent`** + **`/mas-infrastructure-integration`**
+
+---
+
+## PR lifecycle (summary)
+
+1. Feature branch (`feature/`, `fix/`, `chore/`)
+2. Implement + test → **`/review-pr`**
+3. **`/prepare-pr`** (runs `prepare.py` GATES)
+4. **`/merge-pr`** → sync `main`, delete branch
+
+Full checklist: [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) §6 · [workflow-complete.md](workflow-complete.md) §A.
+
+---
+
+## Architecture audit (summary)
+
+For architecture-impacting work before merge prep:
+
+1. **`/enterprise-auditor`** with **`/enterprise-architecture-audit`**
+2. Outputs under `.local/workflow-artifacts/enterprise-architecture-audit/`
+
+Procedure: [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) §7 · [agent-workflow-procedures.md](agent-workflow-procedures.md) §1.
 
 ---
 

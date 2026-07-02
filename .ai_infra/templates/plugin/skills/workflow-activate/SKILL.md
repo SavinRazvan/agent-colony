@@ -60,5 +60,6 @@ After plugin enable, parent agent or user should:
 
 ## Reference
 
-- ADR-001 Option B · `PLUGIN-ARCHITECTURE.md` § Automated activation
-- `consumer-quickstart.md`
+- [PLUGIN-USER-GUIDE.md](../../../docs/operations/PLUGIN-USER-GUIDE.md) — unified consumer manual
+- [ADR-001 Option B](../../../docs/decisions/ADR-001-distribution-activation.md)
+- [consumer-quickstart.md](../../../docs/operations/consumer-quickstart.md)

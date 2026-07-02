@@ -33,7 +33,7 @@ Additionally when changing governance, workflows, `.cursor/`, `.agents/`, or tra
 ## After changing documentation lifecycle
 
 1. Update **`.ai_infra/docs/governance/workflow-source-owners.md`** if ownership moved.
-2. Run **[documentation-maintenance-checklist.md](../operations/documentation-maintenance-checklist.md)** for kit doc surfaces.
+2. Run **[documentation-maintenance-checklist.md](https://github.com/SavinRazvan/mas-workflow-kit/blob/main/.ai_infra/docs/operations/documentation-maintenance-checklist.md)** for kit doc surfaces.
 
 ## After changing `.local` layout
 
@@ -72,5 +72,5 @@ Script-first checks for plan ↔ tracker ↔ session-pointer coherence and hando
 ## Quarterly (or before kit releases)
 
 - Confirm **`rules-overlap-matrix.md`** still lists all **`.cursor/rules/*.mdc`** files.
-- Skim **`IMPLEMENTATION-STATUS.md`** vs shipped manifest profiles.
+- Skim kit repo [**`IMPLEMENTATION-STATUS.md`**](https://github.com/SavinRazvan/mas-workflow-kit/blob/main/.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) vs shipped manifest profiles.
 - Re-run **`make gates`**, **`make drift-validate`**, and **`make install-dry-run`** on the kit repo.
