@@ -26,7 +26,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 5. `make check-plugin` — bundle parity green
 6. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
 7. Bump **all version SSOT fields together** (see [Versioning](#versioning) below)
-8. Add `assets/logo.png` (1:1, background plate) — see `assets/README.md`
+8. [x] `assets/logo.png` (1:1, background plate) — see `assets/README.md` — **present** (commit `1f16af1`, 1024×1024 PNG RGBA, ~1.5 MB; verified 2026-07-02)
 9. Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — record in `.local/workflow-artifacts/release/workflow-activate-ui-smoke.md` before Marketplace publish
 
 ## Versioning
@@ -159,6 +159,8 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 | Website URL | https://razvansavin.com/ |
 
 **Manifest:** `.cursor-plugin/plugin.json` — `author`, `homepage`, `repository`, `logo` aligned with the table above.
+
+**Listing copy review (2026-07-02):** Verified `plugin.json` `description`, the Description row above, and README consumer sections (`What you get`, agent/skill/rule counts) against `IMPLEMENTATION-STATUS.md` on `main` — 584 tests, DOC-006 PASS, coverage scope 3452 stmts / 100% on `--cov=.ai_infra --cov=cursor_workflow`. No stale test or coverage numbers in marketplace-facing copy; feature counts (7 agents, 10 skills, 5 PR skills, 6 rules) match shipped inventory.
 
 ## Publish
 
