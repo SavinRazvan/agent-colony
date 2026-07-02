@@ -31,6 +31,28 @@ def _load_scaffold():
     return module
 
 
+def test_load_inserts_arch_scripts_when_absent_from_sys_path() -> None:
+    """Force the ARCH_SCRIPTS sys.path.insert branch (scaffold.py module load guard).
+
+    Other test modules (e.g. tests/modules/architecture_scripts/*) insert the same
+    architecture/ dir into sys.path at collection time, which — depending on pytest's
+    collection order — can make the `if str(ARCH_SCRIPTS) not in sys.path` check in
+    scaffold.py always False across a full run, leaving the insert call itself
+    uncovered. Dedupe all copies before loading so the branch executes deterministically,
+    then restore sys.path so we don't affect other tests.
+    """
+    arch_scripts = str(REPO_ROOT / ".ai_infra" / "scripts" / "architecture")
+    original_path = list(sys.path)
+    while arch_scripts in sys.path:
+        sys.path.remove(arch_scripts)
+    try:
+        assert arch_scripts not in sys.path
+        _load_scaffold()
+        assert arch_scripts in sys.path
+    finally:
+        sys.path[:] = original_path
+
+
 def test_load_manifest_invalid_raises(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     mod = _load_scaffold()
     bad = tmp_path / "manifest.yaml"

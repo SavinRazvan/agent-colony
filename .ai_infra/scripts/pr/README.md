@@ -1,6 +1,6 @@
 <!--
 File: README.md
-Path: .ai_infra/scripts/pr/README.mdREADME.md
+Path: .ai_infra/scripts/pr/README.md
 Role: Hub for maintainer PR scripts and how they relate to git commit trailers vs `.local` artifacts.
 Used By:
  - Maintainers, `.agents/skills/pr-workflow/SKILL.md`

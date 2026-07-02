@@ -27,11 +27,15 @@ python -m cursor_workflow activate --directory .
 |-------|-----------------|---------------|
 | Cursor contract | `.cursor/`, `.agents/`, `AGENTS.md` | Yes |
 | Infrastructure | `.ai_infra/`, `cursor_workflow/` | No — scripts/CLI |
-| Runtime | `.local/` trackers + `user_settings/` exemplars | No — gitignored |
+| Runtime | `.local/` Tier 1 scaffold: trackers, six `workflow-artifacts/*` buckets + README stubs, `pages.json`, dashboards; `user_settings/` exemplars | No — gitignored |
 
 - Idempotent: skips install when all planes already pass `install-contract.json`
 - Creates `.venv`, merges MCP json, runs verify gates
 - Prints **settings-only** next steps (no re-install)
+
+**MCP config files:** the Marketplace repo-root `agents/`, `rules/`, `skills/` trees load agents,
+skills, and rules only. MCP examples install under `.cursor/` from **payload** when `activate`
+runs — not before. Use **`/connect-external-mcp`** after activate.
 
 ## Post-activate (user focus — not automated)
 

@@ -1,9 +1,0 @@
-[flake8]
-max-line-length = 120
-extend-ignore = E203, W503
-
-per-file-ignores =
-    # Notebook builder files contain markdown table rows in multiline strings
-    # that cannot be wrapped without breaking markdown rendering.
-    notebooks/build_tutorials.py: E501
-    notebooks/build_checks.py: E501
