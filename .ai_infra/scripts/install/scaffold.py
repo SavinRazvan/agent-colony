@@ -42,6 +42,12 @@ KIT_ROOT = ensure_paths_import(__file__)
 
 from paths import ai_infra_dir, kit_root, ui_local_workspace, user_settings_templates
 
+ARCH_SCRIPTS = KIT_ROOT / ".ai_infra" / "scripts" / "architecture"
+if str(ARCH_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(ARCH_SCRIPTS))
+
+import consumer_bundle_paths  # noqa: E402
+
 MANIFEST_PATH = ai_infra_dir() / "manifest.yaml"
 USER_SETTINGS_FILES = [
     "README.md",
@@ -145,24 +151,15 @@ def _copy_tree(
     _log(log, f"COPY {src} -> {dst}")
 
 
-def _load_consumer_bundle_paths(source: Path):
-    arch = source / ".ai_infra" / "scripts" / "architecture"
-    arch_str = str(arch)
-    if arch_str not in sys.path:
-        sys.path.insert(0, arch_str)
-    import consumer_bundle_paths
-
-    return consumer_bundle_paths
-
-
 def _copy_ai_infra_rel(
-    source: Path, ai_src: Path, ai_dst: Path, rel: str, dry_run: bool, log: list[str]
+    ai_src: Path, ai_dst: Path, rel: str, dry_run: bool, log: list[str]
 ) -> None:
     src = ai_src / rel
     dst = ai_dst / rel
-    cbp = _load_consumer_bundle_paths(source)
-    if cbp.is_local_workspace_copy(rel):
-        _copy_tree(src, dst, dry_run, log, ignore=cbp.ignore_local_workspace_ci)
+    if consumer_bundle_paths.is_local_workspace_copy(rel):
+        _copy_tree(
+            src, dst, dry_run, log, ignore=consumer_bundle_paths.ignore_local_workspace_ci
+        )
         return
     _copy_tree(src, dst, dry_run, log)
 
@@ -428,7 +425,7 @@ def scaffold(
         _copy_tree(source / rel_src, target / rel_dst, dry_run, log)
 
     for rel in spec.get("copy_ai_infra", []):
-        _copy_ai_infra_rel(source, ai_src, ai_dst, rel, dry_run, log)
+        _copy_ai_infra_rel(ai_src, ai_dst, rel, dry_run, log)
 
     for rel in spec.get("copy_files", []):
         if rel == "requirements-mcp.txt":
