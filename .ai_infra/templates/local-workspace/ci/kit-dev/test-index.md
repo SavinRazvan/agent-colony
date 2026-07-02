@@ -37,7 +37,7 @@
 - Module: `release`
   - Owned tests: `tests/modules/release/test_sync_plugin_bundle.py`
   - Coverage status: `healthy`
-  - Notes: plugin/payload sync
+  - Notes: agents/rules/skills + payload sync (committed bundle)
 
 - Module: `mcp_registry`
   - Owned tests: `tests/modules/mcp_registry/test_*.py`

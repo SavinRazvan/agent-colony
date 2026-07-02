@@ -60,8 +60,14 @@ flowchart LR
 ```text
 mas-workflow-kit/
 ├── AGENTS.md
-├── .cursor/
-├── .agents/
+├── .cursor-plugin/plugin.json  # marketplace manifest — no path fields (spec-exact discovery)
+├── agents/                     # generated (make sync-plugin) — COMMITTED, sibling of .cursor-plugin/
+├── rules/                      # generated — COMMITTED
+├── skills/                     # generated — COMMITTED
+├── payload/                    # generated (ADR-001 install source) — COMMITTED
+├── assets/logo.png
+├── .cursor/                    # canonical dev source for agents/rules/skills above
+├── .agents/                    # maintainer-only slash skills, merged into skills/
 ├── .ai_infra/              # canonical product tree
 │   ├── manifest.yaml
 │   ├── paths.py
@@ -77,6 +83,8 @@ mas-workflow-kit/
 ```
 
 Maintainer megadocs live under `.ai_infra/docs/maintainer/` (not copied to consumers).
+
+**`agents/`, `rules/`, `skills/`, `payload/` are generated but MUST be committed to git** — Cursor Marketplace reads the repository tree directly; there is no build step at install/review time. `make check-plugin` guards drift between `.cursor/` + `.agents/skills/` (source of truth) and these generated, committed trees. Layout matches [`cursor/plugin-template`](https://github.com/cursor/plugin-template) exactly: `agents/`, `rules/`, `skills/`, `commands/`, `hooks/`, `mcp.json` as direct siblings of `.cursor-plugin/`, discovered by convention — **no path-override fields** in `plugin.json` (the official validator's frontmatter walker ignores such fields even when present, so relying on them risks a false pass with zero components actually loaded).
 
 ---
 
@@ -129,11 +137,11 @@ Product rules: copy `overlays/rules/*.mdc` into `.cursor/rules/` after install (
 
 | Tree | Skills source | Purpose |
 |------|---------------|---------|
-| `plugin/skills/` | `.cursor/skills/` then additive merge from `.agents/skills/` | Cursor IDE loads slash skills from plugin |
+| `skills/` (repo root) | `.cursor/skills/` then additive merge from `.agents/skills/` | Cursor Marketplace loads slash skills from repo-root `skills/` |
 | `payload/.cursor/skills/` | **Kit `.cursor/skills/` only** (no maintainer merge) | Consumer disk must not duplicate `.agents/skills/` folder names |
 | `payload/.agents/skills/` | Kit `.agents/skills/` | Maintainer PR slash skills on consumer disk |
 
-`sync_plugin_bundle.py` merges `.agents/skills/` into `plugin/skills/` only when the folder name is absent from `.cursor/skills/`. Canonical protocols must never be replaced by maintainer stubs. **Do not** copy merged `plugin/skills/` into `payload/.cursor/skills/` — governance `check_governance_consistency.py` fails on duplicate folder names.
+`sync_plugin_bundle.py` merges `.agents/skills/` into repo-root `skills/` only when the folder name is absent from `.cursor/skills/`. Canonical protocols must never be replaced by maintainer stubs. **Do not** copy merged `skills/` into `payload/.cursor/skills/` — governance `check_governance_consistency.py` fails on duplicate folder names.
 
 ---
 

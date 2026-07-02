@@ -27,9 +27,6 @@ jobs:
       - name: Seed CI workspace
         run: .venv/bin/python .ai_infra/scripts/ci/seed_kit_workspace.py --directory .
 
-      - name: Sync plugin bundle
-        run: make sync-plugin
-
       - name: Gate matrix
         run: |
           set -euo pipefail
@@ -37,6 +34,8 @@ jobs:
           make gates
           make drift-validate
           make integrate-validate
+          # check-plugin verifies committed agents/rules/skills/payload against a fresh
+          # regeneration (no prior sync step) — catches drift in the committed bundle.
           make check-plugin
           .venv/bin/python -m cursor_workflow health
           .venv/bin/python -m cursor_workflow contributors validate

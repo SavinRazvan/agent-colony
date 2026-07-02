@@ -22,7 +22,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 1. `make gates` — kit repo green
 2. `make install-dry-run` — consumer install green
 3. `make smoke-consumer` — Track A + Track B PASS (see [Automated smoke](#automated-smoke-kit-repo)); record findings under `.local/workflow-artifacts/release/`
-4. `make sync-plugin` — rebuild `plugin/` + `payload/`
+4. `make sync-plugin` — rebuild `agents/`, `rules/`, `skills/`, `payload/` (commit the result)
 5. `make check-plugin` — bundle parity green
 6. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
 7. Bump **all version SSOT fields together** (see [Versioning](#versioning) below)
@@ -57,11 +57,15 @@ After bump: `make sync-plugin && make check-plugin`, tag `vX.Y.Z`, optional GitH
 ## Bundle layout
 
 ```text
-.cursor-plugin/plugin.json
+.cursor-plugin/plugin.json   # no path-override fields — spec-exact discovery
 assets/logo.png    # Marketplace logotype (commit before publisher submit)
-plugin/            # Cursor-loaded agents, skills, rules
+agents/            # Cursor-loaded — sibling of .cursor-plugin/, matches cursor/plugin-template
+rules/             # Cursor-loaded — sibling of .cursor-plugin/
+skills/            # Cursor-loaded — sibling of .cursor-plugin/
 payload/           # ADR-001 install source (.ai_infra + cursor_workflow shim)
 ```
+
+**All four generated trees (`agents/`, `rules/`, `skills/`, `payload/`) are committed to git** — Cursor Marketplace reads the repository directly, so nothing gitignored is visible to a reviewer or a third-party installer. `make sync-plugin` regenerates them from `.cursor/` + `.agents/skills/`; `make check-plugin` fails the build on drift. Layout and discovery match the official [`cursor/plugin-template`](https://github.com/cursor/plugin-template) starters exactly — verified by running the upstream `scripts/validate-template.mjs` directly against this repo (0 errors, see `.local/workflow-artifacts/release/cursor-plugin-template-compliance-2026-07-02.md`).
 
 ## Local smoke (`/add-plugin` from repo path)
 

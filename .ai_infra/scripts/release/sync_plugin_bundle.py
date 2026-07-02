@@ -1,7 +1,7 @@
 """
 File: sync_plugin_bundle.py
 Path: .ai_infra/scripts/release/sync_plugin_bundle.py
-Role: Build and verify Cursor Marketplace plugin bundle (plugin/ + payload/).
+Role: Build and verify Cursor Marketplace plugin bundle (repo-root agents/rules/skills + payload/).
 Used By:
  - Makefile sync-plugin / check-plugin
  - marketplace-publish.md
@@ -9,8 +9,12 @@ Depends On:
  - .ai_infra/manifest.yaml
  - .ai_infra/bootstrap.py
 Notes:
- - plugin/ = Cursor-loaded agents, skills, rules (team-kit layout under plugin/).
+ - agents/, rules/, skills/ at repo root (siblings of .cursor-plugin/) = Cursor-loaded
+   plugin surface, matching the official cursor/plugin-template convention exactly
+   (no custom path fields in .cursor-plugin/plugin.json).
  - payload/ = ADR-001 install source tree for workflow-activate.
+ - Both are generated from .cursor/ + .agents/skills/ but MUST be committed to git —
+   Cursor Marketplace reads the repository tree directly, there is no build step.
 """
 
 from __future__ import annotations
@@ -40,7 +44,10 @@ else:
 from paths import ai_infra_dir
 
 MANIFEST_PATH = ai_infra_dir() / "manifest.yaml"
-PLUGIN_DIR = KIT_ROOT / "plugin"
+# Plugin surface lives at repo root (agents/, rules/, skills/ siblings of
+# .cursor-plugin/) — matches cursor/plugin-template convention exactly.
+PLUGIN_DIR = KIT_ROOT
+PLUGIN_COMPONENT_DIRS = ("agents", "rules", "skills")
 PAYLOAD_DIR = KIT_ROOT / "payload"
 ACTIVATE_SKILL_SRC = (
     ai_infra_dir() / "templates" / "plugin" / "skills" / "workflow-activate" / "SKILL.md"
@@ -208,8 +215,8 @@ def sync_payload(payload_dir: Path, plugin_dir: Path, profile: str = "with_mcp")
     _copy_tree(plugin_dir / "agents", payload_dir / ".cursor" / "agents")
     _copy_tree(plugin_dir / "rules", payload_dir / ".cursor" / "rules")
     # Consumer parity: canonical skills only under .cursor/skills; maintainer slash
-    # skills live in .agents/skills. plugin/ merges both for IDE loading — do not
-    # copy merged plugin/skills into payload or install --verify fails governance.
+    # skills live in .agents/skills. Repo-root skills/ merges both for Marketplace
+    # loading — do not copy merged skills/ into payload or install --verify fails governance.
     _copy_tree(KIT_ROOT / ".cursor" / "skills", payload_dir / ".cursor" / "skills")
 
     mcp_kit = KIT_ROOT / ".cursor" / "mcp.json.kit.example"
@@ -235,8 +242,14 @@ def _collect_files(root: Path) -> dict[str, str]:
 
 def check_bundle(profile: str = "with_mcp") -> list[str]:
     errors: list[str] = []
-    if not PLUGIN_DIR.is_dir() or not PAYLOAD_DIR.is_dir():
-        return ["plugin/ or payload/ missing — run: python .ai_infra/scripts/release/sync_plugin_bundle.py --sync"]
+    missing_component = any(
+        not (PLUGIN_DIR / name).is_dir() for name in PLUGIN_COMPONENT_DIRS
+    )
+    if missing_component or not PAYLOAD_DIR.is_dir():
+        return [
+            "agents/, rules/, skills/, or payload/ missing — "
+            "run: python .ai_infra/scripts/release/sync_plugin_bundle.py --sync"
+        ]
 
     with tempfile.TemporaryDirectory(prefix="mas-plugin-check-") as tmp:
         tmp_root = Path(tmp)
@@ -245,8 +258,11 @@ def check_bundle(profile: str = "with_mcp") -> list[str]:
         sync_plugin_surface(expected_plugin)
         sync_payload(expected_payload, expected_plugin, profile)
 
+        component_pairs = tuple(
+            (name, expected_plugin / name, PLUGIN_DIR / name) for name in PLUGIN_COMPONENT_DIRS
+        )
         for label, expected_root, actual_root in (
-            ("plugin", expected_plugin, PLUGIN_DIR),
+            *component_pairs,
             ("payload", expected_payload, PAYLOAD_DIR),
         ):
             expected = _collect_files(expected_root)
@@ -312,7 +328,7 @@ def main() -> int:
         return 0
 
     sync_all(args.profile)
-    print(f"Synced plugin/ and payload/ (profile={args.profile}).")
+    print(f"Synced agents/, rules/, skills/, and payload/ (profile={args.profile}).")
     return 0
 
 

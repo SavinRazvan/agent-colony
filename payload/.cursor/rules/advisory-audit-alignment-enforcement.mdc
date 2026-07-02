@@ -1,0 +1,15 @@
+---
+description: Architecture-impacting advisory audits before prepare/merge (authored via enterprise-auditor)
+alwaysApply: true
+---
+
+# Architecture-impacting advisory audit (alignment artifacts)
+
+- **Canonical audit agent:** `.cursor/agents/enterprise-auditor.md` with `.cursor/skills/enterprise-architecture-audit/SKILL.md` (Evidence contract applies to all audit outputs).
+- For **merge workflow only**, architecture-impacting work may use a **focused alignment pass** (same agent/skill; outputs limited to alignment files — see skill § “Focused alignment pass”).
+- Audits are **advisory**: findings and recommendations only; do not auto-apply fixes during the audit step.
+- Run before `/prepare-pr` when scope touches: module boundaries, workflow/rule/skill policy, test/CI layout, roadmap/research source of truth.
+- **Outputs:** `.local/workflow-artifacts/alignment/alignment-audit.md`, `.local/workflow-artifacts/alignment/alignment-todos.md`.
+- **Schema:** `.ai_infra/docs/roadmap/alignment-audit-schema.md`.
+- Each finding: evidence path, mismatch category, recommended fix, status (`open` | `accepted_divergence` | `fixed` | `deferred`).
+- **P0:** block merge prep until fixed or accepted with rationale. **P1:** fix in-slice or defer with owner and slice. **P2:** batch but track in reconciliation TODOs.

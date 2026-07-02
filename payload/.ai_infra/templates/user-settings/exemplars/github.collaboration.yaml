@@ -1,0 +1,120 @@
+# github.collaboration.yaml — complete once at install
+# Path: .local/user_settings/github.collaboration.yaml (gitignored)
+# Role: GitHub commit + PR collaboration settings for humans and AI agents.
+#
+# Two surfaces (do not conflate):
+#   - Git commits     → commit_provenance (Author, GitHub-User, Assisted-by)
+#   - GitHub PR       → pr_collaboration (Action-By, Agent/s, body template)
+#
+# Kit default: AI uses Assisted-by (not Co-authored-by: cursoragent@...).
+# Opt-in legacy mode below if your org requires Git co-author trailers for tools.
+
+version: 1
+
+# ── Human owner (required) ───────────────────────────────────────────────────
+owner:
+  display_name: "Your Full Name"          # → Author: / Action-By:
+  github_user: "@yourhandle"              # → GitHub-User: (include @)
+
+# ── Git commit provenance ────────────────────────────────────────────────────
+commit_provenance:
+  # assisted_by (recommended) | co_author_trailer (legacy) | none
+  ai_disclosure_mode: assisted_by
+
+  # Repeat one line per AI/agent that materially shaped the change
+  assisted_by:
+    - tool: Cursor
+      model: null                         # e.g. composer-2.5 — optional
+      agent: null                         # e.g. implementer — optional
+    # - tool: cursor-agent
+    #   agent: test-runner
+
+  # Real human co-authors only (Git Co-authored-by: convention)
+  # Keep [] unless adding entries UNDER human_coauthors (do not uncomment lines below as siblings of []).
+  human_coauthors: []
+  # - display_name: "Alice Example"
+  #   email: alice@example.com
+
+  # Legacy opt-in: use instead of assisted_by when ai_disclosure_mode: co_author_trailer
+  # co_author_trailer:
+  #   name: Cursor
+  #   email: cursoragent@cursor.com
+
+  forbid_in_commits:
+    - "Made-with:"                      # kit policy — use Author + Assisted-by instead
+
+# ── PR collaboration (GitHub + local phase artifacts) ────────────────────────
+pr_collaboration:
+  # Named pipelines — PR phase presets; implementation agents come from trackers by default
+  # (--agents-from-session merges change-index.md + session-pointer.md with PR agents)
+  pipelines:
+    default:
+      agents:
+        - review-pr
+        - prepare-pr
+        - merge-pr
+    architecture_impacting:
+      agents:
+        - enterprise-auditor
+        - integrator-mas-agent
+        - review-pr
+        - prepare-pr
+        - merge-pr
+      requires_alignment_artifacts: true
+    infrastructure_integration:
+      agents:
+        - integrator-mas-agent
+        - enterprise-auditor
+        - review-pr
+        - prepare-pr
+    multi_agent_feature:
+      agents:
+        - implementer
+        - test-runner
+        - verifier
+        - integrator-mas-agent
+        - review-pr
+        - prepare-pr
+      session_pointer: .local/index-and-planning/current/session-pointer.md
+
+  # Optional: other humans on reviews (informational for PR body)
+  collaborators:
+    humans: []
+    # - display_name: "Alice Example"
+    #   github_user: "@alice"
+    #   roles: [reviewer]
+
+  # gh pr create body — replace {{placeholders}} or copy sections manually
+  pr_body:
+    title_prefix: "feat"                  # convetional prefix hint only
+    summary_heading: "## Summary"
+    test_plan_heading: "## Test plan"
+    collaboration_heading: "## Collaboration"
+    default_test_plan:
+      - "pytest -q"
+      - "make gates (or project equivalent)"
+    # Example filled body (for agents / gh):
+    example: |
+      ## Summary
+      - Shared local-shell.css + site-nav.js for local HTML dashboards
+      - Landing index.html; docs + folder charter updates
+
+      ## Test plan
+      - [ ] pytest -q
+      - [ ] make gates
+
+      ## Collaboration
+      - Action-By: Your Full Name
+      - GitHub-User: @yourhandle
+      - Agent/s: review-pr | prepare-pr | merge-pr
+
+# ── Rendered commit trailer (copy/paste or script-rendered) ──────────────────
+# Replace placeholders after editing owner + assisted_by above.
+#
+# docs(scope): short subject line
+#
+# Optional body paragraph explaining why.
+#
+# Author: Your Full Name
+# GitHub-User: @yourhandle
+# Assisted-by: Cursor

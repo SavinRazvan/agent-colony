@@ -1,0 +1,96 @@
+# mcp.agents.yaml — complete once at install
+# Path: .local/user_settings/mcp.agents.yaml (gitignored)
+# Role: Human-friendly worksheet for external MCP servers and agent ↔ tool mapping.
+#
+# Apply changes to:
+#   .cursor/mcp.user.json       (server commands, args, env — gitignored)
+#   .cursor/mcp.registry.yaml   (which agents use which servers)
+#
+# Validate: cursor-workflow mcp validate
+# Guide:    .ai_infra/docs/operations/connect-external-mcp.md
+
+version: 1
+
+# Kit server (installed with --with-mcp-json / with_mcp profile)
+kit:
+  server_key: workflow-kit
+  description: PR workflow, trackers, gates (workflow_mcp)
+  enabled: true
+  agents:
+    - implementer
+    - test-runner
+    - verifier
+    - enterprise-auditor
+    - researcher
+    - integrator-mas-agent
+  tools_hint:
+    - workflow_run_prepare
+    - workflow_get_tracker
+    - workflow_list_mcp_registry
+    - workflow_mcp_connection_guide
+
+# External servers — add rows as you connect more capability
+external_servers:
+  - id: my-custom-server
+    enabled: false
+    tier: external
+    description: "Replace — e.g. GitHub, Slack, Postgres, browser automation"
+    agents:
+      - implementer
+    tools_hint: []                        # tools you expect agents to call
+    # ── Copy into mcp.user.json → mcpServers.<id> ──
+    transport:
+      command: npx
+      args:
+        - "-y"
+        - "@modelcontextprotocol/server-example"
+      env: {}                             # e.g. GITHUB_TOKEN: "${GITHUB_TOKEN}"
+    secrets_checklist:
+      - name: EXAMPLE_API_TOKEN
+        where: "shell env or Cursor MCP secrets"
+        required: false
+    registry_notes: "Set tier: external in mcp.registry.yaml"
+
+  # - id: github-mcp
+  #   enabled: false
+  #   tier: external
+  #   description: Issues and PRs from the agent
+  #   agents: [implementer, researcher]
+  #   tools_hint: [list_issues, create_pull_request]
+  #   transport:
+  #     command: npx
+  #     args: ["-y", "@modelcontextprotocol/server-github"]
+  #     env:
+  #       GITHUB_PERSONAL_ACCESS_TOKEN: "${GITHUB_TOKEN}"
+  #   secrets_checklist:
+  #     - name: GITHUB_TOKEN
+  #       where: "GitHub PAT with repo scope"
+  #       required: true
+
+# Agent quick reference — which servers each agent should prefer
+agent_defaults:
+  implementer:
+    primary_servers: [workflow-kit]
+    optional_servers: []
+  test-runner:
+    primary_servers: [workflow-kit]
+    optional_servers: []
+  enterprise-auditor:
+    primary_servers: [workflow-kit]
+    optional_servers: []
+  researcher:
+    primary_servers: [workflow-kit]
+    optional_servers: []
+  integrator-mas-agent:
+    primary_servers: [workflow-kit]
+    optional_servers: []
+
+# Fragments directory (optional) — cursor-workflow mcp link --name X --file ...
+fragments_dir: .cursor/mcp.d
+
+# After editing this file:
+#   1. cp .cursor/mcp.user.example.json .cursor/mcp.user.json  (if first time)
+#   2. Merge enabled external_servers[].transport into mcp.user.json mcpServers
+#   3. cp .cursor/mcp.registry.yaml.example .cursor/mcp.registry.yaml
+#   4. Add registry servers: keys matching mcp.user.json + agents + tools_hint
+#   5. cursor-workflow mcp validate && reload Cursor MCP

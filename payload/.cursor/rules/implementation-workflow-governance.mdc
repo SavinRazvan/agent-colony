@@ -1,0 +1,38 @@
+---
+description: Implementation slice lifecycle, index-and-planning updates, and module-aligned testing
+alwaysApply: true
+---
+
+# Implementation and testing governance
+
+## Lifecycle
+
+- Sequence: `plan -> interfaces -> implementation -> tests -> evidence -> docs update`.
+- Before coding: confirm module boundary, acceptance criteria, rollback in `.local/index-and-planning/current/plan.md`; read **`session-pointer.md`** first, then `plan.md`, `work-tracker.md`, project `docs/architecture/` (local stub: `.local/.../current/architecture.md`), `test-plan.md`, `test-index.md`.
+- Treat `.local/index-and-planning/current/*`, `history/*`, and `audits/*` as live local execution state; durable workflow doctrine lives in `.ai_infra/docs/operations/*`.
+- Exactly one primary task `in_progress` in `work-tracker.md`; do not implement without scope in `plan.md`.
+- Incremental, reversible slices; KISS. Block release on P0 failures; RCs need CI/CD evidence bundles.
+
+## Tests
+
+- Place tests under `tests/modules/<module>/` matching source boundaries.
+- Cover happy, failure, and edge cases; add retry/timeout/replay where high-risk or state-changing.
+- Run targeted module tests first, then full suite before merge.
+- For medium/high-risk slices, run `pytest --cov=src --cov-report=term-missing -q`; record gaps in `work-tracker.md` and `updates-log.md`.
+- If modules/tests move or drop, update/remove tests in the same slice; note rationale in `updates-log.md`.
+
+## Planning index updates
+
+- After substantive code change: `session-pointer.md`, `change-index.md`, `work-tracker.md`; `test-index.md` / `test-plan.md` when tests or risk change; `updates-log.md` (one line — see `.ai_infra/docs/operations/token-efficiency.md`).
+- Planning-only scope changes: update `plan.md` / `work-tracker.md` + at least one `updates-log.md` entry.
+- Blocked: mark blocker and unblock action in `work-tracker.md`.
+- **Slice closure** (before handoff): regenerate `current/coverage-index.md` when coverage mattered; if a new tracker path is added, update `.local/agents-control-center/config/pages.json` and dashboard header **Depends On**; do not edit `.local/agents-control-center/audits/module-audit.html` unless refreshing that export.
+
+## Merge gates
+
+- Full gate order: [`.cursor/rules/pr-workflow-enforcement.mdc`](pr-workflow-enforcement.mdc) and `.ai_infra/scripts/pr/prepare.py` (`GATES`).
+
+## Efficiency (less noise)
+
+- Default read set under `.local/`: **`session-pointer.md`**, then **`index-and-planning/current/plan.md`**, **`work-tracker.md`**, **`change-index.md`**; PR artifacts under **`workflow-artifacts/`** when merging. Skip **`generated-data/**`** and **`history/archive/**`** unless explicitly tasked.
+- In `updates-log.md` and chat handoffs, do **not** paste the full `GATES` block; state outcomes (*e.g.* “prepare.py gates green”) and only the failing command + stderr when something breaks.
