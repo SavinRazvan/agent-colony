@@ -41,3 +41,25 @@ def test_empty_dir_planes_missing(tmp_path: Path) -> None:
     assert not status.cursor_contract
     assert not status.infrastructure
     assert not status.runtime
+
+
+def test_plane_for_path_tests_prefix() -> None:
+    plane_status = _load_plane_status()
+    assert plane_status._plane_for_path("tests/modules/foo.py") == "infrastructure"
+
+
+def test_plane_for_path_fallback_infrastructure() -> None:
+    plane_status = _load_plane_status()
+    assert plane_status._plane_for_path("some/other/path.txt") == "infrastructure"
+
+
+def test_format_plane_report_truncates_missing_over_twelve() -> None:
+    plane_status = _load_plane_status()
+    status = plane_status.PlaneStatus(
+        cursor_contract=False,
+        infrastructure=False,
+        runtime=False,
+        missing=tuple(f"path-{i}" for i in range(15)),
+    )
+    report = plane_status.format_plane_report(status)
+    assert "... +3 more" in report

@@ -21,11 +21,13 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 
 1. `make gates` — kit repo green
 2. `make install-dry-run` — consumer install green
-3. `make sync-plugin` — rebuild `plugin/` + `payload/`
-4. `make check-plugin` — bundle parity green
-5. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
-6. Bump **all version SSOT fields together** (see [Versioning](#versioning) below)
-7. Add `assets/logo.png` (1:1, background plate) — see `assets/README.md`
+3. `make smoke-consumer` — Track A + Track B PASS (see [Automated smoke](#automated-smoke-kit-repo)); record findings under `.local/workflow-artifacts/release/`
+4. `make sync-plugin` — rebuild `plugin/` + `payload/`
+5. `make check-plugin` — bundle parity green
+6. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
+7. Bump **all version SSOT fields together** (see [Versioning](#versioning) below)
+8. Add `assets/logo.png` (1:1, background plate) — see `assets/README.md`
+9. Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — record in `.local/workflow-artifacts/release/workflow-activate-ui-smoke.md` before Marketplace publish
 
 ## Versioning
 

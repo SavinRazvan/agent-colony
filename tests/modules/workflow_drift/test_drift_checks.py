@@ -20,11 +20,15 @@ if str(WORKFLOW_DIR) not in sys.path:
     sys.path.insert(0, str(WORKFLOW_DIR))
 
 from drift_checks import (  # noqa: E402
+    _parse_owned_test_paths,
+    _path_exists,
     check_drift001,
     check_drift002,
     check_drift003,
     check_drift004,
     check_drift005,
+    check_drift006,
+    check_drift007,
     check_drift008,
     detect_profile,
     drift_paths,
@@ -153,6 +157,81 @@ def test_drift004_reports_next_field_not_builtin(tmp_path: Path) -> None:
     assert not result.passed
     assert "unrelated-next" in result.detail
     assert "built-in function next" not in result.detail
+
+
+def test_drift005_fails_when_pytest_collection_fails(tmp_path: Path, monkeypatch) -> None:
+    _write_planning(tmp_path)
+    handoff = tmp_path / ".ai_infra/docs/handoff"
+    handoff.mkdir(parents=True)
+    (handoff / "IMPLEMENTATION-STATUS.md").write_text("**Tests:** 10\n", encoding="utf-8")
+
+    class FakeProc:
+        stdout = "no test count here"
+        stderr = "collection error"
+
+    monkeypatch.setattr("drift_checks.subprocess.run", lambda *a, **k: FakeProc())
+    result = check_drift005(drift_paths(tmp_path))
+    assert not result.passed
+    assert "collect-only failed" in result.detail
+
+
+def test_parse_owned_test_paths_skips_ellipsis_and_angle_entries() -> None:
+    text = "- Module: `demo`\n  - Owned tests: `tests/a.py`, `...`, `<placeholder>`\n"
+    assert _parse_owned_test_paths(text) == ["tests/a.py"]
+
+
+def test_path_exists_blank_rel_is_true(tmp_path: Path) -> None:
+    assert _path_exists(tmp_path, "   ") is True
+
+
+def test_drift006_reports_missing_owned_test_paths(tmp_path: Path) -> None:
+    _write_planning(tmp_path)
+    test_index = tmp_path / ".local/index-and-planning/current/test-index.md"
+    test_index.write_text(
+        "- Module: `demo`\n  - Owned tests: `tests/does_not_exist.py`\n",
+        encoding="utf-8",
+    )
+    result = check_drift006(drift_paths(tmp_path))
+    assert not result.passed
+    assert "tests/does_not_exist.py" in result.detail
+
+
+def test_drift006_skips_blank_comma_parts(tmp_path: Path) -> None:
+    _write_planning(tmp_path)
+    real_test = tmp_path / "tests" / "modules" / "demo" / "test_demo.py"
+    real_test.parent.mkdir(parents=True)
+    real_test.write_text("# demo\n", encoding="utf-8")
+    test_index = tmp_path / ".local/index-and-planning/current/test-index.md"
+    test_index.write_text(
+        "- Module: `demo`\n"
+        "  - Owned tests: `tests/modules/demo/test_demo.py, `\n",
+        encoding="utf-8",
+    )
+    result = check_drift006(drift_paths(tmp_path))
+    assert result.passed
+
+
+def test_drift006_passes_when_no_owned_entries(tmp_path: Path) -> None:
+    _write_planning(tmp_path)
+    test_index = tmp_path / ".local/index-and-planning/current/test-index.md"
+    test_index.write_text("- Module: `demo`\n  - no owned tests here\n", encoding="utf-8")
+    result = check_drift006(drift_paths(tmp_path))
+    assert result.passed
+    assert "no Owned tests entries" in result.detail
+
+
+def test_drift007_fails_when_updates_log_missing(tmp_path: Path, monkeypatch) -> None:
+    _write_planning(tmp_path)
+    updates_log = tmp_path / ".local/index-and-planning/current/updates-log.md"
+    updates_log.unlink()
+
+    class FakeProc:
+        stdout = " M some-file.py\n"
+        stderr = ""
+
+    monkeypatch.setattr("drift_checks.subprocess.run", lambda *a, **k: FakeProc())
+    result = check_drift007(drift_paths(tmp_path))
+    assert not result.passed
 
 
 def test_drift_validate_passes_p0_on_kit_repo() -> None:

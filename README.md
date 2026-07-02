@@ -164,6 +164,12 @@ Then continue from [step 3](#3-add-your-name-1-min) above. Preview: add `--dry-r
 
 > **Consumers:** you can ignore this section.
 
+The `.local/` tree you see in **this** repo's source (`mas-workflow-kit`) is a versioned CI
+seed fixture used to test the kit's own gates — it is not what you get as a consumer. When you
+run `/workflow-activate` in your own project, you receive **neutral exemplars** (placeholders
+like `Your Full Name`) instead, scaffolded fresh from `.ai_infra/templates/`. Don't copy this
+repo's `.local/` content into your project.
+
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -e ".[dev,mcp]"
 make gates && make smoke-consumer && make sync-plugin && make check-plugin

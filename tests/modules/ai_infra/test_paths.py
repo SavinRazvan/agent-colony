@@ -15,6 +15,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 _AI_INFRA = REPO_ROOT / ".ai_infra"
 if str(_AI_INFRA) not in sys.path:
@@ -44,6 +46,16 @@ def test_workflow_mcp_import() -> None:
     assert len(gates) == 4
 
 
+def test_user_settings_templates_canonical() -> None:
+    from paths import user_settings_templates
+
+    templates = user_settings_templates(REPO_ROOT)
+    assert templates == (
+        REPO_ROOT / ".ai_infra" / "templates" / "user-settings" / "exemplars"
+    ).resolve()
+    assert (templates / "github.collaboration.yaml").is_file()
+
+
 def test_docs_dir_canonical() -> None:
     from paths import docs_dir
 
@@ -70,3 +82,99 @@ def test_kit_root_from_script() -> None:
 
     script = REPO_ROOT / ".ai_infra" / "scripts" / "pr" / "prepare.py"
     assert kit_root_from_script(script) == REPO_ROOT
+
+
+def test_kit_root_from_script_raises_when_no_marker(tmp_path: Path) -> None:
+    from paths import kit_root_from_script
+
+    with pytest.raises(FileNotFoundError, match="cannot infer kit root"):
+        kit_root_from_script(tmp_path / "no_marker" / "script.py")
+
+
+def test_kit_root_returns_repo_root() -> None:
+    from paths import kit_root
+
+    assert kit_root() == REPO_ROOT.resolve()
+
+
+def test_ai_infra_dir_raises_when_missing(tmp_path: Path) -> None:
+    from paths import ai_infra_dir
+
+    with pytest.raises(FileNotFoundError, match="not found"):
+        ai_infra_dir(tmp_path)
+
+
+def test_ui_local_workspace_raises_when_missing(tmp_path: Path) -> None:
+    from paths import ui_local_workspace
+
+    (tmp_path / ".ai_infra").mkdir(parents=True)
+    with pytest.raises(FileNotFoundError, match="not found"):
+        ui_local_workspace(tmp_path)
+
+
+def test_user_settings_templates_raises_when_missing(tmp_path: Path) -> None:
+    from paths import user_settings_templates
+
+    (tmp_path / ".ai_infra").mkdir(parents=True)
+    with pytest.raises(FileNotFoundError, match="not found"):
+        user_settings_templates(tmp_path)
+
+
+def test_mcp_package_dir_raises_when_missing(tmp_path: Path) -> None:
+    from paths import mcp_package_dir
+
+    (tmp_path / ".ai_infra").mkdir(parents=True)
+    with pytest.raises(FileNotFoundError, match="not found"):
+        mcp_package_dir(tmp_path)
+
+
+def test_docs_dir_raises_when_missing(tmp_path: Path) -> None:
+    from paths import docs_dir
+
+    (tmp_path / ".ai_infra").mkdir(parents=True)
+    with pytest.raises(FileNotFoundError, match="not found"):
+        docs_dir("governance", tmp_path)
+
+
+def test_scripts_dir_raises_when_missing(tmp_path: Path) -> None:
+    from paths import scripts_dir
+
+    (tmp_path / ".ai_infra").mkdir(parents=True)
+    with pytest.raises(FileNotFoundError, match="not found"):
+        scripts_dir("pr", tmp_path)
+
+
+def test_pr_script_raises_when_missing(tmp_path: Path) -> None:
+    from paths import pr_script
+
+    (tmp_path / ".ai_infra" / "scripts" / "pr").mkdir(parents=True)
+    with pytest.raises(FileNotFoundError, match="not found"):
+        pr_script("no-such-script.py", tmp_path)
+
+
+def test_pr_script_resolves_existing_file() -> None:
+    from paths import pr_script
+
+    resolved = pr_script("prepare.py", REPO_ROOT)
+    assert resolved.is_file()
+
+
+def test_architecture_script_raises_when_missing(tmp_path: Path) -> None:
+    from paths import architecture_script
+
+    (tmp_path / ".ai_infra" / "scripts" / "architecture").mkdir(parents=True)
+    with pytest.raises(FileNotFoundError, match="not found"):
+        architecture_script("no-such-script.py", tmp_path)
+
+
+def test_architecture_script_resolves_existing_file() -> None:
+    from paths import architecture_script
+
+    resolved = architecture_script("check_doc_facts.py", REPO_ROOT)
+    assert resolved.is_file()
+
+
+def test_pr_script_rel_returns_relative_path() -> None:
+    from paths import pr_script_rel
+
+    assert pr_script_rel("prepare.py") == ".ai_infra/scripts/pr/prepare.py"

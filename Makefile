@@ -1,4 +1,4 @@
-.PHONY: install-dry-run smoke-consumer test gates sync-plugin check-plugin integrate-validate drift-validate ci-seed verify-all doc-validate
+.PHONY: install-dry-run smoke-consumer test gates sync-plugin check-plugin integrate-validate drift-validate ci-seed verify-all doc-validate type-check
 
 install-dry-run:
 	rm -rf /tmp/workflow-kit-dry-run
@@ -14,6 +14,9 @@ smoke-consumer:
 
 test:
 	.venv/bin/python -m pytest -q
+
+type-check:
+	.venv/bin/pyright
 
 gates:
 	.venv/bin/python -m cursor_workflow gates

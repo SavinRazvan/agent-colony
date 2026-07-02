@@ -15,7 +15,8 @@ description: Module-focused tests and coverage evidence for workflow scripts and
 2. Tests under `tests/modules/<module>/`.
 3. Update `.local/index-and-planning/current/test-index.md` and `test-plan.md`; drop obsolete tests when contracts change.
 4. Run: `pytest` scoped to module → broader as needed. Before merge path: **`python .ai_infra/scripts/pr/check_testing_artifacts.py`** (see `.ai_infra/scripts/pr/prepare.py` `GATES`).
-5. Report: modules • edges added • gaps • tracker edits.
+5. For coverage evidence, install `dev` extras (`pip install -e ".[dev]"`) then run `pytest --cov=.ai_infra --cov=cursor_workflow --cov-report=term-missing -q`; record gaps in `work-tracker.md` and `updates-log.md` per `implementation-workflow-governance.mdc`.
+6. Report: modules • edges added • gaps • tracker edits.
 
 ## Themes (when relevant)
 
