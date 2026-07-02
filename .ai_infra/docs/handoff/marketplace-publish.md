@@ -27,7 +27,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 6. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
 7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02)
 8. [x] `assets/logo.png` (1:1, background plate) — see `assets/README.md` — **present** (commit `1f16af1`, 1024×1024 PNG RGBA, ~1.5 MB; verified 2026-07-02)
-9. Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — record in `.local/workflow-artifacts/release/workflow-activate-ui-smoke.md` before Marketplace publish
+9. [~] Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — **CLI-equivalent path double-verified 2026-07-02** against a fresh `git clone` of `v0.4.0` (see `.local/workflow-artifacts/release/workflow-activate-ui-smoke.md`); the literal Cursor chat `/` menu + `/add-plugin` path is still open
 
 ## Versioning
 
