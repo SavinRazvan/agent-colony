@@ -25,13 +25,18 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 4. `make sync-plugin` — rebuild `agents/`, `rules/`, `skills/`, `payload/` (commit the result)
 5. `make check-plugin` — bundle parity green
 6. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
-7. Bump **all version SSOT fields together** (see [Versioning](#versioning) below)
+7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02)
 8. [x] `assets/logo.png` (1:1, background plate) — see `assets/README.md` — **present** (commit `1f16af1`, 1024×1024 PNG RGBA, ~1.5 MB; verified 2026-07-02)
 9. Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — record in `.local/workflow-artifacts/release/workflow-activate-ui-smoke.md` before Marketplace publish
 
 ## Versioning
 
-**Current release:** `0.3.0` (git tag `v0.3.0`).
+**Current release:** `0.4.0` (git tag `v0.4.0`).
+
+**Superseded:** `v0.3.0` (`1f16af1`) predates `PLUGIN-FLATTEN` (#15) — its tagged tree has **zero**
+files under `agents/`, `rules/`, `skills/`, `payload/` (the gitignore bug #15 fixed). Do not
+reference `v0.3.0` as an installable release; `v0.4.0` is the first tag with a functional plugin
+bundle committed.
 
 On every release, bump **in lockstep**:
 

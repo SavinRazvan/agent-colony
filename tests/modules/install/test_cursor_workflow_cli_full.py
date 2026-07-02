@@ -366,7 +366,7 @@ def test_build_parser_version_exits(capsys: pytest.CaptureFixture[str]) -> None:
     with pytest.raises(SystemExit) as exc:
         parser.parse_args(["--version"])
     assert exc.value.code == 0
-    assert "cursor-workflow 0.3.0" in capsys.readouterr().out
+    assert "cursor-workflow 0.4.0" in capsys.readouterr().out
 
 
 def test_main_install_dispatch(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

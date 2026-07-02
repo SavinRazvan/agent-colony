@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (MAS Workflow Kit)
 
-**Last updated:** 2026-07-02 (PLUGIN-FLATTEN merged; coverage gap closed)  
-**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 585
+**Last updated:** 2026-07-02 (MARKETPLACE-VERSION: bumped to 0.4.0)  
+**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.4.0 · **Tests:** 585
 
 ## Shipped (confirmed in repo)
 
@@ -43,7 +43,7 @@ Notes:
 | Three-plane activate | Idempotent plugin consumer setup | `.ai_infra/install/cursor_workflow/activate_cli.py`, `plane_status.py` |
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
-| Kit version on install | `kit_version` 0.3.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
+| Kit version on install | `kit_version` 0.4.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
 | Tests | 585 | `tests/modules/` |
 
 ## Coverage scope (shipped source)

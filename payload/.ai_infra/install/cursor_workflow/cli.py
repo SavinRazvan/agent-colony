@@ -220,7 +220,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="cursor-workflow",
         description="Cursor Agent Infrastructure Plugin — install and gate helpers.",
     )
-    parser.add_argument("--version", action="version", version="cursor-workflow 0.3.0")
+    parser.add_argument("--version", action="version", version="cursor-workflow 0.4.0")
     sub = parser.add_subparsers(dest="command", required=True)
 
     install = sub.add_parser("install", help="Install infrastructure into a target project")

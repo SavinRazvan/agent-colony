@@ -10,4 +10,4 @@ Notes:
  - Thin wrapper — delegates to `.ai_infra/install/cursor_workflow/cli.py`.
 """
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
