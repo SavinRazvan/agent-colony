@@ -1,6 +1,11 @@
-# MAS Workflow Kit
+<p align="center">
+  <img src="assets/logo.png" alt="MAS Workflow Kit" width="260">
+</p>
 
-Multi-agent workflow for Cursor — subagents, skills, rules, PR scripts, and `.local/` trackers. Install into **your** project (not a standalone app).
+<p align="center">
+  Multi-agent workflow for Cursor — subagents, skills, rules, PR scripts, and <code>.local/</code> trackers.<br>
+  Install into <strong>your</strong> project (not a standalone app).
+</p>
 
 | If you are… | Start here |
 |-------------|------------|
@@ -19,13 +24,17 @@ Multi-agent workflow for Cursor — subagents, skills, rules, PR scripts, and `.
 
 In **Agent chat**, type (this is **not** a bash command):
 
-```text
+```bash
 /add-plugin https://github.com/SavinRazvan/mas-workflow-kit
 ```
 
+Cursor shows an **Add Plugin** preview — click the **MAS Workflow Kit** card to install:
+
+![Install MAS Workflow Kit from Agent chat — type /add-plugin with the GitHub URL, then click the plugin card](assets/mas-workflow-kit-install.png)
+
 Pin a branch explicitly if you want:
 
-```text
+```bash
 /add-plugin https://github.com/SavinRazvan/mas-workflow-kit/tree/main
 ```
 

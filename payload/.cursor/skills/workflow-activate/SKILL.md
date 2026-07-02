@@ -23,7 +23,7 @@ User enabled the **MAS Workflow Kit** plugin and opened **their project** (not t
 
 ## Guide the user (keep it simple)
 
-1. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` (chat only — not terminal).
+1. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` (chat only — not terminal). Show [install screenshot](https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit/main/assets/mas-workflow-kit-install.png) or [consumer-quickstart § step 1](../../.ai_infra/docs/operations/consumer-quickstart.md#step-1-detail--install-plugin-from-github) — user clicks the **MAS Workflow Kit** card in the preview.
 2. Confirm the open folder is **their app**, not `mas-workflow-kit`.
 3. Run activate (below) — or tell them to pick **`/workflow-activate`** from the **`/`** menu.
 4. Tell them to edit `.local/user_settings/github.collaboration.yaml` → `contributors validate`.

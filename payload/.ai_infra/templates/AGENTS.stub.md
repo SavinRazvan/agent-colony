@@ -1,5 +1,10 @@
 # AGENTS.md
 
+## Installing?
+
+1. Agent chat: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` — [screenshot](.ai_infra/docs/operations/assets/mas-workflow-kit-install.png) · [step-by-step](.ai_infra/docs/operations/consumer-quickstart.md#step-1-detail--install-plugin-from-github)
+2. Open **your app folder** → **`/workflow-activate`**
+
 ## Just installed?
 
 1. Edit `.local/user_settings/github.collaboration.yaml` → your name + `@handle`

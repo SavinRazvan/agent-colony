@@ -63,6 +63,10 @@ In **Agent chat** (not the terminal):
 /add-plugin https://github.com/SavinRazvan/mas-workflow-kit
 ```
 
+Cursor shows an **Add Plugin** preview — click the **MAS Workflow Kit** card to install:
+
+![Install MAS Workflow Kit from Agent chat](assets/mas-workflow-kit-install.png)
+
 Optional — explicit branch:
 
 ```text
