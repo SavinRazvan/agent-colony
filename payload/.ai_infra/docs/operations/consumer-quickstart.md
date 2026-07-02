@@ -27,12 +27,30 @@ Install the **MAS Workflow Kit** into your project in a few minutes. No special 
 
 | Step | Action |
 |------|--------|
-| **1. Plugin** | Cursor → Marketplace → **MAS Workflow Kit** → Install *(or `/add-plugin` → kit repo while waiting)* |
-| **2. Activate** | In Agent chat: **`/workflow-activate`** → wait for **`VERIFY PASS`** |
+| **1. Plugin** | In **Agent chat** (not terminal): `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` — or **Cursor → Marketplace** when listed |
+| **2. Activate** | Open **your app folder** → Agent chat: **`/workflow-activate`** → wait for **`VERIFY PASS`** |
 | **3. Your name** | Edit `.local/user_settings/github.collaboration.yaml` → set `display_name` + `github_user` → `python3 -m cursor_workflow contributors validate` |
 | **4. Build** | **`/implementer`** · read `session-pointer.md` → `plan.md` → `work-tracker.md` |
 
 **Healthy install?** `python3 -m cursor_workflow health`
+
+> **Cheat sheet:** [Agent chat vs terminal](#agent-chat-vs-terminal) · [Dashboards](#control-center-dashboards) · [All CLI commands](#terminal-commands-cheat-sheet)
+
+### Step 1 detail — install plugin from GitHub
+
+`/add-plugin` runs in **Cursor Agent chat only** — it is not a shell command.
+
+```text
+/add-plugin https://github.com/SavinRazvan/mas-workflow-kit
+```
+
+Optional — pin `main`:
+
+```text
+/add-plugin https://github.com/SavinRazvan/mas-workflow-kit/tree/main
+```
+
+After install you may see only `.cursor/settings.json` in the project. That is expected — run **step 2** to copy the full bundle.
 
 ### In Agent chat — type `/`
 
@@ -63,10 +81,26 @@ Agent may also **auto-delegate** subagents or **auto-apply** skills when the tas
 | Infrastructure | `.ai_infra/`, `cursor_workflow/` |
 | Runtime | `.local/` trackers + dashboards (gitignored) |
 
-Also creates `.venv`, merges MCP config (profile **`with_mcp`**), runs smoke gates. Safe to re-run — won't overwrite your settings or trackers.
+Also creates `.venv`, merges MCP config (profile **`with_mcp`**), runs smoke gates.
+
+**Re-activate is safe:** won't overwrite your trackers, `user_settings/`, or `AGENTS.md`. Kit-managed **dashboard HTML**, JS/CSS, `module-audit.html`, and `pages.json` **are refreshed** on each activate (from plugin payload when available).
+
+**Terminal equivalent** (same as `/workflow-activate`):
+
+```bash
+cd ~/Projects/my-app          # your activated project
+source .venv/bin/activate     # after first activate
+python3 -m cursor_workflow activate --directory .
+```
+
+To pull the latest dashboards after a kit update without a full reinstall:
+
+```bash
+python3 -m cursor_workflow activate --directory .
+```
 
 <details>
-<summary><strong>Terminal activate (consumer trial, pre-Marketplace)</strong></summary>
+<summary><strong>Alternative: terminal activate (no plugin UI)</strong></summary>
 
 ```bash
 export KIT=~/Projects/mas-workflow-kit
@@ -109,9 +143,110 @@ Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → **`/connect
 1. Open `.local/index-and-planning/current/session-pointer.md`
 2. Update `plan.md` and `work-tracker.md` for your slice
 3. **`/implementer`** (or `/test-runner`, `/verifier`, `/enterprise-auditor`)
-4. Dashboard (optional): `.local/agents-control-center/dashboards/`
+4. Dashboard (optional): see [Control Center dashboards](#control-center-dashboards) below
 
 **Add your own agent/skill/MCP:** **`/integrator-mas-agent`** + **`/mas-infrastructure-integration`**
+
+---
+
+## Agent chat vs terminal
+
+| Where | Use for | Examples |
+|-------|---------|----------|
+| **Agent chat** | Plugin install, subagents, skills, slash workflows | `/add-plugin …`, `/workflow-activate`, `/implementer`, `/review-pr` |
+| **Terminal** | Validation, health, gates, serving dashboards | `python3 -m cursor_workflow health`, `http.server` |
+
+**Rule:** `/add-plugin` and `/workflow-activate` are **chat commands** — do not paste them into bash.
+
+### Agent chat — type `/` in Cursor
+
+| Goal | Command |
+|------|---------|
+| Install plugin (once) | `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` |
+| Activate / refresh kit | `/workflow-activate` |
+| Implement a slice | `/implementer` |
+| Tests / coverage | `/test-runner` |
+| Verify claims | `/verifier` |
+| Architecture audit | `/enterprise-auditor` |
+| Drift check | `/workflow-drift-guard` |
+| Add agents/skills/MCP | `/integrator-mas-agent` |
+| External MCP setup | `/connect-external-mcp` |
+| PR workflow | `/review-pr` → `/prepare-pr` → `/merge-pr` |
+| Attach file context | `@` + pick file (not for starting workflows) |
+
+---
+
+## Terminal commands cheat sheet
+
+Run from **your activated project root** (`~/Projects/my-app`), not the kit repo.
+
+```bash
+cd ~/Projects/my-app
+source .venv/bin/activate          # required for gates/pytest
+```
+
+| Command | When |
+|---------|------|
+| `python3 -m cursor_workflow activate --directory .` | First install, re-activate, or refresh dashboards |
+| `python3 -m cursor_workflow contributors validate` | After editing `github.collaboration.yaml` — must PASS before PR |
+| `python3 -m cursor_workflow health` | Quick layout + `kit_version` check |
+| `python3 -m cursor_workflow integrate validate` | Agent/skill/MCP integration sanity (P0 = 0) |
+| `python3 -m cursor_workflow gates` | Full smoke gates (4 checks on consumer) |
+| `python3 -m cursor_workflow drift validate` | Plan ↔ tracker coherence |
+| `python3 -m cursor_workflow mcp validate` | MCP config after edits |
+| `python3 -m pytest -q tests/modules/smoke/` | Install smoke test |
+| `python3 -m http.server 8000` | Serve local dashboards (see below) |
+
+Commit trailer preview: `python3 -m cursor_workflow contributors commit-trailers`
+
+---
+
+## Control Center dashboards
+
+Local HTML dashboards browse your trackers and kit docs in the browser. They ship under `.local/agents-control-center/` on activate.
+
+### 1. Start a local web server (required)
+
+Browsers block `fetch()` on `file://` URLs — **do not** double-click the HTML files.
+
+From **project root**:
+
+```bash
+cd ~/Projects/my-app
+python3 -m http.server 8000
+```
+
+Leave the terminal open while browsing.
+
+### 2. Open in your browser
+
+| Page | URL |
+|------|-----|
+| **Home** | http://localhost:8000/.local/agents-control-center/dashboards/index.html |
+| **Implementation Control Center** | http://localhost:8000/.local/agents-control-center/dashboards/implementation-control-center.html |
+| **Module audit** | http://localhost:8000/.local/agents-control-center/audits/module-audit.html |
+
+Use the top **navigator** to switch between Home, Control Center, and Module audit.
+
+### 3. What you can do there
+
+- **Control Center** — pick a page from the sidebar (`session-pointer`, `plan`, `work-tracker`, workflow docs, …); markdown renders with tables and lists
+- **Home** — links to trackers and quick paths
+- **Module audit** — workflow module map (when exported)
+
+### 4. Refresh dashboards after a kit update
+
+Re-run activate (chat or terminal):
+
+```text
+/workflow-activate
+```
+
+```bash
+python3 -m cursor_workflow activate --directory .
+```
+
+This overwrites kit-managed dashboard files with the latest templates from the plugin payload.
 
 ---
 
@@ -180,12 +315,17 @@ Architecture: [workflow-architecture.md](../architecture/workflow-architecture.m
 
 | Problem | Fix |
 |---------|-----|
+| `bash: /add-plugin: No such file or directory` | `/add-plugin` is **Agent chat only** — paste the GitHub URL in chat, not the terminal |
+| Only `.cursor/settings.json` after plugin install | Normal — run **`/workflow-activate`** in your app folder for the full bundle |
 | `contributors validate` FAIL | Replace placeholders in `github.collaboration.yaml` |
 | YAML `ParserError` / traceback | Fix `human_coauthors` — keep `[]` or use a proper list; don't uncomment example lines as siblings of `[]` |
 | Validate passes from kit repo but fails in your app | Run commands from **your project** (`cd ~/Projects/my-app`), not `mas-workflow-kit` |
 | `pytest` not found | Re-run **`/workflow-activate`** (creates `.venv`) |
 | Permission denied on `/path` | You used a placeholder path — create a real folder |
 | Subagents/skills missing in **`/`** menu | Open **your activated project**, not the kit repo; re-run **`/workflow-activate`** if planes are incomplete |
+| Control Center shows **Failed to fetch** | Use `python3 -m http.server 8000` from project root — not `file://` |
+| Raw markdown (no tables/bold) in Control Center | Re-run **`/workflow-activate`** to refresh `local-markdown.js` |
+| Stale dashboard UI after kit update | `python3 -m cursor_workflow activate --directory .` |
 
 ---
 

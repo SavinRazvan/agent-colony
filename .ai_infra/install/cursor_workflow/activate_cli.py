@@ -91,6 +91,36 @@ def _print_post_activate_hints(root: Path) -> None:
     print("Add agents/skills later: /integrator-mas-agent (subagent, not a shell command).")
 
 
+def _import_scaffold_refresh() -> object:
+    install_dir = Path(__file__).resolve().parents[2] / "scripts" / "install"
+    install_str = str(install_dir)
+    if install_str not in sys.path:
+        sys.path.insert(0, install_str)
+    import scaffold
+
+    return scaffold
+
+
+def _resolve_dashboard_refresh_source(
+    raw: Path | None, target: Path, default_kit_root: Path
+) -> Path | None:
+    try:
+        return resolve_activate_source(raw, target, default_kit_root)
+    except FileNotFoundError:
+        embedded = target / ".ai_infra" / "templates" / "local-workspace" / "index.html"
+        if embedded.is_file():
+            return target
+        return None
+
+
+def _refresh_dashboard_templates(target: Path, source: Path | None, default_kit_root: Path) -> None:
+    refresh_source = source or _resolve_dashboard_refresh_source(None, target, default_kit_root)
+    if refresh_source is None:
+        return
+    scaffold = _import_scaffold_refresh()
+    scaffold.refresh_dashboards(refresh_source, target)
+
+
 def cmd_activate(args: argparse.Namespace) -> int:
     from paths import kit_root
 
@@ -100,6 +130,11 @@ def cmd_activate(args: argparse.Namespace) -> int:
 
     if status.all_ready and not args.force:
         print(plane_status.format_plane_report(status))
+        try:
+            ext_source = resolve_activate_source(args.source, target, kit_root())
+            _refresh_dashboard_templates(target, ext_source, kit_root())
+        except FileNotFoundError:
+            _refresh_dashboard_templates(target, None, kit_root())
         print("\nAll three planes ready — skipping install.")
         code, out = _run_settings_validate(target)
         if out:

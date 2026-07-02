@@ -76,6 +76,7 @@ def test_seed_kit_workspace_creates_artifact_buckets(tmp_path: Path) -> None:
         "implementation-control-center.html",
         "site-nav.js",
         "local-shell.css",
+        "local-markdown.js",
     ):
         shutil.copy2(ui_src / name, ui_dst / name)
     pr_scripts = REPO_ROOT / ".ai_infra/scripts/pr"

@@ -55,6 +55,24 @@ flowchart LR
 
 **Important:** Enabling the plugin does **not** replace activate. Open **your app folder** in Cursor, then run **`/workflow-activate`** once (safe to re-run — idempotent).
 
+### Install plugin from GitHub (recommended until Marketplace listing)
+
+In **Agent chat** (not the terminal):
+
+```text
+/add-plugin https://github.com/SavinRazvan/mas-workflow-kit
+```
+
+Optional — explicit branch:
+
+```text
+/add-plugin https://github.com/SavinRazvan/mas-workflow-kit/tree/main
+```
+
+This loads agents, skills, and rules into Cursor. Your project may only get `.cursor/settings.json` until you activate (§2).
+
+**When listed:** **Cursor → Marketplace → MAS Workflow Kit → Install** — same two-step flow; you still run **`/workflow-activate`** afterward.
+
 ---
 
 ## 2. Quick start (4 steps)
@@ -63,8 +81,8 @@ flowchart LR
 
 | Step | Action |
 |------|--------|
-| 1. Plugin | Cursor → Marketplace → **MAS Workflow Kit** → Install *(or `/add-plugin` while waiting)* |
-| 2. Activate | Agent chat → **`/workflow-activate`** → wait for **`VERIFY PASS`** and all planes **ready** |
+| 1. Plugin | Agent chat: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` *(or Marketplace when listed)* |
+| 2. Activate | Open **your app** → Agent chat → **`/workflow-activate`** → wait for **`VERIFY PASS`** and all planes **ready** |
 | 3. Your name | Edit `.local/user_settings/github.collaboration.yaml` → `python3 -m cursor_workflow contributors validate` |
 | 4. Build | **`/implementer`** · read `session-pointer.md` → `plan.md` → `work-tracker.md` |
 
@@ -105,11 +123,71 @@ your-project/
 
 **Not installed:** kit full `tests/`, `Makefile`, `docs/handoff/`, CI/release scripts, maintainer megadocs. Those exist only in the [kit repository](https://github.com/SavinRazvan/mas-workflow-kit).
 
-**Re-activate is safe:** existing trackers, `user_settings/`, `AGENTS.md`, and `pages.json` are not overwritten.
+**Re-activate is safe:** existing trackers, `user_settings/`, and `AGENTS.md` are not overwritten. Kit-managed **dashboard HTML**, JS/CSS, `module-audit.html`, and `pages.json` **are refreshed** on each activate.
 
 ---
 
-## 4. Use-case matrix
+## 4. Agent chat vs terminal
+
+| Where | Use for |
+|-------|---------|
+| **Agent chat** (`/` menu) | Plugin install, activate, subagents, skills, PR slash workflow |
+| **Terminal** | `python3 -m cursor_workflow …`, pytest, serving dashboards |
+
+### Agent chat commands
+
+| Goal | Type in chat |
+|------|--------------|
+| Install plugin | `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` |
+| Activate / refresh | `/workflow-activate` |
+| Implement | `/implementer` |
+| Tests | `/test-runner` |
+| PR lifecycle | `/review-pr` → `/prepare-pr` → `/merge-pr` |
+| Extend kit | `/integrator-mas-agent` |
+
+### Terminal commands (project root)
+
+```bash
+cd ~/Projects/my-app
+source .venv/bin/activate
+```
+
+| Command | Purpose |
+|---------|---------|
+| `python3 -m cursor_workflow activate --directory .` | Install, re-activate, refresh dashboards |
+| `python3 -m cursor_workflow contributors validate` | After editing collaboration YAML |
+| `python3 -m cursor_workflow health` | Layout + version |
+| `python3 -m cursor_workflow integrate validate` | Integration checks |
+| `python3 -m cursor_workflow gates` | Full smoke gates |
+| `python3 -m pytest -q tests/modules/smoke/` | Install smoke |
+
+Full list: [consumer-quickstart.md](consumer-quickstart.md) § Terminal commands cheat sheet.
+
+---
+
+## 5. Control Center dashboards
+
+Local browser UI for trackers and docs under `.local/agents-control-center/`.
+
+**Do not open HTML via `file://`** — browsers block fetch. From project root:
+
+```bash
+python3 -m http.server 8000
+```
+
+| Page | URL |
+|------|-----|
+| Home | http://localhost:8000/.local/agents-control-center/dashboards/index.html |
+| Control Center | http://localhost:8000/.local/agents-control-center/dashboards/implementation-control-center.html |
+| Module audit | http://localhost:8000/.local/agents-control-center/audits/module-audit.html |
+
+Refresh after kit update: **`/workflow-activate`** or `python3 -m cursor_workflow activate --directory .`
+
+Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dashboards.
+
+---
+
+## 6. Use-case matrix
 
 | I want to… | Type in chat | Or run | Deep dive |
 |------------|--------------|--------|-----------|
@@ -122,7 +200,7 @@ your-project/
 | **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` GATES | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
 | **Add agents / skills / MCP** | `/integrator-mas-agent` + `/mas-infrastructure-integration` | `integrate validate` | [mas-infrastructure-integration.md](mas-infrastructure-integration.md) |
 | **Connect external MCP** | `/connect-external-mcp` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
-| **Upgrade / reinstall** | `/workflow-activate` (or install CLI) | — | [upgrade-kit.md](upgrade-kit.md) |
+| **Upgrade / refresh dashboards** | `/workflow-activate` | `python3 -m cursor_workflow activate --directory .` | [upgrade-kit.md](upgrade-kit.md) |
 | **Check install health** | — | `python3 -m cursor_workflow health` | [gate-matrix.md](gate-matrix.md) |
 | **Dry-run install preview** | — | `scaffold.py --dry-run` | [install-dry-run.md](install-dry-run.md) |
 
@@ -148,20 +226,20 @@ Cursor may also auto-delegate subagents when the task matches their `description
 
 ---
 
-## 5. Daily workflow
+## 7. Daily workflow
 
 Every session:
 
 1. `.local/index-and-planning/current/session-pointer.md`
 2. `plan.md` → `work-tracker.md`
-3. **`/implementer`** (or specialist agent from §4)
-4. Optional dashboard: `.local/agents-control-center/dashboards/`
+3. **`/implementer`** (or specialist agent from §6)
+4. Optional: [Control Center dashboards](#5-control-center-dashboards) — `python3 -m http.server 8000`
 
 Token contract: [token-efficiency.md](token-efficiency.md) · Layout: [local-workspace-layout.md](local-workspace-layout.md).
 
 ---
 
-## 6. PR lifecycle (summary)
+## 8. PR lifecycle (summary)
 
 Pattern A — one script command per step; gate order lives only in `prepare.py`.
 
@@ -174,7 +252,7 @@ Full checklist: [workflow-complete.md](workflow-complete.md).
 
 ---
 
-## 7. Architecture audit (summary)
+## 9. Architecture audit (summary)
 
 For architecture-impacting work before merge prep:
 
@@ -186,7 +264,7 @@ Procedure: [agent-workflow-procedures.md](agent-workflow-procedures.md).
 
 ---
 
-## 8. Personalize settings
+## 10. Personalize settings
 
 | File | Purpose |
 |------|---------|
@@ -203,7 +281,7 @@ Use project `.venv`: `source .venv/bin/activate` before CLI commands.
 
 ---
 
-## 9. Verify and gates
+## 11. Verify and gates
 
 | Command | When | Steps |
 |---------|------|-------|
@@ -215,21 +293,25 @@ Details: [gate-matrix.md](gate-matrix.md). **`make gates`** / **`make verify-all
 
 ---
 
-## 10. Troubleshooting
+## 12. Troubleshooting
 
 | Problem | Fix |
 |---------|-----|
+| `bash: /add-plugin: No such file or directory` | Use **Agent chat**, not terminal — paste the GitHub URL after `/add-plugin` |
+| Only `.cursor/settings.json` after plugin | Expected — run **`/workflow-activate`** for `.ai_infra/`, `.local/`, etc. |
 | Subagents missing in `/` menu | Open **your activated project**, not kit repo; re-run `/workflow-activate` |
 | `contributors validate` FAIL | Replace placeholders in `github.collaboration.yaml` |
 | `pytest` not found | Re-run activate (creates `.venv`); use `source .venv/bin/activate` |
 | Activate blocked in kit repo | Open your app folder — activate refuses self-install |
 | Broken YAML in collaboration file | Keep `human_coauthors: []` or use a proper list |
+| Control Center **Failed to fetch** | Serve via `python3 -m http.server 8000` — not `file://` |
+| Stale dashboard after kit update | Re-run `/workflow-activate` or `activate --directory .` |
 
 More: [consumer-quickstart.md](consumer-quickstart.md) § Troubleshooting.
 
 ---
 
-## 11. Further reading (operations index)
+## 13. Further reading (operations index)
 
 | Topic | Doc |
 |-------|-----|

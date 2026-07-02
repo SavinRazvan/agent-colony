@@ -10,10 +10,19 @@ Re-run install from a **newer kit source** (git tag, plugin payload, or local cl
 
 ## Upgrade command
 
-**Plugin / payload (recommended):**
+**Light refresh (dashboards + activate scripts, keeps trackers):**
 
 ```bash
 cd ~/Projects/my-app    # your activated project
+source .venv/bin/activate
+python3 -m cursor_workflow activate --directory .
+```
+
+Same as **`/workflow-activate`** in Agent chat when planes are already ready. Refreshes kit-managed dashboard HTML, `pages.json`, and install scripts from the plugin payload.
+
+**Full reinstall (scripts, agents, rules — review `.local/` merge):**
+
+```bash
 python3 -m cursor_workflow activate --directory . --force
 ```
 
@@ -37,7 +46,8 @@ Use `--source payload` when running from the distribution root (see `workflow-ac
 |------|----------|
 | `.ai_infra/scripts/` | Overwritten from manifest profile |
 | `.cursor/agents`, rules, skills | Overwritten from kit |
-| `.local/` exemplars | Re-copied; **review** `plan.md` / `work-tracker.md` for merge |
+| `.local/` exemplars | Re-copied on **`--force`** only; light re-activate refreshes dashboards + `pages.json` |
+| Dashboard HTML / `pages.json` | Refreshed on every `activate` (idempotent) |
 | `AGENTS.md` | **Not** overwritten if present — delete to refresh from stub, or merge manually |
 | `mcp.user.json` | **Not** overwritten — merge via `python3 -m cursor_workflow mcp validate` |
 | `.kit-version` | Updated to manifest `kit_version` |

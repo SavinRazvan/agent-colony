@@ -127,6 +127,18 @@ def _pages_json_needs_artifact_tabs(pages_path: Path) -> bool:
     return not {"pr-review", "drift-audit", "ea-audit"}.issubset(ids)
 
 
+def _pages_json_paths_stale(pages_path: Path) -> bool:
+    """True when legacy ../../../docs/ paths omit .ai_infra (break ICC fetch over http.server)."""
+    if not pages_path.is_file():
+        return False
+    data = json.loads(pages_path.read_text(encoding="utf-8"))
+    for page in data.get("pages", []):
+        rel = page.get("file", "")
+        if isinstance(rel, str) and rel.startswith("../../../docs/"):
+            return True
+    return False
+
+
 def _ensure_workflow_artifact_buckets(dry_run: bool, log: list[str]) -> None:
     lwp = _import_local_workflow_paths()
     if dry_run:
@@ -203,7 +215,7 @@ def main() -> int:
             arch_dst.write_text(ARCHITECTURE_STUB, encoding="utf-8")
 
     cfg = LOCAL / "agents-control-center" / "config" / "pages.json"
-    if _pages_json_needs_artifact_tabs(cfg):
+    if _pages_json_needs_artifact_tabs(cfg) or _pages_json_paths_stale(cfg):
         _copy_template_overwrite("pages.json", cfg, dry_run, log)
     else:
         _copy_template("pages.json", cfg, dry_run, log)
@@ -213,6 +225,8 @@ def main() -> int:
     _copy_template_overwrite("site-nav.js", nav_js, dry_run, log)
     shell_css = LOCAL / "agents-control-center" / "dashboards" / "local-shell.css"
     _copy_template_overwrite("local-shell.css", shell_css, dry_run, log)
+    markdown_js = LOCAL / "agents-control-center" / "dashboards" / "local-markdown.js"
+    _copy_template_overwrite("local-markdown.js", markdown_js, dry_run, log)
     dash = LOCAL / "agents-control-center" / "dashboards" / "implementation-control-center.html"
     legacy_backup = (
         LOCAL / "agents-control-center" / "dashboards" / "implementation-control-center.legacy.html"

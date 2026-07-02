@@ -6,7 +6,7 @@ Multi-agent workflow for Cursor — subagents, skills, rules, PR scripts, and `.
 |-------------|------------|
 | **New user** | [Get started in 4 steps](#get-started-most-users) below |
 | **Plugin user manual** | [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) — architecture, file tree, use cases |
-| **Full `/` menu + verify commands** | [Consumer quickstart](.ai_infra/docs/operations/consumer-quickstart.md) (copied into your project after activate) |
+| **Full `/` menu + verify commands** | [Consumer quickstart](.ai_infra/docs/operations/consumer-quickstart.md) — install, chat vs terminal, dashboards |
 | **Kit maintainer** | [Developing the kit](#developing-the-kit-repo-only) |
 
 ---
@@ -15,10 +15,25 @@ Multi-agent workflow for Cursor — subagents, skills, rules, PR scripts, and `.
 
 **You need:** Cursor · Python 3.11+ (`python3 --version`) · a **project folder** open in Cursor (your app — **not** this `mas-workflow-kit` repo).
 
-### 1. Install the plugin
+### 1. Install the plugin (Cursor chat — not the terminal)
 
-- **Cursor → Marketplace** → search **MAS Workflow Kit** → Install  
-- **Before Marketplace is live:** `/add-plugin` → select this repo root
+In **Agent chat**, type (this is **not** a bash command):
+
+```text
+/add-plugin https://github.com/SavinRazvan/mas-workflow-kit
+```
+
+Pin a branch explicitly if you want:
+
+```text
+/add-plugin https://github.com/SavinRazvan/mas-workflow-kit/tree/main
+```
+
+**What this does:** enables the plugin in Cursor (agents, skills, rules in the IDE). It may only create `.cursor/settings.json` in your project — that is normal.
+
+**What it does not do:** copy `.ai_infra/`, `.local/`, or the rest of the bundle. You need step 2.
+
+**When Cursor Marketplace lists MAS Workflow Kit:** you can install from **Cursor → Marketplace** instead — same plugin, then still run step 2.
 
 ### 2. Activate into your project
 
@@ -68,7 +83,51 @@ Type **`/`** in Agent chat — Cursor lists **subagents**, **skills**, and **com
 
 Each session, read first: `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 
-**Optional dashboard:** serve `.local/agents-control-center/dashboards/` locally (see [consumer quickstart](.ai_infra/docs/operations/consumer-quickstart.md)).
+### 5. Optional — Control Center dashboards
+
+Browse trackers and docs in your browser. **Do not** open HTML via `file://` — use a local server:
+
+```bash
+cd ~/Projects/my-app    # your activated project
+python3 -m http.server 8000
+```
+
+| Page | URL |
+|------|-----|
+| Home | http://localhost:8000/.local/agents-control-center/dashboards/index.html |
+| Control Center | http://localhost:8000/.local/agents-control-center/dashboards/implementation-control-center.html |
+| Module audit | http://localhost:8000/.local/agents-control-center/audits/module-audit.html |
+
+After a kit update, refresh dashboards: **`/workflow-activate`** in chat or `python3 -m cursor_workflow activate --directory .`
+
+Full reference: [consumer quickstart](.ai_infra/docs/operations/consumer-quickstart.md) · [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md)
+
+---
+
+<details>
+<summary><strong>Commands cheat sheet (agent chat vs terminal)</strong></summary>
+
+**Agent chat** (type `/` — not bash):
+
+| Goal | Command |
+|------|---------|
+| Install plugin | `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` |
+| Activate / refresh | `/workflow-activate` |
+| Implement | `/implementer` |
+| PR workflow | `/review-pr` → `/prepare-pr` → `/merge-pr` |
+
+**Terminal** (from your project, after `source .venv/bin/activate`):
+
+```bash
+python3 -m cursor_workflow contributors validate   # after YAML edit
+python3 -m cursor_workflow health
+python3 -m cursor_workflow integrate validate
+python3 -m cursor_workflow gates
+python3 -m cursor_workflow activate --directory .    # re-activate / refresh dashboards
+python3 -m http.server 8000                          # serve dashboards
+```
+
+</details>
 
 ---
 
@@ -77,17 +136,20 @@ Each session, read first: `.local/index-and-planning/current/session-pointer.md`
 | Do | Don't |
 |----|-------|
 | Open **your app** in Cursor before **`/workflow-activate`** | Activate while inside `mas-workflow-kit` |
+| Install plugin in **Agent chat**: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` | Run `/add-plugin` in the terminal — it is chat-only |
+| Expect only `.cursor/settings.json` until **`/workflow-activate`** | Expect the full bundle after `/add-plugin` alone |
 | Run CLI from **your activated project** | Run `contributors validate` from the kit repo — it checks the wrong folder |
 | Run `pytest tests/modules/smoke/` after activate/install | Run it from the kit repo — that folder only exists in activated/installed projects |
 | `source .venv/bin/activate` then `python3 -m cursor_workflow …` | Use system `python3` for **`gates`** without venv — pytest may be missing |
+| Serve dashboards with `python3 -m http.server 8000` | Open dashboard HTML via `file://` — fetch is blocked |
 | Type **`/`** and pick subagents/skills | Use **`@ implementer`** — `@` is for file/doc context only |
 | Create a **real** project folder (e.g. `~/Projects/my-app`) | Copy `/path/to/your-project` or `cd` to a folder that does not exist |
 | Ignore **`make …`** in this repo | Run maintainer commands unless you develop the kit |
 
 <details>
-<summary><strong>Pre-launch: terminal activate (consumer trial)</strong></summary>
+<summary><strong>Alternative: terminal activate (no plugin UI)</strong></summary>
 
-Skip this if Marketplace + **`/workflow-activate`** works for you.
+Use this if `/add-plugin` is unavailable or you prefer CLI-only setup:
 
 ```bash
 export KIT=~/Projects/mas-workflow-kit
@@ -145,7 +207,9 @@ Details after activate: **`AGENTS.md`** and [consumer quickstart](.ai_infra/docs
 
 ---
 
-## Advanced install (no Marketplace)
+## Advanced install (git clone, no plugin)
+
+If you cannot use `/add-plugin`, clone and install directly:
 
 ```bash
 git clone https://github.com/SavinRazvan/mas-workflow-kit.git

@@ -27,7 +27,10 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 6. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
 7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02)
 8. [x] `assets/logo.png` (1:1, background plate) — see `assets/README.md` — **present** (commit `1f16af1`, 1024×1024 PNG RGBA, ~1.5 MB; verified 2026-07-02)
-9. [~] Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — **CLI-equivalent path double-verified 2026-07-02** against a fresh `git clone` of `v0.4.0` (see `.local/workflow-artifacts/release/workflow-activate-ui-smoke.md`); the literal Cursor chat `/` menu + `/add-plugin` path is still open
+9. [~] Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — **live runbook:**
+   `.local/workflow-artifacts/release/workflow-activate-live-ui-runbook.md`. CLI-equivalent path
+   double-verified 2026-07-02 (`workflow-activate-ui-smoke.md`); literal `/add-plugin` + `/`
+   menu path still open.
 
 ## Versioning
 
@@ -75,15 +78,32 @@ payload/           # ADR-001 install source (.ai_infra + cursor_workflow shim)
 
 ## Local smoke (`/add-plugin` from repo path)
 
-### Consumer trial (maintainer — separate project, not the kit repo)
+### Consumer trial (GitHub plugin — recommended until Marketplace)
+
+```bash
+export TARGET=~/Projects/my-app
+mkdir -p "$TARGET"
+```
+
+1. **Agent chat** (not terminal): `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit`
+2. **File → Open Folder** → `"$TARGET"` (your app — not the kit repo)
+3. **Agent chat:** `/workflow-activate` → wait for **VERIFY PASS**
+4. Edit `.local/user_settings/github.collaboration.yaml` → `python3 -m cursor_workflow contributors validate`
+
+**Alternative — local path** (if GitHub URL fails in your Cursor build):
+
+```text
+/add-plugin /home/you/Projects/mas-workflow-kit
+```
+
+(clone the repo first if needed)
+
+### Consumer trial (terminal activate, no plugin UI)
 
 ```bash
 export KIT=~/Projects/mas-workflow-kit
-export TARGET=~/Projects/mas-consumer-trial
+export TARGET=~/Projects/my-app
 mkdir -p "$TARGET"
-
-# 1. Plugin in Cursor: /add-plugin → "$KIT" (repo root with .cursor-plugin/plugin.json)
-# 2. Open "$TARGET" as the workspace in Cursor (File → Open Folder)
 
 "$KIT/.venv/bin/python" "$KIT/payload/cursor_workflow" activate \
   --directory "$TARGET" \
@@ -101,7 +121,7 @@ Pass: `VERIFY PASS` on activate; `contributors validate: PASS` (after editing pl
 ### Quick plugin smoke (from kit repo)
 
 1. Run `make sync-plugin`
-2. In Cursor: `/add-plugin` → kit repo root
+2. In Agent chat: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit`
 3. Confirm agents: `implementer`, `enterprise-auditor`, maintainer slash skills
 4. Run **`/workflow-activate`** in Agent chat with a **non-kit** project folder open
 
@@ -166,7 +186,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Manifest:** `.cursor-plugin/plugin.json` — `author`, `homepage`, `repository`, `logo` aligned with the table above.
 
-**Listing copy review (2026-07-02):** Verified `plugin.json` `description`, the Description row above, and README consumer sections (`What you get`, agent/skill/rule counts) against `IMPLEMENTATION-STATUS.md` on `main` — 585 tests, DOC-006 PASS, coverage scope 3484 stmts / 100% on `--cov=.ai_infra --cov=cursor_workflow`. No stale test or coverage numbers in marketplace-facing copy; feature counts (7 agents, 10 skills, 5 PR skills, 6 rules) match shipped inventory.
+**Listing copy review (2026-07-02):** Verified `plugin.json` `description`, the Description row above, and README consumer sections (`What you get`, agent/skill/rule counts) against `IMPLEMENTATION-STATUS.md` on `main` — 588 tests, DOC-006 PASS, coverage scope 3484 stmts / 100% on `--cov=.ai_infra --cov=cursor_workflow`. No stale test or coverage numbers in marketplace-facing copy; feature counts (7 agents, 10 skills, 5 PR skills, 6 rules) match shipped inventory.
 
 ## Publish
 

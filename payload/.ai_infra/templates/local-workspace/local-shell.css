@@ -286,6 +286,77 @@ code,
   margin: 0.2em 0;
 }
 
+.local-md-panel ol {
+  margin: 0.35em 0 0.5em 1.4em;
+  padding: 0;
+}
+
+.local-md-panel table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75em 0 1em;
+  font-size: 0.92rem;
+}
+
+.local-md-panel th,
+.local-md-panel td {
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.local-md-panel th {
+  background: #13254a;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.local-md-panel tr:nth-child(even) td {
+  background: rgba(15, 26, 54, 0.55);
+}
+
+.local-md-panel blockquote {
+  margin: 0.65em 0;
+  padding: 10px 14px;
+  border-left: 4px solid var(--accent);
+  background: rgba(97, 178, 255, 0.08);
+  color: var(--muted);
+  border-radius: 0 8px 8px 0;
+}
+
+.local-md-panel blockquote p {
+  margin: 0.35em 0;
+}
+
+.local-md-panel hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 1.25em 0;
+}
+
+.local-md-panel a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.local-md-panel a:hover {
+  text-decoration: underline;
+}
+
+.local-md-panel strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.local-md-panel em {
+  color: #c8d8ff;
+}
+
+.local-md-panel del {
+  color: #7a8bb8;
+}
+
 .local-md-panel code {
   background: var(--code-bg);
   padding: 1px 4px;

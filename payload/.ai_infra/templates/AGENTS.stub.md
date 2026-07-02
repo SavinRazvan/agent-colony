@@ -3,9 +3,11 @@
 ## Just installed?
 
 1. Edit `.local/user_settings/github.collaboration.yaml` → your name + `@handle`
-2. `python3 -m cursor_workflow contributors validate`
+2. `source .venv/bin/activate && python3 -m cursor_workflow contributors validate`
 3. Read `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 4. **`/implementer`** (or pick `/test-runner`, `/verifier`, `/enterprise-auditor` from the **`/`** menu)
+
+**Dashboards (optional):** `python3 -m http.server 8000` from project root → open `http://localhost:8000/.local/agents-control-center/dashboards/index.html`
 
 Full walkthrough: [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) · [consumer-quickstart.md](.ai_infra/docs/operations/consumer-quickstart.md)
 
