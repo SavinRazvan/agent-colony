@@ -16,6 +16,8 @@
 
 ---
 
+
+
 ## Get started (most users)
 
 **You need:** Cursor · Python 3.11+ (`python3 --version`) · a **project folder** open in Cursor (your app — **not** this `mas-workflow-kit` repo).
@@ -24,7 +26,7 @@
 
 In **Agent chat**, type (this is **not** a bash command):
 
-```bash
+```text
 /add-plugin https://github.com/SavinRazvan/mas-workflow-kit
 ```
 
@@ -34,7 +36,7 @@ Cursor shows an **Add Plugin** preview — click the **MAS Workflow Kit** card t
 
 Pin a branch explicitly if you want:
 
-```bash
+```text
 /add-plugin https://github.com/SavinRazvan/mas-workflow-kit/tree/main
 ```
 
@@ -47,14 +49,14 @@ Pin a branch explicitly if you want:
 ### 2. Activate into your project
 
 1. **File → Open Folder** → your app (create a folder first if needed, e.g. `~/Projects/my-app`)
-2. In Agent chat, type **`/`** → pick **`/workflow-activate`**
-3. Wait for **`VERIFY PASS: all gates green`** and all planes **ready**
+2. In Agent chat, type `/` → pick `/workflow-activate`
+3. Wait for `VERIFY PASS: all gates green` and all planes **ready**
 
 Activate copies the full bundle into that folder: `.cursor/`, `.agents/`, `.ai_infra/`, `.local/`, `cursor_workflow/`, and `AGENTS.md`.
 
 ### 3. Add your name (~1 min)
 
-Open **`.local/user_settings/github.collaboration.yaml`** in **the same project folder** from step 2 and replace:
+Open `.local/user_settings/github.collaboration.yaml` in **the same project folder** from step 2 and replace:
 
 ```yaml
 owner:
@@ -75,20 +77,24 @@ Expected: `contributors validate: PASS`. Run the last two anytime to confirm a h
 
 > **YAML tip:** Only change `owner.display_name` and `owner.github_user` at first. Leave commented `# - display_name:` examples commented — uncommenting them under `human_coauthors: []` breaks the file.
 
+
+
 ### 4. Start building
 
-Type **`/`** in Agent chat — Cursor lists **subagents**, **skills**, and **commands** in one menu ([Customize](https://cursor.com/docs/customize-cursor)). Use **`@`** only to attach files, docs, or git context — not to start kit workflows ([Prompting](https://cursor.com/docs/agent/prompting)).
+Type `/` in Agent chat — Cursor lists **subagents**, **skills**, and **commands** in one menu ([Customize](https://cursor.com/docs/customize-cursor)). Use `@` only to attach files, docs, or git context — not to start kit workflows ([Prompting](https://cursor.com/docs/agent/prompting)).
 
-| Do this | Type in chat |
-|---------|--------------|
-| Implement a feature | **`/implementer`** |
-| Run tests / coverage | **`/test-runner`** |
-| Verify claims | **`/verifier`** |
-| Architecture audit | **`/enterprise-auditor`** |
-| Operational drift | **`/workflow-drift-guard`** |
-| Add agents / skills / MCP | **`/integrator-mas-agent`** + **`/mas-infrastructure-integration`** |
-| Connect external MCP | **`/connect-external-mcp`** (after editing `mcp.agents.yaml`) |
-| PR review → prepare → merge | **`/review-pr`** → **`/prepare-pr`** → **`/merge-pr`** |
+
+| Do this                     | Type in chat                                                |
+| --------------------------- | ----------------------------------------------------------- |
+| Implement a feature         | `/implementer`                                              |
+| Run tests / coverage        | `/test-runner`                                              |
+| Verify claims               | `/verifier`                                                 |
+| Architecture audit          | `/enterprise-auditor`                                       |
+| Operational drift           | `/workflow-drift-guard`                                     |
+| Add agents / skills / MCP   | `/integrator-mas-agent` + `/mas-infrastructure-integration` |
+| Connect external MCP        | `/connect-external-mcp` (after editing `mcp.agents.yaml`)   |
+| PR review → prepare → merge | `/review-pr` → `/prepare-pr` → `/merge-pr`                  |
+
 
 Each session, read first: `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 
@@ -101,29 +107,32 @@ cd ~/Projects/my-app    # your activated project
 python3 -m http.server 8000
 ```
 
-| Page | URL |
-|------|-----|
-| Home | http://localhost:8000/.local/agents-control-center/dashboards/index.html |
-| Control Center | http://localhost:8000/.local/agents-control-center/dashboards/implementation-control-center.html |
-| Module audit | http://localhost:8000/.local/agents-control-center/audits/module-audit.html |
 
-After a kit update, refresh dashboards: **`/workflow-activate`** in chat or `python3 -m cursor_workflow activate --directory .`
+| Page           | URL                                                                                                                                                                                                  |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Home           | [http://localhost:8000/.local/agents-control-center/dashboards/index.html](http://localhost:8000/.local/agents-control-center/dashboards/index.html)                                                 |
+| Control Center | [http://localhost:8000/.local/agents-control-center/dashboards/implementation-control-center.html](http://localhost:8000/.local/agents-control-center/dashboards/implementation-control-center.html) |
+| Module audit   | [http://localhost:8000/.local/agents-control-center/audits/module-audit.html](http://localhost:8000/.local/agents-control-center/audits/module-audit.html)                                           |
+
+
+After a kit update, refresh dashboards: `/workflow-activate` in chat or `python3 -m cursor_workflow activate --directory .`
 
 Full reference: [consumer quickstart](.ai_infra/docs/operations/consumer-quickstart.md) · [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md)
 
 ---
 
-<details>
-<summary><strong>Commands cheat sheet (agent chat vs terminal)</strong></summary>
+**Commands cheat sheet (agent chat vs terminal)**
 
 **Agent chat** (type `/` — not bash):
 
-| Goal | Command |
-|------|---------|
-| Install plugin | `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` |
-| Activate / refresh | `/workflow-activate` |
-| Implement | `/implementer` |
-| PR workflow | `/review-pr` → `/prepare-pr` → `/merge-pr` |
+
+| Goal               | Command                                                       |
+| ------------------ | ------------------------------------------------------------- |
+| Install plugin     | `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` |
+| Activate / refresh | `/workflow-activate`                                          |
+| Implement          | `/implementer`                                                |
+| PR workflow        | `/review-pr` → `/prepare-pr` → `/merge-pr`                    |
+
 
 **Terminal** (from your project, after `source .venv/bin/activate`):
 
@@ -136,27 +145,30 @@ python3 -m cursor_workflow activate --directory .    # re-activate / refresh das
 python3 -m http.server 8000                          # serve dashboards
 ```
 
-</details>
+
 
 ---
 
+
+
 ### Quick tips (common mistakes)
 
-| Do | Don't |
-|----|-------|
-| Open **your app** in Cursor before **`/workflow-activate`** | Activate while inside `mas-workflow-kit` |
-| Install plugin in **Agent chat**: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` | Run `/add-plugin` in the terminal — it is chat-only |
-| Expect only `.cursor/settings.json` until **`/workflow-activate`** | Expect the full bundle after `/add-plugin` alone |
-| Run CLI from **your activated project** | Run `contributors validate` from the kit repo — it checks the wrong folder |
-| Run `pytest tests/modules/smoke/` after activate/install | Run it from the kit repo — that folder only exists in activated/installed projects |
-| `source .venv/bin/activate` then `python3 -m cursor_workflow …` | Use system `python3` for **`gates`** without venv — pytest may be missing |
-| Serve dashboards with `python3 -m http.server 8000` | Open dashboard HTML via `file://` — fetch is blocked |
-| Type **`/`** and pick subagents/skills | Use **`@ implementer`** — `@` is for file/doc context only |
-| Create a **real** project folder (e.g. `~/Projects/my-app`) | Copy `/path/to/your-project` or `cd` to a folder that does not exist |
-| Ignore **`make …`** in this repo | Run maintainer commands unless you develop the kit |
 
-<details>
-<summary><strong>Alternative: terminal activate (no plugin UI)</strong></summary>
+| Do                                                                                              | Don't                                                                              |
+| ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Open **your app** in Cursor before `/workflow-activate`                                         | Activate while inside `mas-workflow-kit`                                           |
+| Install plugin in **Agent chat**: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` | Run `/add-plugin` in the terminal — it is chat-only                                |
+| Expect only `.cursor/settings.json` until `/workflow-activate`                                  | Expect the full bundle after `/add-plugin` alone                                   |
+| Run CLI from **your activated project**                                                         | Run `contributors validate` from the kit repo — it checks the wrong folder         |
+| Run `pytest tests/modules/smoke/` after activate/install                                        | Run it from the kit repo — that folder only exists in activated/installed projects |
+| `source .venv/bin/activate` then `python3 -m cursor_workflow …`                                 | Use system `python3` for `gates` without venv — pytest may be missing              |
+| Serve dashboards with `python3 -m http.server 8000`                                             | Open dashboard HTML via `file://` — fetch is blocked                               |
+| Type `/` and pick subagents/skills                                                              | Use `@ implementer` — `@` is for file/doc context only                             |
+| Create a **real** project folder (e.g. `~/Projects/my-app`)                                     | Copy `/path/to/your-project` or `cd` to a folder that does not exist               |
+| Ignore `make …` in this repo                                                                    | Run maintainer commands unless you develop the kit                                 |
+
+
+**Alternative: terminal activate (no plugin UI)**
 
 Use this if `/add-plugin` is unavailable or you prefer CLI-only setup:
 
@@ -171,26 +183,30 @@ cd "$TARGET"
 source .venv/bin/activate
 ```
 
-</details>
+
 
 ---
+
+
 
 ## What you get
 
 After activate, your project includes:
 
-| Piece | Count | Where |
-|-------|-------|--------|
-| **Subagents** | 7 | `.cursor/agents/` — implementer, test-runner, verifier, enterprise-auditor, integrator-mas-agent, workflow-drift-guard, researcher |
-| **Skills** | 10 | `.cursor/skills/` — workflow-activate, implementation loop, tests, audits, integration, MCP, … |
-| **PR skills** | 5 | `.agents/skills/` — review-pr, prepare-pr, merge-pr, pr-workflow, audit-alignment |
-| **6 universal rules** | 6 | `.cursor/rules/` — always-on governance |
-| **PR scripts** | Pattern A | `.ai_infra/scripts/pr/` — review → prepare → merge |
-| **Trackers + dashboards** | Tier 1 scaffold | `.local/index-and-planning/`, `.local/agents-control-center/` |
-| **CLI** | one entrypoint | `python3 -m cursor_workflow` — activate, gates, health, integrate, drift, doc, verify, … |
-| **Onboarding doc** | copied on activate | `AGENTS.md` + `consumer-quickstart.md` under `.ai_infra/docs/operations/` |
 
-Optional product rules: [`overlays/rules/`](overlays/README.md)
+| Piece                     | Count              | Where                                                                                                                              |
+| ------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Subagents**             | 7                  | `.cursor/agents/` — implementer, test-runner, verifier, enterprise-auditor, integrator-mas-agent, workflow-drift-guard, researcher |
+| **Skills**                | 10                 | `.cursor/skills/` — workflow-activate, implementation loop, tests, audits, integration, MCP, …                                     |
+| **PR skills**             | 5                  | `.agents/skills/` — review-pr, prepare-pr, merge-pr, pr-workflow, audit-alignment                                                  |
+| **6 universal rules**     | 6                  | `.cursor/rules/` — always-on governance                                                                                            |
+| **PR scripts**            | Pattern A          | `.ai_infra/scripts/pr/` — review → prepare → merge                                                                                 |
+| **Trackers + dashboards** | Tier 1 scaffold    | `.local/index-and-planning/`, `.local/agents-control-center/`                                                                      |
+| **CLI**                   | one entrypoint     | `python3 -m cursor_workflow` — activate, gates, health, integrate, drift, doc, verify, …                                           |
+| **Onboarding doc**        | copied on activate | `AGENTS.md` + `consumer-quickstart.md` under `.ai_infra/docs/operations/`                                                          |
+
+
+Optional product rules: `[overlays/rules/](overlays/README.md)`
 
 **Verify anytime** (from **your activated project** — e.g. `~/Projects/my-app` — not the `mas-workflow-kit` kit repo; `tests/modules/smoke/` only exists after activate/install):
 
@@ -203,18 +219,22 @@ python3 -m pytest -q tests/modules/smoke/
 
 ---
 
+
+
 ## Git / PR workflow (when you use git)
 
 1. Create a branch (`feature/…`, `fix/…`, or `chore/…`)
-2. Work with **`/implementer`**; trackers live in `.local/index-and-planning/current/`
-3. In Agent chat: **`/review-pr`** → **`/prepare-pr`** → **`/merge-pr`** (skills under `.agents/skills/`)
-4. Architecture-impacting changes: **`/enterprise-auditor`** before prepare (alignment artifacts)
+2. Work with `/implementer`; trackers live in `.local/index-and-planning/current/`
+3. In Agent chat: `/review-pr` → `/prepare-pr` → `/merge-pr` (skills under `.agents/skills/`)
+4. Architecture-impacting changes: `/enterprise-auditor` before prepare (alignment artifacts)
 
 Scripts (Pattern A — one command per phase): `python .ai_infra/scripts/pr/prepare.py --pr <url> --pipeline default` when not using chat skills.
 
-Details after activate: **`AGENTS.md`** and [consumer quickstart](.ai_infra/docs/operations/consumer-quickstart.md).
+Details after activate: `AGENTS.md` and [consumer quickstart](.ai_infra/docs/operations/consumer-quickstart.md).
 
 ---
+
+
 
 ## Advanced install (git clone, no plugin)
 
@@ -235,6 +255,8 @@ Then continue from [step 3](#3-add-your-name-1-min) above. Preview: add `--dry-r
 
 ---
 
+
+
 ## Developing the kit repo only
 
 > **Consumers:** you can ignore this section.
@@ -254,6 +276,8 @@ make gates && make smoke-consumer && make sync-plugin && make check-plugin
 
 ---
 
+
+
 ## License
 
-Apache 2.0 — [`LICENSE`](LICENSE) · [`NOTICE`](NOTICE)
+Apache 2.0 — `[LICENSE](LICENSE)` · `[NOTICE](NOTICE)`
