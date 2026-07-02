@@ -9,4 +9,4 @@ Depends On:
 Notes:
  - CLI lives in .ai_infra/install/cursor_workflow/; this tree is a copy shim.
 """
-__version__ = "0.3.0"
+__version__ = "0.4.0"

@@ -17,7 +17,7 @@ from __future__ import annotations
 def test_import_cursor_workflow_package() -> None:
     import cursor_workflow
 
-    assert cursor_workflow.__version__ == "0.3.0"
+    assert cursor_workflow.__version__ == "0.4.0"
 
 
 def test_import_workflow_mcp_package() -> None:
