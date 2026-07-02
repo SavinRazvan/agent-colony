@@ -91,6 +91,33 @@ def test_scaffold_creates_dashboards(tmp_path: Path) -> None:
     assert (dash / "implementation-control-center.html").is_file()
     assert (dash / "site-nav.js").is_file()
     assert (dash / "local-shell.css").is_file()
+    assert (dash / "local-markdown.js").is_file()
+    audit_html = target / ".local" / "agents-control-center" / "audits" / "module-audit.html"
+    assert audit_html.is_file()
+    icc = (dash / "implementation-control-center.html").read_text(encoding="utf-8")
+    assert "local-markdown.js" in icc
+
+
+def test_scaffold_refreshes_dashboards_on_repeat(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    index = target / ".local" / "agents-control-center" / "dashboards" / "index.html"
+    index.write_text("<!-- stale dashboard -->\n", encoding="utf-8")
+    mod.scaffold(target, REPO_ROOT)
+    assert "local control center" in index.read_text(encoding="utf-8").lower()
+
+
+def test_refresh_dashboards_updates_pages_json(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    pages = target / ".local" / "agents-control-center" / "config" / "pages.json"
+    pages.write_text('{"version": 1, "pages": []}\n', encoding="utf-8")
+    mod.refresh_dashboards(REPO_ROOT, target)
+    text = pages.read_text(encoding="utf-8")
+    assert ".ai_infra/docs" in text
+    assert '"pages"' in text
 
 
 def test_scaffold_reactivate_preserves_trackers(tmp_path: Path) -> None:

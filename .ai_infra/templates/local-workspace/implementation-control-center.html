@@ -5,7 +5,7 @@ Role: Template dashboard — copy to `.local/agents-control-center/dashboards/` 
 Used By:
  - Local preview (file:// or static server)
 Depends On:
- - local-shell.css, site-nav.js
+ - local-shell.css, site-nav.js, local-markdown.js
  - ../config/pages.json (after copy: `.local/agents-control-center/config/pages.json`)
  - Paths declared inside pages.json (`.local/...` and `docs/...`)
 Notes:
@@ -36,6 +36,7 @@ Notes:
     <section class="local-md-panel" id="content">Loading manifest...</section>
   </div>
 
+  <script src="local-markdown.js"></script>
   <script>
     const MANIFEST = "../config/pages.json";
     let PAGES = [];
@@ -47,97 +48,11 @@ Notes:
     const refreshBtn = document.getElementById("refresh-btn");
 
     function escapeHtml(value) {
-      return value
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-    }
-
-    function parseInline(text) {
-      const escaped = escapeHtml(text);
-      return escaped.replace(/`([^`]+)`/g, "<code>$1</code>");
+      return LocalMarkdown.escapeHtml(value);
     }
 
     function renderMarkdown(md) {
-      const lines = md.split("\n");
-      const out = [];
-      let inList = false;
-      let inCode = false;
-
-      function closeListIfOpen() {
-        if (inList) {
-          out.push("</ul>");
-          inList = false;
-        }
-      }
-
-      for (const rawLine of lines) {
-        const line = rawLine.trimEnd();
-
-        if (line.startsWith("<!--")) {
-          continue;
-        }
-        if (line.endsWith("-->")) {
-          continue;
-        }
-
-        if (line.startsWith("```")) {
-          closeListIfOpen();
-          if (!inCode) {
-            out.push("<pre><code>");
-            inCode = true;
-          } else {
-            out.push("</code></pre>");
-            inCode = false;
-          }
-          continue;
-        }
-
-        if (inCode) {
-          out.push(escapeHtml(rawLine) + "\n");
-          continue;
-        }
-
-        if (!line) {
-          closeListIfOpen();
-          continue;
-        }
-
-        if (line.startsWith("### ")) {
-          closeListIfOpen();
-          out.push("<h3>" + parseInline(line.slice(4)) + "</h3>");
-          continue;
-        }
-        if (line.startsWith("## ")) {
-          closeListIfOpen();
-          out.push("<h2>" + parseInline(line.slice(3)) + "</h2>");
-          continue;
-        }
-        if (line.startsWith("# ")) {
-          closeListIfOpen();
-          out.push("<h1>" + parseInline(line.slice(2)) + "</h1>");
-          continue;
-        }
-
-        if (line.startsWith("- ")) {
-          if (!inList) {
-            out.push("<ul>");
-            inList = true;
-          }
-          out.push("<li>" + parseInline(line.slice(2)) + "</li>");
-          continue;
-        }
-
-        closeListIfOpen();
-        out.push("<p>" + parseInline(line) + "</p>");
-      }
-
-      closeListIfOpen();
-      if (inCode) {
-        out.push("</code></pre>");
-      }
-
-      return out.join("");
+      return LocalMarkdown.render(md);
     }
 
     function renderTabs() {
@@ -161,6 +76,17 @@ Notes:
       return file.replace(/module-audit\.htmlmodule-audit\.html/gi, "module-audit.html");
     }
 
+    function httpOriginError() {
+      if (window.location.protocol === "file:") {
+        return (
+          "Browser fetch is blocked on file://. From the repo root run: " +
+          "python3 -m http.server 8000 then open " +
+          "http://localhost:8000/.local/agents-control-center/dashboards/implementation-control-center.html"
+        );
+      }
+      return "";
+    }
+
     async function refreshActivePage() {
       const page = PAGES.find((entry) => entry.id === activePage);
       if (!page) return;
@@ -180,6 +106,11 @@ Notes:
     }
 
     async function bootstrap() {
+      const originError = httpOriginError();
+      if (originError) {
+        contentEl.innerHTML = "<p class=\"status-bad\">" + escapeHtml(originError) + "</p>";
+        return;
+      }
       try {
         const res = await fetch(MANIFEST + "?t=" + Date.now(), { cache: "no-store" });
         if (!res.ok) {

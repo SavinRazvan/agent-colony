@@ -192,6 +192,40 @@ def test_cmd_activate_all_ready_settings_pass(tmp_path: Path, monkeypatch: pytes
     assert code == 0
 
 
+def test_cmd_activate_idempotent_refreshes_dashboards_fallback(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target = tmp_path / "target"
+    _make_ready(target)
+    ui = target / ".ai_infra" / "templates" / "local-workspace"
+    ui.mkdir(parents=True)
+    (ui / "index.html").write_text("<html><title>Local control center</title></html>", encoding="utf-8")
+
+    calls: list[tuple[Path, Path | None, Path]] = []
+
+    def _fake_refresh(t: Path, source: Path | None, default_root: Path) -> None:
+        calls.append((t, source, default_root))
+
+    monkeypatch.setattr(activate_cli, "_refresh_dashboard_templates", _fake_refresh)
+    monkeypatch.setattr(
+        activate_cli,
+        "resolve_activate_source",
+        lambda *a, **k: (_ for _ in ()).throw(FileNotFoundError("no payload")),
+    )
+    monkeypatch.setattr(
+        activate_cli.subprocess,
+        "run",
+        lambda *a, **k: SimpleNamespace(returncode=0, stdout="PASS", stderr=""),
+    )
+    monkeypatch.delenv("WORKFLOW_KIT_PAYLOAD", raising=False)
+
+    code = activate_cli.cmd_activate(_args(directory=target))
+    assert code == 0
+    assert len(calls) == 1
+    assert calls[0][0] == target.resolve()
+    assert calls[0][1] is None
+
+
 def test_cmd_activate_all_ready_settings_fail_pending_allowed(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

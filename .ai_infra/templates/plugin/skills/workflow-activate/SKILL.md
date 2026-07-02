@@ -29,7 +29,9 @@ python -m cursor_workflow activate --directory .
 | Infrastructure | `.ai_infra/`, `cursor_workflow/` | No — scripts/CLI |
 | Runtime | `.local/` Tier 1 scaffold: trackers, six `workflow-artifacts/*` buckets + README stubs, `pages.json`, dashboards; `user_settings/` exemplars | No — gitignored |
 
-- Idempotent: skips install when all planes already pass `install-contract.json`
+Re-activate does not overwrite trackers, `user_settings/`, or `AGENTS.md`. Kit-managed dashboard HTML, JS/CSS, `module-audit.html`, and `pages.json` refresh from the activate source (`payload/` when resolved) or embedded `.ai_infra/templates/local-workspace/`.
+
+- Idempotent: skips full install when all planes already pass `install-contract.json`, but still refreshes dashboards
 - Creates `.venv`, merges MCP json, runs verify gates
 - Prints **settings-only** next steps (no re-install)
 
@@ -52,6 +54,7 @@ Invoke subagent **`/integrator-mas-agent`** with skill **`/mas-infrastructure-in
 
 After plugin enable, parent agent or user should:
 
+0. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` (chat only — not terminal)
 1. Run **`workflow_activate`** or `cursor_workflow activate`
 2. Hand user to personalize `user_settings/`
 3. Optionally delegate **`/integrator-mas-agent`** for extensions

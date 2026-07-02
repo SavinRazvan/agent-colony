@@ -68,7 +68,7 @@ AUDIT_EXEMPLARS = (
     "agent-governance-todos.md",
 )
 DASHBOARD_HTML = ("index.html", "implementation-control-center.html")
-DASHBOARD_ASSETS = ("site-nav.js", "local-shell.css")
+DASHBOARD_ASSETS = ("site-nav.js", "local-shell.css", "local-markdown.js")
 ADAPTER_WALL_RULE = "provider-neutral-adapter-wall.mdc"
 PREPARE_REL = Path(".ai_infra") / "scripts" / "pr" / "prepare.py"
 KIT_TESTS_MARKER = Path("tests") / "modules" / "install" / "test_scaffold.py"
@@ -222,6 +222,7 @@ def _scaffold_artifact_readme_stubs(
 
 
 def _scaffold_dashboards(ui_root: Path, target: Path, dry_run: bool, log: list[str]) -> None:
+    """Copy kit-managed dashboard shells; always refresh from templates on each scaffold/activate."""
     dash = target / ".local" / "agents-control-center" / "dashboards"
     if dry_run:
         _log(log, f"DRY-RUN mkdir {dash}")
@@ -231,12 +232,84 @@ def _scaffold_dashboards(ui_root: Path, target: Path, dry_run: bool, log: list[s
         src = ui_root / name
         dst = dash / name
         if src.is_file():
-            _copy_file_if_missing(src, dst, dry_run, log)
+            _copy_file(src, dst, dry_run, log)
     for name in DASHBOARD_ASSETS:
         src = ui_root / name
         dst = dash / name
         if src.is_file():
             _copy_file(src, dst, dry_run, log)
+    pages_src = ui_root / "pages.json"
+    pages_dst = target / ".local" / "agents-control-center" / "config" / "pages.json"
+    if pages_src.is_file():
+        if dry_run:
+            _log(log, f"DRY-RUN copy {pages_src} -> {pages_dst}")
+        else:
+            pages_dst.parent.mkdir(parents=True, exist_ok=True)
+        _copy_file(pages_src, pages_dst, dry_run, log)
+    audit_src = ui_root / "audits" / "module-audit.html"
+    audit_dst = target / ".local" / "agents-control-center" / "audits" / "module-audit.html"
+    if audit_src.is_file():
+        if dry_run:
+            _log(log, f"DRY-RUN copy {audit_dst}")
+        else:
+            audit_dst.parent.mkdir(parents=True, exist_ok=True)
+        _copy_file(audit_src, audit_dst, dry_run, log)
+
+
+_ACTIVATE_RUNTIME_REL = ("install/cursor_workflow", "scripts/install")
+_KIT_UI_TEMPLATE_FILES = DASHBOARD_HTML + DASHBOARD_ASSETS + ("pages.json",)
+_KIT_UI_TEMPLATE_DIRS = ("audits",)
+
+
+def sync_kit_ui_templates(source: Path, target: Path, dry_run: bool = False) -> list[str]:
+    """Refresh embedded `.ai_infra/templates/local-workspace/` kit-managed files in target."""
+    log: list[str] = []
+    if source.resolve() == target.resolve():
+        return log
+    ai_dst = target / ".ai_infra"
+    if not ai_dst.is_dir():
+        return log
+    ui_src = ui_local_workspace(source)
+    ui_dst = ai_dst / "templates" / "local-workspace"
+    if dry_run:
+        _log(log, f"DRY-RUN mkdir {ui_dst}")
+    else:
+        ui_dst.mkdir(parents=True, exist_ok=True)
+    for name in _KIT_UI_TEMPLATE_FILES:
+        src = ui_src / name
+        if src.is_file():
+            _copy_file(src, ui_dst / name, dry_run, log)
+    for dirname in _KIT_UI_TEMPLATE_DIRS:
+        src_dir = ui_src / dirname
+        if src_dir.is_dir():
+            _copy_tree(src_dir, ui_dst / dirname, dry_run, log)
+    return log
+
+
+def sync_activate_runtime(source: Path, target: Path, dry_run: bool = False) -> list[str]:
+    """Refresh activate/scaffold scripts in target from plugin payload or kit source."""
+    log: list[str] = []
+    if source.resolve() == target.resolve():
+        return log
+    ai_src = source / ".ai_infra"
+    ai_dst = target / ".ai_infra"
+    if not ai_src.is_dir():
+        return log
+    for rel in _ACTIVATE_RUNTIME_REL:
+        src = ai_src / rel
+        if src.is_dir():
+            _copy_tree(src, ai_dst / rel, dry_run, log)
+    return log
+
+
+def refresh_dashboards(source: Path, target: Path, dry_run: bool = False) -> list[str]:
+    """Refresh kit-managed HTML dashboards and pages.json (safe on idempotent activate)."""
+    log: list[str] = []
+    log.extend(sync_activate_runtime(source, target, dry_run))
+    log.extend(sync_kit_ui_templates(source, target, dry_run))
+    ui_root = ui_local_workspace(source)
+    _scaffold_dashboards(ui_root, target, dry_run, log)
+    return log
 
 
 def _scaffold_local(source: Path, target: Path, dry_run: bool, log: list[str]) -> None:
@@ -521,9 +594,17 @@ def main() -> int:
     parser.add_argument("--with-venv", action="store_true", help="Create .venv and install deps")
     parser.add_argument("--with-mcp-json", action="store_true", help="Use with_mcp profile + mcp.json")
     parser.add_argument("--verify", action="store_true", help="Run gates after install")
+    parser.add_argument(
+        "--refresh-dashboards-only",
+        action="store_true",
+        help="Refresh kit-managed dashboard HTML/assets and pages.json only",
+    )
     args = parser.parse_args()
 
     try:
+        if args.refresh_dashboards_only:
+            refresh_dashboards(args.source, args.target)
+            return 0
         scaffold(
             args.target,
             args.source,

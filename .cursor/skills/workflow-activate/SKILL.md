@@ -23,10 +23,11 @@ User enabled the **MAS Workflow Kit** plugin and opened **their project** (not t
 
 ## Guide the user (keep it simple)
 
-1. Confirm the open folder is **their app**, not `mas-workflow-kit`.
-2. Run activate (below) — or tell them to pick **`/workflow-activate`** from the **`/`** menu.
-3. Tell them to edit `.local/user_settings/github.collaboration.yaml` → `contributors validate`.
-4. Point them to **`/implementer`** (from **`/`** menu) and `session-pointer.md`.
+1. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` (chat only — not terminal).
+2. Confirm the open folder is **their app**, not `mas-workflow-kit`.
+3. Run activate (below) — or tell them to pick **`/workflow-activate`** from the **`/`** menu.
+4. Tell them to edit `.local/user_settings/github.collaboration.yaml` → `contributors validate`.
+5. Point them to **`/implementer`** (from **`/`** menu) and `session-pointer.md`.
 
 Do **not** dump gate lists or maintainer `make` commands.
 
@@ -50,9 +51,9 @@ python3 -m cursor_workflow activate --directory .
 | Infrastructure | `.ai_infra/`, `cursor_workflow/` | No — scripts/CLI |
 | Runtime | `.local/` Tier 1 scaffold: trackers, six `workflow-artifacts/*` buckets + README stubs, `pages.json`, dashboards; `user_settings/` exemplars | No — gitignored |
 
-Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear when agents/scripts run. See [local-workspace-layout.md](../../.ai_infra/docs/operations/local-workspace-layout.md) § Artifact tiers. Re-activate does not overwrite existing trackers, `user_settings/`, `AGENTS.md`, or `pages.json`.
+Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear when agents/scripts run. See [local-workspace-layout.md](../../.ai_infra/docs/operations/local-workspace-layout.md) § Artifact tiers. Re-activate does not overwrite existing trackers, `user_settings/`, or `AGENTS.md`. Kit-managed dashboard HTML, JS/CSS assets, `module-audit.html`, and `pages.json` are refreshed from the activate source (plugin `payload/` when resolved) or embedded `.ai_infra/templates/local-workspace/` when not.
 
-- Idempotent: skips install when all planes already pass `install-contract.json`
+- Idempotent: skips full install when all planes already pass `install-contract.json`, but still refreshes dashboards
 - Creates `.venv`, merges MCP json, runs verify gates
 - Prints **settings-only** next steps (no re-install)
 
@@ -61,8 +62,11 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 ## Post-activate (tell the user)
 
 1. Open `.local/user_settings/github.collaboration.yaml` — set **display_name** and **github_user**
-2. `python3 -m cursor_workflow contributors validate` (must PASS before git/PR)
+2. Terminal: `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` (must PASS before git/PR)
 3. **`/implementer`** to start · read `session-pointer.md` first each session
+
+**Dashboards (optional):** tell them to run `python3 -m http.server 8000` from project root and open:
+`http://localhost:8000/.local/agents-control-center/dashboards/index.html` (not `file://`).
 
 Optional: `integrate validate`, `health`. Add infrastructure later: **`/integrator-mas-agent`**.
 
