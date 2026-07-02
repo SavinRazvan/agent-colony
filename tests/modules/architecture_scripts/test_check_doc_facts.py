@@ -1,7 +1,7 @@
 """
 File: test_check_doc_facts.py
 Path: tests/modules/architecture_scripts/test_check_doc_facts.py
-Role: Tests for canonical doc fact validation (DOC-001…005).
+Role: Tests for canonical doc fact validation (DOC-001…006).
 Used By:
  - pytest
 Depends On:

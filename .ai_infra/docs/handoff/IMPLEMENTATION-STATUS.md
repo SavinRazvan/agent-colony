@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (MAS Workflow Kit)
 
-**Last updated:** 2026-07-01 (consumer onboarding, YAML validate UX, consumer trial docs)  
-**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 125
+**Last updated:** 2026-07-02 (COV-100 merged; enterprise re-audit doc-sync)  
+**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.3.0 · **Tests:** 583
 
 ## Shipped (confirmed in repo)
 
@@ -31,7 +31,7 @@ Notes:
 | PR scripts + prepare gates | Pattern A — **2** universal; **4** on kit-dev (drift + doc facts) | `.ai_infra/scripts/pr/prepare.py` |
 | Governance + debrand scanners | CI-ready | `.ai_infra/scripts/architecture/` |
 | Workflow drift validate | ADR-007 | `.ai_infra/scripts/workflow/check_drift.py` |
-| Doc facts validate | DOC-001…005 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
+| Doc facts validate | DOC-001…006 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
 | MCP tools + resources | 19 tools + 6 resources | `.ai_infra/mcp_servers/workflow_mcp/` |
@@ -44,7 +44,18 @@ Notes:
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Kit version on install | `kit_version` 0.3.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 125 | `tests/modules/` |
+| Tests | 583 | `tests/modules/` |
+
+## Coverage scope (shipped source)
+
+`pytest --cov=.ai_infra --cov=cursor_workflow` measures the **import surface** of the
+installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-02: **44 files,
+3452 statements, 100%** when the full suite passes. Subprocess-only maintainer scanners
+(`check_governance_consistency.py`, `check_debrand.py`, `check_consumer_purity.py`,
+`check_file_headers.py`) have dedicated module tests but are excluded from this metric by
+design — they are launched via `subprocess` / `make gates`, not imported by the coverage
+run. Running `--cov=.` (tests included) reports ~99% because of order-dependent branches in
+test-helper cleanup code; scope shipped source for marketplace readiness claims.
 
 ## Verification commands
 

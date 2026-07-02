@@ -1,19 +1,21 @@
 """
 File: doc_facts_checks.py
 Path: .ai_infra/scripts/architecture/doc_facts_checks.py
-Role: Individual DOC-001…005 checks for canonical doc vs repo fact parity.
+Role: Individual DOC-001…006 checks for canonical doc vs repo fact parity.
 Used By:
  - .ai_infra/scripts/architecture/check_doc_facts.py
 Depends On:
  - ast, re, pathlib (stdlib)
 Notes:
- - Does not duplicate DRIFT-005 test counts or governance path/brand scans.
+ - Does not duplicate DRIFT-005 test counts in prose; DOC-006 mirrors that parity in the doc-validate path.
 """
 
 from __future__ import annotations
 
 import ast
 import re
+import subprocess
+import sys
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -288,10 +290,61 @@ def check_doc005_prepare_gate_facts(paths: DocFactsPaths) -> CheckResult:
     )
 
 
+def _parse_implementation_test_count(text: str) -> int | None:
+    match = re.search(r"\*\*Tests:\*\*\s*(\d+)", text)
+    return int(match.group(1)) if match else None
+
+
+def _collect_pytest_count(root: Path) -> int:
+    proc = subprocess.run(
+        [sys.executable, "-m", "pytest", "--collect-only", "-q"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    combined = proc.stdout + proc.stderr
+    match = re.search(r"(\d+)\s+tests?\s+collected", combined)
+    return int(match.group(1)) if match else -1
+
+
+def check_doc006_implementation_test_count(paths: DocFactsPaths) -> CheckResult:
+    """IMPLEMENTATION-STATUS **Tests:** must match pytest --collect-only (same as DRIFT-005)."""
+    status_text = _read(paths.implementation_status)
+    doc_count = _parse_implementation_test_count(status_text)
+    if doc_count is None:
+        return CheckResult(
+            check_id="DOC-006",
+            severity=Severity.P1,
+            passed=False,
+            detail="IMPLEMENTATION-STATUS missing **Tests:** count",
+        )
+    actual = _collect_pytest_count(paths.root)
+    if actual < 0:
+        return CheckResult(
+            check_id="DOC-006",
+            severity=Severity.P1,
+            passed=False,
+            detail="pytest --collect-only failed",
+        )
+    passed = doc_count == actual
+    return CheckResult(
+        check_id="DOC-006",
+        severity=Severity.P1,
+        passed=passed,
+        detail=(
+            f"test count matches ({actual})"
+            if passed
+            else f"doc={doc_count} pytest={actual}"
+        ),
+    )
+
+
 KIT_DEV_CHECKS = (
     check_doc001_agent_roster,
     check_doc002_status_agent_count,
     check_doc003_kit_exemplar_tokens,
     check_doc004_rules_count,
     check_doc005_prepare_gate_facts,
+    check_doc006_implementation_test_count,
 )

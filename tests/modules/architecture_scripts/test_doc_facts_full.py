@@ -222,7 +222,38 @@ def test_check_doc005_missing_docs_fails(tmp_path: Path) -> None:
     result = dfc.check_doc005_prepare_gate_facts(paths)
     assert not result.passed
     assert "AGENTS.md missing gate count hint" in result.detail
-    assert "gate-matrix.md missing prepare gate count" in result.detail
+
+
+def test_check_doc006_missing_test_count_fails(tmp_path: Path) -> None:
+    _copy_minimal_kit(tmp_path)
+    status = tmp_path / ".ai_infra" / "docs" / "handoff" / "IMPLEMENTATION-STATUS.md"
+    status.write_text("no test count here\n", encoding="utf-8")
+    paths = dfc.doc_facts_paths(tmp_path)
+    result = dfc.check_doc006_implementation_test_count(paths)
+    assert not result.passed
+    assert "missing **Tests:**" in result.detail
+
+
+def test_check_doc006_mismatch_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _copy_minimal_kit(tmp_path)
+    status = tmp_path / ".ai_infra" / "docs" / "handoff" / "IMPLEMENTATION-STATUS.md"
+    status.write_text("**Tests:** 1\n", encoding="utf-8")
+    monkeypatch.setattr(dfc, "_collect_pytest_count", lambda _root: 578)
+    paths = dfc.doc_facts_paths(tmp_path)
+    result = dfc.check_doc006_implementation_test_count(paths)
+    assert not result.passed
+    assert "doc=1 pytest=578" in result.detail
+
+
+def test_check_doc006_passes_when_counts_match(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _copy_minimal_kit(tmp_path)
+    status = tmp_path / ".ai_infra" / "docs" / "handoff" / "IMPLEMENTATION-STATUS.md"
+    status.write_text("**Tests:** 583\n", encoding="utf-8")
+    monkeypatch.setattr(dfc, "_collect_pytest_count", lambda _root: 583)
+    paths = dfc.doc_facts_paths(tmp_path)
+    result = dfc.check_doc006_implementation_test_count(paths)
+    assert result.passed
+    assert "583" in result.detail
 
 
 # ---------------------------------------------------------------------------

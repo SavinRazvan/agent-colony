@@ -234,6 +234,41 @@ def test_drift007_fails_when_updates_log_missing(tmp_path: Path, monkeypatch) ->
     assert not result.passed
 
 
+def test_drift007_passes_when_updates_log_recent(tmp_path: Path, monkeypatch) -> None:
+    import os
+
+    _write_planning(tmp_path)
+    updates_log = tmp_path / ".local/index-and-planning/current/updates-log.md"
+    os.utime(updates_log, None)  # now
+
+    class FakeProc:
+        stdout = " M some-file.py\n"
+        stderr = ""
+
+    monkeypatch.setattr("drift_checks.subprocess.run", lambda *a, **k: FakeProc())
+    result = check_drift007(drift_paths(tmp_path))
+    assert result.passed
+    assert "touched" in result.detail
+
+
+def test_drift007_fails_when_updates_log_stale(tmp_path: Path, monkeypatch) -> None:
+    import os
+
+    _write_planning(tmp_path)
+    updates_log = tmp_path / ".local/index-and-planning/current/updates-log.md"
+    old = time.time() - (30 * 86400)
+    os.utime(updates_log, (old, old))
+
+    class FakeProc:
+        stdout = " M some-file.py\n"
+        stderr = ""
+
+    monkeypatch.setattr("drift_checks.subprocess.run", lambda *a, **k: FakeProc())
+    result = check_drift007(drift_paths(tmp_path))
+    assert not result.passed
+    assert "stale" in result.detail
+
+
 def test_drift_validate_passes_p0_on_kit_repo() -> None:
     if str(WORKFLOW_DIR) not in sys.path:
         sys.path.insert(0, str(WORKFLOW_DIR))

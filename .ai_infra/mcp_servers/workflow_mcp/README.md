@@ -39,7 +39,7 @@ External servers: [connect-external-mcp.md](../../docs/operations/connect-extern
 | `workflow_integrate_validate` | `.ai_infra/scripts/integration/validate.py` (INT-001…013) |
 | `workflow_drift_validate` | `.ai_infra/scripts/workflow/check_drift.py` (DRIFT-001…008) |
 | `workflow_activate` | `.ai_infra/install/cursor_workflow/activate_cli.py` (three-plane install) |
-| `workflow_doc_facts_validate` | `.ai_infra/scripts/architecture/check_doc_facts.py` (DOC-001…005) |
+| `workflow_doc_facts_validate` | `.ai_infra/scripts/architecture/check_doc_facts.py` (DOC-001…006) |
 | `workflow_verify_all` | `.ai_infra/scripts/architecture/verify_all.py` (maintainer matrix) |
 
 ## P1 resources
