@@ -7,12 +7,12 @@
   Install into <strong>your</strong> project (not a standalone app).
 </p>
 
-| If you are… | Start here |
-|-------------|------------|
-| **New user** | [Get started in 4 steps](#get-started-most-users) below |
-| **Plugin user manual** | [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) — architecture, file tree, use cases |
-| **Full `/` menu + verify commands** | [Consumer quickstart](.ai_infra/docs/operations/consumer-quickstart.md) — install, chat vs terminal, dashboards |
-| **Kit maintainer** | [Developing the kit](#developing-the-kit-repo-only) |
+## Quick navigation
+
+- **New user** — [Get started in 4 steps](#get-started-most-users)
+- **Plugin manual** — [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) (architecture, file tree, use cases)
+- **Chat + terminal commands** — [Consumer quickstart](.ai_infra/docs/operations/consumer-quickstart.md) (install, dashboards, verify)
+- **Kit maintainer** — [Developing the kit](#developing-the-kit-repo-only)
 
 ---
 
