@@ -307,7 +307,7 @@ def main() -> int:
     parser.add_argument(
         "--check",
         action="store_true",
-        help="Verify plugin/ and payload/ match sources (exit 1 on drift)",
+        help="Verify agents/, rules/, skills/, and payload/ match sources (exit 1 on drift)",
     )
     parser.add_argument(
         "--profile",

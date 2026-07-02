@@ -56,7 +56,7 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 - Creates `.venv`, merges MCP json, runs verify gates
 - Prints **settings-only** next steps (no re-install)
 
-**MCP config files:** The Marketplace `plugin/` tree loads agents, skills, and rules only. MCP examples (`mcp.json.kit.example`, `mcp.registry.yaml.example`, `mcp.user.example.json`, `MCP-CONFIG.md`) install under `.cursor/` from **payload** when `activate` runs — not before. Use **`/connect-external-mcp`** after activate.
+**MCP config files:** The Marketplace repo-root `agents/`, `rules/`, `skills/` trees load agents, skills, and rules only. MCP examples (`mcp.json.kit.example`, `mcp.registry.yaml.example`, `mcp.user.example.json`, `MCP-CONFIG.md`) install under `.cursor/` from **payload** when `activate` runs — not before. Use **`/connect-external-mcp`** after activate.
 
 ## Post-activate (tell the user)
 

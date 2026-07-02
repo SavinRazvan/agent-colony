@@ -131,7 +131,7 @@ python -m cursor_workflow integrate validate
 python .ai_infra/scripts/architecture/check_governance_consistency.py   # if .cursor/ or workflows changed
 pytest -q tests/modules/<relevant>/
 make gates                    # kit dev
-make check-plugin             # if plugin/ payload touched
+make check-plugin             # if agents/rules/skills/payload touched
 make install-dry-run          # if manifest / scaffold changed
 python -m cursor_workflow health --directory .
 ```

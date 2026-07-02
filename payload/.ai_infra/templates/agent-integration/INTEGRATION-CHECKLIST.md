@@ -46,7 +46,7 @@ Notes:
 - [ ] `python .ai_infra/scripts/architecture/check_governance_consistency.py`
 - [ ] `pytest -q tests/modules/___` (if applicable)
 - [ ] `make install-dry-run` (if manifest/scaffold)
-- [ ] `make check-plugin` (if plugin/)
+- [ ] `make check-plugin` (if agents/rules/skills/payload touched)
 
 ## Handoff
 

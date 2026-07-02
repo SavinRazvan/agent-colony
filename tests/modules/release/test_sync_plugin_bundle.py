@@ -7,7 +7,7 @@ Used By:
 Depends On:
  - .ai_infra/scripts/release/sync_plugin_bundle.py
 Notes:
- - Uses temporary output dirs; does not require committed plugin/ tree.
+ - Uses temporary output dirs; does not require the committed agents/rules/skills tree.
 """
 
 from __future__ import annotations
