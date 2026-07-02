@@ -78,6 +78,7 @@ Each session, read first: `.local/index-and-planning/current/session-pointer.md`
 |----|-------|
 | Open **your app** in Cursor before **`/workflow-activate`** | Activate while inside `mas-workflow-kit` |
 | Run CLI from **your activated project** | Run `contributors validate` from the kit repo — it checks the wrong folder |
+| Run `pytest tests/modules/smoke/` after activate/install | Run it from the kit repo — that folder only exists in activated/installed projects |
 | `source .venv/bin/activate` then `python3 -m cursor_workflow …` | Use system `python3` for **`gates`** without venv — pytest may be missing |
 | Type **`/`** and pick subagents/skills | Use **`@ implementer`** — `@` is for file/doc context only |
 | Create a **real** project folder (e.g. `~/Projects/my-app`) | Copy `/path/to/your-project` or `cd` to a folder that does not exist |
@@ -120,7 +121,7 @@ After activate, your project includes:
 
 Optional product rules: [`overlays/rules/`](overlays/README.md)
 
-**Verify anytime** (from your project, venv active):
+**Verify anytime** (from **your activated project** — e.g. `~/Projects/my-app` — not the `mas-workflow-kit` kit repo; `tests/modules/smoke/` only exists after activate/install):
 
 ```bash
 python3 -m cursor_workflow health

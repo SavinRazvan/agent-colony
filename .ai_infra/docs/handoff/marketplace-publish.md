@@ -50,12 +50,13 @@ On every release, bump **in lockstep**:
 | `.ai_infra/install/cursor_workflow/cli.py` | `--version` string |
 | `.ai_infra/__init__.py` | `__version__` |
 | `.ai_infra/manifest.yaml` | `kit_version` |
+| `.ai_infra/.kit-version` | raw version string (kit-dev repo's own checked-in copy — see note below) |
 | `.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md` | header + kit version row |
 | `tests/modules/install/test_install_contract.py` | `.kit-version` assertion |
 | `tests/modules/install/test_editable_install.py` | `__version__` assertion |
 | `tests/modules/install/test_cursor_workflow.py` | `__version__` assertion |
 
-**Consumer installs** receive version via `.ai_infra/.kit-version` (written from manifest `kit_version` at scaffold/activate). **Not versioned with kit:** `workflow_mcp.__version__` (MCP server package semver).
+**Consumer installs** receive version via `.ai_infra/.kit-version` (written fresh from manifest `kit_version` at scaffold/activate — no manual action needed there). **The kit-dev repo's own `.ai_infra/.kit-version` is git-tracked** and is *not* regenerated automatically (scaffold only runs on install targets), so it must be bumped by hand in this table too — `python3 -m cursor_workflow health` in this repo reads it directly and will report a stale version if it's missed (caught in v0.4.0: file was left at `0.3.0` after the version bump). **Not versioned with kit:** `workflow_mcp.__version__` (MCP server package semver).
 
 After bump: `make sync-plugin && make check-plugin`, tag `vX.Y.Z`, optional GitHub Release notes.
 
