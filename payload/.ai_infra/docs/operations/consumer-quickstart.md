@@ -75,7 +75,16 @@ Agent may also **auto-delegate** subagents or **auto-apply** skills when the tas
 
 ## Step 2 detail — activate
 
-**In Agent chat (recommended):** **`/workflow-activate`** on the open workspace.
+1. **File → Open Folder** → your app (e.g. `~/Projects/my-app`)
+2. In **Agent chat** (not the terminal):
+
+```text
+/workflow-activate
+```
+
+Or type `/` and pick **workflow-activate** from the menu.
+
+3. Wait for **`VERIFY PASS`** and all planes **ready**
 
 **What it does:** copies three planes into your project:
 
