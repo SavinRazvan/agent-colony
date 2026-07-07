@@ -312,3 +312,61 @@ def test_workflow_activate_idempotent(monkeypatch: pytest.MonkeyPatch) -> None:
 
     text = workflow_activate(force=False)
     assert text.startswith("exit=0")
+
+
+@pytest.mark.live
+def test_workflow_mcp_stdio_initialize_smoke() -> None:
+    """Opt-in: spawn workflow_mcp stdio server and verify initialize handshake."""
+    pytest.importorskip("mcp")
+    import json
+    import os
+    import subprocess
+    import threading
+
+    env = {**os.environ, "WORKFLOW_KIT_ROOT": str(REPO_ROOT)}
+    proc = subprocess.Popen(
+        [sys.executable, "-m", "workflow_mcp"],
+        cwd=REPO_ROOT,
+        env=env,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        bufsize=1,
+    )
+    assert proc.stdin is not None and proc.stdout is not None
+
+    init = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "initialize",
+        "params": {
+            "protocolVersion": "2024-11-05",
+            "capabilities": {},
+            "clientInfo": {"name": "pytest-live", "version": "0"},
+        },
+    }
+    proc.stdin.write(json.dumps(init) + "\n")
+    proc.stdin.flush()
+
+    response: dict | None = None
+
+    def _read_stdout() -> None:
+        nonlocal response
+        line = proc.stdout.readline()
+        if line.strip():
+            response = json.loads(line)
+
+    reader = threading.Thread(target=_read_stdout, daemon=True)
+    reader.start()
+    reader.join(timeout=5.0)
+    proc.terminate()
+    try:
+        proc.wait(timeout=2.0)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+
+    assert response is not None, proc.stderr.read() if proc.stderr else ""
+    assert response.get("id") == 1
+    assert "result" in response
+    assert response["result"].get("serverInfo", {}).get("name") == "workflow-kit"
