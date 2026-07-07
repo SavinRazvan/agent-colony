@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -235,3 +236,59 @@ def test_sanity_check_rejects_full_kit_tests_tree(tmp_path: Path) -> None:
     log: list[str] = []
     errors = mod._sanity_check(target, log, with_tests=False)
     assert any("full kit tests tree" in err for err in errors)
+
+
+def test_sync_kit_ui_templates_same_source_target_returns_empty() -> None:
+    mod = _load_scaffold()
+    assert mod.sync_kit_ui_templates(REPO_ROOT, REPO_ROOT) == []
+
+
+def test_sync_kit_ui_templates_no_ai_infra_returns_empty(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "bare"
+    target.mkdir()
+    assert mod.sync_kit_ui_templates(REPO_ROOT, target) == []
+
+
+def test_sync_kit_ui_templates_dry_run_logs_mkdir(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    log = mod.sync_kit_ui_templates(REPO_ROOT, target, dry_run=True)
+    assert any("DRY-RUN mkdir" in line for line in log)
+
+
+def test_sync_activate_runtime_same_source_target_returns_empty() -> None:
+    mod = _load_scaffold()
+    assert mod.sync_activate_runtime(REPO_ROOT, REPO_ROOT) == []
+
+
+def test_sync_activate_runtime_no_ai_src_returns_empty(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    source = tmp_path / "no-ai-infra"
+    source.mkdir()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    assert mod.sync_activate_runtime(source, target) == []
+
+
+def test_main_refresh_dashboards_only(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    pages = target / ".local" / "agents-control-center" / "config" / "pages.json"
+    pages.write_text('{"version": 1, "pages": []}\n', encoding="utf-8")
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "scaffold",
+            "--target",
+            str(target),
+            "--source",
+            str(REPO_ROOT),
+            "--refresh-dashboards-only",
+        ],
+    )
+    assert mod.main() == 0
+    assert ".ai_infra/docs" in pages.read_text(encoding="utf-8")

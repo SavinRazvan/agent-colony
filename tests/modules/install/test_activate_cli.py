@@ -362,6 +362,92 @@ def test_cmd_activate_install_succeeds_settings_fail_pending_disallowed(
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# Dashboard refresh helpers
+# ---------------------------------------------------------------------------
+
+
+def test_import_scaffold_refresh_returns_scaffold_module() -> None:
+    scaffold = activate_cli._import_scaffold_refresh()
+    assert hasattr(scaffold, "refresh_dashboards")
+
+
+def test_import_scaffold_refresh_inserts_install_dir_on_sys_path() -> None:
+    install_dir = Path(activate_cli.__file__).resolve().parents[2] / "scripts" / "install"
+    install_str = str(install_dir)
+    original = sys.path.copy()
+    try:
+        sys.path[:] = [p for p in sys.path if p != install_str]
+        activate_cli._import_scaffold_refresh()
+        assert install_str in sys.path
+    finally:
+        sys.path[:] = original
+
+
+def test_resolve_dashboard_refresh_source_embedded_fallback(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target = tmp_path / "target"
+    ui = target / ".ai_infra" / "templates" / "local-workspace"
+    ui.mkdir(parents=True)
+    (ui / "index.html").write_text("<html></html>", encoding="utf-8")
+
+    def _raise(*_a, **_k):  # noqa: ANN001
+        raise FileNotFoundError("no payload")
+
+    monkeypatch.setattr(activate_cli, "resolve_activate_source", _raise)
+    result = activate_cli._resolve_dashboard_refresh_source(None, target, tmp_path / "default")
+    assert result == target
+
+
+def test_resolve_dashboard_refresh_source_no_embedded_returns_none(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target = tmp_path / "target"
+    target.mkdir()
+
+    def _raise(*_a, **_k):  # noqa: ANN001
+        raise FileNotFoundError("no payload")
+
+    monkeypatch.setattr(activate_cli, "resolve_activate_source", _raise)
+    result = activate_cli._resolve_dashboard_refresh_source(None, target, tmp_path / "default")
+    assert result is None
+
+
+def test_refresh_dashboard_templates_skips_when_no_source(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    target = tmp_path / "target"
+    target.mkdir()
+    calls: list[tuple[Path, Path]] = []
+
+    class _FakeScaffold:
+        @staticmethod
+        def refresh_dashboards(source: Path, t: Path, dry_run: bool = False) -> list[str]:  # noqa: ARG004
+            calls.append((source, t))
+            return []
+
+    monkeypatch.setattr(activate_cli, "_resolve_dashboard_refresh_source", lambda *a, **k: None)
+    monkeypatch.setattr(activate_cli, "_import_scaffold_refresh", lambda: _FakeScaffold())
+    activate_cli._refresh_dashboard_templates(target, None, tmp_path / "default")
+    assert calls == []
+
+
+def test_refresh_dashboard_templates_calls_scaffold(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    target = tmp_path / "target"
+    source = tmp_path / "source"
+    source.mkdir()
+    calls: list[tuple[Path, Path]] = []
+
+    class _FakeScaffold:
+        @staticmethod
+        def refresh_dashboards(s: Path, t: Path, dry_run: bool = False) -> list[str]:  # noqa: ARG004
+            calls.append((s, t))
+            return ["ok"]
+
+    monkeypatch.setattr(activate_cli, "_import_scaffold_refresh", lambda: _FakeScaffold())
+    activate_cli._refresh_dashboard_templates(target, source, tmp_path / "default")
+    assert calls == [(source, target)]
+
+
 def test_register_activate_subparser_defaults_and_flags() -> None:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command")
