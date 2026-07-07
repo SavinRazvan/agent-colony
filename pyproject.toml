@@ -43,4 +43,5 @@ filterwarnings = [
 [tool.coverage.run]
 omit = [
     ".ai_infra/scripts/ci/generate_coverage_index.py",
+    ".ai_infra/scripts/dev/migrate_local_workspace_layout.py",
 ]
