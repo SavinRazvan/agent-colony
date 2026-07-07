@@ -15,6 +15,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import sys
+import uuid
 from pathlib import Path
 
 import pytest
@@ -24,7 +25,8 @@ SCAFFOLD_PATH = REPO_ROOT / ".ai_infra" / "scripts" / "install" / "scaffold.py"
 
 
 def _load_scaffold():
-    spec = importlib.util.spec_from_file_location("scaffold", SCAFFOLD_PATH)
+    module_name = f"scaffold_test_{uuid.uuid4().hex}"
+    spec = importlib.util.spec_from_file_location(module_name, SCAFFOLD_PATH)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -119,6 +121,19 @@ def test_refresh_dashboards_updates_pages_json(tmp_path: Path) -> None:
     text = pages.read_text(encoding="utf-8")
     assert ".ai_infra/docs" in text
     assert '"pages"' in text
+
+
+def test_scaffold_artifact_tab_placeholders(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    ui_root = REPO_ROOT / ".ai_infra" / "templates" / "local-workspace"
+    target = tmp_path / "project"
+    (target / ".local" / "workflow-artifacts" / "pr").mkdir(parents=True)
+    log: list[str] = []
+    mod._scaffold_artifact_readme_stubs(ui_root, target, False, log, ("pr", "alignment", "drift"))
+    assert (target / ".local" / "workflow-artifacts" / "pr" / "review.md").is_file()
+    assert (target / ".local" / "workflow-artifacts" / "alignment" / "alignment-audit.md").is_file()
+    assert (target / ".local" / "workflow-artifacts" / "drift" / "drift-audit.md").is_file()
+    assert any("review.md" in line for line in log)
 
 
 def test_scaffold_reactivate_preserves_trackers(tmp_path: Path) -> None:

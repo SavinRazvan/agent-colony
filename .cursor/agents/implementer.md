@@ -24,7 +24,7 @@ Deliver **small, reversible** slices with production quality: clear module bound
 - `.local/index-and-planning/current/work-tracker.md`
 - Project architecture doc (local stub: `.local/.../current/architecture.md` → project `docs/architecture/`)
 
-When the slice touches tests or ownership: `test-plan.md`, `test-index.md`. After meaningful coverage runs: refresh `coverage-index.md` per `plan.md` / `.ai_infra/docs/operations/workflow-complete.md` §F.  
+When the slice touches tests or ownership: `test-plan.md`, `test-index.md`. After meaningful coverage runs: run **`make coverage-index`** (or `python .ai_infra/scripts/ci/generate_coverage_index.py`) and refresh `coverage-index.md` per `plan.md` / `.ai_infra/docs/operations/workflow-complete.md` §F — the Control Center **Coverage** tab reads this file live (ICC auto-refreshes every 12s over `http.server`).  
 **Skip** `.local/generated-data/**` unless the task is coverage or metrics. **Do not** edit `.local/agents-control-center/audits/module-audit.html` except deliberate audit refresh.
 
 ## Loop
@@ -35,7 +35,7 @@ When the slice touches tests or ownership: `test-plan.md`, `test-index.md`. Afte
 4. **Commits:** complete **`.local/user_settings/github.collaboration.yaml`**; append trailers via  
    `python -m cursor_workflow contributors commit-trailers` (policy: `.cursor/rules/commit-trailer-format.mdc`).  
    Optional `Assisted-by:` when AI materially helped. No tool-generated human sign-off.
-5. **Close:** `session-pointer.md`, `change-index.md`, `work-tracker.md`, `history/updates-log.md` (short — no pasted gate lists; see `.ai_infra/docs/operations/token-efficiency.md`), test trackers + `coverage-index.md` + `agents-control-center/config/pages.json` when applicable. Run **`make drift-validate`**; hand off to **`workflow-drift-guard`** when P0/P1 drift findings need artifacts.
+5. **Close:** `session-pointer.md`, `change-index.md`, `work-tracker.md`, `history/updates-log.md` (short — no pasted gate lists; see `.ai_infra/docs/operations/token-efficiency.md`), test trackers + **`make coverage-index`** when coverage changed + `agents-control-center/config/pages.json` when tabs change. **Dashboard check:** serve project root with `python3 -m http.server 8000` and confirm ICC tabs load (trackers + artifacts under `.local/`). Run **`make drift-validate`**; hand off to **`workflow-drift-guard`** when P0/P1 drift findings need artifacts.
 
 ## Architecture
 

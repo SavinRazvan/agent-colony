@@ -10,7 +10,7 @@ description: Evidence-only enterprise architecture audit; writes workflow artifa
 
 **Entry:** Read `.local/index-and-planning/current/session-pointer.md` and `change-index.md`.
 
-**Exit:** Update alignment artifacts + `change-index.md`; one line in `updates-log.md` for audit completion.
+**Exit:** Update alignment artifacts + `change-index.md`; one line in `updates-log.md` for audit completion. **Dashboard:** ICC reads `.local/workflow-artifacts/` and trackers via `pages.json` — after the audit, list required tracker updates in `enterprise-audit-actions.md` (gate counts, scores) so **implementer** can sync `plan.md`, `work-tracker.md`, and `session-pointer.md` for live dashboard truth.
 
 Act as a **Principal Enterprise Architect** using **strict evidence-only discipline**. This is not a style review; it is a phased, repository-grounded architecture and engineering audit.
 
@@ -38,7 +38,7 @@ Act as a **Principal Enterprise Architect** using **strict evidence-only discipl
 
 ## Tracker etiquette
 
-- Do **not** silently overwrite `plan.md` / `work-tracker.md`. Propose edits in `enterprise-audit-actions.md`; let **implementer** move items into `work-tracker.md`.
+- Do **not** silently overwrite `plan.md` / `work-tracker.md`. Propose concrete tracker edits (gate counts, closed EA IDs, dates) in `enterprise-audit-actions.md`; **implementer** applies them so Plan / Work Tracker ICC tabs match audit reality.
 - Log a short entry in `.local/index-and-planning/history/updates-log.md` when the audit completes.
 
 ## Architecture cross-check

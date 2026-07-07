@@ -34,7 +34,7 @@ USER_SETTINGS_FILES = (
 )
 
 DASHBOARD_HTML = ("index.html", "implementation-control-center.html")
-DASHBOARD_ASSETS = ("site-nav.js", "local-shell.css")
+DASHBOARD_ASSETS = ("site-nav.js", "local-shell.css", "local-markdown.js")
 
 
 def _import_local_workflow_paths(root: Path):

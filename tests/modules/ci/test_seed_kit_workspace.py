@@ -93,6 +93,7 @@ def test_seed_kit_workspace_creates_artifact_buckets(tmp_path: Path) -> None:
 
     dash = tmp_path / ".local" / "agents-control-center" / "dashboards"
     assert (dash / "index.html").is_file()
+    assert (dash / "local-markdown.js").is_file()
 
 
 def test_seed_passes_check_testing_artifacts(tmp_path: Path) -> None:

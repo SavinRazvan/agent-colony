@@ -1,4 +1,4 @@
-.PHONY: install-dry-run smoke-consumer test gates sync-plugin check-plugin integrate-validate drift-validate ci-seed verify-all doc-validate type-check
+.PHONY: install-dry-run smoke-consumer test gates sync-plugin check-plugin integrate-validate drift-validate ci-seed verify-all doc-validate type-check coverage-index
 
 install-dry-run:
 	rm -rf /tmp/workflow-kit-dry-run
@@ -41,3 +41,6 @@ verify-all:
 
 ci-seed:
 	.venv/bin/python .ai_infra/scripts/ci/seed_kit_workspace.py --directory .
+
+coverage-index:
+	.venv/bin/python .ai_infra/scripts/ci/generate_coverage_index.py --directory .

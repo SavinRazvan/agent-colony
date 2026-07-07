@@ -69,6 +69,15 @@ AUDIT_EXEMPLARS = (
 )
 DASHBOARD_HTML = ("index.html", "implementation-control-center.html")
 DASHBOARD_ASSETS = ("site-nav.js", "local-shell.css", "local-markdown.js")
+ARTIFACT_TAB_STUBS: dict[str, tuple[str, ...]] = {
+    "pr": ("review.md", "prep.md", "merge.md"),
+    "alignment": ("alignment-audit.md", "alignment-todos.md"),
+    "drift": ("drift-audit.md", "drift-todos.md"),
+    "enterprise-architecture-audit": (
+        "enterprise-architecture-audit.md",
+        "enterprise-audit-actions.md",
+    ),
+}
 ADAPTER_WALL_RULE = "provider-neutral-adapter-wall.mdc"
 PREPARE_REL = Path(".ai_infra") / "scripts" / "pr" / "prepare.py"
 KIT_TESTS_MARKER = Path("tests") / "modules" / "install" / "test_scaffold.py"
@@ -219,6 +228,11 @@ def _scaffold_artifact_readme_stubs(
         if not src.is_file():
             continue
         _copy_file_if_missing(src, dst, dry_run, log)
+        for name in ARTIFACT_TAB_STUBS.get(bucket, ()):
+            tab_src = stubs_root / bucket / name
+            tab_dst = target / ".local" / "workflow-artifacts" / bucket / name
+            if tab_src.is_file():
+                _copy_file_if_missing(tab_src, tab_dst, dry_run, log)
 
 
 def _scaffold_dashboards(ui_root: Path, target: Path, dry_run: bool, log: list[str]) -> None:

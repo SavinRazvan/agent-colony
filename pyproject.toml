@@ -39,3 +39,8 @@ markers = [
 filterwarnings = [
     "ignore:Using `httpx` with `starlette.testclient` is deprecated:starlette.exceptions.StarletteDeprecationWarning",
 ]
+
+[tool.coverage.run]
+omit = [
+    ".ai_infra/scripts/ci/generate_coverage_index.py",
+]
