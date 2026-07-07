@@ -49,7 +49,14 @@ Pin a branch explicitly if you want:
 ### 2. Activate into your project
 
 1. **File → Open Folder** → your app (create a folder first if needed, e.g. `~/Projects/my-app`)
-2. In Agent chat, type `/` → pick `/workflow-activate`
+2. In **Agent chat**, type (this is **not** a bash command):
+
+```text
+/workflow-activate
+```
+
+Or type `/` and pick **workflow-activate** from the menu.
+
 3. Wait for `VERIFY PASS: all gates green` and all planes **ready**
 
 Activate copies the full bundle into that folder: `.cursor/`, `.agents/`, `.ai_infra/`, `.local/`, `cursor_workflow/`, and `AGENTS.md`.

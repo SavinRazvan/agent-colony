@@ -90,6 +90,12 @@ This loads agents, skills, and rules into Cursor. Your project may only get `.cu
 | 3. Your name | Edit `.local/user_settings/github.collaboration.yaml` → `python3 -m cursor_workflow contributors validate` |
 | 4. Build | **`/implementer`** · read `session-pointer.md` → `plan.md` → `work-tracker.md` |
 
+**Step 2 — in Agent chat (not the terminal):**
+
+```text
+/workflow-activate
+```
+
 Shorter variant: [consumer-quickstart.md](consumer-quickstart.md).
 
 ---
