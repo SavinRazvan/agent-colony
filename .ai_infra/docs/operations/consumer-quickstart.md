@@ -167,7 +167,7 @@ Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → **`/connect
 | Where | Use for | Examples |
 |-------|---------|----------|
 | **Agent chat** | Plugin install, subagents, skills, slash workflows | `/add-plugin …`, `/workflow-activate`, `/implementer`, `/review-pr` |
-| **Terminal** | Validation, health, gates, serving dashboards | `python3 -m cursor_workflow health`, `http.server` |
+| **Terminal** | Validation, health, gates, serving dashboards | `python3 -m cursor_workflow health`, `http.server` → [dashboard URL](#control-center-dashboards) |
 
 **Rule:** `/add-plugin` and `/workflow-activate` are **chat commands** — do not paste them into bash.
 
@@ -208,7 +208,7 @@ source .venv/bin/activate          # required for gates/pytest
 | `python3 -m cursor_workflow drift validate` | Plan ↔ tracker coherence |
 | `python3 -m cursor_workflow mcp validate` | MCP config after edits |
 | `python3 -m pytest -q tests/modules/smoke/` | Install smoke test |
-| `python3 -m http.server 8000` | Serve local dashboards (see below) |
+| `python3 -m http.server 8000` | Serve dashboards — open http://localhost:8000/.local/agents-control-center/dashboards/index.html |
 
 Commit trailer preview: `python3 -m cursor_workflow contributors commit-trailers`
 
@@ -218,9 +218,7 @@ Commit trailer preview: `python3 -m cursor_workflow contributors commit-trailers
 
 Local HTML dashboards browse your trackers and kit docs in the browser. They ship under `.local/agents-control-center/` on activate.
 
-### 1. Start a local web server (required)
-
-Browsers block `fetch()` on `file://` URLs — **do not** double-click the HTML files.
+**Do not** open HTML via `file://` — browsers block `fetch()`.
 
 From **project root**:
 
@@ -229,9 +227,11 @@ cd ~/Projects/my-app
 python3 -m http.server 8000
 ```
 
-Leave the terminal open while browsing.
+**Open in browser:** http://localhost:8000/.local/agents-control-center/dashboards/index.html
 
-### 2. Open in your browser
+*(Port busy? Use `8001` — swap the port in every URL below.)*
+
+Leave the terminal open while browsing. More pages:
 
 | Page | URL |
 |------|-----|
@@ -241,13 +241,13 @@ Leave the terminal open while browsing.
 
 Use the top **navigator** to switch between Home, Control Center, and Module audit.
 
-### 3. What you can do there
+### What you can do there
 
 - **Control Center** — pick a page from the sidebar (`session-pointer`, `plan`, `work-tracker`, workflow docs, …); markdown renders with tables and lists
 - **Home** — links to trackers and quick paths
 - **Module audit** — workflow module map (when exported)
 
-### 4. Refresh dashboards after a kit update
+### Refresh dashboards after a kit update
 
 Re-run activate (chat or terminal):
 
@@ -336,7 +336,7 @@ Architecture: [workflow-architecture.md](../architecture/workflow-architecture.m
 | `pytest` not found | Re-run **`/workflow-activate`** (creates `.venv`) |
 | Permission denied on `/path` | You used a placeholder path — create a real folder |
 | Subagents/skills missing in **`/`** menu | Open **your activated project**, not the kit repo; re-run **`/workflow-activate`** if planes are incomplete |
-| Control Center shows **Failed to fetch** | Use `python3 -m http.server 8000` from project root — not `file://` |
+| Control Center shows **Failed to fetch** | From project root: `python3 -m http.server 8000` then open http://localhost:8000/.local/agents-control-center/dashboards/index.html — not `file://` |
 | Raw markdown (no tables/bold) in Control Center | Re-run **`/workflow-activate`** to refresh `local-markdown.js` |
 | Stale dashboard UI after kit update | `python3 -m cursor_workflow activate --directory .` |
 

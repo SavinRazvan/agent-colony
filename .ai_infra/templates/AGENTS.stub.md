@@ -23,7 +23,13 @@
 3. Read `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 4. **`/implementer`** (or pick `/test-runner`, `/verifier`, `/enterprise-auditor` from the **`/`** menu)
 
-**Dashboards (optional):** `python3 -m http.server 8000` from project root → open `http://localhost:8000/.local/agents-control-center/dashboards/index.html`
+**Dashboards (optional):** from project root:
+
+```bash
+python3 -m http.server 8000
+```
+
+Open http://localhost:8000/.local/agents-control-center/dashboards/index.html *(not `file://`)*.
 
 Full walkthrough: [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) · [consumer-quickstart.md](.ai_infra/docs/operations/consumer-quickstart.md)
 

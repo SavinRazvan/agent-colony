@@ -65,8 +65,8 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 2. Terminal: `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` (must PASS before git/PR)
 3. **`/implementer`** to start · read `session-pointer.md` first each session
 
-**Dashboards (optional):** tell them to run `python3 -m http.server 8000` from project root and open:
-`http://localhost:8000/.local/agents-control-center/dashboards/index.html` (not `file://`).
+**Dashboards (optional):** from project root run `python3 -m http.server 8000`, then open
+http://localhost:8000/.local/agents-control-center/dashboards/index.html (not `file://`).
 
 Optional: `integrate validate`, `health`. Add infrastructure later: **`/integrator-mas-agent`**.
 

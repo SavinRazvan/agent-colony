@@ -114,6 +114,10 @@ cd ~/Projects/my-app    # your activated project
 python3 -m http.server 8000
 ```
 
+**Open in browser:** http://localhost:8000/.local/agents-control-center/dashboards/index.html
+
+*(Port busy? Use `8001` — or any free port — and swap the port in the URL.)*
+
 
 | Page           | URL                                                                                                                                                                                                  |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -149,7 +153,8 @@ python3 -m cursor_workflow health
 python3 -m cursor_workflow integrate validate
 python3 -m cursor_workflow gates
 python3 -m cursor_workflow activate --directory .    # re-activate / refresh dashboards
-python3 -m http.server 8000                          # serve dashboards
+python3 -m http.server 8000
+# Open: http://localhost:8000/.local/agents-control-center/dashboards/index.html
 ```
 
 
@@ -169,7 +174,7 @@ python3 -m http.server 8000                          # serve dashboards
 | Run CLI from **your activated project**                                                         | Run `contributors validate` from the kit repo — it checks the wrong folder         |
 | Run `pytest tests/modules/smoke/` after activate/install                                        | Run it from the kit repo — that folder only exists in activated/installed projects |
 | `source .venv/bin/activate` then `python3 -m cursor_workflow …`                                 | Use system `python3` for `gates` without venv — pytest may be missing              |
-| Serve dashboards with `python3 -m http.server 8000`                                             | Open dashboard HTML via `file://` — fetch is blocked                               |
+| Serve dashboards: `python3 -m http.server 8000` then open `http://localhost:8000/.local/agents-control-center/dashboards/index.html` | Open dashboard HTML via `file://` — fetch is blocked |
 | Type `/` and pick subagents/skills                                                              | Use `@ implementer` — `@` is for file/doc context only                             |
 | Create a **real** project folder (e.g. `~/Projects/my-app`)                                     | Copy `/path/to/your-project` or `cd` to a folder that does not exist               |
 | Ignore `make …` in this repo                                                                    | Run maintainer commands unless you develop the kit                                 |

@@ -182,8 +182,13 @@ Local browser UI for trackers and docs under `.local/agents-control-center/`.
 **Do not open HTML via `file://`** — browsers block fetch. From project root:
 
 ```bash
+cd ~/Projects/my-app
 python3 -m http.server 8000
 ```
+
+**Open in browser:** http://localhost:8000/.local/agents-control-center/dashboards/index.html
+
+*(Port busy? Use `8001` — swap the port in every URL below.)*
 
 | Page | URL |
 |------|-----|
@@ -243,7 +248,7 @@ Every session:
 1. `.local/index-and-planning/current/session-pointer.md`
 2. `plan.md` → `work-tracker.md`
 3. **`/implementer`** (or specialist agent from §6)
-4. Optional: [Control Center dashboards](#5-control-center-dashboards) — `python3 -m http.server 8000`
+4. Optional: [Control Center dashboards](#5-control-center-dashboards) — `http.server` + full URL in §5
 
 Token contract: [token-efficiency.md](token-efficiency.md) · Layout: [local-workspace-layout.md](local-workspace-layout.md).
 
@@ -314,7 +319,7 @@ Details: [gate-matrix.md](gate-matrix.md). **`make gates`** / **`make verify-all
 | `pytest` not found | Re-run activate (creates `.venv`); use `source .venv/bin/activate` |
 | Activate blocked in kit repo | Open your app folder — activate refuses self-install |
 | Broken YAML in collaboration file | Keep `human_coauthors: []` or use a proper list |
-| Control Center **Failed to fetch** | Serve via `python3 -m http.server 8000` — not `file://` |
+| Control Center **Failed to fetch** | `python3 -m http.server 8000` from project root, then http://localhost:8000/.local/agents-control-center/dashboards/index.html — not `file://` |
 | Stale dashboard after kit update | Re-run `/workflow-activate` or `activate --directory .` |
 
 More: [consumer-quickstart.md](consumer-quickstart.md) § Troubleshooting.
