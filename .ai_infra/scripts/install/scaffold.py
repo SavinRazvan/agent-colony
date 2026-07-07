@@ -40,7 +40,7 @@ else:
 assert ensure_paths_import is not None
 KIT_ROOT = ensure_paths_import(__file__)
 
-from paths import ai_infra_dir, kit_root, ui_local_workspace, user_settings_templates
+from paths import ai_infra_dir, kit_root, resolve_project_python, ui_local_workspace, user_settings_templates
 
 ARCH_SCRIPTS = KIT_ROOT / ".ai_infra" / "scripts" / "architecture"
 if str(ARCH_SCRIPTS) not in sys.path:
@@ -423,9 +423,7 @@ def _sanity_check(target: Path, log: list[str], *, with_tests: bool = False) -> 
 
 
 def _run_verify(target: Path, log: list[str]) -> int:
-    py = target / ".venv" / "bin" / "python"
-    if not py.is_file():
-        py = Path(sys.executable)
+    py = Path(resolve_project_python(target))
     infra = target / ".ai_infra"
     cmds = [
         [str(py), str(infra / "scripts" / "pr" / "check_testing_artifacts.py")],

@@ -23,7 +23,10 @@ Notes:
 
 ## Current index
 
-(copy the template row below for each module in your project)
+- Module: `_project_`
+  - Owned tests: `tests/modules/smoke/`
+  - Coverage status: `gap`
+  - Notes: rename module; add paths as you add product tests
 
 ## Template row (copy per module)
 

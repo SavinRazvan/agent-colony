@@ -186,7 +186,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Manifest:** `.cursor-plugin/plugin.json` — `author`, `homepage`, `repository`, `logo` aligned with the table above.
 
-**Listing copy review (2026-07-02):** Verified `plugin.json` `description`, the Description row above, and README consumer sections (`What you get`, agent/skill/rule counts) against `IMPLEMENTATION-STATUS.md` on `main` — 588 tests, DOC-006 PASS, coverage scope 3484 stmts / 100% on `--cov=.ai_infra --cov=cursor_workflow`. No stale test or coverage numbers in marketplace-facing copy; feature counts (7 agents, 10 skills, 5 PR skills, 6 rules) match shipped inventory.
+**Listing copy review (2026-07-02):** Verified `plugin.json` `description`, the Description row above, and README consumer sections (`What you get`, agent/skill/rule counts) against `IMPLEMENTATION-STATUS.md` on `main` — 591 tests, DOC-006 PASS, coverage scope 3484 stmts / 100% on `--cov=.ai_infra --cov=cursor_workflow`. No stale test or coverage numbers in marketplace-facing copy; feature counts (7 agents, 10 skills, 5 PR skills, 6 rules) match shipped inventory.
 
 ## Publish
 

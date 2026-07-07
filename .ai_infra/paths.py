@@ -9,7 +9,7 @@ Used By:
 Depends On:
  - pathlib
 Notes:
- - Kit root is parent of .ai_infra/. No PyPI package; scripts import via bootstrap + `import paths`.
+ - Kit root is parent of .ai_infra/. Editable install via pyproject; scripts may use bootstrap + `import paths`.
 """
 
 from __future__ import annotations
@@ -102,3 +102,14 @@ def architecture_script(name: str, root: Path | None = None) -> Path:
 def pr_script_rel(name: str) -> str:
     """Relative path for agent prose templates."""
     return f".ai_infra/scripts/pr/{name}"
+
+
+def resolve_project_python(root: Path | None = None) -> str:
+    """Return `.venv/bin/python` when present so gates/pytest work without manual activate."""
+    import sys
+
+    base = (root or _KIT_ROOT).resolve()
+    venv_py = base / ".venv" / "bin" / "python"
+    if venv_py.is_file():
+        return str(venv_py)
+    return sys.executable

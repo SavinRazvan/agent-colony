@@ -32,6 +32,7 @@ for _candidate in (Path(__file__).resolve(), *Path(__file__).resolve().parents):
 else:
     raise RuntimeError("kit root not found above cursor_workflow")
 
+import paths
 from paths import ai_infra_dir, kit_root, scripts_dir
 
 _MCP_PKG = Path(__file__).resolve().parent
@@ -101,7 +102,7 @@ def cmd_install(args: argparse.Namespace) -> int:
 
 def cmd_gates(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
-    py = sys.executable
+    py = paths.resolve_project_python(root)
     pr = root / ".ai_infra" / "scripts" / "pr"
     arch = root / ".ai_infra" / "scripts" / "architecture"
     if not pr.is_dir():

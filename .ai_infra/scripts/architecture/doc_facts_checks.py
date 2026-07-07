@@ -296,8 +296,10 @@ def _parse_implementation_test_count(text: str) -> int | None:
 
 
 def _collect_pytest_count(root: Path) -> int:
+    from paths import resolve_project_python
+
     proc = subprocess.run(
-        [sys.executable, "-m", "pytest", "--collect-only", "-q"],
+        [resolve_project_python(root), "-m", "pytest", "--collect-only", "-q"],
         cwd=root,
         capture_output=True,
         text=True,

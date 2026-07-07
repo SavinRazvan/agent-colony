@@ -28,6 +28,7 @@ if str(_PKG_DIR) not in sys.path:
     sys.path.insert(0, str(_PKG_DIR))
 
 import cli  # noqa: E402
+import paths  # noqa: E402
 import contributors_cli  # noqa: E402
 import drift_cli  # noqa: E402
 import integrate_cli  # noqa: E402
@@ -156,6 +157,31 @@ def test_cmd_gates_short_circuits(monkeypatch: pytest.MonkeyPatch) -> None:
     args = argparse.Namespace(directory=REPO_ROOT)
     assert cli.cmd_gates(args) == 5
     assert len(calls) == 1
+
+
+def test_cmd_gates_uses_resolve_project_python(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    (tmp_path / ".ai_infra" / "scripts" / "pr").mkdir(parents=True)
+    (tmp_path / ".ai_infra" / "scripts" / "architecture").mkdir(parents=True)
+    (tmp_path / ".ai_infra" / "scripts" / "pr" / "check_testing_artifacts.py").write_text(
+        "# stub\n", encoding="utf-8"
+    )
+    resolved_roots: list[Path | None] = []
+    seen_interpreters: list[str] = []
+
+    def _fake_resolve(root: Path | None = None) -> str:
+        resolved_roots.append(root)
+        return "/tmp/fake-project-python"
+
+    def _fake_run(cmd: list[str], cwd: Path) -> int:
+        seen_interpreters.append(cmd[0])
+        return 0
+
+    monkeypatch.setattr(paths, "resolve_project_python", _fake_resolve)
+    monkeypatch.setattr(cli, "_run", _fake_run)
+    args = argparse.Namespace(directory=tmp_path)
+    assert cli.cmd_gates(args) == 0
+    assert resolved_roots == [tmp_path.resolve()]
+    assert seen_interpreters == ["/tmp/fake-project-python"] * 5
 
 
 def test_cmd_gates_fallback_scripts_dir_raises_when_absent(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

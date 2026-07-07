@@ -195,7 +195,7 @@ Run from **your activated project root** (`~/Projects/my-app`), not the kit repo
 
 ```bash
 cd ~/Projects/my-app
-source .venv/bin/activate          # required for gates/pytest
+source .venv/bin/activate          # recommended; gates auto-use `.venv/bin/python` when present
 ```
 
 | Command | When |

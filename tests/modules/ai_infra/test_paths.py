@@ -178,3 +178,19 @@ def test_pr_script_rel_returns_relative_path() -> None:
     from paths import pr_script_rel
 
     assert pr_script_rel("prepare.py") == ".ai_infra/scripts/pr/prepare.py"
+
+
+def test_resolve_project_python_prefers_venv(tmp_path: Path) -> None:
+    from paths import resolve_project_python
+
+    venv_bin = tmp_path / ".venv" / "bin"
+    venv_bin.mkdir(parents=True)
+    venv_py = venv_bin / "python"
+    venv_py.write_text("#!/bin/sh\n", encoding="utf-8")
+    assert resolve_project_python(tmp_path) == str(venv_py)
+
+
+def test_resolve_project_python_falls_back_to_sys_executable(tmp_path: Path) -> None:
+    from paths import resolve_project_python
+
+    assert resolve_project_python(tmp_path) == sys.executable

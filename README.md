@@ -223,9 +223,11 @@ Optional product rules: [overlays/rules/](overlays/README.md)
 **Verify anytime** (from **your activated project** — e.g. `~/Projects/my-app` — not the `mas-workflow-kit` kit repo; `tests/modules/smoke/` only exists after activate/install):
 
 ```bash
+cd ~/Projects/my-app
+source .venv/bin/activate    # or: .venv/bin/python -m cursor_workflow …
 python3 -m cursor_workflow health
 python3 -m cursor_workflow integrate validate
-python3 -m cursor_workflow gates          # uses project .venv
+python3 -m cursor_workflow gates
 python3 -m pytest -q tests/modules/smoke/
 ```
 
