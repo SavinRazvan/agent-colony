@@ -12,7 +12,7 @@
 - **New user** — [Get started in 4 steps](#get-started-most-users)
 - **Plugin manual** — [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) (architecture, file tree, use cases)
 - **Chat + terminal commands** — [Consumer quickstart](.ai_infra/docs/operations/consumer-quickstart.md) (install, dashboards, verify)
-- **Kit maintainer** — [Developing the kit](#developing-the-kit-repo-only)
+- **Kit maintainer** — [Developing the kit](#developing-the-kit-repo-only) · [Docs index](.ai_infra/docs/README.md) · [Repository map](.ai_infra/docs/handoff/repository-map.md) · [Plugin architecture](.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md)
 
 ---
 
@@ -289,7 +289,7 @@ python3 -m venv .venv && .venv/bin/pip install -e ".[dev,mcp]"
 make gates && make smoke-consumer && make sync-plugin && make check-plugin
 ```
 
-[IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) · [Marketplace / versioning](.ai_infra/docs/handoff/marketplace-publish.md)
+**Kit maintainer docs:** [Docs index](.ai_infra/docs/README.md) · [IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) · [Repository map](.ai_infra/docs/handoff/repository-map.md) · [Plugin architecture](.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md) · [Marketplace / versioning](.ai_infra/docs/handoff/marketplace-publish.md)
 
 ## License
 

@@ -7,11 +7,14 @@
 ## First reads (onboarding)
 
 1. [`README.md`](README.md) — install, Pattern A, overlay model, `.local/` anchoring
-2. [`.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md`](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) — shipped vs spec
-3. [`.ai_infra/docs/architecture/workflow-architecture.md`](.ai_infra/docs/architecture/workflow-architecture.md) — three planes
-4. [`.ai_infra/docs/decisions/README.md`](.ai_infra/docs/decisions/README.md) — ADR index
-5. [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md) — `.local/` contract (**Artifact tiers**: base scaffold vs runtime artifacts)
-6. [`.ai_infra/docs/governance/workflow-source-owners.md`](.ai_infra/docs/governance/workflow-source-owners.md) — scripts win over prose
+2. [`.ai_infra/docs/README.md`](.ai_infra/docs/README.md) — docs index (linked navigation)
+3. [`.ai_infra/docs/handoff/repository-map.md`](.ai_infra/docs/handoff/repository-map.md) — **kit repo only** — SSOT vs generated vs consumer install (not shipped to consumers)
+4. [`.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md`](.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md) — plugin bundle, install profiles
+5. [`.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md`](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) — shipped vs spec
+6. [`.ai_infra/docs/architecture/workflow-architecture.md`](.ai_infra/docs/architecture/workflow-architecture.md) — three planes
+7. [`.ai_infra/docs/decisions/README.md`](.ai_infra/docs/decisions/README.md) — ADR index
+8. [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md) — `.local/` contract (**Artifact tiers**: base scaffold vs runtime artifacts)
+9. [`.ai_infra/docs/governance/workflow-source-owners.md`](.ai_infra/docs/governance/workflow-source-owners.md) — scripts win over prose
 
 **Optional product overlays:** copy rules from [`overlays/rules/`](overlays/README.md) into the target `.cursor/rules/` at install.
 

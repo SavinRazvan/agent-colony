@@ -2,6 +2,15 @@
 
 # Cursor Agent Infrastructure Plugin — architecture
 
+**Kit repo map (maintainers):** [repository-map.md](repository-map.md) — SSOT vs generated trees, consumer install surface, deprecated paths. Not shipped to consumer projects.
+
+**Onboarding (by audience):**
+
+| Audience | Read next |
+|----------|-----------|
+| **Kit maintainer** | [repository-map.md](repository-map.md) → [IMPLEMENTATION-STATUS.md](IMPLEMENTATION-STATUS.md) → [Docs index](../README.md) |
+| **Consumer app dev** | [PLUGIN-USER-GUIDE.md](../operations/PLUGIN-USER-GUIDE.md) → [consumer-quickstart.md](../operations/consumer-quickstart.md) → [workflow-architecture.md](../architecture/workflow-architecture.md) |
+
 **Product:** installable **multi-agent workflow infrastructure** for any Cursor project (not a PyPI package, not an MCP-first product).
 
 **User journey:** plugin unpacks the full **consumer infrastructure** → user completes `.local/user_settings/` (GitHub + MCP worksheets) → **`/integrator-mas-agent`** extends agents/skills/MCP while preserving Pattern A, gates, and three-plane layout.
@@ -173,3 +182,20 @@ bundle (not copied by `sync_plugin_bundle.py` or `scaffold.py`) and has no effec
 
 
 Plugins ≠ MCP. This product is agent infrastructure; MCP is an optional wire.
+
+---
+
+## Related docs
+
+| Audience | Document |
+|----------|----------|
+| **Kit maintainer — repo map** | [repository-map.md](repository-map.md) |
+| **Kit maintainer — status** | [IMPLEMENTATION-STATUS.md](IMPLEMENTATION-STATUS.md) |
+| **Kit maintainer — publish** | [marketplace-publish.md](marketplace-publish.md) |
+| **Kit maintainer — docs index** | [../README.md](../README.md) |
+| **Consumer — plugin manual** | [PLUGIN-USER-GUIDE.md](../operations/PLUGIN-USER-GUIDE.md) |
+| **Consumer — quickstart** | [consumer-quickstart.md](../operations/consumer-quickstart.md) |
+| **Consumer — three planes** | [workflow-architecture.md](../architecture/workflow-architecture.md) |
+| **Governance — folder layout** | [folder-charter.md](../governance/folder-charter.md) |
+| **`.local/` contract** | [local-workspace-layout.md](../operations/local-workspace-layout.md) |
+| **ADR index** | [decisions/README.md](../decisions/README.md) |
