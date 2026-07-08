@@ -169,6 +169,7 @@ source .venv/bin/activate
 | `python3 -m cursor_workflow health` | Layout + version |
 | `python3 -m cursor_workflow integrate validate` | Integration checks |
 | `python3 -m cursor_workflow gates` | Full smoke gates |
+| `python3 -m cursor_workflow drift validate --profile consumer` | Consumer drift (no agent required) — see [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
 | `python3 -m pytest -q tests/modules/smoke/` | Install smoke |
 
 Full list: [consumer-quickstart.md](consumer-quickstart.md) § Terminal commands cheat sheet.
@@ -211,7 +212,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | **Run tests / coverage** | `/test-runner` | `pytest -q` | [workflow-complete.md](workflow-complete.md) §C |
 | **Verify a claim** | `/verifier` | — | Evidence-only checks |
 | **Architecture audit** | `/enterprise-auditor` | `workflow_enterprise_audit` (MCP) | [agent-workflow-procedures.md](agent-workflow-procedures.md) §1 |
-| **Operational drift** (plan ↔ tracker) | `/workflow-drift-guard` | `python3 -m cursor_workflow drift validate` | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) |
+| **Operational drift** (plan ↔ tracker) | `/workflow-drift-guard` (optional) | `python3 -m cursor_workflow drift validate --profile consumer` on app projects | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) · [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
 | **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` GATES | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
 | **Add agents / skills / MCP** | `/integrator-mas-agent` + `/mas-infrastructure-integration` | `integrate validate` | [mas-infrastructure-integration.md](mas-infrastructure-integration.md) |
 | **Connect external MCP** | `/connect-external-mcp` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
@@ -302,7 +303,8 @@ Use project `.venv`: `source .venv/bin/activate` before CLI commands.
 |---------|------|-------|
 | `python3 -m cursor_workflow gates` | Post-change smoke | 4 on consumer (no doc-facts) |
 | `python3 -m cursor_workflow health` | Anytime | Layout + version |
-| `python3 -m cursor_workflow drift validate` | Slice closure | Plan ↔ tracker coherence |
+| `python3 -m cursor_workflow drift validate` | Slice closure (kit-dev) | Plan ↔ tracker coherence |
+| `python3 -m cursor_workflow drift validate --profile consumer` | Consumer verify | DRIFT-005 + DRIFT-008 only; no agent required. **DRIFT-005 FAIL** on missing `IMPLEMENTATION-STATUS.md` = kit bug (false positive on older payloads) — see [consumer-quickstart](consumer-quickstart.md#drift-005-fail--kit-bug-not-your-app) |
 
 Details: [gate-matrix.md](gate-matrix.md). **`make gates`** / **`make verify-all`** are **kit maintainer only**.
 
@@ -321,6 +323,8 @@ Details: [gate-matrix.md](gate-matrix.md). **`make gates`** / **`make verify-all
 | Broken YAML in collaboration file | Keep `human_coauthors: []` or use a proper list |
 | Control Center **Failed to fetch** | `python3 -m http.server 8000` from project root, then http://localhost:8000/.local/agents-control-center/dashboards/index.html — not `file://` |
 | Stale dashboard after kit update | Re-run `/workflow-activate` or `activate --directory .` |
+| `DRIFT-005 FAIL` on consumer drift | **Kit bug (not your app)** — upgrade kit or ignore until skip-if-absent fix ships. Details: [consumer-quickstart](consumer-quickstart.md#drift-005-fail--kit-bug-not-your-app) |
+| `mcp validate` → typer required | Use `python3 -m cursor_workflow mcp validate` — not bare `mcp validate` |
 
 More: [consumer-quickstart.md](consumer-quickstart.md) § Troubleshooting.
 

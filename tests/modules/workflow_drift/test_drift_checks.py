@@ -96,6 +96,24 @@ def test_drift003_fails_when_active_not_in_plan(tmp_path: Path) -> None:
     assert not result.passed
 
 
+def test_drift005_skips_when_implementation_status_absent(tmp_path: Path) -> None:
+    _write_planning(tmp_path)
+    result = check_drift005(drift_paths(tmp_path))
+    assert result.passed
+    assert result.check_id == "DRIFT-005"
+    assert "skipped" in result.detail
+
+
+def test_drift005_fails_when_implementation_status_missing_test_count(tmp_path: Path) -> None:
+    _write_planning(tmp_path)
+    handoff = tmp_path / ".ai_infra/docs/handoff"
+    handoff.mkdir(parents=True)
+    (handoff / "IMPLEMENTATION-STATUS.md").write_text("# Status\n\nNo test count here.\n", encoding="utf-8")
+    result = check_drift005(drift_paths(tmp_path))
+    assert not result.passed
+    assert "missing **Tests:** count" in result.detail
+
+
 def test_drift005_matches_doc_and_pytest(tmp_path: Path, monkeypatch) -> None:
     _write_planning(tmp_path)
     handoff = tmp_path / ".ai_infra/docs/handoff"

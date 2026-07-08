@@ -27,10 +27,11 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 6. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
 7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02)
 8. [x] `assets/logo.png` (1:1, background plate) — see `assets/README.md` — **present** (commit `1f16af1`, 1024×1024 PNG RGBA, ~1.5 MB; verified 2026-07-02)
-9. [~] Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — **live runbook:**
-   `.local/workflow-artifacts/release/workflow-activate-live-ui-runbook.md`. CLI-equivalent path
-   double-verified 2026-07-02 (`workflow-activate-ui-smoke.md`); literal `/add-plugin` + `/`
-   menu path still open.
+9. [x] Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — **PASS 2026-07-08**
+   on **Smart-Notes** (`~/Projects/Smart-Notes`): chat activate + terminal matrix green. Evidence:
+   `.local/workflow-artifacts/release/smoke-consumer-smart-notes-2026-07-08.md`,
+   `workflow-activate-ui-smoke.md`, `workflow-activate-live-ui-runbook.md` (Phases B–C filled).
+   CLI-equivalent path double-verified 2026-07-02. Optional: empty-folder rerun (`mas-ui-smoke-test`).
 
 ## Versioning
 
@@ -116,7 +117,17 @@ python3 -m cursor_workflow integrate validate
 python3 -m cursor_workflow gates
 ```
 
-Pass: `VERIFY PASS` on activate; `contributors validate: PASS` (after editing placeholders); `integrate validate` P0 = 0 (plugin parity skipped on consumer); `gates` green.
+Pass: `VERIFY PASS` on activate; `contributors validate: PASS` (after editing placeholders); `integrate validate` P0 = 0 (plugin parity skipped on consumer); `gates` green. Kit smoke alone: `pytest -q tests/modules/smoke/` → **1 passed**; full `gates` runs **your app tests + smoke** (e.g. 120 on Smart-Notes).
+
+**Drift on consumer apps:** auto profile may read `kit-dev` unless `work-tracker.md` contains `STARTER-001`. Use explicit consumer profile (no agent required):
+
+```bash
+python3 -m cursor_workflow drift validate --directory . --profile consumer
+```
+
+**DRIFT-005 on consumer:** If you see `DRIFT-005 FAIL: IMPLEMENTATION-STATUS missing **Tests:** count` — that is a **kit bug (not your app)**: false positive because `IMPLEMENTATION-STATUS.md` is maintainer-only and is not shipped to consumers. Fixed on kit `main` (skip when absent → PASS). Until your consumer project picks up the fix, ignore DRIFT-005 or upgrade the kit payload.
+
+**MCP validate:** use `python3 -m cursor_workflow mcp validate` — not bare `mcp validate` (different CLI).
 
 ### Quick plugin smoke (from kit repo)
 
@@ -186,7 +197,9 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Manifest:** `.cursor-plugin/plugin.json` — `author`, `homepage`, `repository`, `logo` aligned with the table above.
 
-**Listing copy review (2026-07-07):** Verified `plugin.json` `description`, the Description row above, and README consumer sections (`What you get`, agent/skill/rule counts) against `IMPLEMENTATION-STATUS.md` on `main` — 630 tests, DOC-006 PASS, coverage scope 3586 stmts / 100% on `--cov=.ai_infra --cov=cursor_workflow`. No stale test or coverage numbers in marketplace-facing copy; feature counts (7 agents, 10 skills, 5 PR skills, 6 rules) match shipped inventory.
+**Listing copy review (2026-07-07):** Verified `plugin.json` `description`, the Description row above, and README consumer sections (`What you get`, agent/skill/rule counts) against `IMPLEMENTATION-STATUS.md` on `main` — 633 tests (post DRIFT-005 slice), DOC-006 PASS, coverage scope 3588 stmts / 100% on `--cov=.ai_infra --cov=cursor_workflow`. No stale test or coverage numbers in marketplace-facing copy; feature counts (7 agents, 10 skills, 5 PR skills, 6 rules) match shipped inventory.
+
+**Consumer smoke (2026-07-08):** Real app **Smart-Notes** — `/add-plugin` + chat **`/workflow-activate`**, `health`/`gates`/`integrate`/`mcp validate` PASS, kit smoke **1** of **120** pytest during gates. Record: `.local/workflow-artifacts/release/smoke-consumer-smart-notes-2026-07-08.md`.
 
 ## Publish
 

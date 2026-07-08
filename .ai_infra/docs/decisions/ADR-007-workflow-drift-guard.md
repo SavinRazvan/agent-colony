@@ -41,7 +41,7 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 | DRIFT-002 | P0 | kit-dev | At most one `in_progress` in work-tracker |
 | DRIFT-003 | P1 | kit-dev | Active task token appears in plan Current focus |
 | DRIFT-004 | P1 | kit-dev | session-pointer Phase/Next sanity vs plan |
-| DRIFT-005 | P1 | both | IMPLEMENTATION-STATUS test count vs pytest collect |
+| DRIFT-005 | P1 (kit-dev) / P2 skip (consumer) | both | IMPLEMENTATION-STATUS test count vs pytest collect; **PASS (skip)** when file absent (consumer install — not a consumer failure) |
 | DRIFT-006 | P2 | kit-dev | test-index Owned tests paths resolve |
 | DRIFT-007 | P2 | kit-dev | updates-log fresh when git tree dirty |
 | DRIFT-008 | P2 | consumer | Scaffold trackers present |

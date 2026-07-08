@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (MAS Workflow Kit)
 
-**Last updated:** 2026-07-07 (EA-v5 closure: cov + doc sync)  
-**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.4.0 · **Tests:** 630
+**Last updated:** 2026-07-08 (DRIFT-005 consumer skip + coverage branch test)  
+**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.4.0 · **Tests:** 633
 
 ## Shipped (confirmed in repo)
 
@@ -44,13 +44,13 @@ Notes:
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Kit version on install | `kit_version` 0.4.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 630 | `tests/modules/` |
+| Tests | 633 | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 
 `pytest --cov=.ai_infra --cov=cursor_workflow` measures the **import surface** of the
-installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-07: **44 files,
-3586 statements, 100%** when the full suite passes (`generate_coverage_index.py` and
+installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-08: **44 files,
+3588 statements, 100%** when the full suite passes (`generate_coverage_index.py` and
 `migrate_local_workspace_layout.py` are maintainer tooling — omitted from `--cov` per
 `pyproject.toml`). Subprocess-only maintainer scanners
 (`check_governance_consistency.py`, `check_debrand.py`, `check_consumer_purity.py`,

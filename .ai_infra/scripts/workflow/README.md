@@ -12,6 +12,8 @@ make drift-validate
 
 ## Checks
 
-See `drift_checks.py` — DRIFT-001…008. Profile `kit-dev` (default) or `consumer` (when `STARTER-001` in work-tracker).
+See `drift_checks.py` — DRIFT-001…008. Profile `kit-dev` (default) or `consumer` (when `STARTER-001` in work-tracker, or `--profile consumer`).
+
+**DRIFT-005 on consumer:** When `IMPLEMENTATION-STATUS.md` is absent (normal on plugin installs), the check **PASSes (skip)** — not a consumer failure. A FAIL on missing file indicates an older kit payload (false positive; see `consumer-quickstart.md`).
 
 Exit code 1 on P0 failure only.
