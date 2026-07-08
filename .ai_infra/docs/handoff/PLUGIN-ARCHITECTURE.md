@@ -93,7 +93,7 @@ mas-workflow-kit/
 
 Maintainer megadocs live under `.ai_infra/docs/maintainer/` (not copied to consumers).
 
-**`agents/`, `rules/`, `skills/`, `payload/` are generated but MUST be committed to git** — Cursor Marketplace reads the repository tree directly; there is no build step at install/review time. `make check-plugin` guards drift between `.cursor/` + `.agents/skills/` (source of truth) and these generated, committed trees. Layout matches [`cursor/plugin-template`](https://github.com/cursor/plugin-template) exactly: `agents/`, `rules/`, `skills/`, `commands/`, `hooks/`, `mcp.json` as direct siblings of `.cursor-plugin/`, discovered by convention — **no path-override fields** in `plugin.json` (the official validator's frontmatter walker ignores such fields even when present, so relying on them risks a false pass with zero components actually loaded).
+**`agents/`, `rules/`, `skills/`, `payload/` are generated but MUST be committed to git** — Cursor Marketplace reads the repository tree directly; there is no build step at install/review time. `make check-plugin` guards drift between `.cursor/` + `.agents/skills/` (source of truth) and these generated, committed trees. Upstream [`cursor/plugin-template`](https://github.com/cursor/plugin-template) may include `commands/`, `hooks/`, and repo-root `mcp.json`; **this kit ships** repo-root `agents/`, `rules/`, `skills/`, and `payload/` only (MCP config lives at `.cursor/mcp.json` when enabled). Components are discovered by convention — **no path-override fields** in `plugin.json`.
 
 ---
 

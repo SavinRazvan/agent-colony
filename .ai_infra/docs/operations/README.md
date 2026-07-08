@@ -35,7 +35,8 @@ Depends On:
 
 ## Kit maintainers (not copied to consumer projects)
 
-- [`documentation-maintenance-checklist.md`](documentation-maintenance-checklist.md) — doc sync when policy changes ([kit repo only](https://github.com/SavinRazvan/mas-workflow-kit/blob/main/.ai_infra/docs/operations/documentation-maintenance-checklist.md))
+- [repository-map.md](../handoff/repository-map.md) — SSOT vs generated vs consumer install (**kit repo only**)
+- [`documentation-maintenance-checklist.md`](documentation-maintenance-checklist.md) — doc sync when policy changes
 
 ## Product overlays (not in core)
 

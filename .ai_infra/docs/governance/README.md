@@ -8,7 +8,7 @@ Used By:
 Depends On:
  - .ai_infra/docs/governance/folder-charter.md
 Notes:
- - Last reviewed: 2026-06-14
+ - Last reviewed: 2026-07-08
 -->
 
 # Governance documentation

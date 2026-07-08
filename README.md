@@ -213,7 +213,7 @@ After activate, your project includes:
 | ------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
 | **Subagents**             | 7                  | `.cursor/agents/` — implementer, test-runner, verifier, enterprise-auditor, integrator-mas-agent, workflow-drift-guard, researcher |
 | **Skills**                | 10                 | `.cursor/skills/` — workflow-activate, implementation loop, tests, audits, integration, MCP, …                                     |
-| **PR skills**             | 5                  | `.agents/skills/` — review-pr, prepare-pr, merge-pr, pr-workflow, audit-alignment                                                  |
+| **PR skills**             | 5                  | `.agents/skills/` — review-pr, prepare-pr, merge-pr, pr-workflow, audit-alignment (deprecated stub → enterprise-auditor)           |
 | **6 universal rules**     | 6                  | `.cursor/rules/` — always-on governance                                                                                            |
 | **PR scripts**            | Pattern A          | `.ai_infra/scripts/pr/` — review → prepare → merge                                                                                 |
 | **Trackers + dashboards** | Tier 1 scaffold    | `.local/index-and-planning/`, `.local/agents-control-center/`                                                                      |

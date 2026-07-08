@@ -44,8 +44,11 @@ mas-workflow-kit/
 ├── skills/                     Generated → Marketplace merge (.cursor/skills + additive .agents/skills)
 ├── payload/                    Generated → activate/install source tree (ADR-001)
 ├── .cursor-plugin/plugin.json  SSOT — Marketplace manifest
-├── .ai_infra/                  SSOT — scripts, docs, templates, MCP, manifest.yaml
+├── .ai_infra/                  SSOT — scripts, docs, templates, MCP, workflows, manifest.yaml
+├── assets/                     Marketplace logo (`logo.png`)
+├── .github/                    CI workflows (kit-dev only)
 ├── cursor_workflow/            SSOT — thin CLI shim (also copied to consumer)
+├── schemas/                    Legacy gate.json stub (GATES live in prepare.py)
 ├── .local/                     Kit-dev runtime (gitignored); CI seed fixture — not consumer exemplars
 ├── tests/                      Kit-dev only — full pytest suite (633+)
 ├── Makefile, pyproject.toml    Kit-dev only
@@ -91,6 +94,7 @@ my-app/
 │   ├── install/cursor_workflow/
 │   ├── docs/operations|governance|roadmap|decisions|architecture/
 │   ├── templates/local-workspace|user-settings|agent-integration/
+│   ├── workflows/                  PR lane hub (shipped — see workflows/README.md)
 │   └── mcp_servers/workflow_mcp/   (with_mcp profile)
 ├── cursor_workflow/                CLI entrypoint
 └── .local/                         Scaffolded trackers + artifact buckets (gitignored)
