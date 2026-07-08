@@ -29,7 +29,7 @@ Detect **operational workflow drift** — plan ↔ tracker ↔ session-pointer i
 
 ## Steps
 
-1. **Script first:** `python -m cursor_workflow drift validate --directory .` (or `make drift-validate`).
+1. **Script first:** `python -m cursor_workflow drift validate --directory .` (or `make drift-validate`). On **consumer app projects**, use `--profile consumer` (no agent required before the script).
 2. Capture profile, check IDs, severities, and details from output.
 3. Write artifacts under `.local/workflow-artifacts/drift/` only.
 4. Do **not** auto-edit `plan.md`, `work-tracker.md`, or `session-pointer.md`.
@@ -51,8 +51,10 @@ Action-By: <name>
 GitHub-User: <handle>
 Date: <ISO-8601>
 Profile: kit-dev | consumer
-Command: python -m cursor_workflow drift validate --directory .
+Command: python -m cursor_workflow drift validate --directory . [--profile consumer]
 ```
+
+**Consumer DRIFT-005:** When `IMPLEMENTATION-STATUS.md` is absent (normal on plugin installs), DRIFT-005 **PASSes (skip)**. A FAIL on the missing file is a **kit false positive** on older payloads — not a consumer app defect. See `consumer-quickstart.md` § Drift on consumer apps.
 
 ## drift-audit.md
 

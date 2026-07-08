@@ -130,6 +130,8 @@ After a kit update, refresh dashboards: `/workflow-activate` in chat or `python3
 
 Full reference: [consumer quickstart](.ai_infra/docs/operations/consumer-quickstart.md) · [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md)
 
+**Consumer drift:** On app projects use `drift validate --profile consumer` (no agent required). If **DRIFT-005 FAIL** mentions missing `IMPLEMENTATION-STATUS.md`, that is a **kit bug (not your app)** — see [consumer quickstart § DRIFT-005](.ai_infra/docs/operations/consumer-quickstart.md#drift-005-fail--kit-bug-not-your-app).
+
 ---
 
 **Commands cheat sheet (agent chat vs terminal)**
@@ -152,6 +154,7 @@ python3 -m cursor_workflow contributors validate   # after YAML edit
 python3 -m cursor_workflow health
 python3 -m cursor_workflow integrate validate
 python3 -m cursor_workflow gates
+python3 -m cursor_workflow drift validate --profile consumer   # consumer apps — no agent required
 python3 -m cursor_workflow activate --directory .    # re-activate / refresh dashboards
 python3 -m http.server 8000
 # Open: http://localhost:8000/.local/agents-control-center/dashboards/index.html

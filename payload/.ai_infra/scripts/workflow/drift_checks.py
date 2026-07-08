@@ -239,6 +239,13 @@ def check_drift004(paths: DriftPaths) -> CheckResult:
 
 
 def check_drift005(paths: DriftPaths) -> CheckResult:
+    if not paths.implementation_status.is_file():
+        return CheckResult(
+            check_id="DRIFT-005",
+            severity=Severity.P2,
+            passed=True,
+            detail="IMPLEMENTATION-STATUS absent — test count check skipped (consumer install)",
+        )
     status_text = _read(paths.implementation_status)
     doc_count = _parse_implementation_test_count(status_text)
     if doc_count is None:
@@ -246,7 +253,7 @@ def check_drift005(paths: DriftPaths) -> CheckResult:
             check_id="DRIFT-005",
             severity=Severity.P1,
             passed=False,
-            detail="IMPLEMENTATION-STATUS missing **Tests:** count",
+            detail="IMPLEMENTATION-STATUS present but missing **Tests:** count",
         )
     actual = _collect_pytest_count(paths.root)
     if actual < 0:

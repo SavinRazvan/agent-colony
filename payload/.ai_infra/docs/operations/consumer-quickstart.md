@@ -206,6 +206,7 @@ source .venv/bin/activate          # recommended; gates auto-use `.venv/bin/pyth
 | `python3 -m cursor_workflow integrate validate` | Agent/skill/MCP integration sanity (P0 = 0) |
 | `python3 -m cursor_workflow gates` | Full smoke gates (4 checks on consumer) |
 | `python3 -m cursor_workflow drift validate` | Plan ↔ tracker coherence |
+| `python3 -m cursor_workflow drift validate --profile consumer` | **Use on consumer apps** — no agent required; see [Drift on consumer apps](#drift-on-consumer-apps) |
 | `python3 -m cursor_workflow mcp validate` | MCP config after edits |
 | `python3 -m pytest -q tests/modules/smoke/` | Install smoke test |
 | `python3 -m http.server 8000` | Serve dashboards — open http://localhost:8000/.local/agents-control-center/dashboards/index.html |
@@ -324,6 +325,47 @@ Architecture: [workflow-architecture.md](../architecture/workflow-architecture.m
 
 ---
 
+## Drift on consumer apps
+
+Run from your project root. **No agent is required** before this command — `/workflow-drift-guard` is optional (writes advisory artifacts under `.local/workflow-artifacts/drift/`).
+
+```bash
+python3 -m cursor_workflow drift validate --directory . --profile consumer
+```
+
+Always pass **`--profile consumer`** on app projects. Auto-detect defaults to **`kit-dev`** unless `work-tracker.md` contains `STARTER-001`; without the flag you may see kit-dev-only checks (DRIFT-003, DRIFT-006) that do not apply to your app.
+
+| Check (consumer profile) | Meaning |
+|--------------------------|---------|
+| **DRIFT-005** | Maintainer handoff doc test count — **not shipped to consumer installs** |
+| **DRIFT-008** | Scaffold trackers (`session-pointer`, `plan`, `work-tracker`) present |
+
+### DRIFT-005 FAIL — kit bug (not your app)
+
+If you see:
+
+```text
+[P1] DRIFT-005 FAIL: IMPLEMENTATION-STATUS missing **Tests:** count
+```
+
+| Question | Answer |
+|----------|--------|
+| Is it your app's problem? | **No** — your install can be valid while this fails |
+| Is it a kit bug? | **Yes** — the checker assumed a maintainer-only file exists |
+| False positive? | **Yes** — `IMPLEMENTATION-STATUS.md` lives only in the **mas-workflow-kit** repo |
+| Who needs to fix it? | **Kit maintainers** (skip the check when the file is absent) |
+| What should you do? | Re-run with `--profile consumer` after upgrading the kit; until then, treat DRIFT-005 as ignorable |
+
+**Kit-dev vs consumer:** On the kit repo, DRIFT-005 compares `IMPLEMENTATION-STATUS.md` **Tests:** count to `pytest --collect-only` — that is real drift detection for maintainers. Consumer projects never ship that file, so the same check was a false failure on plugin installs (fixed on kit `main`: absent file → **PASS**, detail *skipped (consumer install)*).
+
+After the kit fix, expect:
+
+```text
+[P2] DRIFT-005 PASS: IMPLEMENTATION-STATUS absent — test count check skipped (consumer install)
+```
+
+---
+
 ## Troubleshooting
 
 | Problem | Fix |
@@ -339,6 +381,9 @@ Architecture: [workflow-architecture.md](../architecture/workflow-architecture.m
 | Control Center shows **Failed to fetch** | From project root: `python3 -m http.server 8000` then open http://localhost:8000/.local/agents-control-center/dashboards/index.html — not `file://` |
 | Raw markdown (no tables/bold) in Control Center | Re-run **`/workflow-activate`** to refresh `local-markdown.js` |
 | Stale dashboard UI after kit update | `python3 -m cursor_workflow activate --directory .` |
+| `DRIFT-005 FAIL` on `drift validate --profile consumer` | **Kit bug (not your app)** — false positive when kit lacks the skip-if-absent fix; upgrade kit or ignore until fixed. See [DRIFT-005](#drift-005-fail--kit-bug-not-your-app) |
+| `drift validate` without `--profile consumer` shows DRIFT-003/006 | Auto profile picked **kit-dev** — re-run with `--profile consumer` |
+| `mcp validate` → typer required | Use `python3 -m cursor_workflow mcp validate` — not bare `mcp validate` |
 
 ---
 
