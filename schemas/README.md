@@ -6,7 +6,7 @@ Used By:
  - MCP inventory evolution
  - docs/roadmap alignment
 Depends On:
- - scripts/pr/prepare.py (GATES authoritative)
+ - .ai_infra/scripts/pr/prepare.py (GATES authoritative)
 Notes:
  - Pattern A: gates are hardcoded in prepare.py; schema documents shape only.
 -->
@@ -17,4 +17,4 @@ Notes:
 |------|---------|
 | [`gate.json`](gate.json) | Shape of one `GATES` entry (string argv array) |
 
-Gate **order and commands** live only in `scripts/pr/prepare.py`.
+Gate **order and commands** live only in `.ai_infra/scripts/pr/prepare.py`.

@@ -7,11 +7,14 @@
 ## First reads (onboarding)
 
 1. [`README.md`](README.md) — install, Pattern A, overlay model, `.local/` anchoring
-2. [`.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md`](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) — shipped vs spec
-3. [`.ai_infra/docs/architecture/workflow-architecture.md`](.ai_infra/docs/architecture/workflow-architecture.md) — three planes
-4. [`.ai_infra/docs/decisions/README.md`](.ai_infra/docs/decisions/README.md) — ADR index
-5. [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md) — `.local/` contract (**Artifact tiers**: base scaffold vs runtime artifacts)
-6. [`.ai_infra/docs/governance/workflow-source-owners.md`](.ai_infra/docs/governance/workflow-source-owners.md) — scripts win over prose
+2. [`.ai_infra/docs/README.md`](.ai_infra/docs/README.md) — docs index (linked navigation)
+3. [`.ai_infra/docs/handoff/repository-map.md`](.ai_infra/docs/handoff/repository-map.md) — **kit repo only** — SSOT vs generated vs consumer install (not shipped to consumers)
+4. [`.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md`](.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md) — plugin bundle, install profiles
+5. [`.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md`](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) — shipped vs spec
+6. [`.ai_infra/docs/architecture/workflow-architecture.md`](.ai_infra/docs/architecture/workflow-architecture.md) — three planes
+7. [`.ai_infra/docs/decisions/README.md`](.ai_infra/docs/decisions/README.md) — ADR index
+8. [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md) — `.local/` contract (**Artifact tiers**: base scaffold vs runtime artifacts)
+9. [`.ai_infra/docs/governance/workflow-source-owners.md`](.ai_infra/docs/governance/workflow-source-owners.md) — scripts win over prose
 
 **Optional product overlays:** copy rules from [`overlays/rules/`](overlays/README.md) into the target `.cursor/rules/` at install.
 
@@ -42,11 +45,11 @@ Full handoff checklist: [`.ai_infra/docs/operations/workflow-complete.md`](.ai_i
 
 **Default merge gate order** is `resolve_gates()` in **`.ai_infra/scripts/pr/prepare.py`** — **two** subprocesses in universal core (`check_testing_artifacts.py`, `pytest -q`). Kit-dev repos auto-append drift validate + doc facts (**four** total). Append gates at consumer install as needed. `prepare.py` does **not** run governance consistency by default.
 
-**Additionally** run **`python .ai_infra/scripts/architecture/check_governance_consistency.py`** and **`python .ai_infra/scripts/architecture/check_debrand.py`** when changing governance, workflows, `.cursor/`, `.agents/`, or tracked policy docs.
+**Additionally** run **`python3 .ai_infra/scripts/architecture/check_governance_consistency.py`** and **`python3 .ai_infra/scripts/architecture/check_debrand.py`** when changing governance, workflows, `.cursor/`, `.agents/`, or tracked policy docs.
 
-When adding or changing agents, skills, pipelines, or integration templates, also run **`python -m cursor_workflow integrate validate`** (included in governance consistency on kit dev repo).
+When adding or changing agents, skills, pipelines, or integration templates, also run **`python3 -m cursor_workflow integrate validate`** (included in governance consistency on kit dev repo).
 
-At slice closure, run **`python -m cursor_workflow drift validate`** (or `make drift-validate`) and hand off to **`workflow-drift-guard`** when P0/P1 findings need artifacts.
+At slice closure, run **`python3 -m cursor_workflow drift validate`** (or `make drift-validate`) and hand off to **`workflow-drift-guard`** when P0/P1 findings need artifacts.
 
 After doc or agent roster changes, run **`make doc-validate`** (included in **`make gates`**). Before full audits, run **`make verify-all`** — see `.cursor/skills/audit-orchestration/SKILL.md`.
 
@@ -58,7 +61,7 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 - `GitHub-User: @<handle>`
 
 **Render from config:** `.local/user_settings/github.collaboration.yaml` via  
-`python -m cursor_workflow contributors commit-trailers`.
+`python3 -m cursor_workflow contributors commit-trailers`.
 
 **AI-assisted work:** optional `Assisted-by:` when AI materially shaped the change. Do **not** add **`Made-with:`** (redundant). You stay accountable for the result.
 
@@ -70,7 +73,7 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 |------|------|
 | `.cursor/agents/` | Subagent cards (7) — Task delegation; **`model: auto`**; audit agents write `.local/` artifacts only |
 | `.cursor/skills/` | **Canonical protocols** (10 folders: audit, drift, implement loop, activate, …) |
-| `.agents/skills/` | **Maintainer slash skills** (5 folders: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `audit-alignment`) — additive in plugin sync |
+| `.agents/skills/` | **Maintainer slash skills** (5 folders: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `audit-alignment` stub → `enterprise-auditor`) — additive in plugin sync |
 | `.cursor/rules/` | Six universal `alwaysApply` rules — high context cost by design |
 
 **Plugin sync:** `.cursor/skills/` wins; `.agents/skills/` never overwrites same folder name (`sync_plugin_bundle.py`).
@@ -85,12 +88,12 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 
 | Role | Entry |
 |------|--------|
-| Plugin activation | [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) or `workflow-activate` skill / `python -m cursor_workflow activate --directory .` |
+| Plugin activation | [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) or `workflow-activate` skill / `python3 -m cursor_workflow activate --directory .` |
 | Implement | `.cursor/agents/implementer.md` + `.cursor/skills/implementation-execution-loop/SKILL.md` |
-| Integrate infrastructure | `.cursor/agents/integrator-mas-agent.md` + `.cursor/skills/mas-infrastructure-integration/SKILL.md` — validate with `python -m cursor_workflow integrate validate` |
+| Integrate infrastructure | `.cursor/agents/integrator-mas-agent.md` + `.cursor/skills/mas-infrastructure-integration/SKILL.md` — validate with `python3 -m cursor_workflow integrate validate` |
 | Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-module-coverage/SKILL.md` |
 | Verify claims | `.cursor/agents/verifier.md` |
-| Operational drift | **`workflow-drift-guard`** — `.cursor/agents/workflow-drift-guard.md` + `.cursor/skills/workflow-drift-audit/SKILL.md` — validate with `python -m cursor_workflow drift validate` |
+| Operational drift | **`workflow-drift-guard`** — `.cursor/agents/workflow-drift-guard.md` + `.cursor/skills/workflow-drift-audit/SKILL.md` — validate with `python3 -m cursor_workflow drift validate` |
 | Audits (canonical) | **`enterprise-auditor`** — `.cursor/agents/enterprise-auditor.md` + `.cursor/skills/enterprise-architecture-audit/SKILL.md` |
 | Audit orchestration | `.cursor/skills/audit-orchestration/SKILL.md` — parent runs verify-all + Task delegation (no dedicated agent) |
 | Audit module map | `.cursor/skills/audit-module-map/SKILL.md` — optional deep map; invoke via **`enterprise-auditor`** |

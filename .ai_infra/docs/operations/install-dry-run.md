@@ -58,24 +58,16 @@ Use the sections below if you prefer hand-copying or need to debug scaffold beha
 - Git
 - Cursor IDE (for agents + optional MCP)
 
-## 1. Copy core (manual)
+## 1. Copy core (manual — deprecated)
+
+> **Prefer the [Automated](#automated-recommended) section above.** Hand-copy paths drift from `manifest.yaml` and `cursor_workflow install`. Do **not** copy deprecated `project-rules/` — use `overlays/rules/` only.
+
+If you must debug scaffold behavior, install from **`payload/`** (not repo root):
 
 ```bash
 TARGET=/tmp/workflow-kit-dry-run
-mkdir -p "$TARGET" && cd "$TARGET"
-git init
-
-# From mas-workflow-kit root (adjust SOURCE):
-SOURCE=/path/to/mas-workflow-kit
-cp -r "$SOURCE/.cursor" "$SOURCE/.agents" "$TARGET/"
-cp -r "$SOURCE/scripts/pr" "$SOURCE/scripts/architecture" "$TARGET/scripts/"
-cp -r "$SOURCE/workflow_mcp" "$SOURCE/schemas" "$TARGET/"
-cp "$SOURCE/requirements-mcp.txt" "$TARGET/"
-cp "$SOURCE/AGENTS.md" "$SOURCE/README.md" "$TARGET/"
-mkdir -p "$TARGET/docs"
-cp -r "$SOURCE/docs/governance" "$SOURCE/docs/operations" "$SOURCE/docs/roadmap" "$TARGET/docs/"
-cp -r "$SOURCE/docs/templates" "$TARGET/docs/"
-cp -r "$SOURCE/overlays" "$SOURCE/project-rules" "$TARGET/"
+SOURCE=/path/to/mas-workflow-kit/payload
+python3 -m cursor_workflow install --target "$TARGET" --source "$SOURCE" --dry-run
 ```
 
 ## 2. Scaffold `.local/` (prefer automated)
