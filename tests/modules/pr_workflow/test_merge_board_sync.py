@@ -97,3 +97,57 @@ def test_sync_board_warn_when_no_item(
     )
     line = merge_mod.sync_board_after_merge(root=tmp_path, pr="99", merge_sha="sha")
     assert "warn" in line
+
+
+def test_sync_board_warn_edit_item_body_fails_after_set_status(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Status set succeeds; edit_item_body failure yields notes warn line."""
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
+    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "98236657"))
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([{"id": "PVTI_x", "content": {"body": ""}}], None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "edit_item_body",
+        lambda *a, **k: (False, "graphql resolve failed"),
+    )
+    line = merge_mod.sync_board_after_merge(
+        root=tmp_path, pr="7", merge_sha="abc123", item_id="PVTI_x"
+    )
+    assert "status→done on PVTI_x" in line
+    assert "notes warn" in line
+    assert "graphql resolve failed" in line
+    err = capsys.readouterr().err
+    assert "[WARN] board sync append-notes failed" in err
+
+
+def test_sync_board_notes_via_edit_item_body(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """merge sync must call edit_item_body (which resolves DI_) for Notes."""
+    edited: list[tuple] = []
+
+    def capture_edit(ssot, item_id, body):
+        edited.append((item_id, body))
+        return True, "ok"
+
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
+    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "98236657"))
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([{"id": "PVTI_x", "content": {"body": ""}}], None),
+    )
+    monkeypatch.setattr(project_cli, "edit_item_body", capture_edit)
+    line = merge_mod.sync_board_after_merge(
+        root=tmp_path, pr="7", merge_sha="abc123", item_id="PVTI_x"
+    )
+    assert "Notes:" in line
+    assert edited
+    assert edited[0][0] == "PVTI_x"
+    assert "Merged:" in edited[0][1]
+    assert "abc123" in edited[0][1]

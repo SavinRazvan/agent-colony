@@ -87,8 +87,8 @@ Human or maintainer agent: `review-pr` → `prepare-pr` → `merge-pr` on a `fea
 ## Delegation rules
 
 1. **Scripts before agents** — never let an agent re-run five gates if preflight JSON is fresh (<1 session).
-2. **One primary `in_progress`** in `work-tracker.md` during implementer slice.
-3. **Do not auto-edit** `plan.md` / `work-tracker.md` from audit agents — propose in actions file.
+2. **One primary `in_progress`** during implementer slice: when `project_ssot.enabled` + `sync_policy: board_only`, Status lives on the **Project board** (`project status` → claim with `set-status --to in_progress`); do **not** dual-write tracker `in_progress`. When SSOT is disabled or offline fallback is active, one primary `in_progress` in `work-tracker.md`.
+3. **Do not auto-edit** slice scope from audit agents — propose in `enterprise-audit-actions.md`. Under `board_only`, do not auto-edit board card body or local `plan.md` / `work-tracker.md`; offline fallback: do not auto-edit `plan.md` / `work-tracker.md`.
 4. **Canvases** — optional IDE artifacts; not merge gates.
 5. **Token efficiency** — cite preflight pass/fail in chat; paste failing command output only.
 

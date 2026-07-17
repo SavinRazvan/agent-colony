@@ -66,7 +66,7 @@ Copy and edit from **`.ai_infra/templates/agent-integration/`**:
 |----------|-----|
 | `AGENT.template.md` | New `.cursor/agents/<id>.md` |
 | `SKILL.template.md` | New skill under `.cursor/skills/<name>/` |
-| `INTEGRATION-CHECKLIST.md` | Track slice; attach to `work-tracker.md` |
+| `INTEGRATION-CHECKLIST.md` | Track slice; when `project_ssot.enabled` + `board_only`, attach to the **board card** body/Notes; else attach to `work-tracker.md` |
 
 **Agent file rules:**
 
@@ -74,7 +74,7 @@ Copy and edit from **`.ai_infra/templates/agent-integration/`**:
 - **Anchor** block (Entry/Exit) — same discipline as `implementer.md`
 - **Read first** — bounded file set; no whole-repo loads
 - **MCP integration** section — required (governance scanner)
-- Procedural exits: update `session-pointer.md`, `change-index.md`
+- Procedural exits: when `project_ssot.enabled` + `board_only`, **Entry/Exit** on Project (`project status` → `set-status` / Notes); update `change-index.md`. `session-pointer.md` is offline fallback / session pointer only — not Status SSOT. When SSOT disabled/offline: update `session-pointer.md`, `change-index.md`
 
 **Independent agent:** still includes Anchor + universal rules; omit from `github.collaboration.yaml` pipelines unless it participates in PR phases.
 
@@ -168,4 +168,4 @@ Record PASS/FAIL in `change-index.md` and `updates-log.md`.
 - [ ] Registry / user_settings exemplars updated if MCP or pipelines affected
 - [ ] Manifest + install-contract if consumer tree changed
 - [ ] Verification commands run; failures fixed or logged as blockers
-- [ ] `session-pointer.md` + `change-index.md` updated
+- [ ] Board Status/Notes updated when `project_ssot.enabled` + `board_only`; else `session-pointer.md` updated. `change-index.md` always updated

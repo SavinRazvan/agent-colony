@@ -10,6 +10,7 @@ Depends On:
  - .ai_infra/scripts/pr/user_settings.py (load_github_collaboration)
 Notes:
  - Pattern A: one gh invocation per action; no dual-write of local trackers.
+ - DraftIssue body edits resolve PVTI_… → DI_… (+ --title); Status stays on PVTI_….
 """
 
 from __future__ import annotations
@@ -30,9 +31,9 @@ def _import_user_settings(root: Path):
     pr_str = str(pr_dir)
     if pr_str not in sys.path:
         sys.path.insert(0, pr_str)
-    import user_settings
+    import importlib
 
-    return user_settings
+    return importlib.import_module("user_settings")
 
 
 def load_project_ssot(root: Path) -> tuple[dict[str, Any] | None, list[str]]:
@@ -528,23 +529,144 @@ def resolve_item_id_for_pr(
     return None, [], "no project item found for this PR (add Board-Item: PVTI_… to PR body)"
 
 
-def edit_item_body(ssot: dict[str, Any], item_id: str, body: str) -> tuple[bool, str]:
-    project_id = str(ssot["project_id"])
-    proc = run_gh(
-        [
-            "project",
-            "item-edit",
-            "--project-id",
-            project_id,
-            "--id",
-            item_id,
-            "--body",
-            body,
-        ]
+def resolve_item_content(
+    ssot: dict[str, Any], item_id: str
+) -> tuple[str | None, str | None, dict[str, Any] | None, str | None]:
+    """
+    Resolve project item content for body edits.
+
+    Returns (kind, content_id_or_number, meta, error) where kind is:
+      - "draft" → content_id is DI_…, meta has title
+      - "issue" → content_id is issue number str, meta has title/repo hints
+      - None on error
+    If item_id already starts with DI_, treat as draft content id (title fetched if possible).
+    """
+    iid = (item_id or "").strip()
+    if not iid:
+        return None, None, None, "empty item id"
+
+    if iid.startswith("DI_"):
+        query = "query($id:ID!){node(id:$id){...on DraftIssue{id title}}}"
+        proc = run_gh(["api", "graphql", "-f", f"query={query}", "-f", f"id={iid}"])
+        title = ""
+        if proc.returncode == 0:
+            try:
+                data = json.loads(proc.stdout or "{}")
+                node = (data.get("data") or {}).get("node") or {}
+                if isinstance(node, dict) and node.get("title"):
+                    title = str(node["title"])
+            except json.JSONDecodeError:
+                pass
+        return "draft", iid, {"title": title}, None
+
+    query = (
+        "query($id:ID!){node(id:$id){...on ProjectV2Item{id content{"
+        "__typename "
+        "...on DraftIssue{id title body} "
+        "...on Issue{id number title body repository{nameWithOwner}}"
+        "}}}}"
     )
+    proc = run_gh(["api", "graphql", "-f", f"query={query}", "-f", f"id={iid}"])
     if proc.returncode != 0:
-        return False, (proc.stderr or proc.stdout or "gh project item-edit --body failed").strip()
-    return True, "ok"
+        return None, None, None, (proc.stderr or proc.stdout or "graphql resolve failed").strip()
+    try:
+        data = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError as exc:
+        return None, None, None, f"invalid graphql JSON: {exc}"
+    errors = data.get("errors")
+    if errors:
+        return None, None, None, str(errors[0].get("message") if isinstance(errors[0], dict) else errors)
+    node = (data.get("data") or {}).get("node")
+    if not isinstance(node, dict):
+        return None, None, None, f"project item not found: {iid}"
+    content = node.get("content")
+    if not isinstance(content, dict):
+        return None, None, None, f"project item has no content: {iid}"
+    typename = str(content.get("__typename") or "")
+    if typename == "DraftIssue":
+        di = str(content.get("id") or "")
+        if not di.startswith("DI_"):
+            return None, None, None, f"unexpected draft id: {di!r}"
+        return "draft", di, {"title": str(content.get("title") or "")}, None
+    if typename == "Issue":
+        number = content.get("number")
+        if number is None:
+            return None, None, None, "issue content missing number"
+        repo = ""
+        repository = content.get("repository")
+        if isinstance(repository, dict):
+            repo = str(repository.get("nameWithOwner") or "")
+        if not repo:
+            repo = str(ssot.get("default_repo") or "")
+        return (
+            "issue",
+            str(number),
+            {
+                "title": str(content.get("title") or ""),
+                "repo": repo,
+                "body": str(content.get("body") or ""),
+            },
+            None,
+        )
+    return None, None, None, f"unsupported content type {typename!r} for body edit"
+
+
+# Back-compat alias used in plan / docs
+def resolve_draft_content(
+    ssot: dict[str, Any], item_id: str
+) -> tuple[str | None, str | None, str | None]:
+    """Return (content_id, title, error) for DraftIssue; error if not a draft."""
+    kind, cid, meta, err = resolve_item_content(ssot, item_id)
+    if err:
+        return None, None, err
+    if kind != "draft":
+        return None, None, f"not a DraftIssue (got {kind})"
+    title = (meta or {}).get("title") or ""
+    return cid, title, None
+
+
+def edit_item_body(ssot: dict[str, Any], item_id: str, body: str) -> tuple[bool, str]:
+    """
+    Update card body. Agents pass PVTI_…; DraftIssue edits require DI_… + --title.
+    Issue-backed items use gh issue edit.
+    """
+    kind, cid, meta, err = resolve_item_content(ssot, item_id)
+    if err or not kind or not cid:
+        return False, err or "could not resolve content id for body edit"
+    meta = meta or {}
+    project_id = str(ssot["project_id"])
+
+    if kind == "draft":
+        title = str(meta.get("title") or "").strip() or "(untitled)"
+        proc = run_gh(
+            [
+                "project",
+                "item-edit",
+                "--project-id",
+                project_id,
+                "--id",
+                cid,
+                "--title",
+                title,
+                "--body",
+                body,
+            ]
+        )
+        if proc.returncode != 0:
+            return False, (proc.stderr or proc.stdout or "gh project item-edit --body failed").strip()
+        return True, "ok"
+
+    if kind == "issue":
+        repo = str(meta.get("repo") or ssot.get("default_repo") or "")
+        gh_args = ["issue", "edit", cid, "--body", body]
+        if repo:
+            gh_args.extend(["--repo", repo])
+        proc = run_gh(gh_args)
+        if proc.returncode != 0:
+            return False, (proc.stderr or proc.stdout or "gh issue edit --body failed").strip()
+        return True, "ok"
+
+    return False, f"unsupported content kind {kind!r}"
 
 
 def set_item_status(ssot: dict[str, Any], item_id: str, logical: str) -> tuple[bool, str]:
