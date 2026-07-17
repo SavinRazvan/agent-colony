@@ -19,6 +19,32 @@
         "github_user": { "type": "string", "minLength": 1 }
       }
     },
+    "project_ssot": {
+      "type": "object",
+      "required": ["enabled"],
+      "additionalProperties": true,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "name": { "type": "string" },
+        "owner": { "type": "string", "minLength": 1 },
+        "number": { "type": "integer", "minimum": 1 },
+        "url": { "type": "string", "minLength": 1 },
+        "project_id": { "type": "string", "minLength": 1 },
+        "default_repo": { "type": "string" },
+        "tool": { "type": "string", "enum": ["gh", "mcp"] },
+        "sync_policy": {
+          "type": "string",
+          "enum": ["board_only", "board_first", "offline_fallback"]
+        },
+        "fallback": { "type": "string", "enum": ["local_trackers", "none"] },
+        "fields": { "type": "object", "additionalProperties": true },
+        "conventions": { "type": "object", "additionalProperties": true },
+        "local_only": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
     "commit_provenance": {
       "type": "object",
       "required": ["ai_disclosure_mode"],

@@ -1,13 +1,15 @@
 # github.collaboration.yaml — complete once at install
 # Path: .local/user_settings/github.collaboration.yaml (gitignored)
-# Role: GitHub commit + PR collaboration settings for humans and AI agents.
+# Role: GitHub identity, Project SSOT, commit trailers, and PR pipelines for humans and agents.
 #
-# Two surfaces (do not conflate):
+# Three surfaces (do not conflate):
 #   - Git commits     → commit_provenance (Author, GitHub-User, Assisted-by)
 #   - GitHub PR       → pr_collaboration (Action-By, Agent/s, body template)
+#   - Project SSOT    → project_ssot (backlog / status board — replaces local tracker markdown)
 #
 # Kit default: AI uses Assisted-by (not Co-authored-by: cursoragent@...).
 # Opt-in legacy mode below if your org requires Git co-author trailers for tools.
+# Project SSOT: set enabled: true and fill board ids; requires gh scopes read:project + project.
 
 version: 1
 
@@ -15,6 +17,80 @@ version: 1
 owner:
   display_name: "Your Full Name"          # → Author: / Action-By:
   github_user: "@yourhandle"              # → GitHub-User: (include @)
+
+# ── Project SSOT (GitHub Project board) ──────────────────────────────────────
+# Agents: when enabled, read this before local plan.md / work-tracker.md.
+# Discover ids: gh project view <N> --owner <login> · gh project field-list <N> --owner <login>
+project_ssot:
+  enabled: false                          # set true after filling board identity + field ids
+
+  # Board identity
+  name: "My Project Board"                # human label
+  owner: your-github-login                # user or org login (no @)
+  number: 1                               # projects/<number>
+  url: https://github.com/users/your-github-login/projects/1
+  project_id: PVT_kwPLACEHOLDER           # from gh project view --format json
+
+  # Default code repo when a card has no Repository field
+  default_repo: your-org/your-repo
+
+  # How agents call the Projects API
+  tool: gh                                # gh (Pattern A) | mcp (optional later)
+
+  # Truth policy
+  #   board_only         — board wins; do not dual-write trackers
+  #   board_first        — board primary; optional export to local
+  #   offline_fallback   — use fallback when board unreachable
+  sync_policy: board_only
+  fallback: local_trackers                # local_trackers | none
+
+  # Project V2 single-select fields (replace ids from field-list)
+  fields:
+    status:
+      field_id: PVTSSF_PLACEHOLDER_STATUS
+      options:
+        backlog: "STATUS_BACKLOG_OPTION_ID"
+        ready: "STATUS_READY_OPTION_ID"
+        in_progress: "STATUS_IN_PROGRESS_OPTION_ID"
+        in_review: "STATUS_IN_REVIEW_OPTION_ID"
+        done: "STATUS_DONE_OPTION_ID"
+    priority:
+      field_id: PVTSSF_PLACEHOLDER_PRIORITY
+      options:
+        p0: "PRIORITY_P0_OPTION_ID"
+        p1: "PRIORITY_P1_OPTION_ID"
+        p2: "PRIORITY_P2_OPTION_ID"
+    size:
+      field_id: PVTSSF_PLACEHOLDER_SIZE
+      options:
+        xs: "SIZE_XS_OPTION_ID"
+        s: "SIZE_S_OPTION_ID"
+        m: "SIZE_M_OPTION_ID"
+        l: "SIZE_L_OPTION_ID"
+        xl: "SIZE_XL_OPTION_ID"
+
+  # Multi-agent / multi-collaborator conventions
+  conventions:
+    queue_status: ready
+    active_status: in_progress
+    review_status: in_review
+    done_status: done
+    claim: set_assignee                   # set_assignee | title_prefix | none
+    one_in_progress_per_assignee: true
+    item_kind_default: draft              # draft | issue
+    promote_to_issue_on_pr: true
+    body_sections:
+      - Acceptance
+      - Rollback
+      - Notes
+
+  # Stay local even when project_ssot.enabled
+  local_only:
+    - pr_phase_artifacts
+    - audit_alignment_drift
+    - coverage_exports
+    - secrets
+    - user_settings
 
 # ── Git commit provenance ────────────────────────────────────────────────────
 commit_provenance:

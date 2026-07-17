@@ -15,16 +15,16 @@ Notes:
 
 # Implementation status (MAS Workflow Kit)
 
-**Last updated:** 2026-07-08 (DRIFT-005 consumer skip + coverage branch test)  
-**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.4.0 · **Tests:** 633
+**Last updated:** 2026-07-17 (board SSOT experiment: ADR-008, project-board agent, DRIFT-009)  
+**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.4.0 · **Tests:** 642
 
 ## Shipped (confirmed in repo)
 
 | Area | Status | Location |
 |------|--------|----------|
-| Universal rules | 6 `.mdc` | `.cursor/rules/` |
-| Agents | 7 core; `model: auto`; audit agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` |
-| Canonical skills | 10 folders | `.cursor/skills/` |
+| Universal rules | 7 `.mdc` | `.cursor/rules/` (6 kit + experiment `project-ssot-precedence`; marketplace `payload/` keeps 6 until port) |
+| Agents | 8 core; `model: auto`; audit agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` |
+| Canonical skills | 11 folders | `.cursor/skills/` |
 | Maintainer skills | 5 folders (additive plugin merge) | `.agents/skills/` |
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
@@ -44,7 +44,7 @@ Notes:
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Kit version on install | `kit_version` 0.4.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 633 | `tests/modules/` |
+| Tests | 642 | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

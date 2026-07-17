@@ -353,6 +353,73 @@ def check_drift008(paths: DriftPaths) -> CheckResult:
     )
 
 
+def check_drift009(paths: DriftPaths) -> CheckResult:
+    """Advisory: board_only SSOT must not dual-write tracker in_progress."""
+    collab = paths.root / ".local" / "user_settings" / "github.collaboration.yaml"
+    if not collab.is_file():
+        return CheckResult(
+            check_id="DRIFT-009",
+            severity=Severity.P1,
+            passed=True,
+            detail="no github.collaboration.yaml — skipped",
+        )
+    try:
+        import yaml
+    except ImportError:
+        return CheckResult(
+            check_id="DRIFT-009",
+            severity=Severity.P1,
+            passed=True,
+            detail="PyYAML missing — skipped",
+        )
+    try:
+        data = yaml.safe_load(collab.read_text(encoding="utf-8")) or {}
+    except Exception as exc:  # noqa: BLE001
+        return CheckResult(
+            check_id="DRIFT-009",
+            severity=Severity.P1,
+            passed=False,
+            detail=f"cannot parse collab YAML: {exc}",
+        )
+    ssot = data.get("project_ssot") if isinstance(data, dict) else None
+    if not isinstance(ssot, dict) or not ssot.get("enabled"):
+        return CheckResult(
+            check_id="DRIFT-009",
+            severity=Severity.P1,
+            passed=True,
+            detail="project_ssot disabled or absent — skipped",
+        )
+    policy = str(ssot.get("sync_policy") or "")
+    if policy != "board_only":
+        return CheckResult(
+            check_id="DRIFT-009",
+            severity=Severity.P1,
+            passed=True,
+            detail=f"sync_policy={policy!r} — dual-write check skipped",
+        )
+    tracker = _read(paths.work_tracker)
+    # Count in_progress only under ## Active (same idea as DRIFT-002)
+    active = ""
+    if "## Active" in tracker:
+        active = tracker.split("## Active", 1)[1]
+        for stop in ("## Completed", "## Deferred", "## Queued", "## Blocked"):
+            if stop in active:
+                active = active.split(stop, 1)[0]
+                break
+    count = len(re.findall(r"`in_progress`", active))
+    passed = count == 0
+    return CheckResult(
+        check_id="DRIFT-009",
+        severity=Severity.P1,
+        passed=passed,
+        detail=(
+            "board_only: no competing tracker in_progress"
+            if passed
+            else f"board_only dual-write risk: {count} tracker in_progress under Active — use board Status only"
+        ),
+    )
+
+
 KIT_DEV_CHECKS = (
     check_drift001,
     check_drift002,
@@ -362,6 +429,7 @@ KIT_DEV_CHECKS = (
     check_drift006,
     check_drift007,
     check_drift008,
+    check_drift009,
 )
 
 CONSUMER_CHECKS = (

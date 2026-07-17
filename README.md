@@ -1,6 +1,6 @@
 # mas-workflow-kit-project-ssot
 
-**Experiment:** Anchor Cursor / MAS agents on a **GitHub Project** board instead of (or ahead of) local markdown trackers.
+**Experiment:** Make a **GitHub Project** the SSOT for backlog/status — replace local tracker markdown so collaborators and agents share one board (configured in `github.collaboration.yaml` like identity).
 
 | | |
 |--|--|
@@ -8,9 +8,11 @@
 | **Production kit (do not break)** | [mas-workflow-kit](https://github.com/SavinRazvan/mas-workflow-kit) |
 | **Agent handoff (READ FIRST)** | [HANDOFF.md](./HANDOFF.md) |
 
+**Experiment agents (8):** `implementer`, `test-runner`, `verifier`, `enterprise-auditor`, `researcher`, `integrator-mas-agent`, `workflow-drift-guard`, `project-board` — see [AGENTS.md](./AGENTS.md). Board CLI: `python -m cursor_workflow project …`.
+
 This repository is an isolated sibling sandbox. If the experiment fails, abandon this repo; leave marketplace `mas-workflow-kit` on markdown SSOT.
 
-**Kit mirror:** This tree includes a full merge of production [`mas-workflow-kit`](https://github.com/SavinRazvan/mas-workflow-kit) `main` (tip `8a779fa` / tag `v0.4.0`). Use kit docs below for agents, skills, PR workflow, and CLI — but follow [HANDOFF.md](./HANDOFF.md) for experiment scope and board-first work.
+**Kit mirror:** This tree includes a full merge of production [`mas-workflow-kit`](https://github.com/SavinRazvan/mas-workflow-kit) `main` (tip `8a779fa` / tag `v0.4.0`). Use kit docs below for agents, skills, PR workflow, and CLI — but follow [HANDOFF.md](./HANDOFF.md) for experiment scope and board-first work. This experiment workspace applies **7 universal** Cursor rules (6 kit + `project-ssot-precedence`).
 
 ## Clone (new Cursor window)
 

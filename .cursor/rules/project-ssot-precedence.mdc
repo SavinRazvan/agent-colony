@@ -1,0 +1,15 @@
+---
+description: Experiment — GitHub Project SSOT precedes local tracker markdown when project_ssot.enabled
+alwaysApply: true
+---
+
+# Project SSOT precedence (experiment)
+
+- When `.local/user_settings/github.collaboration.yaml` → `project_ssot.enabled: true` and `sync_policy: board_only`, the **GitHub Project** is backlog/status SSOT.
+- Agents use `python -m cursor_workflow project …` (see `.cursor/skills/project-board-ssot/SKILL.md`). Do **not** dual-write competing slice status to `work-tracker.md` / `session-pointer.md`.
+- Overrides tracker `in_progress` expectations in `implementation-workflow-governance.mdc` for this experiment only — see ADR-008 (`board_only` wins; DRIFT-009 guards dual-write).
+- Offline / disabled: `fallback: local_trackers` only — resume board sync when available.
+- PR Pattern A (`prepare.py` GATES), PR/audit artifacts, secrets, and user_settings stay local (`project_ssot.local_only`).
+- Canon: `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`, `HANDOFF.md`.
+- Do not port this rule to production `mas-workflow-kit` until the experiment port gate passes.
+- Keep this file out of marketplace `payload/.cursor/rules/` until production port (install via `overlays/rules/` copy into `.cursor/rules/` only).
