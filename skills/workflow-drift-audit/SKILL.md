@@ -29,7 +29,7 @@ Detect **operational workflow drift** — plan ↔ tracker ↔ session-pointer i
 
 ## Steps
 
-1. **Script first:** `python -m cursor_workflow drift validate --directory .` (or `make drift-validate`). On **consumer app projects**, use `--profile consumer` (no agent required before the script).
+1. **Script first:** `python -m cursor_workflow drift validate --directory .` (or `make drift-validate`). On **consumer app projects**, use `--profile consumer` (no agent required before the script). Include **DRIFT-009** when `project_ssot` board_only is enabled (ADR-008).
 2. Capture profile, check IDs, severities, and details from output.
 3. Write artifacts under `.local/workflow-artifacts/drift/` only.
 4. Do **not** auto-edit `plan.md`, `work-tracker.md`, or `session-pointer.md`.

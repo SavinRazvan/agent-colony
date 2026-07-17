@@ -41,19 +41,22 @@ Gate order: read `.ai_infra/scripts/pr/prepare.py` only — do not duplicate her
 
 ## Anchoring
 
-Every session: `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
+**When `project_ssot.enabled`** (see `github.collaboration.yaml`, [ADR-008](../decisions/ADR-008-project-board-ssot.md)): session backlog/status is the **GitHub Project** via `python -m cursor_workflow project …` and `.cursor/skills/project-board-ssot/SKILL.md`. Local `session-pointer.md` / `plan.md` / `work-tracker.md` are **offline fallback only** under `sync_policy: board_only` (no dual-write; DRIFT-009).
+
+**Otherwise:** every session → `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
 
 ## Core agents (kit)
 
 | Agent | Role |
 |-------|------|
-| `implementer` | Slices, code, trackers |
+| `implementer` | Slices, code, trackers (or board when `project_ssot.enabled`) |
 | `test-runner` | Module tests, coverage |
 | `verifier` | Evidence checks |
 | `enterprise-auditor` | Architecture audits |
 | `researcher` | Research corpus (local) |
 | `integrator-mas-agent` | Add agents/skills/MCP to infrastructure |
 | `workflow-drift-guard` | Operational drift (plan ↔ tracker ↔ docs) — [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) |
+| `project-board` | Independent-governed board triage (ADR-006); not in default PR pipelines |
 
 Integration procedure: [mas-infrastructure-integration.md](../operations/mas-infrastructure-integration.md).  
 Drift validation: `make drift-validate` — see [gate-matrix.md](../operations/gate-matrix.md).

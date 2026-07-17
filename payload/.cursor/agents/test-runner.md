@@ -8,9 +8,9 @@ description: Module-focused tests, regressions, coverage.
 
 ## Anchor (mandatory)
 
-**Entry:** Read `.local/index-and-planning/current/session-pointer.md` and `test-index.md` when tests change.
+**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + claim/list board card; else `session-pointer.md`. Also read `test-index.md` when tests change. Skill: `.cursor/skills/project-board-ssot/SKILL.md` when board SSOT is on.
 
-**Exit:** Update `change-index.md` and `test-index.md` / `test-plan.md` when applicable.
+**Exit:** Board Status via CLI when enabled (`in_review`/`done` as appropriate); update `change-index.md` and `test-index.md` / `test-plan.md` when applicable. No dual-write of tracker SSOT under `board_only`.
 
 - Map changes → `tests/modules/<module>/`; one clear responsibility per file.
 - Cover happy, failure, edge, and regression cases for touched behavior.

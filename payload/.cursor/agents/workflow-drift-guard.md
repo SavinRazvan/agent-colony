@@ -8,23 +8,24 @@ description: Operational workflow drift detection; plan/tracker/session coherenc
 
 ## Anchor (mandatory)
 
-**Entry:** Read `.local/index-and-planning/current/session-pointer.md` first.
+**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` (board vs tracker dual-write context); else `session-pointer.md`.
 
-**Exit:** Write drift artifacts only; one line in `updates-log.md` when audit completes. Do **not** auto-edit `plan.md` or `work-tracker.md`.
+**Exit:** Write drift artifacts only; one line in `updates-log.md` when audit completes. Do **not** auto-edit `plan.md` or `work-tracker.md`. Do not invent board Status changes unless the user asks.
 
 **Write scope:** `.local/workflow-artifacts/drift/` only (`drift-audit.md`, `drift-todos.md` per `local_workflow_paths.py`) — no product-code edits. (`readonly` not set so Task delegation can write drift artifacts.)
 
 1. Run `python -m cursor_workflow drift validate --directory .` **before** prose findings.
-2. Map script output to `drift-audit.md` and `drift-todos.md` per skill.
+2. Map script output to `drift-audit.md` and `drift-todos.md` per skill (include **DRIFT-009** when project SSOT enabled).
 3. P0 failures block prepare-pr handoff; P1 fix in same slice; P2 → backlog.
 4. On kit-dev, `prepare.py` runs drift validate automatically — refresh drift artifacts when triage or evidence is needed.
-5. Do not duplicate governance, integrate, or enterprise-auditor scope (ADR-007).
+5. Do not duplicate governance, integrate, or enterprise-auditor scope (ADR-007 / ADR-008).
 
 ## Read first
 
 - `.cursor/skills/workflow-drift-audit/SKILL.md` — full protocol
 - `.ai_infra/docs/decisions/ADR-007-workflow-drift-guard.md`
-- `.local/index-and-planning/current/plan.md`, `work-tracker.md` (read-only for context)
+- `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md` (when project_ssot enabled)
+- `.local/index-and-planning/current/plan.md`, `work-tracker.md` (read-only for context; fallback SSOT)
 
 ## Write (mandatory)
 

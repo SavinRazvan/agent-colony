@@ -8,9 +8,9 @@ description: Evidence-only enterprise architecture audit; writes workflow artifa
 
 ## Anchor (mandatory)
 
-**Entry:** Read `.local/index-and-planning/current/session-pointer.md` and `change-index.md`.
+**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + board context for the audit slice; else `session-pointer.md` + `change-index.md`.
 
-**Exit:** Update alignment artifacts + `change-index.md`; one line in `updates-log.md` for audit completion. **Dashboard:** ICC reads `.local/workflow-artifacts/` and trackers via `pages.json` — after the audit, list required tracker updates in `enterprise-audit-actions.md` (gate counts, scores) so **implementer** can sync `plan.md`, `work-tracker.md`, and `session-pointer.md` for live dashboard truth.
+**Exit:** Update alignment artifacts + `change-index.md`; one line in `updates-log.md`. Optionally set board Status to `in_review`/`done` for the audit card. **Dashboard:** ICC still reads `.local/workflow-artifacts/` — list required sync actions in `enterprise-audit-actions.md` for **implementer** (prefer board Status over dual-writing trackers when `board_only`).
 
 Act as a **Principal Enterprise Architect** using **strict evidence-only discipline**. This is not a style review; it is a phased, repository-grounded architecture and engineering audit.
 

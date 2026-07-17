@@ -32,6 +32,7 @@ Abbreviations: [`.ai_infra/docs/operations/abbreviations-notepad.md`](.ai_infra/
 | `.cursor/rules/file-docstring-header-relations.mdc` | File headers |
 | `.cursor/rules/local-artifact-protection.mdc` | Protected local paths (`.coverage`, `.env`) |
 | `.cursor/rules/advisory-audit-alignment-enforcement.mdc` | Architecture-impacting audits → **`enterprise-auditor`** + alignment artifacts |
+| `.cursor/rules/project-ssot-precedence.mdc` | **Experiment:** board SSOT precedes local trackers when `project_ssot.enabled` (ADR-008) |
 
 **Product rules** belong in **`overlays/rules/`** at install — see [`overlays/README.md`](overlays/README.md). **Do not duplicate gate lists** in chat or `updates-log.md` — say *prepare gates green* or paste failing command output only.
 
@@ -97,6 +98,7 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 |------|--------|
 | Plugin activation | [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) or `workflow-activate` skill / `python3 -m cursor_workflow activate --directory .` |
 | Implement | `.cursor/agents/implementer.md` + `.cursor/skills/implementation-execution-loop/SKILL.md` |
+| Project board SSOT | `.cursor/agents/project-board.md` + `.cursor/skills/project-board-ssot/SKILL.md` — `python -m cursor_workflow project …` |
 | Integrate infrastructure | `.cursor/agents/integrator-mas-agent.md` + `.cursor/skills/mas-infrastructure-integration/SKILL.md` — validate with `python3 -m cursor_workflow integrate validate` |
 | Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-module-coverage/SKILL.md` |
 | Verify claims | `.cursor/agents/verifier.md` |

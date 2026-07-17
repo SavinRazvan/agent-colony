@@ -274,28 +274,29 @@ Do **not** run production marketplace publish from this repo.
 - [x] `gh` has `project` scope; board reachable
 - [x] Collab identity filled (`contributors validate` PASS)
 
-### B. BOARD-SPIKE-001 (P0 — next)
+### B. BOARD-SPIKE-001 (P0) — done
 
-1. Add **`project_ssot`** block to local + **exemplar** `github.collaboration.yaml` (field ids from §4.3).
-2. Shared skill/CLI: list Ready, create item, set Status/Priority/Size (`gh project` Pattern A).
-3. Optional thin `.cursor/agents/project-board.md` (**independent-governed**, ADR-006) — helper, not the end state.
-4. Vertical demo: `[Explorer] Hello…` → In progress → Done on the board.
-5. ADR draft **only in this repo**: board-only SSOT vs offline fallback.
+- [x] Add **`project_ssot`** block to local + **exemplar** `github.collaboration.yaml` (field ids from §4.3).
+- [x] Shared skill/CLI: list Ready, create item, set Status/Priority/Size (`cursor_workflow project` / `gh project` Pattern A).
+- [x] Thin `.cursor/agents/project-board.md` (**independent-governed**, ADR-006).
+- [x] Vertical demo: `[Explorer] Hello…` → In progress → Done on the board.
+- [x] ADR-008 **only in this repo**: board-only SSOT vs offline fallback.
 
-### C. BOARD-ANCHOR-002 (P1)
+### C. BOARD-ANCHOR-002 (P1) — done
 
-Rewrite agent **Entry/Exit Anchors** starting with `implementer`: read `project_ssot` → board; stop writing `work-tracker.md` / `session-pointer.md` as SSOT (fallback only).
+- [x] Rewrite agent **Entry/Exit Anchors** starting with `implementer`: read `project_ssot` → board; stop writing trackers as SSOT (fallback only).
 
-### D. BOARD-ROLL-003 (P2)
+### D. BOARD-ROLL-003 (P2) — done
 
-Remaining agents (`test-runner`, `verifier`, `integrator-mas-agent`, …); deprecate tracker writes; update drift rules + dashboards if needed.
+- [x] Remaining agents board-first; DRIFT-009 dual-write guard; AGENTS/experiment overlay.
 
-### E. Explicitly defer
+### E. Explicitly defer (until human PORT-GATE)
 
 - Porting to `mas-workflow-kit` main / marketplace bump
 - Deleting production `.local` tracker contract for consumers
 - Always-on GitHub Actions bot
 - Requiring GitHub MCP before `gh` path works
+- ICC Control Center board tab (see §8)
 
 ---
 
@@ -308,7 +309,7 @@ Remaining agents (`test-runner`, `verifier`, `integrator-mas-agent`, …); depre
 | Consumer installs? | Projects opt-in until production port. |
 | Offline / no `gh`? | `fallback: local_trackers` then resume board sync. |
 | Card → which repo? | Convention: Repository field or body path; default = this experiment repo. |
-| Control Center dashboards? | Today read `.local/` markdown — may need board export or new tabs later. |
+| Control Center dashboards? | **Deferred.** ICC today reads `.local/` markdown only — no board tab until a later export/tab slice (EA-010). Humans follow Project #3 UI for backlog/status. |
 
 ---
 
@@ -330,10 +331,19 @@ Remaining agents (`test-runner`, `verifier`, `integrator-mas-agent`, …); depre
 - [x] Open board URL; explorer items present (or recreate)  
 - [x] Mirror / merge production kit into this repo  
 - [x] Agree with human: Project in **collab YAML**; all agents use Project; phased P0→P2  
-- [ ] Run **BOARD-SPIKE-001** (`/integrator-mas-agent` or implementer) — no production port  
-- [ ] Update this file’s “Last agent / Last updated” when you finish a slice  
+- [x] Run **BOARD-SPIKE-001** / ANCHOR / ROLL — no production port without human sign-off  
+- [x] Update this file’s “Last agent / Last updated” when you finish a slice  
 
-**Last agent (writer):** Composer (Cursor) · **Last updated:** 2026-07-17  
-**Next agent:** `enterprise-auditor` — PORT-GATE re-audit; human decides production port.
+**Last agent (writer):** implementer (Cursor) · **Last updated:** 2026-07-17  
+**Next agent:** maintainer (@SavinRazvan) — **PORT-GATE** approve or defer production port (board card `PVTI_lAHOBl46-84A9KZxzgzOZuE`).
 
-**Implemented (2026-07-17):** `cursor_workflow project` CLI, `project-board` agent/skill, ADR-008, Ready→Done demo, all agent Anchors board-first, DRIFT-009.
+**Implemented (2026-07-17):** `cursor_workflow project` CLI, `project-board` agent/skill, ADR-008, Ready→Done demo, all agent Anchors board-first, DRIFT-009, payload sync, experiment overlay installed, board seeded, doc-facts hygiene.
+
+### PORT-GATE decision (human)
+
+| Field | Value |
+|-------|--------|
+| **Status** | **Deferred** until explicit approve (safe default per ADR-008 §7) |
+| **Board card** | `[PORT-GATE] …` · `PVTI_lAHOBl46-84A9KZxzgzOZuE` · In progress / P0 |
+| **Approve** | Record date + “PORT approved” here; then open port PR to `mas-workflow-kit` |
+| **Defer** | Leave marketplace on markdown SSOT; keep iterating in this sibling |
