@@ -115,7 +115,8 @@ Ready → In progress → In review → Done
 4. **Create:** `project create --title "…" [--body "…"]`
 5. **Fields:** `set-field --id … --field priority|size --to …`
 6. **Close / handoff:** `set-status --to in_review|done`
-7. **Verify:** `project list` matches intent + handoff line printed
+7. **Notes:** `append-notes --id PVTI_… --text "…"` — agents always pass the project item id (`PVTI_…`); CLI resolves DraftIssue content id (`DI_…`) for body edits and keeps Status on `PVTI_…`
+8. **Verify:** `project list` matches intent + handoff line printed
 
 ## Dual-write ban
 

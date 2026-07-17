@@ -31,6 +31,7 @@ Related: [ADR-006](ADR-006-agent-integration-model.md), [HANDOFF.md](../../../HA
 - Agent: `.cursor/agents/project-board.md`
 - Drift: DRIFT-009 (dual-write) and DRIFT-010 (board vs PRs / stale In progress; read-only export); workflow-drift-guard **reads and updates** the board on Exit
 - Post-merge Done: Pattern A `merge.py` (not a dedicated agent)
+- DraftIssue body edits: `append-notes` / `edit_item_body` resolve project item `PVTI_…` → content `DI_…` (+ preserve `--title`); Status/field edits stay on `PVTI_…`
 
 ## References
 

@@ -39,6 +39,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Assignee / My items | Yes | Claim = In progress | My items view |
 | PR / audits / secrets | Local | Local | — |
 | Post-merge Status → Done | — | Via `merge.py` (Pattern A) | — |
+| Card Notes (`append-notes`) | Yes | Yes — pass `PVTI_…`; CLI resolves `DI_…` for DraftIssue body | — |
 | Read-only board export | Consume | `project export` (never writes Status) | — |
 
 ## Per-agent Entry / Exit

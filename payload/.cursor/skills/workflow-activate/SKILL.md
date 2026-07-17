@@ -27,7 +27,7 @@ User enabled the **MAS Workflow Kit** plugin and opened **their project** (not t
 2. Confirm the open folder is **their app**, not `mas-workflow-kit`.
 3. Run activate (below) — or tell them to pick **`/workflow-activate`** from the **`/`** menu.
 4. Tell them to edit `.local/user_settings/github.collaboration.yaml` → `contributors validate`.
-5. Point them to **`/implementer`** (from **`/`** menu) and `session-pointer.md`.
+5. Point them to **`/implementer`** (from **`/`** menu). When `project_ssot.enabled` in `github.collaboration.yaml`, Entry is **`python -m cursor_workflow project status`** (board SSOT); else read `session-pointer.md` first.
 
 Do **not** dump gate lists or maintainer `make` commands.
 
@@ -63,7 +63,7 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 
 1. Open `.local/user_settings/github.collaboration.yaml` — set **display_name** and **github_user**
 2. Terminal: `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` (must PASS before git/PR)
-3. **`/implementer`** to start · read `session-pointer.md` first each session
+3. **`/implementer`** to start · when `project_ssot.enabled`, run **`python -m cursor_workflow project status`** first each session (board SSOT); else read `session-pointer.md` first
 
 **Dashboards (optional):** from project root run `python3 -m http.server 8000`, then open
 http://localhost:8000/.local/agents-control-center/dashboards/index.html (not `file://`).
