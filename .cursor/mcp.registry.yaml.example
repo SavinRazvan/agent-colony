@@ -1,0 +1,13 @@
+version: 1
+servers:
+  workflow-kit:
+    tier: kit
+    description: PR workflow, trackers, gates
+    agents: [implementer, test-runner, verifier, enterprise-auditor, researcher, integrator-mas-agent, workflow-drift-guard]
+    tools_hint: [workflow_run_prepare, workflow_get_tracker, workflow_list_mcp_registry, workflow_integrate_validate, workflow_drift_validate]
+  # User adds keys matching mcp.json mcpServers:
+  my-custom-server:
+    tier: external
+    description: "Fill in — e.g. database, Slack, GitHub"
+    agents: [implementer]
+    tools_hint: []

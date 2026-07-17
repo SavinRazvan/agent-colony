@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "pages": [
+    {
+      "id": "session",
+      "title": "Session",
+      "file": "../../index-and-planning/current/session-pointer.md"
+    },
+    {
+      "id": "change-index",
+      "title": "Change Index",
+      "file": "../../index-and-planning/current/change-index.md"
+    },
+    {
+      "id": "plan",
+      "title": "Plan",
+      "file": "../../index-and-planning/current/plan.md"
+    },
+    {
+      "id": "workflow",
+      "title": "Workflows",
+      "file": "../../../.ai_infra/docs/operations/workflow-complete.md"
+    },
+    {
+      "id": "procedures",
+      "title": "Procedures",
+      "file": "../../../.ai_infra/docs/operations/agent-workflow-procedures.md"
+    },
+    {
+      "id": "architecture",
+      "title": "Architecture",
+      "file": "../../index-and-planning/current/architecture.md"
+    },
+    {
+      "id": "strategy-index",
+      "title": "Strategy index",
+      "file": "../../../.ai_infra/docs/roadmap/README.md"
+    },
+    {
+      "id": "work",
+      "title": "Work Tracker",
+      "file": "../../index-and-planning/current/work-tracker.md"
+    },
+    {
+      "id": "pr-review",
+      "title": "PR Review",
+      "file": "../../workflow-artifacts/pr/review.md"
+    },
+    {
+      "id": "pr-prep",
+      "title": "PR Prepare",
+      "file": "../../workflow-artifacts/pr/prep.md"
+    },
+    {
+      "id": "pr-merge",
+      "title": "PR Merge",
+      "file": "../../workflow-artifacts/pr/merge.md"
+    },
+    {
+      "id": "alignment-audit",
+      "title": "Alignment Audit",
+      "file": "../../workflow-artifacts/alignment/alignment-audit.md"
+    },
+    {
+      "id": "alignment-todos",
+      "title": "Alignment TODOs",
+      "file": "../../workflow-artifacts/alignment/alignment-todos.md"
+    },
+    {
+      "id": "drift-audit",
+      "title": "Drift Audit",
+      "file": "../../workflow-artifacts/drift/drift-audit.md"
+    },
+    {
+      "id": "drift-todos",
+      "title": "Drift TODOs",
+      "file": "../../workflow-artifacts/drift/drift-todos.md"
+    },
+    {
+      "id": "ea-audit",
+      "title": "Enterprise Audit",
+      "file": "../../workflow-artifacts/enterprise-architecture-audit/enterprise-architecture-audit.md"
+    },
+    {
+      "id": "ea-actions",
+      "title": "Enterprise Actions",
+      "file": "../../workflow-artifacts/enterprise-architecture-audit/enterprise-audit-actions.md"
+    },
+    {
+      "id": "logging",
+      "title": "Logging and Errors",
+      "file": "../../../.ai_infra/docs/operations/logging-and-errors.md"
+    },
+    {
+      "id": "test-plan",
+      "title": "Test Plan",
+      "file": "../../index-and-planning/current/test-plan.md"
+    },
+    {
+      "id": "test-index",
+      "title": "Test Index",
+      "file": "../../index-and-planning/current/test-index.md"
+    },
+    {
+      "id": "coverage",
+      "title": "Coverage",
+      "file": "../../index-and-planning/current/coverage-index.md"
+    },
+    {
+      "id": "governance-audit",
+      "title": "Governance Audit",
+      "file": "../../index-and-planning/audits/agent-governance-audit.md"
+    },
+    {
+      "id": "governance-todos",
+      "title": "Governance TODOs",
+      "file": "../../index-and-planning/audits/agent-governance-todos.md"
+    },
+    {
+      "id": "updates",
+      "title": "Updates Log",
+      "file": "../../index-and-planning/history/updates-log.md"
+    }
+  ]
+}

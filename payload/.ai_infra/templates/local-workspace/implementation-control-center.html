@@ -1,0 +1,139 @@
+<!--
+File: implementation-control-center.html
+Path: docs/templates/local-workspace/implementation-control-center.html
+Role: Template dashboard — copy to `.local/agents-control-center/dashboards/` (see migrate script).
+Used By:
+ - Local preview (file:// or static server)
+Depends On:
+ - local-shell.css, site-nav.js, local-markdown.js
+ - ../config/pages.json (after copy: `.local/agents-control-center/config/pages.json`)
+ - Paths declared inside pages.json (`.local/...` and `docs/...`)
+Notes:
+ - Page list is manifest-driven; edit `pages.json` instead of hardcoding PAGES here.
+ - Default manifest includes **Strategy index** tab (`.ai_infra/docs/roadmap/README.md`); product plan tabs belong in consumer overlays.
+-->
+<!DOCTYPE html>
+<html lang="en" data-local-site="dashboards" data-local-active="control">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Implementation Control Center</title>
+  <link rel="stylesheet" href="local-shell.css" />
+</head>
+<body>
+  <div class="local-content">
+    <section class="local-surface local-page-head">
+      <h1>Implementation Control Center</h1>
+      <p class="local-sub">Markdown-backed workspace: pick a tab below. Paths come from <code>../config/pages.json</code> (relative to this file).</p>
+      <div class="local-icc-toolbar">
+        <span class="local-pill">manifest: ../config/pages.json</span>
+        <span id="last-refresh" class="local-pill">refresh: --</span>
+        <button id="refresh-btn" type="button" class="local-btn">Refresh</button>
+      </div>
+    </section>
+
+    <section class="local-tabs" id="tabs"></section>
+    <section class="local-md-panel" id="content">Loading manifest...</section>
+  </div>
+
+  <script src="local-markdown.js"></script>
+  <script>
+    const MANIFEST = "../config/pages.json";
+    let PAGES = [];
+    let activePage = "";
+
+    const contentEl = document.getElementById("content");
+    const tabsEl = document.getElementById("tabs");
+    const refreshEl = document.getElementById("last-refresh");
+    const refreshBtn = document.getElementById("refresh-btn");
+
+    function escapeHtml(value) {
+      return LocalMarkdown.escapeHtml(value);
+    }
+
+    function renderMarkdown(md) {
+      return LocalMarkdown.render(md);
+    }
+
+    function renderTabs() {
+      tabsEl.innerHTML = "";
+      for (const page of PAGES) {
+        const tab = document.createElement("button");
+        tab.className = "local-tab" + (page.id === activePage ? " active" : "");
+        tab.textContent = page.title;
+        tab.type = "button";
+        tab.onclick = () => {
+          activePage = page.id;
+          renderTabs();
+          refreshActivePage();
+        };
+        tabsEl.appendChild(tab);
+      }
+    }
+
+    function normalizePageFile(file) {
+      if (typeof file !== "string") return file;
+      return file.replace(/module-audit\.htmlmodule-audit\.html/gi, "module-audit.html");
+    }
+
+    function httpOriginError() {
+      if (window.location.protocol === "file:") {
+        return (
+          "Browser fetch is blocked on file://. From the repo root run: " +
+          "python3 -m http.server 8000 then open " +
+          "http://localhost:8000/.local/agents-control-center/dashboards/implementation-control-center.html"
+        );
+      }
+      return "";
+    }
+
+    async function refreshActivePage() {
+      const page = PAGES.find((entry) => entry.id === activePage);
+      if (!page) return;
+      contentEl.textContent = "Loading " + page.title + "...";
+      try {
+        const filePath = normalizePageFile(page.file);
+        const response = await fetch(filePath + "?t=" + Date.now(), { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("Failed to load " + filePath + " (" + response.status + ")");
+        }
+        const markdown = await response.text();
+        contentEl.innerHTML = renderMarkdown(markdown);
+        refreshEl.textContent = "refresh: " + new Date().toLocaleString();
+      } catch (error) {
+        contentEl.innerHTML = "<p class=\"status-bad\">Could not load markdown: " + escapeHtml(String(error.message || error)) + "</p>";
+      }
+    }
+
+    async function bootstrap() {
+      const originError = httpOriginError();
+      if (originError) {
+        contentEl.innerHTML = "<p class=\"status-bad\">" + escapeHtml(originError) + "</p>";
+        return;
+      }
+      try {
+        const res = await fetch(MANIFEST + "?t=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) {
+          throw new Error("Manifest " + MANIFEST + " (" + res.status + ")");
+        }
+        const data = await res.json();
+        PAGES = data.pages || [];
+        if (!PAGES.length) {
+          contentEl.innerHTML = "<p class=\"status-bad\">Manifest has no pages.</p>";
+          return;
+        }
+        activePage = PAGES[0].id;
+        renderTabs();
+        await refreshActivePage();
+      } catch (error) {
+        contentEl.innerHTML = "<p class=\"status-bad\">" + escapeHtml(String(error.message || error)) + "</p>";
+      }
+    }
+
+    refreshBtn.addEventListener("click", refreshActivePage);
+    bootstrap();
+    setInterval(refreshActivePage, 12000);
+  </script>
+  <script src="site-nav.js"></script>
+</body>
+</html>

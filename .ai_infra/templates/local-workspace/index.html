@@ -1,0 +1,47 @@
+<!--
+File: index.html
+Path: docs/templates/local-workspace/index.html
+Role: Landing page for local HTML tools — copy to `.local/agents-control-center/dashboards/index.html`.
+Used By:
+ - Browser entry when serving repo root or `.local/` over HTTP
+Depends On:
+ - local-shell.css, site-nav.js
+ - ./implementation-control-center.html, ../audits/module-audit.html (relative targets after copy)
+Notes:
+ - Keep links relative to `dashboards/` so they work on any static server.
+-->
+<!DOCTYPE html>
+<html lang="en" data-local-site="dashboards" data-local-active="home">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local control center</title>
+  <link rel="stylesheet" href="local-shell.css" />
+</head>
+<body>
+  <div class="local-content local-content--narrow">
+    <section class="local-surface local-page-head">
+      <h1>Local control center</h1>
+      <p class="local-sub">Gitignored workspace under <code>.local/agents-control-center/</code> — use the <strong>Navigator</strong> above to switch pages, or open a tool below.</p>
+    </section>
+    <ul class="local-card-list">
+      <li>
+        <a class="local-card" href="implementation-control-center.html">
+          <strong>Implementation Control Center</strong>
+          <span class="local-card-desc">Manifest-driven tabs over Markdown trackers in <code>index-and-planning/</code> and <code>docs/</code>.</span>
+        </a>
+      </li>
+      <li>
+        <a class="local-card" href="../audits/module-audit.html">
+          <strong>Module audit (HTML)</strong>
+          <span class="local-card-desc">Deep audit export or stub; add more HTML reports alongside this file.</span>
+        </a>
+      </li>
+    </ul>
+    <p class="local-hint">Serve the <strong>project root</strong> with <code>python3 -m http.server 8000</code>, then open<br />
+      <code>http://localhost:8000/.local/agents-control-center/dashboards/index.html</code><br />
+      (Do not open HTML via <code>file://</code> — manifest fetch is blocked.)</p>
+  </div>
+  <script src="site-nav.js"></script>
+</body>
+</html>

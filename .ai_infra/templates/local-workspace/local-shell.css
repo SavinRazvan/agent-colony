@@ -1,0 +1,398 @@
+/*
+ * File: local-shell.css
+ * Path: docs/templates/local-workspace/local-shell.css
+ * Role: Shared visual shell for all local workspace HTML pages (with site-nav.js).
+ * Used By:
+ *  - index.html, implementation-control-center.html, audits/module-audit.html (via link)
+ * Depends On:
+ *  - (none)
+ * Notes:
+ *  - Copy to `.local/agents-control-center/dashboards/`; audits pages use `../dashboards/local-shell.css`.
+ */
+
+:root {
+  --bg: #0b1020;
+  --panel: #111a33;
+  --panel-2: #142041;
+  --line: #2b3f73;
+  --text: #eaf0ff;
+  --muted: #9eb3e6;
+  --accent: #61b2ff;
+  --ok: #42d392;
+  --warn: #ffd166;
+  --bad: #ff6b6b;
+  --surface-deep: #0e1730;
+  --code-bg: #16264d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at top left, #172750 0%, var(--bg) 55%);
+  min-height: 100vh;
+}
+
+/* Main column */
+.local-content {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 18px;
+}
+
+.local-content--narrow {
+  max-width: 720px;
+  padding: 28px 18px;
+}
+
+/* Gradient header / title card (matches landing “feel”) */
+.local-surface {
+  background: linear-gradient(135deg, var(--panel), var(--panel-2));
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.local-page-head {
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+
+.local-page-head h1 {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.local-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Deep content panel */
+.local-panel {
+  background: var(--surface-deep);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.local-panel strong {
+  color: var(--text);
+}
+
+.local-panel p {
+  margin: 0.5em 0;
+}
+
+.local-panel h1,
+.local-panel h2,
+.local-panel h3 {
+  margin-top: 1em;
+  margin-bottom: 0.45em;
+  color: #dce8ff;
+}
+
+.local-panel h1 {
+  font-size: 1.25rem;
+}
+
+.local-panel h2 {
+  font-size: 1.12rem;
+}
+
+.local-panel h3 {
+  font-size: 1.02rem;
+}
+
+.local-panel ul {
+  margin: 0.35em 0 0.5em 1.2em;
+  padding: 0;
+}
+
+.local-panel li {
+  margin: 0.2em 0;
+}
+
+/* Landing cards */
+.local-card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+a.local-card {
+  display: block;
+  text-decoration: none;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--panel), var(--panel-2));
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 18px;
+  transition: border-color 0.15s;
+}
+
+a.local-card:hover {
+  border-color: var(--accent);
+}
+
+a.local-card strong {
+  color: var(--accent);
+  font-size: 1.05rem;
+}
+
+a.local-card .local-card-desc {
+  display: block;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+
+/* Hint callout (landing) */
+.local-hint {
+  margin-top: 28px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px dashed var(--line);
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* Inline / panel code */
+code,
+.local-panel code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #a8ccff;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.9em;
+}
+
+/* Implementation control center */
+.local-icc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(43, 63, 115, 0.6);
+}
+
+.local-pill {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: #0f1a36;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.local-btn {
+  background: #1f3264;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.local-btn:hover {
+  border-color: var(--accent);
+}
+
+.local-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.local-tab {
+  background: #0f1a36;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 10px;
+  color: var(--muted);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+}
+
+.local-tab.active {
+  color: var(--text);
+  border-color: var(--accent);
+  background: #173064;
+}
+
+.local-md-panel {
+  background: var(--surface-deep);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  min-height: 62vh;
+  overflow: auto;
+  padding: 18px;
+  line-height: 1.55;
+  white-space: normal;
+}
+
+.local-md-panel h1,
+.local-md-panel h2,
+.local-md-panel h3 {
+  margin-top: 1em;
+  margin-bottom: 0.45em;
+  color: #dce8ff;
+}
+
+.local-md-panel h1 {
+  font-size: 1.25rem;
+}
+
+.local-md-panel h2 {
+  font-size: 1.12rem;
+}
+
+.local-md-panel h3 {
+  font-size: 1.02rem;
+}
+
+.local-md-panel p {
+  margin: 0.45em 0;
+}
+
+.local-md-panel ul {
+  margin: 0.35em 0 0.5em 1.2em;
+  padding: 0;
+}
+
+.local-md-panel li {
+  margin: 0.2em 0;
+}
+
+.local-md-panel ol {
+  margin: 0.35em 0 0.5em 1.4em;
+  padding: 0;
+}
+
+.local-md-panel table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75em 0 1em;
+  font-size: 0.92rem;
+}
+
+.local-md-panel th,
+.local-md-panel td {
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.local-md-panel th {
+  background: #13254a;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.local-md-panel tr:nth-child(even) td {
+  background: rgba(15, 26, 54, 0.55);
+}
+
+.local-md-panel blockquote {
+  margin: 0.65em 0;
+  padding: 10px 14px;
+  border-left: 4px solid var(--accent);
+  background: rgba(97, 178, 255, 0.08);
+  color: var(--muted);
+  border-radius: 0 8px 8px 0;
+}
+
+.local-md-panel blockquote p {
+  margin: 0.35em 0;
+}
+
+.local-md-panel hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 1.25em 0;
+}
+
+.local-md-panel a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.local-md-panel a:hover {
+  text-decoration: underline;
+}
+
+.local-md-panel strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.local-md-panel em {
+  color: #c8d8ff;
+}
+
+.local-md-panel del {
+  color: #7a8bb8;
+}
+
+.local-md-panel code {
+  background: var(--code-bg);
+  padding: 1px 4px;
+  border-radius: 4px;
+  color: #a8ccff;
+  font-family: Consolas, "Courier New", monospace;
+}
+
+.local-md-panel pre {
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  overflow: auto;
+  font-size: 0.88rem;
+}
+
+.local-md-panel pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.status-ok {
+  color: var(--ok);
+}
+
+.status-warn {
+  color: var(--warn);
+}
+
+.status-bad {
+  color: var(--bad);
+}
+
+@media (max-width: 900px) {
+  .local-tabs {
+    grid-template-columns: 1fr 1fr;
+  }
+}

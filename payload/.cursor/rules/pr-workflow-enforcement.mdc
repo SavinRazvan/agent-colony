@@ -1,0 +1,18 @@
+---
+description: PR-first maintainer workflow, artifacts, and pre-merge gates
+alwaysApply: true
+---
+
+# PR workflow enforcement
+
+- **PR-first:** task branch (`feature/`, `fix/`, `chore/`) → implement/test → push → open PR → `python .ai_infra/scripts/pr/verify_publish.py` + `gh pr view` → `/review-pr` → `/prepare-pr` → `/merge-pr` → sync `main` and remove local/remote feature branch.
+- **Never** merge straight from local to `main`. **No** destructive git (`reset --hard`, history rewrite) unless the user explicitly asks.
+- **Phase artifacts** (do not skip): `.local/workflow-artifacts/pr/review.md`, `.local/workflow-artifacts/pr/prep.md`, `.local/workflow-artifacts/pr/merge.md` with `Action-By`, `GitHub-User`, `Agent/s` from **`.local/user_settings/github.collaboration.yaml`** (via `--pipeline` on PR scripts) or explicit `--actor` / `--agents`; use `Reviewed-By` / `Prepared-By` / `Merged-By` where applicable.
+- **Git commits** (separate from PR artifact headers): trailers per **commit-trailer-format.mdc** — required `Author` / `GitHub-User`, optional `Assisted-by` (no `Made-with:`); summary in **AGENTS.md** § Commits.
+- **Architecture-impacting** changes: before prepare/merge, produce `.local/workflow-artifacts/alignment/alignment-audit.md` and `.local/workflow-artifacts/alignment/alignment-todos.md` using **`enterprise-auditor`** + `.cursor/skills/enterprise-architecture-audit/SKILL.md` (focused alignment pass when a full scorecard is not required; see [advisory-audit-alignment-enforcement.mdc](advisory-audit-alignment-enforcement.mdc)).
+- **Pre-merge gates:** order and commands are **`GATES` in `.ai_infra/scripts/pr/prepare.py`** only — run via `prepare.py`, not as separate agent commands. When changing governance, workflows, or tracked policy docs, also run `python .ai_infra/scripts/architecture/check_governance_consistency.py` locally (CI may mirror path-scoped runs).
+- **Branch/PR health:** current branch tracks `origin/<branch>`; `git ls-remote --heads origin <branch>` shows head; `gh pr view --json headRefName` matches current branch.
+- **Tracking docs** when architecture/runtime scope shifts: `.local/index-and-planning/current/plan.md`, project `docs/architecture/` (local stub: `.local/.../current/architecture.md`).
+- `git push --force-with-lease` only for intentional rewrites on branches you own.
+- **Stop and report** if required artifacts or gates are missing, or post-merge sync/cleanup is incomplete.
+- **Efficiency:** gate order and commands live in `.ai_infra/scripts/pr/prepare.py` (`GATES`). Link or summarize *pass/fail* in chat and PR artifacts — avoid pasting the full command list repeatedly.

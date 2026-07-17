@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://workflow-kit.local/schemas/mcp-registry.schema.json",
+  "title": "MCPRegistry",
+  "type": "object",
+  "required": ["version", "servers"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "servers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["tier", "description", "agents"],
+        "additionalProperties": false,
+        "properties": {
+          "tier": {
+            "type": "string",
+            "enum": ["kit", "external"]
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "agents": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "tools_hint": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

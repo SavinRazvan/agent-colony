@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mas-workflow-kit"
+version = "0.4.0"
+description = "Universal installable multi-agent workflow infrastructure for Cursor"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pyyaml>=6.0",
+    "jsonschema>=4.0",
+]
+
+[project.optional-dependencies]
+mcp = ["mcp>=1.2"]
+dev = ["pytest>=8.0", "pytest-cov>=4.0", "pyright>=1.1"]
+
+[project.scripts]
+cursor-workflow = "cursor_workflow.cli:main"
+
+[tool.setuptools.packages.find]
+where = [".ai_infra/install", ".ai_infra/mcp_servers"]
+
+[tool.pyright]
+include = [".ai_infra/install", ".ai_infra/mcp_servers", ".ai_infra/scripts"]
+typeCheckingMode = "basic"
+reportMissingImports = "warning"
+
+[tool.pytest.ini_options]
+pythonpath = [".", ".ai_infra/mcp_servers"]
+addopts = "-ra"
+testpaths = ["tests"]
+markers = [
+    "soak: Non-blocking long-run soak scenarios (opt-in: pytest -m soak)",
+    "live: Optional live-network adapter tests (opt-in: pytest -m live)",
+]
+filterwarnings = [
+    "ignore:Using `httpx` with `starlette.testclient` is deprecated:starlette.exceptions.StarletteDeprecationWarning",
+]
+
+[tool.coverage.run]
+omit = [
+    ".ai_infra/scripts/ci/generate_coverage_index.py",
+    ".ai_infra/scripts/dev/migrate_local_workspace_layout.py",
+]

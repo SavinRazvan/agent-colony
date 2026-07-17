@@ -1,0 +1,49 @@
+name: Kit Quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: kit-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install -q -e ".[dev,mcp]"
+
+      - name: Seed CI workspace
+        run: .venv/bin/python .ai_infra/scripts/ci/seed_kit_workspace.py --directory .
+
+      - name: Gate matrix
+        run: |
+          set -euo pipefail
+          # make gates includes check_testing_artifacts, pytest, check_governance_consistency.py, check_debrand.py
+          make gates
+          make drift-validate
+          make integrate-validate
+          # check-plugin verifies committed agents/rules/skills/payload against a fresh
+          # regeneration (no prior sync step) — catches drift in the committed bundle.
+          make check-plugin
+          .venv/bin/python -m cursor_workflow health
+          .venv/bin/python -m cursor_workflow contributors validate
+          .venv/bin/python .ai_infra/scripts/architecture/check_governance_consistency.py
+
+      - name: Install dry-run
+        run: make install-dry-run
+
+      - name: Type check (non-blocking)
+        continue-on-error: true
+        run: .venv/bin/pyright
