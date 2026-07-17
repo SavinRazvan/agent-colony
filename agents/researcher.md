@@ -8,9 +8,11 @@ description: Optional local research corpus; hard-stop on product code without e
 
 ## Anchor (mandatory)
 
-**Entry:** When coordinating with implement slices: if `project_ssot.enabled` note board card context via `project status`; else `session-pointer.md`.
+**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` (+ research card via `list` when one exists). Else `session-pointer.md`.
 
-**Exit:** Research-only — update research corpus indexes; do not mutate board Status or `session-pointer` unless user expands scope.
+**Exit:** Research corpus indexes under `_research_results/`. When a **research board card** exists: **must** `set-status --to done` and put corpus paths in Notes for continuation. Do not mutate unrelated cards or `session-pointer` as SSOT.
+
+**Board rights:** Always **read** board when enabled. **Update** only your research card on Exit. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract.
 
 Build and maintain a **local research corpus** with verified evidence. **Off by default** in the universal kit core — enable per project via overlay and `_research_results/` scaffold.
 

@@ -5,11 +5,14 @@ alwaysApply: true
 
 # Project SSOT precedence (experiment)
 
-- When `.local/user_settings/github.collaboration.yaml` → `project_ssot.enabled: true` and `sync_policy: board_only`, the **GitHub Project** is backlog/status SSOT.
-- Agents use `python -m cursor_workflow project …` (see `.cursor/skills/project-board-ssot/SKILL.md`). Do **not** dual-write competing slice status to `work-tracker.md` / `session-pointer.md`.
-- Overrides tracker `in_progress` expectations in `implementation-workflow-governance.mdc` for this experiment only — see ADR-008 (`board_only` wins; DRIFT-009 guards dual-write).
+- When `.local/user_settings/github.collaboration.yaml` → `project_ssot.enabled: true` and `sync_policy: board_only`, the **GitHub Project** is the **only writable** backlog/status **and continuation** SSOT.
+- **Every agent:** Entry reads the board (`project status` / list / claim); Exit updates Status (and Notes) so the next agent can continue from the Project — not from chat alone. See `.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract.
+- **workflow-drift-guard:** must read board Status for DRIFT-009 / DRIFT-010; updates the drift-pass card on Exit; remediations via Notes/Ready handoff — never silent dual-write to trackers.
+- Do **not** dual-write competing slice status to `work-tracker.md` / `session-pointer.md`. Do **not** dual-mirror “for safety.”
+- Read-only `project export` snapshots (if present) never write Status and never compete with board Status.
+- Overrides tracker `in_progress` expectations in `implementation-workflow-governance.mdc` for this experiment only — see ADR-008 (`board_only` wins; DRIFT-009).
 - Offline / disabled: `fallback: local_trackers` only — resume board sync when available.
-- PR Pattern A (`prepare.py` GATES), PR/audit artifacts, secrets, and user_settings stay local (`project_ssot.local_only`).
-- Canon: `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`, `HANDOFF.md`.
+- PR Pattern A (`prepare.py` GATES), post-merge board close (`merge.py`), PR/audit artifacts, secrets, and user_settings stay local (`project_ssot.local_only`).
+- Humans own Project views, workflows, Insights, README, status updates, Ready prioritization.
+- Canon: `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`, `.ai_infra/docs/operations/project-board-collaboration.md`, `HANDOFF.md`.
 - Do not port this rule to production `mas-workflow-kit` until the experiment port gate passes.
-- Keep this file out of marketplace `payload/.cursor/rules/` until production port (install via `overlays/rules/` copy into `.cursor/rules/` only).

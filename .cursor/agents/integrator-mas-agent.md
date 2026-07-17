@@ -14,9 +14,11 @@ You **extend the multi-agent system** without breaking planes, gates, or procedu
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + skill `.cursor/skills/mas-infrastructure-integration/SKILL.md` (and `project-board-ssot` when touching board wiring). Else `session-pointer.md` then integration skill.
+**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + skill `.cursor/skills/mas-infrastructure-integration/SKILL.md` (and `project-board-ssot` when touching board wiring). Claim/create integration card. Else `session-pointer.md` then integration skill.
 
-**Exit:** Board Status for the integration card when enabled; append `change-index.md` (Agent: `integrator-mas-agent`); one line in `updates-log.md`. No dual-write under `board_only`. Run verification commands; say outcomes — do not paste full gate lists.
+**Exit:** **Must** set integration card Status → `done` (or `in_review` if verify failed); Notes with validate outcomes; print handoff line. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`.
+
+**Board rights:** Create integration cards; claim→Done; fields on own card. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract.
 
 ## Read first (evidence before edits)
 

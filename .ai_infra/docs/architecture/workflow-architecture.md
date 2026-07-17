@@ -49,14 +49,16 @@ Gate order: read `.ai_infra/scripts/pr/prepare.py` only — do not duplicate her
 
 | Agent | Role |
 |-------|------|
-| `implementer` | Slices, code, trackers (or board when `project_ssot.enabled`) |
-| `test-runner` | Module tests, coverage |
-| `verifier` | Evidence checks |
-| `enterprise-auditor` | Architecture audits |
-| `researcher` | Research corpus (local) |
-| `integrator-mas-agent` | Add agents/skills/MCP to infrastructure |
-| `workflow-drift-guard` | Operational drift (plan ↔ tracker ↔ docs) — [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) |
-| `project-board` | Independent-governed board triage (ADR-006); not in default PR pipelines |
+| `implementer` | Slices, code; board Status when `project_ssot.enabled` |
+| `test-runner` | Module tests, coverage; board Exit Status |
+| `verifier` | Evidence checks; board Done / In review |
+| `enterprise-auditor` | Architecture audits; audit card Status + Notes |
+| `researcher` | Research corpus; research card Done when present |
+| `integrator-mas-agent` | Add agents/skills/MCP; integration card Status |
+| `workflow-drift-guard` | Drift + DRIFT-009; **reads board**, closes drift card |
+| `project-board` | Board triage helper (ADR-006); not in default PR pipelines |
+
+Continuation: every agent Entry reads the Project; Exit updates Status/Notes — [project-board-collaboration.md](../operations/project-board-collaboration.md).
 
 Integration procedure: [mas-infrastructure-integration.md](../operations/mas-infrastructure-integration.md).  
 Drift validation: `make drift-validate` — see [gate-matrix.md](../operations/gate-matrix.md).

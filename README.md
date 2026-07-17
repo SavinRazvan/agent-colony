@@ -8,7 +8,7 @@
 | **Production kit (do not break)** | [mas-workflow-kit](https://github.com/SavinRazvan/mas-workflow-kit) |
 | **Agent handoff (READ FIRST)** | [HANDOFF.md](./HANDOFF.md) |
 
-**Experiment agents (8):** `implementer`, `test-runner`, `verifier`, `enterprise-auditor`, `researcher`, `integrator-mas-agent`, `workflow-drift-guard`, `project-board` — see [AGENTS.md](./AGENTS.md). Board CLI: `python -m cursor_workflow project …`.
+**Experiment agents (8):** `implementer`, `test-runner`, `verifier`, `enterprise-auditor`, `researcher`, `integrator-mas-agent`, `workflow-drift-guard`, `project-board` — see [AGENTS.md](./AGENTS.md). Board CLI: `python -m cursor_workflow project …`. **Continuation:** every agent reads the Project on Entry and updates Status/Notes on Exit ([project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md)).
 
 This repository is an isolated sibling sandbox. If the experiment fails, abandon this repo; leave marketplace `mas-workflow-kit` on markdown SSOT.
 

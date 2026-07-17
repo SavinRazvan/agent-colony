@@ -8,12 +8,26 @@ Depends On:
  - .ai_infra/scripts/pr/prepare.py
  - docs/governance/workflow-source-owners.md
 Notes:
- - Pair with session-pointer.md + change-index.md for resume-without-chat.
+ - When project_ssot.enabled: pair with board Status + card Notes for resume-without-chat.
+ - Else: session-pointer.md + change-index.md.
 -->
 
 # Token efficiency (agent contract)
 
 ## Read set (default)
+
+**When `project_ssot.enabled`:**
+
+| Order | Path / command | When |
+|-------|----------------|------|
+| 1 | `python -m cursor_workflow project status` + `project list` | **Every session start** |
+| 2 | Board card body (Acceptance / Rollback / Notes) | Claimed / In progress card |
+| 3 | `.cursor/skills/project-board-ssot/SKILL.md` § Continuation | When mutating Status |
+| 4 | `change-index.md` | Resume mid-slice (thin cache) |
+| 5 | `test-plan.md`, `test-index.md` | When tests change |
+| 6 | `workflow-artifacts/pr/*.md` | Only when phase = review \| prepare \| merge |
+
+**When disabled / offline fallback:**
 
 | Order | Path | When |
 |-------|------|------|
@@ -26,6 +40,15 @@ Notes:
 **Skip:** `.local/generated-data/**`, `history/archive/**`, full `updates-log.md` body, root handoff megadocs unless explicitly tasked.
 
 ## Write set (slice close)
+
+**When board SSOT enabled:**
+
+1. Board Status via `cursor_workflow project set-status` (+ Notes / handoff line)
+2. `change-index.md` — one row per batch  
+3. `history/updates-log.md` — **one line** (no gate dumps)
+4. Do **not** dual-write tracker `in_progress` under `board_only`
+
+**Offline fallback:**
 
 1. `change-index.md` — one row per batch  
 2. `session-pointer.md` — phase, next agent, blockers  

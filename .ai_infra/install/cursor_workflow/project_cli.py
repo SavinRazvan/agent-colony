@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -348,6 +349,403 @@ def cmd_set_field(args: argparse.Namespace) -> int:
     return 0
 
 
+def _normalize_status(raw: str) -> str:
+    key = str(raw or "").strip().lower().replace(" ", "_").replace("-", "_")
+    if key in ("inprogress",):
+        return "in_progress"
+    if key in ("review",):
+        return "in_review"
+    return key
+
+
+def _item_body(item: dict[str, Any]) -> str:
+    content = item.get("content")
+    if isinstance(content, dict):
+        body = content.get("body")
+        if isinstance(body, str):
+            return body
+    body = item.get("body")
+    return body if isinstance(body, str) else ""
+
+
+def _item_title(item: dict[str, Any]) -> str:
+    title = item.get("title")
+    if isinstance(title, str) and title:
+        return title
+    content = item.get("content")
+    if isinstance(content, dict):
+        t = content.get("title")
+        if isinstance(t, str):
+            return t
+    return ""
+
+
+def fetch_project_items(ssot: dict[str, Any], *, limit: int = 100) -> tuple[list[dict[str, Any]], str | None]:
+    """Return (items, error). Each item keeps gh JSON fields plus normalized helpers."""
+    owner = str(ssot["owner"])
+    number = int(ssot["number"])
+    proc = run_gh(
+        [
+            "project",
+            "item-list",
+            str(number),
+            "--owner",
+            owner,
+            "--format",
+            "json",
+            "--limit",
+            str(limit),
+        ]
+    )
+    if proc.returncode != 0:
+        return [], (proc.stderr or proc.stdout or "gh project item-list failed").strip()
+    try:
+        data = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError as exc:
+        return [], f"invalid JSON from gh: {exc}"
+    raw = data.get("items") if isinstance(data, dict) else data
+    if not isinstance(raw, list):
+        return [], None
+    items: list[dict[str, Any]] = []
+    for item in raw:
+        if isinstance(item, dict):
+            items.append(item)
+    return items, None
+
+
+def find_item_by_id(items: list[dict[str, Any]], item_id: str) -> dict[str, Any] | None:
+    for item in items:
+        if str(item.get("id") or "") == item_id:
+            return item
+    return None
+
+
+def append_notes_to_body(body: str, text: str) -> tuple[str, bool]:
+    """
+    Append text under ## Notes. Returns (new_body, changed).
+    Idempotent when the exact text line is already present.
+    """
+    note_line = text.strip()
+    if not note_line:
+        return body, False
+    if note_line in (body or ""):
+        return body, False
+    body = body or ""
+    marker = "## Notes"
+    if marker in body:
+        # Append after the Notes heading block (before next ## or end).
+        idx = body.find(marker)
+        rest = body[idx + len(marker) :]
+        next_h = rest.find("\n## ")
+        if next_h >= 0:
+            insert_at = idx + len(marker) + next_h
+            new_body = body[:insert_at].rstrip() + f"\n\n- {note_line}\n" + body[insert_at:]
+        else:
+            new_body = body.rstrip() + f"\n\n- {note_line}\n"
+    else:
+        new_body = body.rstrip() + f"\n\n## Notes\n\n- {note_line}\n"
+    return new_body, True
+
+
+def parse_board_item_from_text(text: str) -> str | None:
+    """Extract PVTI_… from a Board-Item: line in PR or card body."""
+    m = re.search(r"(?i)Board-Item:\s*(PVTI_[A-Za-z0-9_-]+)", text or "")
+    return m.group(1) if m else None
+
+
+def find_items_mentioning_pr(
+    items: list[dict[str, Any]],
+    *,
+    pr_number: str,
+    pr_url: str = "",
+) -> list[dict[str, Any]]:
+    """Items whose body/title mention the PR number or URL; prefer in_review/in_progress."""
+    needle_num = str(pr_number).strip().lstrip("#")
+    needles = [n for n in (pr_url, f"#{needle_num}", f"/pull/{needle_num}", needle_num) if n]
+    matches: list[dict[str, Any]] = []
+    for item in items:
+        blob = f"{_item_title(item)}\n{_item_body(item)}"
+        if not any(n and n in blob for n in needles):
+            continue
+        status = _normalize_status(str(item.get("status") or ""))
+        if status in ("in_review", "in_progress", "ready"):
+            matches.append(item)
+        else:
+            matches.append(item)
+    # Prefer in_review then in_progress
+    def rank(it: dict[str, Any]) -> int:
+        s = _normalize_status(str(it.get("status") or ""))
+        return {"in_review": 0, "in_progress": 1, "ready": 2}.get(s, 9)
+
+    matches.sort(key=rank)
+    return matches
+
+
+def resolve_item_id_for_pr(
+    ssot: dict[str, Any],
+    *,
+    pr: str,
+    repo: str | None = None,
+    limit: int = 100,
+) -> tuple[str | None, list[str], str | None]:
+    """
+    Resolve project item id for a PR.
+    Returns (item_id | None, candidate_ids, error | None).
+    Prefers Board-Item in PR body; else body/URL scan of active cards.
+    """
+    pr_ref = str(pr).strip()
+    # Accept URL or number
+    pr_number = pr_ref.rstrip("/").split("/")[-1] if "/" in pr_ref else pr_ref.lstrip("#")
+    repo_flag = repo or str(ssot.get("default_repo") or "")
+    view_args = ["pr", "view", pr_number, "--json", "body,url,number"]
+    if repo_flag:
+        view_args.extend(["--repo", repo_flag])
+    proc = run_gh(view_args)
+    pr_body = ""
+    pr_url = ""
+    if proc.returncode == 0:
+        try:
+            pdata = json.loads(proc.stdout or "{}")
+            pr_body = str(pdata.get("body") or "")
+            pr_url = str(pdata.get("url") or "")
+            if pdata.get("number") is not None:
+                pr_number = str(pdata["number"])
+        except json.JSONDecodeError:
+            pass
+    board_item = parse_board_item_from_text(pr_body)
+    if board_item:
+        return board_item, [board_item], None
+
+    items, err = fetch_project_items(ssot, limit=limit)
+    if err:
+        return None, [], err
+    matches = find_items_mentioning_pr(items, pr_number=pr_number, pr_url=pr_url)
+    ids = [str(m.get("id")) for m in matches if m.get("id")]
+    if len(ids) == 1:
+        return ids[0], ids, None
+    if len(ids) > 1:
+        return None, ids, "ambiguous: multiple project items mention this PR"
+    return None, [], "no project item found for this PR (add Board-Item: PVTI_… to PR body)"
+
+
+def edit_item_body(ssot: dict[str, Any], item_id: str, body: str) -> tuple[bool, str]:
+    project_id = str(ssot["project_id"])
+    proc = run_gh(
+        [
+            "project",
+            "item-edit",
+            "--project-id",
+            project_id,
+            "--id",
+            item_id,
+            "--body",
+            body,
+        ]
+    )
+    if proc.returncode != 0:
+        return False, (proc.stderr or proc.stdout or "gh project item-edit --body failed").strip()
+    return True, "ok"
+
+
+def set_item_status(ssot: dict[str, Any], item_id: str, logical: str) -> tuple[bool, str]:
+    try:
+        option_id = resolve_status_option_id(ssot, logical)
+        field_id = status_field_id(ssot)
+    except KeyError as exc:
+        return False, str(exc)
+    project_id = str(ssot["project_id"])
+    proc = run_gh(
+        [
+            "project",
+            "item-edit",
+            "--project-id",
+            project_id,
+            "--id",
+            item_id,
+            "--field-id",
+            field_id,
+            "--single-select-option-id",
+            option_id,
+        ]
+    )
+    if proc.returncode != 0:
+        return False, (proc.stderr or proc.stdout or "gh project item-edit failed").strip()
+    return True, option_id
+
+
+def build_export_snapshot(ssot: dict[str, Any], items: list[dict[str, Any]]) -> dict[str, Any]:
+    """Read-only snapshot shape for project export / DRIFT-010."""
+    out_items: list[dict[str, Any]] = []
+    for item in items:
+        body = _item_body(item)
+        excerpt = body if len(body) <= 500 else body[:497] + "..."
+        out_items.append(
+            {
+                "id": item.get("id"),
+                "title": _item_title(item),
+                "status": item.get("status"),
+                "status_normalized": _normalize_status(str(item.get("status") or "")),
+                "priority": item.get("priority"),
+                "size": item.get("size"),
+                "body_excerpt": excerpt,
+                "updated_at": item.get("updatedAt") or item.get("updated_at"),
+            }
+        )
+    return {
+        "schema": "project-board-snapshot/v1",
+        "project": {
+            "name": ssot.get("name"),
+            "owner": ssot.get("owner"),
+            "number": ssot.get("number"),
+            "url": ssot.get("url"),
+            "project_id": ssot.get("project_id"),
+            "default_repo": ssot.get("default_repo"),
+        },
+        "items": out_items,
+        "totalCount": len(out_items),
+    }
+
+
+def cmd_get(args: argparse.Namespace) -> int:
+    root = Path(args.directory).resolve()
+    ssot, errs = load_project_ssot(root)
+    if errs or ssot is None:
+        for e in errs:
+            print(f"project get: FAIL — {e}", file=sys.stderr)
+        return 1
+    enabled_errs = require_enabled(ssot)
+    if enabled_errs:
+        for e in enabled_errs:
+            print(f"project get: FAIL — {e}", file=sys.stderr)
+        return 2
+    items, err = fetch_project_items(ssot, limit=args.limit)
+    if err:
+        print(f"project get: FAIL — {err}", file=sys.stderr)
+        return 1
+    item = find_item_by_id(items, args.id)
+    if item is None:
+        print(f"project get: FAIL — item not found: {args.id}", file=sys.stderr)
+        return 1
+    payload = {
+        "id": item.get("id"),
+        "title": _item_title(item),
+        "status": item.get("status"),
+        "priority": item.get("priority"),
+        "size": item.get("size"),
+        "body": _item_body(item),
+    }
+    if args.json:
+        print(json.dumps(payload, indent=2))
+    else:
+        print(f"id: {payload['id']}")
+        print(f"title: {payload['title']}")
+        print(f"status: {payload['status']}")
+        print(f"priority: {payload['priority']}")
+        print(f"size: {payload['size']}")
+        print("--- body ---")
+        print(payload["body"] or "(empty)")
+    return 0
+
+
+def cmd_append_notes(args: argparse.Namespace) -> int:
+    root = Path(args.directory).resolve()
+    ssot, errs = load_project_ssot(root)
+    if errs or ssot is None:
+        for e in errs:
+            print(f"project append-notes: FAIL — {e}", file=sys.stderr)
+        return 1
+    enabled_errs = require_enabled(ssot)
+    if enabled_errs:
+        for e in enabled_errs:
+            print(f"project append-notes: FAIL — {e}", file=sys.stderr)
+        return 2
+    items, err = fetch_project_items(ssot, limit=args.limit)
+    if err:
+        print(f"project append-notes: FAIL — {err}", file=sys.stderr)
+        return 1
+    item = find_item_by_id(items, args.id)
+    if item is None:
+        print(f"project append-notes: FAIL — item not found: {args.id}", file=sys.stderr)
+        return 1
+    body = _item_body(item)
+    new_body, changed = append_notes_to_body(body, args.text)
+    if not changed:
+        print(f"append-notes: {args.id} — already present (idempotent skip)")
+        return 0
+    ok, detail = edit_item_body(ssot, args.id, new_body)
+    if not ok:
+        print(f"project append-notes: FAIL — {detail}", file=sys.stderr)
+        return 1
+    print(f"append-notes: {args.id} — updated")
+    return 0
+
+
+def cmd_find_by_pr(args: argparse.Namespace) -> int:
+    root = Path(args.directory).resolve()
+    ssot, errs = load_project_ssot(root)
+    if errs or ssot is None:
+        for e in errs:
+            print(f"project find-by-pr: FAIL — {e}", file=sys.stderr)
+        return 1
+    enabled_errs = require_enabled(ssot)
+    if enabled_errs:
+        for e in enabled_errs:
+            print(f"project find-by-pr: FAIL — {e}", file=sys.stderr)
+        return 2
+    item_id, candidates, err = resolve_item_id_for_pr(
+        ssot, pr=args.pr, repo=args.repo or None, limit=args.limit
+    )
+    payload = {
+        "item_id": item_id,
+        "candidates": candidates,
+        "error": err,
+    }
+    if args.json:
+        print(json.dumps(payload, indent=2))
+    else:
+        if item_id:
+            print(item_id)
+        else:
+            print(f"project find-by-pr: FAIL — {err}", file=sys.stderr)
+            if candidates:
+                print("candidates:", ", ".join(candidates), file=sys.stderr)
+            return 1
+    return 0 if item_id else 1
+
+
+def cmd_export(args: argparse.Namespace) -> int:
+    """Read-only snapshot — never mutates the board."""
+    root = Path(args.directory).resolve()
+    ssot, errs = load_project_ssot(root)
+    if errs or ssot is None:
+        for e in errs:
+            print(f"project export: FAIL — {e}", file=sys.stderr)
+        return 1
+    enabled_errs = require_enabled(ssot)
+    if enabled_errs:
+        for e in enabled_errs:
+            print(f"project export: FAIL — {e}", file=sys.stderr)
+        return 2
+    items, err = fetch_project_items(ssot, limit=args.limit)
+    if err:
+        print(f"project export: FAIL — {err}", file=sys.stderr)
+        return 1
+    snapshot = build_export_snapshot(ssot, items)
+    text = json.dumps(snapshot, indent=2) + "\n"
+    if args.stdout:
+        print(text, end="")
+        return 0
+    out_path = Path(args.output) if args.output else (
+        root / ".local" / "generated-data" / "project-board-snapshot.json"
+    )
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(text, encoding="utf-8")
+    print(f"Wrote {out_path} ({snapshot['totalCount']} items)")
+    if args.json:
+        print(text, end="")
+    return 0
+
+
 def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     project = sub.add_parser(
         "project",
@@ -393,3 +791,44 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     set_field.add_argument("--field", required=True, choices=("priority", "size"))
     set_field.add_argument("--to", required=True, help="e.g. p1 or s")
     set_field.set_defaults(func=cmd_set_field)
+
+    get_cmd = project_sub.add_parser("get", help="Get one project item by id")
+    get_cmd.add_argument("--directory", type=Path, default=".")
+    get_cmd.add_argument("--id", required=True, help="Project item id (PVTI_…)")
+    get_cmd.add_argument("--limit", type=int, default=100)
+    get_cmd.add_argument("--json", action="store_true")
+    get_cmd.set_defaults(func=cmd_get)
+
+    notes_cmd = project_sub.add_parser(
+        "append-notes", help="Append a line under ## Notes on the card body"
+    )
+    notes_cmd.add_argument("--directory", type=Path, default=".")
+    notes_cmd.add_argument("--id", required=True)
+    notes_cmd.add_argument("--text", required=True)
+    notes_cmd.add_argument("--limit", type=int, default=100)
+    notes_cmd.set_defaults(func=cmd_append_notes)
+
+    find_cmd = project_sub.add_parser(
+        "find-by-pr", help="Resolve project item id from PR (Board-Item or body scan)"
+    )
+    find_cmd.add_argument("--directory", type=Path, default=".")
+    find_cmd.add_argument("--pr", required=True, help="PR number or URL")
+    find_cmd.add_argument("--repo", default="", help="owner/repo (defaults to project_ssot.default_repo)")
+    find_cmd.add_argument("--limit", type=int, default=100)
+    find_cmd.add_argument("--json", action="store_true")
+    find_cmd.set_defaults(func=cmd_find_by_pr)
+
+    export_cmd = project_sub.add_parser(
+        "export", help="Read-only board snapshot (never mutates Status)"
+    )
+    export_cmd.add_argument("--directory", type=Path, default=".")
+    export_cmd.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="Output path (default: .local/generated-data/project-board-snapshot.json)",
+    )
+    export_cmd.add_argument("--limit", type=int, default=100)
+    export_cmd.add_argument("--json", action="store_true", help="Also print JSON to stdout")
+    export_cmd.add_argument("--stdout", action="store_true", help="Print JSON only (no file write)")
+    export_cmd.set_defaults(func=cmd_export)

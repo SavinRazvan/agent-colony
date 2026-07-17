@@ -8,9 +8,11 @@ description: Module-focused tests, regressions, coverage.
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + claim/list board card; else `session-pointer.md`. Also read `test-index.md` when tests change. Skill: `.cursor/skills/project-board-ssot/SKILL.md` when board SSOT is on.
+**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + claim/list board card (read Acceptance/Notes); else `session-pointer.md`. Also read `test-index.md` when tests change. Skill: `.cursor/skills/project-board-ssot/SKILL.md` when board SSOT is on.
 
-**Exit:** Board Status via CLI when enabled (`in_review`/`done` as appropriate); update `change-index.md` and `test-index.md` / `test-plan.md` when applicable. No dual-write of tracker SSOT under `board_only`.
+**Exit:** **Must** update board Status when your test part finishes (`in_review` if tests gate the PR, else `done` for test-only slices). Print handoff line for next agent. Update `change-index.md` and `test-index.md` / `test-plan.md` when applicable. No dual-write under `board_only`.
+
+**Board rights:** Stay on the slice card; Exit Status update required for continuation. Priority/Size only on own card. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract.
 
 - Map changes → `tests/modules/<module>/`; one clear responsibility per file.
 - Cover happy, failure, edge, and regression cases for touched behavior.

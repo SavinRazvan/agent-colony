@@ -141,3 +141,127 @@ def test_cmd_list_filters_status(monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     monkeypatch.setattr(project_cli, "run_gh", fake_gh)
     args = argparse.Namespace(directory=tmp_path, status="ready", limit=50, json=True)
     assert project_cli.cmd_list(args) == 0
+
+
+def test_append_notes_to_body_idempotent() -> None:
+    body, changed = project_cli.append_notes_to_body("", "Merged: https://example/pull/1 @ abc")
+    assert changed
+    assert "## Notes" in body
+    assert "Merged:" in body
+    body2, changed2 = project_cli.append_notes_to_body(body, "Merged: https://example/pull/1 @ abc")
+    assert not changed2
+    assert body2 == body
+
+
+def test_parse_board_item_from_text() -> None:
+    assert (
+        project_cli.parse_board_item_from_text("- Board-Item: PVTI_abc123\n")
+        == "PVTI_abc123"
+    )
+    assert project_cli.parse_board_item_from_text("no item") is None
+
+
+def test_cmd_get(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    payload = {
+        "items": [
+            {
+                "id": "PVTI_x",
+                "title": "Slice",
+                "status": "In progress",
+                "content": {"body": "## Notes\n\nhello"},
+            }
+        ]
+    }
+
+    def fake_gh(args: list[str], *, timeout_s: float = 60.0):
+        return SimpleNamespace(returncode=0, stdout=json.dumps(payload), stderr="")
+
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
+    monkeypatch.setattr(project_cli, "run_gh", fake_gh)
+    args = argparse.Namespace(directory=tmp_path, id="PVTI_x", limit=50, json=True)
+    assert project_cli.cmd_get(args) == 0
+
+
+def test_cmd_append_notes(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    payload = {
+        "items": [
+            {
+                "id": "PVTI_x",
+                "title": "Slice",
+                "status": "In review",
+                "content": {"body": "## Acceptance\n\nok"},
+            }
+        ]
+    }
+    calls: list[list[str]] = []
+
+    def fake_gh(args: list[str], *, timeout_s: float = 60.0):
+        calls.append(args)
+        if args[:2] == ["project", "item-list"]:
+            return SimpleNamespace(returncode=0, stdout=json.dumps(payload), stderr="")
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
+    monkeypatch.setattr(project_cli, "run_gh", fake_gh)
+    args = argparse.Namespace(
+        directory=tmp_path, id="PVTI_x", text="Merged: url @ sha", limit=50
+    )
+    assert project_cli.cmd_append_notes(args) == 0
+    assert any("--body" in c for c in calls)
+
+
+def test_resolve_item_id_from_pr_body(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_gh(args: list[str], *, timeout_s: float = 60.0):
+        if args[:2] == ["pr", "view"]:
+            return SimpleNamespace(
+                returncode=0,
+                stdout=json.dumps(
+                    {
+                        "number": 7,
+                        "url": "https://github.com/o/r/pull/7",
+                        "body": "- Board-Item: PVTI_from_pr\n",
+                    }
+                ),
+                stderr="",
+            )
+        return SimpleNamespace(returncode=1, stdout="", stderr="unexpected")
+
+    monkeypatch.setattr(project_cli, "run_gh", fake_gh)
+    item_id, cands, err = project_cli.resolve_item_id_for_pr(SAMPLE_SSOT, pr="7")
+    assert item_id == "PVTI_from_pr"
+    assert err is None
+    assert cands == ["PVTI_from_pr"]
+
+
+def test_find_items_mentioning_pr() -> None:
+    items = [
+        {
+            "id": "a",
+            "status": "In review",
+            "title": "Work",
+            "content": {"body": "See https://github.com/o/r/pull/9"},
+        },
+        {"id": "b", "status": "Done", "title": "Other", "content": {"body": "pull/9"}},
+    ]
+    matches = project_cli.find_items_mentioning_pr(
+        items, pr_number="9", pr_url="https://github.com/o/r/pull/9"
+    )
+    assert matches[0]["id"] == "a"
+
+
+def test_cmd_export_stdout(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    payload = {
+        "items": [
+            {"id": "a", "title": "T", "status": "Ready", "content": {"body": "x" * 600}}
+        ]
+    }
+
+    def fake_gh(args: list[str], *, timeout_s: float = 60.0):
+        return SimpleNamespace(returncode=0, stdout=json.dumps(payload), stderr="")
+
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
+    monkeypatch.setattr(project_cli, "run_gh", fake_gh)
+    args = argparse.Namespace(
+        directory=tmp_path, output=None, limit=50, json=False, stdout=True
+    )
+    assert project_cli.cmd_export(args) == 0

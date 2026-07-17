@@ -74,15 +74,26 @@ When cutting an RC in a product repo:
 
 This is the **implementation agent** end-of-loop on top of sections **C** and **D** — run it before saying a slice is finished:
 
-1. **`.local/index-and-planning/history/updates-log.md`** — append one top entry (summary, validation, next step; no repeated prepare-gate paste — see **`agent-workflow-procedures.md`**).
-2. **`.local/index-and-planning/current/work-tracker.md`** — resolve task status; keep one primary `in_progress` across the file.
-3. **`test-plan.md` / `test-index.md`** — update when tests or ownership changed.
-4. **`coverage-index.md`** — regenerate after any coverage run that matters for the slice (project-specific tooling; see overlay pack if applicable).
-5. **`implementation-control-center.html`** — under `.local/agents-control-center/dashboards/`; if you add a tracker, update **`../config/pages.json`** and header **Depends On** comments; keep **Coverage** in sync with **`coverage-index.md`**.
-6. **`module-audit.html`** — under `.local/agents-control-center/audits/`; touch only when deliberately refreshing a deep module audit export, not per slice.
-7. **`make drift-validate`** — run before handoff; on P0/P1 findings, hand off to **`workflow-drift-guard`** (`.cursor/agents/workflow-drift-guard.md`).
+**When `project_ssot.enabled` (board-first):**
 
-Canonical detail: **`.local/index-and-planning/current/plan.md`** section **Implementer slice closure (mandatory end-of-loop)**.
+1. **Board Status** — `set-status --to in_review|done`; card Notes name next agent; print handoff line (`item_id=… · Status=… · next=…`).
+2. **`.local/index-and-planning/history/updates-log.md`** — one top entry (no gate dumps).
+3. **`change-index.md`** — one row; do **not** dual-write tracker `in_progress` under `board_only`.
+4. **`test-plan.md` / `test-index.md`** — when tests changed.
+5. After merge: **`merge.py --merge-sha`** is the sole Pattern A writer that sets the card → **Done** + Notes (PR URL + SHA); pass `--item-id` or embed `Board-Item: PVTI_…` in the PR body.
+6. **`make drift-validate`** — on P0/P1, hand off to **`workflow-drift-guard`** (reads + updates the board; DRIFT-009/010).
+
+**Offline fallback (project_ssot disabled / no gh):**
+
+1. **`.local/index-and-planning/history/updates-log.md`** — append one top entry.
+2. **`.local/index-and-planning/current/work-tracker.md`** — resolve task status; keep one primary `in_progress`.
+3. **`test-plan.md` / `test-index.md`** — update when tests or ownership changed.
+4. **`coverage-index.md`** — regenerate after any coverage run that matters.
+5. **`implementation-control-center.html`** — under `.local/agents-control-center/dashboards/`; if you add a tracker, update **`../config/pages.json`**.
+6. **`module-audit.html`** — touch only when deliberately refreshing a deep module audit export.
+7. **`make drift-validate`** — hand off to **`workflow-drift-guard`** on P0/P1.
+
+Canonical detail: **`.local/index-and-planning/current/plan.md`** / board card body; skill `.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract.
 
 ## File retention policy (explicit)
 
