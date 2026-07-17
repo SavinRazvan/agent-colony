@@ -4,6 +4,8 @@
 
 **MAS Workflow Kit** (`mas-workflow-kit`) — universal, installable infrastructure for multi-agent development workflows. Agents call **one script command** per maintainer action; `GATES` are hardcoded in `.ai_infra/scripts/pr/prepare.py` (customize once at install). This is **not** a product application repo unless you add overlays.
 
+**This sibling experiment (`mas-workflow-kit-project-ssot`):** when `.local/user_settings/github.collaboration.yaml` → `project_ssot.enabled: true`, the **GitHub Project** is backlog/status SSOT. Agents use `python -m cursor_workflow project …` (see `.cursor/skills/project-board-ssot/SKILL.md`, ADR-008, `overlays/rules/project-ssot-precedence.mdc`). Local trackers are offline fallback only — no dual-write under `board_only`. Read [`HANDOFF.md`](HANDOFF.md) first.
+
 ## First reads (onboarding)
 
 1. [`README.md`](README.md) — install, Pattern A, overlay model, `.local/` anchoring
@@ -35,9 +37,14 @@ Abbreviations: [`.ai_infra/docs/operations/abbreviations-notepad.md`](.ai_infra/
 
 ## Execution workflow
 
-**Resume every session:** `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`. Token contract: [`.ai_infra/docs/operations/token-efficiency.md`](.ai_infra/docs/operations/token-efficiency.md).
+**Resume every session:**
 
-Sequence: `plan → interfaces → implementation → tests → evidence → docs update`.
+1. If `project_ssot.enabled` → `python -m cursor_workflow project status` → board list/claim (`.cursor/skills/project-board-ssot/SKILL.md`).
+2. Else → `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
+
+Token contract: [`.ai_infra/docs/operations/token-efficiency.md`](.ai_infra/docs/operations/token-efficiency.md).
+
+Sequence: `plan → interfaces → implementation → tests → evidence → docs update` (plan may live on the board card body when SSOT enabled).
 
 Full handoff checklist: [`.ai_infra/docs/operations/workflow-complete.md`](.ai_infra/docs/operations/workflow-complete.md) (esp. §F).
 

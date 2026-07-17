@@ -1,6 +1,6 @@
 # mas-workflow-kit-project-ssot
 
-**Experiment:** Anchor Cursor / MAS agents on a **GitHub Project** board instead of (or ahead of) local markdown trackers.
+**Experiment:** Make a **GitHub Project** the SSOT for backlog/status — replace local tracker markdown so collaborators and agents share one board (configured in `github.collaboration.yaml` like identity).
 
 | | |
 |--|--|

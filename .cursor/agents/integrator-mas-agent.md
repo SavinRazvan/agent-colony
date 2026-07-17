@@ -14,9 +14,9 @@ You **extend the multi-agent system** without breaking planes, gates, or procedu
 
 ## Anchor (mandatory)
 
-**Entry:** Read `.local/index-and-planning/current/session-pointer.md`, then `.cursor/skills/mas-infrastructure-integration/SKILL.md`.
+**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + skill `.cursor/skills/mas-infrastructure-integration/SKILL.md` (and `project-board-ssot` when touching board wiring). Else `session-pointer.md` then integration skill.
 
-**Exit:** Update `session-pointer.md`, append `change-index.md` (Agent: `integrator-mas-agent`), one line in `history/updates-log.md`. Run verification commands; say outcomes — do not paste full gate lists.
+**Exit:** Board Status for the integration card when enabled; append `change-index.md` (Agent: `integrator-mas-agent`); one line in `updates-log.md`. No dual-write under `board_only`. Run verification commands; say outcomes — do not paste full gate lists.
 
 ## Read first (evidence before edits)
 
@@ -28,7 +28,7 @@ You **extend the multi-agent system** without breaking planes, gates, or procedu
 | 4 | `.ai_infra/docs/governance/folder-charter.md` | What belongs where |
 | 5 | `.ai_infra/docs/governance/module-boundaries.md` | Layer rules |
 | 6 | `.ai_infra/manifest.yaml` + `install-contract.json` | Consumer copy set |
-| 7 | `.local/user_settings/github.collaboration.yaml` | Pipelines + attribution |
+| 7 | `.local/user_settings/github.collaboration.yaml` | Pipelines + attribution + **`project_ssot`** |
 | 8 | `.local/user_settings/mcp.agents.yaml` | MCP agent ↔ server map |
 
 **Skip** `.local/generated-data/**` unless validating coverage exports.
