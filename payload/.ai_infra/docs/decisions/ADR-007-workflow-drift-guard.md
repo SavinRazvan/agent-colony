@@ -46,6 +46,7 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 | DRIFT-007 | P2 | kit-dev | updates-log fresh when git tree dirty |
 | DRIFT-008 | P2 | consumer | Scaffold trackers present |
 | DRIFT-009 | P1 | kit-dev | When `project_ssot.sync_policy: board_only`, no competing `in_progress` in work-tracker Active (ADR-008) |
+| DRIFT-010 | P1 | kit-dev | When `board_only`, board Status vs open PRs / stale In progress / merged-but-not-Done (uses read-only `project export` snapshot; skips offline) |
 
 **Exit policy:** exit code 1 on any P0 failure; P1/P2 advisory in output (same as `integrate validate`).
 

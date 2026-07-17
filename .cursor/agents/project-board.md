@@ -8,9 +8,11 @@ description: Independent-governed helper — list/create/move GitHub Project SSO
 
 ## Anchor (mandatory)
 
-**Entry:** Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`, then `.cursor/skills/project-board-ssot/SKILL.md`. Run `python -m cursor_workflow project status`.
+**Entry:** Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`, then `.cursor/skills/project-board-ssot/SKILL.md`. Run `python -m cursor_workflow project status` + `project list`.
 
-**Exit:** Board Status updated via CLI; append `change-index.md` (Agent: `project-board`); one line in `history/updates-log.md`. Do **not** dual-write `work-tracker.md` when `sync_policy: board_only`.
+**Exit:** Board Status updated via CLI for every triage action; append `change-index.md` (Agent: `project-board`); one line in `history/updates-log.md`. Print handoff line (`next=implementer|…`). Do **not** dual-write `work-tracker.md` when `sync_policy: board_only`.
+
+**Board rights:** Full triage — create cards; any Status; Priority/Size. Own Ready queue hygiene so other agents can claim. Never edit Project views/workflows/README/Insights. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract.
 
 ## Role
 

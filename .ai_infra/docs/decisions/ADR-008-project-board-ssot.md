@@ -11,20 +11,26 @@ Related: [ADR-006](ADR-006-agent-integration-model.md), [HANDOFF.md](../../../HA
 
 ## Decision
 
-1. **`board_only` wins** when `project_ssot.enabled: true` and `sync_policy: board_only`. Agents must not dual-write competing slice status to `work-tracker.md` / `session-pointer.md`.
-2. **Offline fallback:** if enabled is false or `gh`/Projects unavailable, use `fallback: local_trackers` with an explicit warning — then resume board sync; never silent dual-write.
-3. **Config habit:** board identity and field ids live next to `owner` in `github.collaboration.yaml` (not a separate primary settings file).
-4. **Tooling:** Pattern A CLI (`cursor_workflow project`) wrapping `gh project`; MCP optional later.
-5. **Item kind:** default DraftIssue; promote to Issue when linking PRs (`promote_to_issue_on_pr`).
-6. **`project-board` agent:** independent-governed helper; not in PR pipelines. Long-term all agents Anchor on `project_ssot`.
-7. **Production port deferred** until demo + implementer Anchor + dual-write drift check + human sign-off. Marketplace kit stays markdown SSOT until then.
+1. **Only writable SSOT:** when `project_ssot.enabled: true` and `sync_policy: board_only`, the GitHub Project is the **only writable** coordination SSOT for backlog, Status, and multi-agent continuation. Agents must not dual-write competing slice status to `work-tracker.md` / `session-pointer.md`.
+2. **`board_only` wins** — dual-mirror (local trackers + board both writable) is rejected; it causes worse agent drift (DRIFT-009).
+3. **Offline fallback:** if enabled is false or `gh`/Projects unavailable, use `fallback: local_trackers` with an explicit warning — then resume board sync; never silent dual-write.
+4. **Read-only exports:** optional snapshots (`project export`) may cache board state for audits/ICC later; they **must not** write Status and must never become a competing SSOT.
+5. **Config habit:** board identity and field ids live next to `owner` in `github.collaboration.yaml` (not a separate primary settings file).
+6. **Tooling:** Pattern A CLI (`cursor_workflow project`) wrapping `gh project`; MCP optional later.
+7. **Item kind:** default DraftIssue; promote to Issue when linking PRs (`promote_to_issue_on_pr`).
+8. **`project-board` agent:** independent-governed helper; not in PR pipelines. **All agents** Anchor on `project_ssot` when enabled: **Entry reads** the Project; **Exit updates** Status (and Notes) so work stays indexed for the next agent (continuation contract in `project-board-ssot` skill).
+9. **Post-merge card close:** Pattern A (`merge.py` + project CLI) sets Status → Done and appends Notes (PR URL + SHA) — **not** a dedicated post-merge agent.
+10. **Production port deferred** until demo + implementer Anchor + dual-write drift check + human sign-off. Marketplace kit stays markdown SSOT until then.
+11. **Human-only Project surfaces:** views, workflows, Insights, Project README, status updates, Ready prioritization — agents never edit these.
 
 ## Consequences
 
 - New CLI module: `.ai_infra/install/cursor_workflow/project_cli.py`
-- Skill: `.cursor/skills/project-board-ssot/SKILL.md`
+- Skill: `.cursor/skills/project-board-ssot/SKILL.md` (Continuation contract + per-agent rights)
+- Ops: `.ai_infra/docs/operations/project-board-collaboration.md`
 - Agent: `.cursor/agents/project-board.md`
-- Drift: DRIFT-009 advisory when board_only and tracker has competing `in_progress` (experiment)
+- Drift: DRIFT-009 (dual-write) and DRIFT-010 (board vs PRs / stale In progress; read-only export); workflow-drift-guard **reads and updates** the board on Exit
+- Post-merge Done: Pattern A `merge.py` (not a dedicated agent)
 
 ## References
 

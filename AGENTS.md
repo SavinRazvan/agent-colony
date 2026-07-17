@@ -4,7 +4,7 @@
 
 **MAS Workflow Kit** (`mas-workflow-kit`) — universal, installable infrastructure for multi-agent development workflows. Agents call **one script command** per maintainer action; `GATES` are hardcoded in `.ai_infra/scripts/pr/prepare.py` (customize once at install). This is **not** a product application repo unless you add overlays.
 
-**This sibling experiment (`mas-workflow-kit-project-ssot`):** when `.local/user_settings/github.collaboration.yaml` → `project_ssot.enabled: true`, the **GitHub Project** is backlog/status SSOT. Agents use `python -m cursor_workflow project …` (see `.cursor/skills/project-board-ssot/SKILL.md`, ADR-008, `overlays/rules/project-ssot-precedence.mdc`). Local trackers are offline fallback only — no dual-write under `board_only`. Read [`HANDOFF.md`](HANDOFF.md) first.
+**This sibling experiment (`mas-workflow-kit-project-ssot`):** when `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project** is the **only writable SSOT** for backlog, Status, and multi-agent continuation. Agents use `python -m cursor_workflow project …` (see `.cursor/skills/project-board-ssot/SKILL.md` § Collaboration, ADR-008, `overlays/rules/project-ssot-precedence.mdc`). Ops mirror: `.ai_infra/docs/operations/project-board-collaboration.md`. Local trackers are offline fallback only; read-only exports never compete with board Status — no dual-write under `board_only`. Read [`HANDOFF.md`](HANDOFF.md) first.
 
 ## First reads (onboarding)
 
@@ -40,12 +40,14 @@ Abbreviations: [`.ai_infra/docs/operations/abbreviations-notepad.md`](.ai_infra/
 
 **Resume every session:**
 
-1. If `project_ssot.enabled` → `python -m cursor_workflow project status` → board list/claim (`.cursor/skills/project-board-ssot/SKILL.md`).
+1. If `project_ssot.enabled` → `python -m cursor_workflow project status` → board list/claim (`.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract). Read card Notes for prior handoffs.
 2. Else → `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
+
+**After every agent part:** update board Status (`in_review` / `done` / Notes + next agent) so continuation is indexed on the Project — not chat-only. Ops: `.ai_infra/docs/operations/project-board-collaboration.md`.
 
 Token contract: [`.ai_infra/docs/operations/token-efficiency.md`](.ai_infra/docs/operations/token-efficiency.md).
 
-Sequence: `plan → interfaces → implementation → tests → evidence → docs update` (plan may live on the board card body when SSOT enabled).
+Sequence: `plan → interfaces → implementation → tests → evidence → docs update` (plan lives on the **board card body** when SSOT enabled).
 
 Full handoff checklist: [`.ai_infra/docs/operations/workflow-complete.md`](.ai_infra/docs/operations/workflow-complete.md) (esp. §F).
 

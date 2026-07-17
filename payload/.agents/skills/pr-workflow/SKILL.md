@@ -6,15 +6,15 @@ disable-model-invocation: true
 
 # PR workflow (maintainer)
 
-**Implementer work** (trackers, slices) uses `.local/index-and-planning/current/*`, `.cursor/agents/implementer.md`, and `.cursor/rules/implementation-workflow-governance.mdc`. Slice closure: `.ai_infra/docs/operations/workflow-complete.md` §F.
+**Implementer work:** when `project_ssot.enabled` + `board_only`, slice status lives on the **GitHub Project** (Entry/Exit continuation). Local `.local/index-and-planning/current/*` is offline fallback only — see ADR-008 and `project-ssot-precedence.mdc`. Slice closure: `.ai_infra/docs/operations/workflow-complete.md` §F.
 
 This skill is the **merge path** only: **review → prepare → merge** (slash skills: `review-pr`, `prepare-pr`, `merge-pr`).
 
 ## Order
 
-1. `review-pr` — findings only; optional **`make drift-validate`** before review when trackers changed. When scope is architecture-impacting, run **`enterprise-auditor`** and write alignment artifacts per `.cursor/rules/advisory-audit-alignment-enforcement.mdc`.
-2. `prepare-pr` — tracker sync + `prepare.py` (`resolve_gates()` — **4** steps on kit-dev: testing artifacts, pytest, drift, doc facts).
-3. `merge-pr` — `merge.py` check, `gh pr merge`, finalize repo state.
+1. `review-pr` — findings only; optional **`make drift-validate`** before review when trackers/board status changed. When scope is architecture-impacting, run **`enterprise-auditor`** and write alignment artifacts per `.cursor/rules/advisory-audit-alignment-enforcement.mdc`.
+2. `prepare-pr` — board Status (or tracker sync only if offline fallback) + `prepare.py` (`resolve_gates()` — **4** steps on kit-dev: testing artifacts, pytest, drift, doc facts).
+3. `merge-pr` — `merge.py` check, `gh pr merge`, `merge.py --merge-sha` (sets board card → Done when SSOT on), finalize repo state.
 
 Per-step detail: `.agents/skills/review-pr/`, `prepare-pr/`, `merge-pr/`.
 

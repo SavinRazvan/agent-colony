@@ -1,7 +1,7 @@
 """
 File: drift_checks.py
 Path: .ai_infra/scripts/workflow/drift_checks.py
-Role: Individual DRIFT-001…008 check functions for workflow drift validation.
+Role: Individual DRIFT-001…010 check functions for workflow drift validation.
 Used By:
  - .ai_infra/scripts/workflow/check_drift.py
 Depends On:
@@ -420,6 +420,215 @@ def check_drift009(paths: DriftPaths) -> CheckResult:
     )
 
 
+def _load_board_snapshot(paths: DriftPaths) -> tuple[dict | None, str]:
+    """Load read-only export if present; else None + reason."""
+    snap = (
+        paths.root
+        / ".local"
+        / "generated-data"
+        / "project-board-snapshot.json"
+    )
+    if not snap.is_file():
+        return None, "no project-board-snapshot.json (run: python -m cursor_workflow project export)"
+    try:
+        import json
+
+        data = json.loads(snap.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        return None, f"cannot read snapshot: {exc}"
+    if not isinstance(data, dict):
+        return None, "snapshot is not an object"
+    return data, "ok"
+
+
+def _open_pr_bodies(repo: str) -> tuple[list[dict], str | None]:
+    """Return open PRs as dicts with number, url, body — or error."""
+    import json
+    import subprocess
+
+    cmd = [
+        "gh",
+        "pr",
+        "list",
+        "--repo",
+        repo,
+        "--state",
+        "open",
+        "--json",
+        "number,url,body,title",
+        "--limit",
+        "50",
+    ]
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=45, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return [], str(exc)
+    if proc.returncode != 0:
+        return [], (proc.stderr or proc.stdout or "gh pr list failed").strip()
+    try:
+        data = json.loads(proc.stdout or "[]")
+    except json.JSONDecodeError as exc:
+        return [], f"invalid JSON from gh pr list: {exc}"
+    if not isinstance(data, list):
+        return [], "gh pr list did not return a list"
+    return [p for p in data if isinstance(p, dict)], None
+
+
+def check_drift010(paths: DriftPaths) -> CheckResult:
+    """
+    Advisory: board Status vs open PRs / stale In progress (board_only).
+    Uses read-only snapshot when present; skips offline without failing P0.
+    """
+    collab = paths.root / ".local" / "user_settings" / "github.collaboration.yaml"
+    if not collab.is_file():
+        return CheckResult(
+            check_id="DRIFT-010",
+            severity=Severity.P1,
+            passed=True,
+            detail="no github.collaboration.yaml — skipped",
+        )
+    try:
+        import yaml
+    except ImportError:
+        return CheckResult(
+            check_id="DRIFT-010",
+            severity=Severity.P1,
+            passed=True,
+            detail="PyYAML missing — skipped",
+        )
+    try:
+        data = yaml.safe_load(collab.read_text(encoding="utf-8")) or {}
+    except Exception as exc:  # noqa: BLE001
+        return CheckResult(
+            check_id="DRIFT-010",
+            severity=Severity.P1,
+            passed=False,
+            detail=f"cannot parse collab YAML: {exc}",
+        )
+    ssot = data.get("project_ssot") if isinstance(data, dict) else None
+    if not isinstance(ssot, dict) or not ssot.get("enabled"):
+        return CheckResult(
+            check_id="DRIFT-010",
+            severity=Severity.P1,
+            passed=True,
+            detail="project_ssot disabled or absent — skipped",
+        )
+    policy = str(ssot.get("sync_policy") or "")
+    if policy != "board_only":
+        return CheckResult(
+            check_id="DRIFT-010",
+            severity=Severity.P1,
+            passed=True,
+            detail=f"sync_policy={policy!r} — board/PR check skipped",
+        )
+
+    snapshot, snap_detail = _load_board_snapshot(paths)
+    if snapshot is None:
+        return CheckResult(
+            check_id="DRIFT-010",
+            severity=Severity.P1,
+            passed=True,
+            detail=f"skipped — {snap_detail}",
+        )
+
+    items = snapshot.get("items") if isinstance(snapshot.get("items"), list) else []
+    repo = str(ssot.get("default_repo") or "")
+    if not repo:
+        proj = snapshot.get("project") if isinstance(snapshot.get("project"), dict) else {}
+        repo = str(proj.get("default_repo") or "")
+
+    open_prs: list[dict] = []
+    pr_err: str | None = None
+    if repo:
+        open_prs, pr_err = _open_pr_bodies(repo)
+        if pr_err:
+            return CheckResult(
+                check_id="DRIFT-010",
+                severity=Severity.P1,
+                passed=True,
+                detail=f"skipped — cannot list open PRs: {pr_err}",
+            )
+
+    # Build set of Board-Item ids referenced by open PRs + PR numbers mentioned
+    open_item_ids: set[str] = set()
+    open_pr_nums: set[str] = set()
+    for pr in open_prs:
+        open_pr_nums.add(str(pr.get("number") or ""))
+        body = str(pr.get("body") or "")
+        m = re.search(r"(?i)Board-Item:\s*(PVTI_[A-Za-z0-9_-]+)", body)
+        if m:
+            open_item_ids.add(m.group(1))
+
+    findings: list[str] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        item_id = str(item.get("id") or "")
+        status = str(
+            item.get("status_normalized")
+            or str(item.get("status") or "").strip().lower().replace(" ", "_")
+        )
+        title = str(item.get("title") or item_id)
+        excerpt = str(item.get("body_excerpt") or "")
+
+        if status == "in_review":
+            # In review should have an open PR referencing this item or mentioning the card
+            linked = item_id in open_item_ids
+            mentioned = any(
+                f"/pull/{n}" in excerpt or f"#{n}" in excerpt for n in open_pr_nums if n
+            )
+            if open_prs and not linked and not mentioned:
+                # Also OK if any open PR body mentions this item id
+                if not any(item_id and item_id in str(p.get("body") or "") for p in open_prs):
+                    findings.append(f"in_review without open PR: {title} ({item_id})")
+
+        if status == "in_progress":
+            # Stale if no open PR references this card and Notes lack a recent handoff marker
+            linked = item_id in open_item_ids
+            has_pr_mention = any(
+                f"/pull/{n}" in excerpt or f"#{n}" in excerpt for n in open_pr_nums if n
+            )
+            if open_prs is not None and repo and not linked and not has_pr_mention:
+                # Soft stale signal: In progress with no PR link when repo has open PRs elsewhere
+                # Only flag when there are open PRs in the repo but none tied to this card —
+                # and excerpt has no "next=" handoff (still actively worked mid-slice is OK).
+                if "next=" not in excerpt.lower() and "Merged:" not in excerpt:
+                    # Don't flag every In progress — only when excerpt looks abandoned (empty Notes)
+                    if not excerpt.strip() or excerpt.strip() in ("...", "(TBD)"):
+                        findings.append(
+                            f"stale in_progress (empty Notes, no open PR link): {title} ({item_id})"
+                        )
+
+    # Merged-but-not-Done is hard without merged PR list; use Notes heuristic:
+    # if Status still in_review/in_progress but body has Merged: line → drift
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        status = str(
+            item.get("status_normalized")
+            or str(item.get("status") or "").strip().lower().replace(" ", "_")
+        )
+        excerpt = str(item.get("body_excerpt") or "")
+        if status in ("in_review", "in_progress") and "Merged:" in excerpt:
+            findings.append(
+                f"merged-but-not-done: {item.get('title')} ({item.get('id')})"
+            )
+
+    if not findings:
+        return CheckResult(
+            check_id="DRIFT-010",
+            severity=Severity.P1,
+            passed=True,
+            detail="board Status vs open PRs — no mismatches",
+        )
+    return CheckResult(
+        check_id="DRIFT-010",
+        severity=Severity.P1,
+        passed=False,
+        detail="; ".join(findings[:5]) + (f" (+{len(findings) - 5} more)" if len(findings) > 5 else ""),
+    )
+
+
 KIT_DEV_CHECKS = (
     check_drift001,
     check_drift002,
@@ -430,6 +639,7 @@ KIT_DEV_CHECKS = (
     check_drift007,
     check_drift008,
     check_drift009,
+    check_drift010,
 )
 
 CONSUMER_CHECKS = (

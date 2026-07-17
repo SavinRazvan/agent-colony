@@ -34,7 +34,7 @@ Notes:
 
 ## 1. Goal (north star)
 
-**Hypothesis (updated):** Collaborators and agents use a **GitHub Project** as the **single source of truth** for backlog, slice status, and handoffs — **replacing** local tracker markdown under `.local/index-and-planning/current/` (`session-pointer.md`, `plan.md`, `work-tracker.md`, and related tracker writes).
+**Hypothesis (clarified):** Collaborators and agents treat the configured **GitHub Project** as the **only writable SSOT** for backlog, Status, and multi-agent continuation when `project_ssot.enabled` and `sync_policy: board_only`. Every agent **reads the board on Entry** and **updates Status and Notes on Exit**; card body indexes handoffs — not chat alone. Local trackers are **offline fallback only**; PR gates, audits, secrets stay local. Optional **read-only** exports may cache snapshots but must never compete with board Status.
 
 **Why:**
 
@@ -48,18 +48,19 @@ Notes:
 
 | Keep | Why |
 |------|-----|
-| PR Pattern A (`prepare.py` GATES, review/prep/merge scripts) | Merge readiness is code-side |
+| PR Pattern A (`prepare.py` GATES, review/prep/merge scripts) | Merge readiness is code-side; post-merge card → Done is Pattern A (`merge.py`) |
 | Commit/PR attribution (`owner`, trailers, pipelines) | Already in collab YAML |
 | `.venv`, secrets, coverage dumps | Machine-local |
-| Optional offline fallback | If no `project` scope / no `gh` — degrade to local trackers temporarily |
+| Offline fallback trackers | If no `project` scope / no `gh` — **resume-only** local trackers; never a second writer under `board_only` |
+| Read-only board export (optional) | Snapshot cache for audits/ICC later — never writes Status |
 
-**Non-goal (this experiment):** Do **not** rewrite production `mas-workflow-kit` `main` until this sibling proves the model. Marketplace `v0.4.0` consumers stay on markdown SSOT until an explicit port.
+**Non-goal (this experiment):** Do **not** rewrite production `mas-workflow-kit` `main` until this sibling proves the model. Marketplace `v0.4.0` consumers stay on markdown SSOT until an explicit port. Do **not** dual-mirror local trackers + board “for safety.”
 
 **Success looks like:**
 
 1. Agents **create** and **load** tasks from the configured Project (not from `work-tracker.md`).
-2. Agent Anchors read `project_ssot` from collab YAML → board; exit updates card Status (and links Issue/PR when useful).
-3. Humans follow progress **only** on the Project UI; local tracker markdown is deprecated or unused.
+2. Agent Anchors read `project_ssot` from collab YAML → board; Exit updates card Status and Notes (continuation contract).
+3. Humans follow progress **only** on the Project UI; local tracker markdown is **offline fallback only** (not a writable SSOT under `board_only`).
 4. Clear auth (`project` scopes) + settings onboarding for every collaborator who opts in.
 5. Rollback = abandon this sibling repo; production kit unchanged.
 
@@ -304,12 +305,13 @@ Do **not** run production marketplace publish from this repo.
 
 | Question | Notes |
 |----------|-------|
-| Board-only vs dual mirror? | **Board wins.** Offline fallback only; no dual writers. |
+| Board-only vs dual mirror? | **Board wins — only writable SSOT.** Offline fallback only; no dual writers “for safety.” |
 | DraftIssue vs real Issues? | Drafts OK for smoke; Issues better for PR linking. |
 | Consumer installs? | Projects opt-in until production port. |
 | Offline / no `gh`? | `fallback: local_trackers` then resume board sync. |
 | Card → which repo? | Convention: Repository field or body path; default = this experiment repo. |
-| Control Center dashboards? | **Deferred.** ICC today reads `.local/` markdown only — no board tab until a later export/tab slice (EA-010). Humans follow Project #3 UI for backlog/status. |
+| Control Center dashboards? | **Deferred (EA-010).** Read-only `project export` may land first; ICC panel that *reads* the export is future — never a second writer. Humans follow Project #3 UI for backlog/status. |
+| Who updates the Project? | **Every agent** Entry=read board; Exit=update Status/Notes. Post-merge Done = Pattern A (`merge.py`). Rights: `project-board-ssot` skill § Continuation; ops `project-board-collaboration.md`. **You:** views, workflows, Insights, README, status updates, Ready prioritization. |
 
 ---
 

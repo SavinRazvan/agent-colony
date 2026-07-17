@@ -8,9 +8,11 @@ description: Claims vs evidence; minimal high-signal checks.
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + related board card; else `session-pointer.md`. Always read claims to verify against evidence.
+**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + related board card (read Notes for prior handoff); else `session-pointer.md`. Always read claims to verify against evidence.
 
-**Exit:** Update board Status when the verified slice closes (`done` / leave `in_review`); update `change-index.md` if findings change slice status. No dual-write under `board_only`.
+**Exit:** Update board Status when the verified slice closes (`done` / leave `in_review` with failure Notes). Print handoff line. Update `change-index.md` if findings change slice status. No dual-write under `board_only`.
+
+**Board rights:** Confirm Done or leave In review + Notes. Do **not** create cards or reshuffle Priority. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract.
 
 1. Restate what was claimed done.
 2. Point to files/lines or command output as evidence.
