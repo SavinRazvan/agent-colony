@@ -29,6 +29,8 @@ No product repo edits; no git commits for research packs; writes only `_research
 | D5 | CLI owns init/fetch/validate; agent owns rounds 1–6 prose evidence |
 | D6 | Host `mode: self` is optional; default is `external` when a source is present |
 | D7 | Accept HTTPS GitHub URLs and terse `/researcher <url>` chat; apply skill defaults |
+| D8 | Anti-loop: rounds_max≤6; no re-fetch/re-init without `--force`; exit on complete |
+| D9 | Private GitHub needs consumer `gh`/git auth; public needs network only |
 
 ## Forbidden
 
@@ -40,6 +42,8 @@ No product repo edits; no git commits for research packs; writes only `_research
 | Invent evidence without path/~Lnn | Evidence contract |
 | Implement fixes in product tree during research | → implementer |
 | Refuse terse chat that clearly names a GitHub/local source | D7 — adapt + defaults |
+| Endless deepen / re-fetch after complete | D8 — stop rules |
+| Silent private-clone retry without auth | D9 — one attempt, report fail |
 
 ## Pack outputs
 

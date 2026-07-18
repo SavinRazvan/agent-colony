@@ -170,6 +170,7 @@ def _write_index_stub(
     commit_sha: str | None = None,
     resolved_path: str | None = None,
     consumers: list[str] | None = None,
+    rounds_max: int = 6,
 ) -> None:
     payload: dict[str, Any] = {
         "schema_version": "1",
@@ -179,6 +180,7 @@ def _write_index_stub(
         "question": question,
         "lenses": lenses,
         "rounds_completed": 0,
+        "rounds_max": rounds_max if rounds_max > 0 else 6,
         "commit_sha": commit_sha,
         "resolved_path": resolved_path,
         "findings": [],
@@ -247,6 +249,12 @@ def structural_validate_index(data: Any) -> list[str]:
     rounds = data.get("rounds_completed")
     if rounds is not None and (not isinstance(rounds, int) or rounds < 0 or rounds > 6):
         errors.append("rounds_completed must be 0..6")
+    rounds_max = data.get("rounds_max")
+    if rounds_max is not None:
+        if not isinstance(rounds_max, int) or rounds_max < 1 or rounds_max > 6:
+            errors.append("rounds_max must be 1..6")
+        elif isinstance(rounds, int) and rounds > rounds_max:
+            errors.append(f"rounds_completed ({rounds}) exceeds rounds_max ({rounds_max})")
     return errors
 
 
@@ -336,8 +344,46 @@ def cmd_research_init(args: argparse.Namespace) -> int:
         lenses=lenses,
         status="init",
         consumers=consumers,
+        rounds_max=int(args.rounds_max or 6),
     )
     return _ok("init", f"pack={pack}")
+
+
+def _clone_github(locator: str, ref: str | None, dest: Path) -> tuple[bool, str]:
+    """Shallow-clone owner/repo into dest. Prefer `gh` (private auth), else git HTTPS.
+
+    Returns (ok, detail). Private repos work when `gh auth` / git credentials can
+    access the repo the same way a local `gh repo clone` / `git clone` would.
+    """
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    git_flags = ["--depth", "1"]
+    if ref:
+        git_flags.extend(["--branch", ref])
+
+    gh_cmd = ["gh", "repo", "clone", locator, str(dest), "--", *git_flags]
+    try:
+        proc = subprocess.run(gh_cmd, capture_output=True, text=True, timeout=300, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        proc = None
+        gh_err = str(exc)
+    else:
+        if proc.returncode == 0 and dest.is_dir():
+            return True, "gh repo clone"
+        gh_err = (proc.stderr or proc.stdout or "").strip()[:400]
+
+    if dest.exists():
+        shutil.rmtree(dest, ignore_errors=True)
+
+    url = f"https://github.com/{locator}.git"
+    git_cmd = ["git", "clone", *git_flags, url, str(dest)]
+    try:
+        proc2 = subprocess.run(git_cmd, capture_output=True, text=True, timeout=300, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return False, f"gh failed ({gh_err}); git clone failed: {exc}"
+    if proc2.returncode != 0:
+        detail = (proc2.stderr or proc2.stdout or "").strip()[:400]
+        return False, f"gh failed ({gh_err}); git clone failed: {detail}"
+    return True, "git clone"
 
 
 def cmd_research_fetch(args: argparse.Namespace) -> int:
@@ -350,6 +396,14 @@ def cmd_research_fetch(args: argparse.Namespace) -> int:
     pack = pack_dir(root, slug)
     if not pack.is_dir():
         return _fail("fetch", EXIT_USAGE, f"pack missing — run research init first: {pack}")
+
+    # Anti-loop: do not re-fetch a pinned pack unless --force
+    if (pack / "SOURCE.md").is_file() and not args.force:
+        return _fail(
+            "fetch",
+            EXIT_USAGE,
+            f"SOURCE.md already exists for {slug} (use --force to re-fetch)",
+        )
 
     try:
         kind, locator, ref = _parse_source(args.source)
@@ -379,22 +433,13 @@ def cmd_research_fetch(args: argparse.Namespace) -> int:
                 shutil.rmtree(cache)
             else:
                 return _fail("fetch", EXIT_USAGE, f"cache exists: {cache} (use --force)")
-        cache.parent.mkdir(parents=True, exist_ok=True)
-        url = f"https://github.com/{locator}.git"
-        cmd = ["git", "clone", "--depth", "1"]
-        if ref:
-            cmd.extend(["--branch", ref])
-        cmd.extend([url, str(cache)])
-        try:
-            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300, check=False)
-        except (OSError, subprocess.TimeoutExpired) as exc:
-            return _fail("fetch", EXIT_FAIL, f"git clone failed: {exc}")
-        if proc.returncode != 0:
-            detail = (proc.stderr or proc.stdout or "").strip()[:500]
-            return _fail("fetch", EXIT_FAIL, f"git clone failed: {detail}")
+        ok, how = _clone_github(locator, ref, cache)
+        if not ok:
+            return _fail("fetch", EXIT_FAIL, how)
         resolved = cache
         commit_sha = _git_sha(cache)
         source_label = f"github:{locator}" + (f"@{ref}" if ref else "")
+        print(f"research fetch: clone via {how}", file=sys.stderr)
 
     fetched_at = _utc_now()
     source_md = _render(
@@ -428,6 +473,7 @@ def cmd_research_fetch(args: argparse.Namespace) -> int:
             "question": data.get("question") or "(TBD)",
             "lenses": data.get("lenses") or list(_DEFAULT_LENSES),
             "rounds_completed": data.get("rounds_completed") or 0,
+            "rounds_max": data.get("rounds_max") if isinstance(data.get("rounds_max"), int) else 6,
             "commit_sha": commit_sha,
             "resolved_path": str(resolved),
             "findings": data.get("findings") if isinstance(data.get("findings"), list) else [],
@@ -485,7 +531,10 @@ def cmd_research_validate(args: argparse.Namespace) -> int:
         for e in errors:
             print(f" - {e}", file=sys.stderr)
         return _fail("validate", EXIT_FAIL, f"{len(errors)} error(s)")
-    return _ok("validate", f"slug={slug} status={status}")
+    note = ""
+    if status == "complete":
+        note = " · pack closed (do not deepen further without --force redo)"
+    return _ok("validate", f"slug={slug} status={status}{note}")
 
 
 def register_research_subparser(sub: argparse._SubParsersAction) -> None:

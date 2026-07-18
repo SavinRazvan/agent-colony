@@ -89,7 +89,8 @@ const PATTERNS = [
   ["Hard stop", "Write only _research_results/"],
   ["Adaptive intake", "Chat / peer Notes / board card → Brief (+ defaults)"],
   ["Terse chat", "/researcher https://github.com/owner/repo OK"],
-  ["CLI sources", "HTTPS | github: | path: | bare path"],
+  ["Anti-loop", "≤6 deepen rounds; no re-fetch without --force; exit on complete"],
+  ["GitHub auth", "Public: network; private: consumer gh/git credentials"],
   ["Board lifecycle", "create-from-template research → done + pack paths"],
   ["Consumers", "implementer / integrator read AGENT_BRIEF.md"],
 ];

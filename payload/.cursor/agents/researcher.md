@@ -49,6 +49,24 @@ Normalize a **Research Brief** from whatever channel started you — do **not** 
 
 Then write `BRIEF.md` via `research init` and proceed with the skill loop.
 
+## GitHub access (public + private)
+
+| Repo visibility | How fetch works |
+|-----------------|-----------------|
+| **Public** | `research fetch` clones via `gh repo clone` (preferred) or `git clone https://…` |
+| **Private** | Same CLI — requires the **consumer machine** to already authenticate (`gh auth login` and/or git credentials) so a normal local clone of that URL would succeed |
+
+No kit-side GitHub token is stored. If clone fails, report the error and stop (do not retry in a loop).
+
+## Anti-loop (mandatory stop rules)
+
+1. **One pack per slug** — do not `research init` again without user `--force` / explicit redo.
+2. **One fetch** — if `SOURCE.md` exists, do not re-fetch without `--force`.
+3. **Hard cap** — deepen at most `rounds_max` (default **6**). Never invent round-7+.
+4. **Close then exit** — after `INDEX.json` `status: complete` + `research validate` PASS → handoff/Done and **stop**. Do not start another deepen cycle in the same session unless the user explicitly asks to reopen.
+5. **Gaps OK** — if questions remain at cap, write them under gaps / `status: blocked` or complete with “open gaps”; do not keep reading forever.
+6. **No retry storms** — clone/API failures: one attempt, surface stderr, exit (outbox only for board writes).
+
 ## Hard stop (when enabled)
 
 1. **Write only** under `_research_results/` (gitignored) unless the user explicitly expands scope.

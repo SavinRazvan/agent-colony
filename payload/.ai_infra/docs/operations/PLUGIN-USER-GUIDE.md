@@ -230,7 +230,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | `/verifier` | `.cursor/agents/verifier.md` |
 | `/enterprise-auditor` | `.cursor/agents/enterprise-auditor.md` |
 | `/workflow-drift-guard` | `.cursor/agents/workflow-drift-guard.md` |
-| `/researcher` | `.cursor/agents/researcher.md` — adaptive Brief (chat/agents/card); HTTPS or `github:`; `research init\|fetch\|validate`; packs in `_research_results/sources/<slug>/` |
+| `/researcher` | `.cursor/agents/researcher.md` — adaptive Brief; public/private GitHub (private needs `gh`/git auth); anti-loop ≤6 rounds; `research init\|fetch\|validate` |
 | `/integrator-mas-agent` | `.cursor/agents/integrator-mas-agent.md` |
 | `/review-pr`, `/prepare-pr`, `/merge-pr` | `.agents/skills/` |
 | `/mas-infrastructure-integration` | `.cursor/skills/mas-infrastructure-integration/` |

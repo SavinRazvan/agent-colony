@@ -146,3 +146,120 @@ def test_parse_source() -> None:
     assert kind4 == "github" and loc4 == "SavinRazvan/grok-build" and ref4 == "main"
     with pytest.raises(ValueError):
         research_cli._parse_source("")
+
+
+def test_fetch_refuses_without_force_when_source_exists(tmp_path: Path) -> None:
+    _seed_templates(tmp_path)
+    fixture = tmp_path / "fixture-repo"
+    fixture.mkdir()
+    (fixture / "README.md").write_text("# x\n", encoding="utf-8")
+
+    class NS:
+        pass
+
+    init = NS()
+    init.directory = tmp_path
+    init.slug = "once"
+    init.source = f"path:{fixture}"
+    init.question = "q"
+    init.lenses = "architecture"
+    init.consumers = "implementer"
+    init.mode = "external"
+    init.rounds_max = 6
+    init.notes = ""
+    init.brief = None
+    init.force = False
+    assert research_cli.cmd_research_init(init) == 0
+
+    fetch = NS()
+    fetch.directory = tmp_path
+    fetch.slug = "once"
+    fetch.source = f"path:{fixture}"
+    fetch.force = False
+    assert research_cli.cmd_research_fetch(fetch) == 0
+    assert research_cli.cmd_research_fetch(fetch) == research_cli.EXIT_USAGE
+
+
+def test_rounds_completed_cannot_exceed_rounds_max() -> None:
+    errs = research_cli.structural_validate_index(
+        {
+            "schema_version": "1",
+            "slug": "x",
+            "mode": "external",
+            "source": "path:.",
+            "question": "q",
+            "lenses": ["architecture"],
+            "findings": [],
+            "curated_count": 0,
+            "status": "in_progress",
+            "rounds_completed": 7,
+            "rounds_max": 6,
+        }
+    )
+    assert any("rounds_completed" in e for e in errs)
+
+
+def test_clone_github_prefers_gh(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    calls: list[list[str]] = []
+
+    def fake_run(cmd, **_kwargs):  # noqa: ANN001
+        calls.append(list(cmd))
+
+        class P:
+            returncode = 0
+            stdout = ""
+            stderr = ""
+
+        dest = Path(cmd[4]) if cmd[0] == "gh" else Path(cmd[-1])
+        dest.mkdir(parents=True, exist_ok=True)
+        (dest / ".git").mkdir(exist_ok=True)
+        return P()
+
+    monkeypatch.setattr(research_cli.subprocess, "run", fake_run)
+    monkeypatch.setattr(research_cli, "_git_sha", lambda _p: "abc123")
+    dest = tmp_path / "cache"
+    ok, how = research_cli._clone_github("octocat/Hello-World", None, dest)
+    assert ok and how == "gh repo clone"
+    assert calls and calls[0][0] == "gh"
+
+
+@pytest.mark.live
+def test_live_public_github_fetch_smoke(tmp_path: Path) -> None:
+    """Optional: RESEARCH_LIVE=1 pytest -m live … — tiny public clone."""
+    import os
+
+    if os.environ.get("RESEARCH_LIVE") != "1":
+        pytest.skip("Set RESEARCH_LIVE=1 for live GitHub fetch smoke")
+    _seed_templates(tmp_path)
+
+    class NS:
+        pass
+
+    init = NS()
+    init.directory = tmp_path
+    init.slug = "hello-world"
+    init.source = "https://github.com/octocat/Hello-World"
+    init.question = "smoke"
+    init.lenses = "architecture"
+    init.consumers = "implementer"
+    init.mode = "external"
+    init.rounds_max = 1
+    init.notes = ""
+    init.brief = None
+    init.force = False
+    assert research_cli.cmd_research_init(init) == 0
+
+    fetch = NS()
+    fetch.directory = tmp_path
+    fetch.slug = "hello-world"
+    fetch.source = "https://github.com/octocat/Hello-World"
+    fetch.force = False
+    assert research_cli.cmd_research_fetch(fetch) == 0
+
+    pack = tmp_path / "_research_results" / "sources" / "hello-world"
+    assert (pack / "SOURCE.md").is_file()
+
+    validate = NS()
+    validate.directory = tmp_path
+    validate.slug = "hello-world"
+    assert research_cli.cmd_research_validate(validate) == 0

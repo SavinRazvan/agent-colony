@@ -53,6 +53,15 @@ If only a link/path is given:
 
 Refuse **only** when there is no source and no `mode: self` ask. Missing question → use default and state it in board Notes / chat.
 
+### GitHub access
+
+| Visibility | Requirement |
+|------------|-------------|
+| Public | Network + `gh` or `git` clone |
+| Private | Same, plus consumer auth (`gh auth login` / git credentials that can clone the URL) |
+
+Clone failures: report once and stop — no retry loop.
+
 ### Brief contract (persisted)
 
 Write via `research init` into `BRIEF.md`:
@@ -73,7 +82,17 @@ python3 -m cursor_workflow research init --slug <slug> --source '…' --question
 python3 -m cursor_workflow research fetch --slug <slug> --source '…'
 ```
 
-`--source` accepts HTTPS GitHub URLs, `github:…`, `path:…`, or bare local path. Fetch pins `SOURCE.md` (shallow clone under `_research_results/cache/<slug>/` when remote).
+`--source` accepts HTTPS GitHub URLs, `github:…`, `path:…`, or bare local path. Fetch prefers `gh repo clone` (private-friendly), else `git clone --depth 1` into `_research_results/cache/<slug>/`. Re-fetch requires `--force`.
+
+## Anti-loop (hard stop)
+
+| Rule | Behavior |
+|------|----------|
+| Cap | Deepen ≤ `rounds_max` (default 6); never round 7+ |
+| Idempotent init/fetch | Existing pack / `SOURCE.md` → refuse unless `--force` |
+| Closed pack | `INDEX.status=complete` + validate PASS → **exit**; do not deepen again unless user reopens |
+| Failures | One clone attempt; surface error; stop |
+| Gaps | Remaining questions → document gaps; set `blocked` or complete with gaps — do not spin |
 
 ## Multi-round loop (active)
 
@@ -82,11 +101,11 @@ Work only under `_research_results/sources/<slug>/`. Read foreign trees read-onl
 1. **Scout** — confirm `SOURCE.md` pin (SHA/path); note languages/size.
 2. **Map** — write `MAP.md` (entrypoints, layout, docs).
 3. **Extract** — for each lens in Brief, fill `findings/<lens>.md` with path + line evidence.
-4. **Deepen** — open questions only → `rounds/round-N.md` (N ≤ `rounds_max`).
+4. **Deepen** — open questions only → `rounds/round-N.md` (N ≤ `rounds_max`). **Stop deepening when N == rounds_max.**
 5. **Curate** — `CURATED.md` rows `verified: path; ~Lnn; note: …`.
-6. **Pack** — `AGENT_BRIEF.md` (1–2 pages) + update `INDEX.json` (`status: complete`, findings array, `curated_count`, `rounds_completed`).
+6. **Pack** — `AGENT_BRIEF.md` (1–2 pages) + update `INDEX.json` (`status: complete`, findings array, `curated_count`, `rounds_completed` ≤ `rounds_max`).
 7. **Validate** — `python3 -m cursor_workflow research validate --slug <slug>`.
-8. **Exit** — board Done + Notes with pack paths; handoff to named consumer (requesting agent if known).
+8. **Exit** — board Done + Notes with pack paths; handoff to named consumer (requesting agent if known). **Then stop.**
 
 ## Mode: self (optional)
 
