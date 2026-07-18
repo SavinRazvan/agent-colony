@@ -116,7 +116,7 @@ const ABC_SLICES = [
       "project export → read-only snapshot",
       ".local/generated-data/project-board-snapshot.json",
       "Never writes Status — DRIFT-010 stale PR / board drift",
-      "ICC panel deferred to EA-010 (future)",
+      "ICC Project Board tab (EA-010) reads export only",
     ],
   },
 ];
@@ -573,7 +573,7 @@ export default function BoardSsotVsKitCanvas() {
               ["Audit / PR artifacts under .local/", "Evidence bundles stay in-repo"],
               ["Export snapshot under generated-data/", "Read-only cache — not SSOT"],
               ["Offline fallback trackers", "Only when project_ssot disabled or no gh"],
-              ["ICC board panel", "EA-010 Ready — reads export only"],
+              ["ICC board panel", "EA-010 shipped — reads export only"],
             ]}
           />
         </Stack>
@@ -599,6 +599,7 @@ export default function BoardSsotVsKitCanvas() {
                 (promote_to_issue_on_pr default true); claim does not auto-promote
               </Text>
               <Text size="small">BOARD-TIER1: claim Start date + Estimate set-field + mention-pr</Text>
+              <Text size="small">EA-010: ICC Project Board tab (read-only export snapshot)</Text>
             </Stack>
           </CardBody>
         </Card>
@@ -608,8 +609,8 @@ export default function BoardSsotVsKitCanvas() {
           </CardHeader>
           <CardBody>
             <Stack gap={4}>
-              <Text size="small">EA-010 Ready — ICC read-only board panel</Text>
               <Text size="small">Install screenshot asset TBD if UI text differs</Text>
+              <Text size="small">EA-001 split project_cli / EA-004 pyright (audit P1)</Text>
             </Stack>
           </CardBody>
         </Card>

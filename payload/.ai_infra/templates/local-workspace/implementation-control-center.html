@@ -5,7 +5,7 @@ Role: Template dashboard — copy to `.local/agents-control-center/dashboards/` 
 Used By:
  - Local preview (file:// or static server)
 Depends On:
- - local-shell.css, site-nav.js, local-markdown.js
+ - local-shell.css, site-nav.js, local-markdown.js, local-board-snapshot.js
  - ../config/pages.json (after copy: `.local/agents-control-center/config/pages.json`)
  - Paths declared inside pages.json (`.local/...` and `docs/...`)
 Notes:
@@ -37,6 +37,7 @@ Notes:
   </div>
 
   <script src="local-markdown.js"></script>
+  <script src="local-board-snapshot.js"></script>
   <script>
     const MANIFEST = "../config/pages.json";
     let PAGES = [];
@@ -87,6 +88,10 @@ Notes:
       return "";
     }
 
+    function isProjectBoardSnapshot(page) {
+      return page && page.format === "project-board-snapshot";
+    }
+
     async function refreshActivePage() {
       const page = PAGES.find((entry) => entry.id === activePage);
       if (!page) return;
@@ -95,13 +100,30 @@ Notes:
         const filePath = normalizePageFile(page.file);
         const response = await fetch(filePath + "?t=" + Date.now(), { cache: "no-store" });
         if (!response.ok) {
+          if (isProjectBoardSnapshot(page) && response.status === 404) {
+            contentEl.innerHTML = LocalBoardSnapshot.renderMissingExport();
+            refreshEl.textContent = "refresh: " + new Date().toLocaleString();
+            return;
+          }
           throw new Error("Failed to load " + filePath + " (" + response.status + ")");
         }
-        const markdown = await response.text();
-        contentEl.innerHTML = renderMarkdown(markdown);
+        if (isProjectBoardSnapshot(page)) {
+          const snapshot = await response.json();
+          contentEl.innerHTML = LocalBoardSnapshot.render(snapshot);
+        } else {
+          const markdown = await response.text();
+          contentEl.innerHTML = renderMarkdown(markdown);
+        }
         refreshEl.textContent = "refresh: " + new Date().toLocaleString();
       } catch (error) {
-        contentEl.innerHTML = "<p class=\"status-bad\">Could not load markdown: " + escapeHtml(String(error.message || error)) + "</p>";
+        if (isProjectBoardSnapshot(page)) {
+          contentEl.innerHTML = LocalBoardSnapshot.renderMissingExport();
+        } else {
+          contentEl.innerHTML =
+            "<p class=\"status-bad\">Could not load markdown: " +
+            escapeHtml(String(error.message || error)) +
+            "</p>";
+        }
       }
     }
 

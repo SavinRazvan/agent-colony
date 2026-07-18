@@ -274,9 +274,12 @@ Do **not** run upstream marketplace publish from this repo against `mas-workflow
 - [x] `project_ssot` + CLI + `project-board` + ADR-008
 - [x] All agent Anchors board-first; DRIFT-009/010; A→B→C; FIX-NOTES-DI
 
-### E. Explicitly defer (product backlog — not a port gate)
+### E. Shipped (EA-010)
 
-- ICC Control Center board tab (EA-010 Ready)
+- [x] ICC Control Center **Project Board** tab — read-only panel from `project export` snapshot (`.local/generated-data/project-board-snapshot.json`); never writes board Status
+
+### E. Explicitly defer (product backlog)
+
 - Always-on GitHub Actions bot
 - Requiring GitHub MCP before `gh` path works
 
@@ -293,7 +296,7 @@ Do **not** run upstream marketplace publish from this repo against `mas-workflow
 | Offline / no `gh`? | `fallback: local_trackers` then resume board sync. |
 | GraphQL rate-limit? | `project_ssot.outbox` — EXIT_QUEUED (6); `outbox flush` after reset. Never hammer API; outbox ≠ Status SSOT. |
 | Card → which repo? | Convention: Repository field or body path; default = this product repo. |
-| Control Center dashboards? | **Deferred (EA-010).** Read-only `project export` may land first; ICC panel that *reads* the export is future — never a second writer. |
+| Control Center dashboards? | **Project Board tab (EA-010 shipped).** ICC reads `.local/generated-data/project-board-snapshot.json` from `python3 -m cursor_workflow project export` — read-only; never a second Status writer. |
 | Who updates the Project? | **Every agent** Entry=read board; Exit=update Status/Notes. Post-merge Done = Pattern A (`merge.py`). Rights: `project-board-ssot` skill § Continuation; ops `project-board-collaboration.md`. **You:** views, workflows, Insights, README, status updates, Ready prioritization / product roadmap. |
 
 ---
@@ -320,7 +323,7 @@ Do **not** run upstream marketplace publish from this repo against `mas-workflow
 - [ ] Update this file’s “Last agent / Last updated” when you finish a slice  
 
 **Last agent (writer):** implementer (Cursor) · **Last updated:** 2026-07-18  
-**Next agent:** any agent — Entry=`project status`; Ready backlog includes EA-010.
+**Next agent:** any agent — Entry=`project status`; EA-010 ICC board panel shipped.
 
 **Implemented:** `cursor_workflow project` CLI, `project-board` agent/skill, ADR-008, all agent Anchors board-first, DRIFT-009/010, merge.py board sync, FIX-NOTES-DI, BOARD-TIER1 (claim Start date + Estimate `set-field` + `mention-pr`), BOARD-PROMOTE (`promote-to-issue` + `mention-pr` auto), payload sync, `project-ssot-precedence` overlay.
 
@@ -331,4 +334,4 @@ Do **not** run upstream marketplace publish from this repo against `mas-workflow
 | **Status** | **STANDALONE decided** 2026-07-18 |
 | **Board card** | Was `[PORT-GATE] …` · `PVTI_lAHOBl46-84A9KZxzgzOZuE` → **Done** |
 | **Decision** | This repo is the permanent product. **No** port to `mas-workflow-kit`. Board = only writable SSOT; local = evidence. |
-| **Next** | Ready backlog (e.g. EA-010) / normal slices |
+| **Next** | Normal slices / Ready backlog |
