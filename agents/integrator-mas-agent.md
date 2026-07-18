@@ -20,6 +20,8 @@ You **extend the multi-agent system** without breaking planes, gates, or procedu
 
 **Board rights:** Status + Notes on the card you touch. Tier-1: claim may set Start date (UTC); triage may set Estimate; use `mention-pr` for PR Notes; promote via `project promote-to-issue --last --agent integrator-mas-agent` (or `mention-pr` auto when `promote_to_issue_on_pr`) before PR — do not leave shippable work as Draft through merge — do not set Iteration/End date/Reviewers by default. Prefer `claim --last` / `handoff --last --agent integrator-mas-agent` (→ `@owner.github_user/integrator-mas-agent`); atomics `append-notes --agent integrator-mas-agent` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
 
+**Board lifecycle (role):** Claim/create an **integration** card. When shipping an integration PR: `promote-to-issue` or `mention-pr` before merge (same as implementer). Notes: `integrate validate` outcomes.
+
 **Templates:** feature → `--template slice`; defect → `--template bug`; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
 
 **STANDALONE:** this product lives only in `mas-workflow-kit-project-ssot` — do not mutate or merge doctrine into upstream `mas-workflow-kit`.

@@ -16,6 +16,8 @@ description: Module-focused tests, regressions, coverage.
 
 **Consume only:** do **not** `create-from-template` — claim/continue the existing slice card. Notes timestamps via CLI; do not hand-forge times.
 
+**Board lifecycle (role):** Claim/continue the existing slice card only. Exit Status: `in_review` if tests gate the PR, else `done` for test-only slices. Promote/`mention-pr` only if this agent opens a shippable PR.
+
 - Map changes → `tests/modules/<module>/`; one clear responsibility per file.
 - Cover happy, failure, edge, and regression cases for touched behavior.
 - Run **smallest** pytest scope first; widen when needed. For risky `src/**` slices: `pytest --cov=src --cov-report=term-missing` as appropriate.

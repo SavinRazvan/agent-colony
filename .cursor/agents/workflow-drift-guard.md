@@ -14,6 +14,8 @@ description: Operational workflow drift detection; plan/tracker/session coherenc
 
 **Board rights:** Status + Notes on the card you touch. Tier-1: claim may set Start date (UTC); triage may set Estimate; use `mention-pr` for PR Notes; promote via `project promote-to-issue --last --agent workflow-drift-guard` (or `mention-pr` auto when `promote_to_issue_on_pr`) before PR — do not leave shippable work as Draft through merge — do not set Iteration/End date/Reviewers by default. Prefer `claim --last` / `handoff --last --agent workflow-drift-guard` (→ `@owner.github_user/workflow-drift-guard`); atomics `append-notes --agent workflow-drift-guard` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
 
+**Board lifecycle (role):** Entry **must** `list --status in_progress` (dual-write check). Close the **drift-pass** card → `done` (or `in_review` if P0/P1 need human). Remediate via Notes/Ready handoff — **never** silent edits to `plan.md` / `work-tracker.md`.
+
 **Templates:** skill § Template routing when creating a drift-pass card; prefer claim existing. Notes timestamps via CLI; do not hand-forge times.
 
 **Write scope:** `.local/workflow-artifacts/drift/` only (`drift-audit.md`, `drift-todos.md` per `local_workflow_paths.py`) — no product-code edits. (`readonly` not set so Task delegation can write drift artifacts.)

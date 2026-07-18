@@ -1,7 +1,7 @@
 """
 File: doc_facts_checks.py
 Path: .ai_infra/scripts/architecture/doc_facts_checks.py
-Role: Individual DOC-001…006 checks for canonical doc vs repo fact parity.
+Role: Individual DOC-001…007 checks for canonical doc vs repo fact parity.
 Used By:
  - .ai_infra/scripts/architecture/check_doc_facts.py
 Depends On:
@@ -342,6 +342,43 @@ def check_doc006_implementation_test_count(paths: DocFactsPaths) -> CheckResult:
     )
 
 
+def check_doc007_agent_board_rights(paths: DocFactsPaths) -> CheckResult:
+    """Every agent Anchor Board rights must mention promote-to-issue and mention-pr."""
+    agents_dir = paths.agents_dir
+    if not agents_dir.is_dir():
+        return CheckResult(
+            check_id="DOC-007",
+            severity=Severity.P1,
+            passed=False,
+            detail="missing .cursor/agents/",
+        )
+    missing: list[str] = []
+    for path in sorted(agents_dir.glob("*.md")):
+        text = _read(path)
+        agent_id = path.stem
+        if "**Board rights:**" not in text:
+            missing.append(f"{agent_id}: missing Board rights")
+            continue
+        # Scope to Board rights paragraph (until next blank line after the marker)
+        start = text.index("**Board rights:**")
+        rest = text[start:]
+        para = rest.split("\n\n", 1)[0]
+        for needle in ("promote-to-issue", "mention-pr"):
+            if needle not in para:
+                missing.append(f"{agent_id}: Board rights missing {needle}")
+    passed = not missing
+    return CheckResult(
+        check_id="DOC-007",
+        severity=Severity.P1,
+        passed=passed,
+        detail=(
+            "all agents Board rights include promote-to-issue + mention-pr"
+            if passed
+            else "; ".join(missing[:8])
+        ),
+    )
+
+
 KIT_DEV_CHECKS = (
     check_doc001_agent_roster,
     check_doc002_status_agent_count,
@@ -349,4 +386,5 @@ KIT_DEV_CHECKS = (
     check_doc004_rules_count,
     check_doc005_prepare_gate_facts,
     check_doc006_implementation_test_count,
+    check_doc007_agent_board_rights,
 )

@@ -256,6 +256,35 @@ def test_check_doc006_passes_when_counts_match(tmp_path: Path, monkeypatch: pyte
     assert "583" in result.detail
 
 
+def test_check_doc007_passes_on_kit_agents(tmp_path: Path) -> None:
+    _copy_minimal_kit(tmp_path)
+    paths = dfc.doc_facts_paths(tmp_path)
+    result = dfc.check_doc007_agent_board_rights(paths)
+    assert result.passed
+    assert "promote-to-issue" in result.detail
+
+
+def test_check_doc007_fails_when_board_rights_missing_promote(tmp_path: Path) -> None:
+    _copy_minimal_kit(tmp_path)
+    agent = tmp_path / ".cursor" / "agents" / "implementer.md"
+    text = agent.read_text(encoding="utf-8")
+    agent.write_text(
+        text.replace("promote-to-issue", "PROMOTE_REMOVED"),
+        encoding="utf-8",
+    )
+    paths = dfc.doc_facts_paths(tmp_path)
+    result = dfc.check_doc007_agent_board_rights(paths)
+    assert not result.passed
+    assert "implementer" in result.detail
+
+
+def test_check_doc007_missing_agents_dir(tmp_path: Path) -> None:
+    paths = dfc.doc_facts_paths(tmp_path)
+    result = dfc.check_doc007_agent_board_rights(paths)
+    assert not result.passed
+    assert "missing" in result.detail
+
+
 # ---------------------------------------------------------------------------
 # check_doc_facts.py
 # ---------------------------------------------------------------------------

@@ -16,6 +16,8 @@ description: Claims vs evidence; minimal high-signal checks.
 
 **Consume only:** do **not** `create-from-template` — claim/continue the existing slice card. Notes timestamps via CLI; do not hand-forge times.
 
+**Board lifecycle (role):** Evidence-only on the handed-off card. Primary path is **not** opening shippable PRs — promote/`mention-pr` apply only if this agent opens a PR. Verdict → `done` or stay `in_review` with failure Notes; do not implement fixes.
+
 1. Restate what was claimed done.
 2. Point to files/lines or command output as evidence.
 3. Run the **smallest** checks that disprove the claim; expand if still uncertain:

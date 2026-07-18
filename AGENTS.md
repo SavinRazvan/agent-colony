@@ -45,6 +45,20 @@ Abbreviations: [`.ai_infra/docs/operations/abbreviations-notepad.md`](.ai_infra/
 
 **After every agent part:** update board Status (`in_review` / `done` / Notes + next agent) so continuation is indexed on the Project — not chat-only. Notes attribution: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC). Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime. Ops: `.ai_infra/docs/operations/project-board-collaboration.md`.
 
+### Board SSOT (Pattern A + Tier-1)
+
+When `project_ssot.enabled`, prefer CLI recipes over multi-step atomics (`project guide --agent <name>`):
+
+| Step | Command | Notes |
+|------|---------|--------|
+| Claim | `project claim --last --agent <name>` | In progress; may set **Start date** (UTC) |
+| Triage | `project set-field --field priority\|size\|estimate --to … --last` | Agents may set on triage/own cards; humans own Ready *ordering* |
+| Promote | `project promote-to-issue --last --agent <name>` | Draft→Issue (same `PVTI_`); claim does **not** auto-promote |
+| PR link | `project mention-pr --pr N --last --agent <name>` | Notes + auto-promote when `promote_to_issue_on_pr` (default true) |
+| Handoff | `project handoff --last --agent <name> --next <peer> --to in_review` | Status + Notes for next agent |
+
+Do **not** leave shippable work as Draft through merge. Canon: `.cursor/skills/project-board-ssot/SKILL.md`; visual hub: `canvases/agent-board-collaboration.canvas.tsx`.
+
 Token contract: [`.ai_infra/docs/operations/token-efficiency.md`](.ai_infra/docs/operations/token-efficiency.md).
 
 Sequence: `plan → interfaces → implementation → tests → evidence → docs update` (plan lives on the **board card body** when SSOT enabled).

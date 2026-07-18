@@ -196,6 +196,11 @@ export default function AgentRosterCanvas() {
           Explicit handoff edges from agent cards only. researcher is non-product —
           redirects to product agents.
         </Text>
+        <Callout tone="info" title="Board lifecycle (all 8)">
+          Tier-1: claim may set Start date; triage/own card may set Estimate.
+          Promote Draft→Issue via promote-to-issue or mention-pr before shippable PR
+          (claim does not auto-promote). See agent-board-collaboration canvas.
+        </Callout>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only
         </Text>
