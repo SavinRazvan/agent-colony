@@ -14,6 +14,8 @@ description: Optional local research corpus; hard-stop on product code without e
 
 **Board rights:** Status + Notes on the card you touch. Tier-1: claim may set Start date (UTC); triage may set Estimate; use `mention-pr` for PR Notes; promote via `project promote-to-issue --last --agent researcher` (or `mention-pr` auto when `promote_to_issue_on_pr`) before PR — do not leave shippable work as Draft through merge — do not set Iteration/End date/Reviewers by default. Prefer `claim --last` / `handoff --last --agent researcher` (→ `@owner.github_user/researcher`); atomics `append-notes --agent researcher` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
 
+**Board lifecycle (role):** If a research board card exists → `set-status --to done` + corpus paths in Notes. Else read-only on the board; writes only under `_research_results/`. Do not open product PRs from this agent.
+
 **Templates:** skill § Template routing when a research card is needed; Notes timestamps via CLI; do not hand-forge times.
 
 Build and maintain a **local research corpus** with verified evidence. **Off by default** in the universal kit core — enable per project via overlay and `_research_results/` scaffold.

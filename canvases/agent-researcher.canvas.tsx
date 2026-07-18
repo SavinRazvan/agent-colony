@@ -87,6 +87,8 @@ const READ_FIRST = [
 
 const PATTERNS = [
   ["Hard stop", "Write only _research_results/"],
+  ["Board lifecycle", "Research card → done + corpus paths in Notes"],
+  ["Tier-1", "Shared Board rights; read-only board if no research card"],
   ["Forbidden", "No src/tests/scripts; no git commit/push/PR"],
   ["Attribution", "@owner.github_user/researcher via --agent"],
 ];

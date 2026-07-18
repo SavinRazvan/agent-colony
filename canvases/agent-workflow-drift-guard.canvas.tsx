@@ -95,6 +95,8 @@ const READ_FIRST = [
 
 const PATTERNS = [
   ["Write scope", "Drift artifacts only — no product-code"],
+  ["Board lifecycle", "list --status in_progress; close drift-pass → done"],
+  ["Tier-1", "Shared Board rights; no silent tracker dual-write"],
   ["Dual-write remediation", "Notes or handoff to project-board / implementer via Ready"],
   ["Attribution", "@owner.github_user/workflow-drift-guard via --agent"],
 ];

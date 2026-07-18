@@ -18,11 +18,14 @@ description: Disciplined implementation slices with trackers and Pattern A gates
 
 1. Prefer recipe: `python3 -m cursor_workflow project handoff --last --agent implementer --next verifier --to in_review` (or `--to done`).
 2. Claim with `project claim --last --agent implementer` (after create-from-template; never paste docs placeholder ids).
-3. Append `change-index.md`; one line in `history/updates-log.md`.
-4. When `sync_policy: board_only`, do **not** dual-write competing `in_progress` into `work-tracker.md` as SSOT.
-5. Print handoff line. Say *prepare gates green* — do not paste full `GATES`.
+3. Before opening a shippable PR: `promote-to-issue --last` **or** `mention-pr --pr N` (auto-promotes when `promote_to_issue_on_pr`). Claim does **not** promote.
+4. Append `change-index.md`; one line in `history/updates-log.md`.
+5. When `sync_policy: board_only`, do **not** dual-write competing `in_progress` into `work-tracker.md` as SSOT.
+6. Print handoff line. Say *prepare gates green* — do not paste full `GATES`.
 
 **Board rights:** Status + Notes on the card you touch. Tier-1: claim may set Start date (UTC); triage may set Estimate; use `mention-pr` for PR Notes; promote via `project promote-to-issue --last --agent implementer` (or `mention-pr` auto when `promote_to_issue_on_pr`) before PR — do not leave shippable work as Draft through merge — do not set Iteration/End date/Reviewers by default. Prefer `claim --last` / `handoff --last` (`--agent implementer` → `@owner.github_user/implementer`). Run `project guide` for copy-safe commands. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+
+**Board lifecycle (role):** May `create-from-template` for a missing slice card → `claim --last` (Start date). On own card may set Priority/Size/Estimate via `set-field`. Shippable path: promote or `mention-pr` → `handoff --next verifier --to in_review`.
 
 **Templates:** feature/`chore/` → `--template slice`; defect/`fix/` → `--template bug`; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
 

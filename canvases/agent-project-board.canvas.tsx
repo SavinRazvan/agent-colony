@@ -89,6 +89,8 @@ const READ_FIRST = [
 const PATTERNS = [
   ["Independent-governed", "Not in default PR pipelines"],
   ["Loop", "status → list ready → create-from-template + claim --last → handoff"],
+  ["Triage Tier-1", "set-field Priority/Size/Estimate on new/moved cards"],
+  ["Promote", "promote-to-issue before PR if shipping triage work as Issue"],
   ["Attribution", "@owner.github_user/project-board via --agent"],
 ];
 

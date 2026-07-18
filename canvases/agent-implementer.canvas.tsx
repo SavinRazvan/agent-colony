@@ -40,6 +40,7 @@ const BOARD_NODES = [
   { id: "code" },
   { id: "gates" },
   { id: "evidence" },
+  { id: "promote" },
   { id: "handoff" },
   { id: "next" },
 ];
@@ -50,7 +51,8 @@ const BOARD_EDGES = [
   { from: "claim", to: "code" },
   { from: "code", to: "gates" },
   { from: "gates", to: "evidence" },
-  { from: "evidence", to: "handoff" },
+  { from: "evidence", to: "promote" },
+  { from: "promote", to: "handoff" },
   { from: "handoff", to: "next" },
 ];
 
@@ -76,10 +78,11 @@ const FALLBACK_EDGES = [
 const BOARD_LABELS: Record<string, string> = {
   yaml: "project_ssot YAML",
   status: "project status",
-  claim: "claim / Ready list",
+  claim: "claim (+ Start date)",
   code: "contracts → code → tests",
   gates: "prepare.py GATES",
   evidence: "change-index + updates-log",
+  promote: "promote / mention-pr",
   handoff: "handoff --next verifier",
   next: "verifier (typical)",
 };
@@ -139,6 +142,8 @@ const ARTIFACTS = [
 
 const PATTERNS = [
   ["Pattern A recipes", "claim --last / handoff --last / create-from-template"],
+  ["Tier-1", "claim → Start date; set-field estimate on own card"],
+  ["Promote before PR", "promote-to-issue OR mention-pr (auto when promote_to_issue_on_pr)"],
   ["Templates", "slice (feature/chore) · bug (defect/fix)"],
   ["Module headers", "file-docstring-header-relations.mdc on new sources"],
   ["Commit trailers", "Author + GitHub-User via contributors commit-trailers"],

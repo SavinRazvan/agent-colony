@@ -594,6 +594,11 @@ export default function BoardSsotVsKitCanvas() {
               <Text size="small">Edge-case tests: focused 36+; collect ~669</Text>
               <Text size="small">DRIFT validate P0=0 P1=0 P2=0</Text>
               <Text size="small">STANDALONE decided — this repo is the product</Text>
+              <Text size="small">
+                BOARD-PROMOTE: Draft→Issue via promote-to-issue / mention-pr auto
+                (promote_to_issue_on_pr default true); claim does not auto-promote
+              </Text>
+              <Text size="small">BOARD-TIER1: claim Start date + Estimate set-field + mention-pr</Text>
             </Stack>
           </CardBody>
         </Card>
@@ -603,9 +608,7 @@ export default function BoardSsotVsKitCanvas() {
           </CardHeader>
           <CardBody>
             <Stack gap={4}>
-              <Text size="small">STANDALONE decided — no upstream port</Text>
               <Text size="small">EA-010 Ready — ICC read-only board panel</Text>
-              <Text size="small">promote_to_issue_on_pr — optional future</Text>
               <Text size="small">Install screenshot asset TBD if UI text differs</Text>
             </Stack>
           </CardBody>
