@@ -95,10 +95,12 @@ def test_scaffold_creates_dashboards(tmp_path: Path) -> None:
     assert (dash / "site-nav.js").is_file()
     assert (dash / "local-shell.css").is_file()
     assert (dash / "local-markdown.js").is_file()
+    assert (dash / "local-board-snapshot.js").is_file()
     audit_html = target / ".local" / "agents-control-center" / "audits" / "module-audit.html"
     assert audit_html.is_file()
     icc = (dash / "implementation-control-center.html").read_text(encoding="utf-8")
     assert "local-markdown.js" in icc
+    assert "local-board-snapshot.js" in icc
 
 
 def test_scaffold_refreshes_dashboards_on_repeat(tmp_path: Path) -> None:
@@ -169,7 +171,7 @@ def test_scaffold_pages_json_includes_artifact_tabs(tmp_path: Path) -> None:
         )
     )
     page_ids = {page["id"] for page in pages["pages"]}
-    assert {"pr-review", "drift-audit", "ea-audit"}.issubset(page_ids)
+    assert {"pr-review", "drift-audit", "ea-audit", "project-board"}.issubset(page_ids)
 
 
 def test_scaffold_pages_json_tier1_paths_resolve(tmp_path: Path) -> None:
@@ -182,6 +184,8 @@ def test_scaffold_pages_json_tier1_paths_resolve(tmp_path: Path) -> None:
     for page in pages["pages"]:
         rel = page["file"]
         if rel.startswith("../../workflow-artifacts/"):
+            continue
+        if rel.startswith("../../generated-data/"):
             continue
         resolved = (config / rel).resolve()
         assert resolved.is_file(), f"{page['id']}: {rel} -> missing at {resolved}"

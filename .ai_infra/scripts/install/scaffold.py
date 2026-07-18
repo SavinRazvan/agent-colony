@@ -68,7 +68,12 @@ AUDIT_EXEMPLARS = (
     "agent-governance-todos.md",
 )
 DASHBOARD_HTML = ("index.html", "implementation-control-center.html")
-DASHBOARD_ASSETS = ("site-nav.js", "local-shell.css", "local-markdown.js")
+DASHBOARD_ASSETS = (
+    "site-nav.js",
+    "local-shell.css",
+    "local-markdown.js",
+    "local-board-snapshot.js",
+)
 ARTIFACT_TAB_STUBS: dict[str, tuple[str, ...]] = {
     "pr": ("review.md", "prep.md", "merge.md"),
     "alignment": ("alignment-audit.md", "alignment-todos.md"),
