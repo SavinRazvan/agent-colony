@@ -16,7 +16,7 @@ Notes:
 # Implementation status (MAS Workflow Kit — Project SSOT)
 
 **Last updated:** 2026-07-18 (WORKSPACE-CLEAN — DOC-008 canvas roster)  
-**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 942
+**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 943
 
 ## Shipped (confirmed in repo)
 
@@ -47,14 +47,14 @@ Notes:
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Kit version on install | `kit_version` 0.4.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 942 collected (940 passed + 2 skipped on full run) | `tests/modules/` |
+| Tests | 943 collected (941 passed + 2 skipped on full run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 
 `pytest --cov=.ai_infra --cov=cursor_workflow` measures the **import surface** of the
 installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-18
-(COV-100): **5352 statements, 100%** on a full suite pass (**942 collected**;
-930 passed, 1 skipped). The **Tests** row uses collected count; executed pass/skip
+(COV-100): **5352 statements, 100%** on a full suite pass (**943 collected**;
+941 passed, 2 skipped). The **Tests** row uses collected count; executed pass/skip
 may differ by marker or import-order skips.
 One import-order `sys.path` bootstrap in `merge.py` is `# pragma: no cover`.
 Subprocess-only maintainer scanners (`check_governance_consistency.py`,

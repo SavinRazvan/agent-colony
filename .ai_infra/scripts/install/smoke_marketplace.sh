@@ -55,8 +55,9 @@ config = smoke / ".local/agents-control-center/config"
 pages = json.loads((config / "pages.json").read_text(encoding="utf-8"))
 for page in pages["pages"]:
     rel = page["file"]
-    if rel.startswith("../../workflow-artifacts/"):
-        print(f"SKIP {page['id']} (Tier 2)")
+    # Tier 2 / runtime: stubs refreshed later, or machine output (board export).
+    if rel.startswith("../../workflow-artifacts/") or "/generated-data/" in rel:
+        print(f"SKIP {page['id']} (runtime)")
         continue
     ok = (config / rel).resolve().is_file()
     if not ok:

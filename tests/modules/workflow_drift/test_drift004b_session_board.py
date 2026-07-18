@@ -81,6 +81,14 @@ def test_parse_session_board_field() -> None:
     assert "progress" in st.lower()
 
 
+def test_parse_session_board_field_strips_markdown_backticks() -> None:
+    iid, st = _parse_session_board_field(
+        "`PVTI_lAHOBl46-84A9KZxzgzSsE0` Done"
+    )
+    assert iid == "PVTI_lAHOBl46-84A9KZxzgzSsE0"
+    assert st.lower() == "done"
+
+
 def test_drift004b_skips_without_snapshot(tmp_path: Path) -> None:
     root = _scaffold(
         tmp_path,
