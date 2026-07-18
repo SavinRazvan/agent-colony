@@ -34,7 +34,7 @@ Notes:
 | Timestamped board Notes (CONT-TS) | `@user/agent · <ISO-8601-UTC> · …` via CLI (`claim`/`handoff`/`append-notes`) | `project_cli.py` + skill § Notes |
 | Local continuity-index | Rolling ≥3-day UTC rows; board Notes = full card lifetime | `history/continuity-index.md` (+ exemplar) |
 | Board outbox (rate-limit) | `project queue` / `outbox status|flush`; EXIT_QUEUED=6; **58 mocked unit tests** | `project_outbox.py` + `project_cli.py` + `tests/modules/install/test_project_outbox.py` |
-| Doc facts validate | DOC-001…006 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
+| Doc facts validate | DOC-001…007 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
 | MCP tools + resources | 20 tools + 6 resources | `.ai_infra/mcp_servers/workflow_mcp/` |
@@ -53,7 +53,7 @@ Notes:
 
 `pytest --cov=.ai_infra --cov=cursor_workflow` measures the **import surface** of the
 installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-18
-(COV-100): **5352 statements, 100%** on a full suite pass (900 passed, 1 skipped).
+(COV-100): **5352 statements, 100%** on a full suite pass (928 passed, 1 skipped).
 One import-order `sys.path` bootstrap in `merge.py` is `# pragma: no cover`.
 Subprocess-only maintainer scanners (`check_governance_consistency.py`,
 `check_debrand.py`, `check_consumer_purity.py`, `check_file_headers.py`) have
