@@ -6,10 +6,10 @@ Versioned hub (in git). Corpus boundaries: `_research_results/RESEARCH_BOUNDARIE
 
 ## Order (active)
 
-1. `.cursor/agents/researcher.md`
+1. `.cursor/agents/researcher.md` — **Adaptive intake** (chat / peer agents / board)
 2. `.cursor/skills/research-corpus-execution/SKILL.md`
-3. Pack `BRIEF.md` + `SOURCE.md` under `_research_results/sources/<slug>/`
-4. CLI: `python3 -m cursor_workflow research init|fetch|validate`
+3. Normalize source → `research init` → `research fetch` → rounds → `validate`
+4. Pack `BRIEF.md` + `SOURCE.md` under `_research_results/sources/<slug>/`
 
 Agent: **`.cursor/agents/researcher.md`**.
 
@@ -23,11 +23,12 @@ No product repo edits; no git commits for research packs; writes only `_research
 |---|--------|
 | D0 | No edits outside `_research_results/` |
 | D1 | No git commits / PRs for research-only work |
-| D2 | External runs require a Research Brief |
+| D2 | External runs require a Brief — **derive from chat/handoff/card** if not pasted formally |
 | D3 | Pin every pack (path or commit SHA) in `SOURCE.md` |
 | D4 | Consumers read `AGENT_BRIEF.md` + `INDEX.json`, not the whole foreign tree |
 | D5 | CLI owns init/fetch/validate; agent owns rounds 1–6 prose evidence |
-| D6 | Host `mode: self` is optional; default is `external` when Brief present |
+| D6 | Host `mode: self` is optional; default is `external` when a source is present |
+| D7 | Accept HTTPS GitHub URLs and terse `/researcher <url>` chat; apply skill defaults |
 
 ## Forbidden
 
@@ -35,9 +36,10 @@ No product repo edits; no git commits for research packs; writes only `_research
 |--------|-----|
 | `git commit` / PR for research | D1 |
 | Edit outside `_research_results/` | D0 |
-| External run without Brief | D2 |
+| External run without any source (and not self) | D2 |
 | Invent evidence without path/~Lnn | Evidence contract |
 | Implement fixes in product tree during research | → implementer |
+| Refuse terse chat that clearly names a GitHub/local source | D7 — adapt + defaults |
 
 ## Pack outputs
 

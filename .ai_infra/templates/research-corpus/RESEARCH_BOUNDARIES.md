@@ -18,7 +18,7 @@ Notes:
 1. **Write only** under `_research_results/` (gitignored) unless the user explicitly expands scope.
 2. **Do not edit** product `src/`, `tests/`, `scripts/`, or root build files from the researcher.
 3. **Do not** `git commit`, `git push`, or create PRs for research-only work.
-4. **External runs require a Brief** (`sources/<slug>/BRIEF.md`) — no brief → refuse `mode: external`.
+4. **External runs need a Brief** — derive from user chat, peer agent handoff/Notes, or board card; persist as `sources/<slug>/BRIEF.md`. Terse `/researcher <url>` is enough (skill defaults apply).
 5. Pin every pack to a **path or commit SHA** in `SOURCE.md`; do not invent evidence.
 
 ## Modes

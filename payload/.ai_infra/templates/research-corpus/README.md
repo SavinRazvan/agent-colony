@@ -20,8 +20,11 @@ Copy into `_research_results/` via:
 python3 -m cursor_workflow research init --slug <slug> [--brief path/to/brief.md]
 python3 -m cursor_workflow research fetch --slug <slug> --source path:/abs/or/rel
 # or: --source github:owner/repo[@ref]
+# or: --source https://github.com/owner/repo[/tree/ref]
 python3 -m cursor_workflow research validate --slug <slug>
 ```
+
+Terse chat (`/researcher https://github.com/owner/repo`) is valid: agent derives Brief defaults per skill § Intake.
 
 | File | Role |
 |------|------|
