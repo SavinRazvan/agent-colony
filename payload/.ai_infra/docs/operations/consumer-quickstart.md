@@ -27,10 +27,10 @@ Install the **MAS Workflow Kit** into your project in a few minutes. No special 
 
 | Step | Action |
 |------|--------|
-| **1. Plugin** | In **Agent chat** (not terminal): `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` — or **Cursor → Marketplace** when listed |
+| **1. Plugin** | In **Agent chat** (not terminal): `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` — or **Cursor → Marketplace** when listed |
 | **2. Activate** | Open **your app folder** → Agent chat: **`/workflow-activate`** → wait for **`VERIFY PASS`** |
 | **3. Your name** | Edit `.local/user_settings/github.collaboration.yaml` → set `display_name` + `github_user` → `python3 -m cursor_workflow contributors validate` |
-| **4. Build** | **`/implementer`** · read `session-pointer.md` → `plan.md` → `work-tracker.md` |
+| **4. Build** | **`/implementer`** · when `project_ssot.enabled`, Entry = `python3 -m cursor_workflow project status` (board first); else `session-pointer.md` → `plan.md` → `work-tracker.md` |
 
 **Healthy install?** `python3 -m cursor_workflow health`
 
@@ -41,7 +41,7 @@ Install the **MAS Workflow Kit** into your project in a few minutes. No special 
 `/add-plugin` runs in **Cursor Agent chat only** — it is not a shell command.
 
 ```bash
-/add-plugin https://github.com/SavinRazvan/mas-workflow-kit
+/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot
 ```
 
 Cursor shows an **Add Plugin** preview — click the **MAS Workflow Kit** card to install:
@@ -51,7 +51,7 @@ Cursor shows an **Add Plugin** preview — click the **MAS Workflow Kit** card t
 Optional — pin `main`:
 
 ```bash
-/add-plugin https://github.com/SavinRazvan/mas-workflow-kit/tree/main
+/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/tree/main
 ```
 
 After install you may see only `.cursor/settings.json` in the project. That is expected — run **step 2** to copy the full bundle.
@@ -153,8 +153,8 @@ Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → **`/connect
 
 ## Step 4 detail — daily workflow
 
-1. Open `.local/index-and-planning/current/session-pointer.md`
-2. Update `plan.md` and `work-tracker.md` for your slice
+1. When `project_ssot.enabled`: `python3 -m cursor_workflow project status` (board first); else open `.local/index-and-planning/current/session-pointer.md`
+2. Claim/update the board card (Status + Notes); local `plan.md` / `work-tracker.md` only as offline fallback under `board_only`
 3. **`/implementer`** (or `/test-runner`, `/verifier`, `/enterprise-auditor`)
 4. Dashboard (optional): see [Control Center dashboards](#control-center-dashboards) below
 
@@ -175,7 +175,7 @@ Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → **`/connect
 
 | Goal | Command |
 |------|---------|
-| Install plugin (once) | `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` |
+| Install plugin (once) | `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` |
 | Activate / refresh kit | `/workflow-activate` |
 | Implement a slice | `/implementer` |
 | Tests / coverage | `/test-runner` |
@@ -309,7 +309,7 @@ Gate details: [gate-matrix.md](gate-matrix.md) (consumer scaffold = 4 checks).
 
 ## Kit clone path (advanced)
 
-When not using the plugin UI — clone [mas-workflow-kit](https://github.com/SavinRazvan/mas-workflow-kit), then:
+When not using the plugin UI — clone [mas-workflow-kit](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot), then:
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -q -r requirements-dev.txt

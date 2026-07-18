@@ -336,7 +336,7 @@ export default function BoardSsotVsKitCanvas() {
         <Stat value="Markdown" label="Classic SSOT" />
         <Stat value="GitHub Project" label="Shipped SSOT" tone="success" />
         <Stat value="0 / 0 / 0" label="DRIFT P0 P1 P2" tone="success" />
-        <Stat value="In progress" label="PORT-GATE" tone="warning" />
+        <Stat value="STANDALONE" label="Decided 2026-07-18" tone="success" />
       </Grid>
 
       <Callout tone="success" title="North star (shipped)">
@@ -552,7 +552,7 @@ export default function BoardSsotVsKitCanvas() {
         <Callout tone="success" title="append-notes on draft issues (FIX-NOTES-DI)">
           Previously a known gap. append-notes now resolves PVTI_ → DI_ + title for
           DraftIssue content; Status stays on PVTI_; Issue-backed cards use gh issue
-          edit. Smoke OK; board card Done. Shipped locally — pending PR to main.
+          edit. Shipped on main (PR #3).
         </Callout>
       </CollapsibleSection>
 
@@ -590,10 +590,10 @@ export default function BoardSsotVsKitCanvas() {
               <Text size="small">cursor_workflow project CLI (9 commands)</Text>
               <Text size="small">8 agent Anchors + continuation contract</Text>
               <Text size="small">ADR-008 + project-ssot-precedence overlay</Text>
-              <Text size="small">A→B→C merged (PR #2); FIX-NOTES-DI local</Text>
+              <Text size="small">A→B→C merged (PR #2); FIX-NOTES-DI on main (PR #3)</Text>
               <Text size="small">Edge-case tests: focused 36+; collect ~669</Text>
               <Text size="small">DRIFT validate P0=0 P1=0 P2=0</Text>
-              <Text size="small">Doc-drift skill residuals fixed (local)</Text>
+              <Text size="small">STANDALONE decided — this repo is the product</Text>
             </Stack>
           </CardBody>
         </Card>
@@ -603,28 +603,26 @@ export default function BoardSsotVsKitCanvas() {
           </CardHeader>
           <CardBody>
             <Stack gap={4}>
-              <Text size="small">PORT-GATE — In progress (human)</Text>
-              <Text size="small">Production mas-workflow-kit port approval</Text>
-              <Text size="small">Marketplace bump for consumers</Text>
+              <Text size="small">STANDALONE decided — no upstream port</Text>
               <Text size="small">EA-010 Ready — ICC read-only board panel</Text>
               <Text size="small">promote_to_issue_on_pr — optional future</Text>
-              <Text size="small">FIX-NOTES-DI + residuals — pending PR</Text>
+              <Text size="small">Install screenshot asset TBD if UI text differs</Text>
             </Stack>
           </CardBody>
         </Card>
       </Grid>
 
       <Spacer />
-      <Callout tone="neutral" title="How to read this before PORT-GATE">
+      <Callout tone="neutral" title="How to read this (STANDALONE product)">
         Classic kit solved disciplined agents + PR gates on local markdown.
-        This experiment relocated coordination to one GitHub Project — A→B→C merged,
-        follow-ups done locally. Production kit stays markdown SSOT until explicit
-        human port approval.
+        This repository is the permanent product: coordination on one GitHub Project,
+        evidence in local artifacts. Upstream mas-workflow-kit is lineage only —
+        no port back. Board Entry/Exit continues every agent slice.
       </Callout>
 
       <Text size="small" tone="tertiary">
-        Source: HANDOFF §1 · ADR-008 · PR #2 merged · FIX-NOTES-DI local · drift
-        validate green · 2026-07-18
+        Source: HANDOFF §1 · ADR-008 · STANDALONE 2026-07-18 · PR #2/#3 merged ·
+        drift validate green · 2026-07-18
       </Text>
     </Stack>
   );

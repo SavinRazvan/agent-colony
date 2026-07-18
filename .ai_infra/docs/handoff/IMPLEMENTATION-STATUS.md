@@ -13,16 +13,16 @@ Notes:
  - Update this file each material slice; do not rewrite full maintainer megadocs for every change.
 -->
 
-# Implementation status (MAS Workflow Kit)
+# Implementation status (MAS Workflow Kit — Project SSOT)
 
-**Last updated:** 2026-07-18 (FIX-NOTES-DI edge-case tests)  
-**Product:** MAS Workflow Kit (`mas-workflow-kit`) · CLI: `cursor-workflow` 0.4.0 · **Tests:** 669
+**Last updated:** 2026-07-18 (STANDALONE product doctrine)  
+**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 669
 
 ## Shipped (confirmed in repo)
 
 | Area | Status | Location |
 |------|--------|----------|
-| Universal rules | 7 `.mdc` | `.cursor/rules/` (6 kit + experiment `project-ssot-precedence`; marketplace `payload/` keeps 6 until port) |
+| Universal rules | 7 `.mdc` | `.cursor/rules/` **and** `payload/.cursor/rules/` (6 kit + `project-ssot-precedence`) |
 | Agents | 8 core; `model: auto`; audit agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` |
 | Canonical skills | 11 folders | `.cursor/skills/` |
 | Maintainer skills | 5 folders (additive plugin merge) | `.agents/skills/` |
@@ -49,15 +49,15 @@ Notes:
 ## Coverage scope (shipped source)
 
 `pytest --cov=.ai_infra --cov=cursor_workflow` measures the **import surface** of the
-installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-08: **44 files,
-3588 statements, 100%** when the full suite passes (`generate_coverage_index.py` and
-`migrate_local_workspace_layout.py` are maintainer tooling — omitted from `--cov` per
-`pyproject.toml`). Subprocess-only maintainer scanners
-(`check_governance_consistency.py`, `check_debrand.py`, `check_consumer_purity.py`,
-`check_file_headers.py`) have dedicated module tests but are excluded from this metric by
-design — they are launched via `subprocess` / `make gates`, not imported by the coverage
-run. Running `--cov=.` (tests included) reports ~99% because of order-dependent branches in
-test-helper cleanup code; scope shipped source for marketplace readiness claims.
+installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-18: **~4396
+statements, ~94%** on a full suite pass. Primary gap: `project_cli.py` live-`gh` branches
+(~64% — integration paths exercised via targeted unit mocks elsewhere). Subprocess-only
+maintainer scanners (`check_governance_consistency.py`, `check_debrand.py`,
+`check_consumer_purity.py`, `check_file_headers.py`) have dedicated module tests but are
+excluded from this metric by design — they are launched via `subprocess` / `make gates`,
+not imported by the coverage run. Running `--cov=.` (tests included) reports higher
+because of order-dependent branches in test-helper cleanup code; scope shipped source for
+readiness claims.
 
 ## Verification commands
 

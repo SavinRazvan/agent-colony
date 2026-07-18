@@ -9,6 +9,7 @@ alwaysApply: true
 
 - Sequence: `plan -> interfaces -> implementation -> tests -> evidence -> docs update`.
 - Before coding: confirm module boundary, acceptance criteria, rollback in `.local/index-and-planning/current/plan.md`; read **`session-pointer.md`** first, then `plan.md`, `work-tracker.md`, project `docs/architecture/` (local stub: `.local/.../current/architecture.md`), `test-plan.md`, `test-index.md`.
+- When `project_ssot.enabled` and `sync_policy: board_only`, **board Entry wins** (`python3 -m cursor_workflow project status` / claim card); local trackers are offline fallback only.
 - Treat `.local/index-and-planning/current/*`, `history/*`, and `audits/*` as live local execution state; durable workflow doctrine lives in `.ai_infra/docs/operations/*`.
 - Exactly one primary task `in_progress` in `work-tracker.md`; do not implement without scope in `plan.md`.
 - Incremental, reversible slices; KISS. Block release on P0 failures; RCs need CI/CD evidence bundles.

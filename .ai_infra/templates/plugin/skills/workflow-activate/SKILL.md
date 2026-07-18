@@ -54,7 +54,7 @@ Invoke subagent **`/integrator-mas-agent`** with skill **`/mas-infrastructure-in
 
 After plugin enable, parent agent or user should:
 
-0. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` (chat only — not terminal). Show [install screenshot](https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit/main/assets/mas-workflow-kit-install.png) — user clicks the **MAS Workflow Kit** card in the preview.
+0. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` (chat only — not terminal). Show [install screenshot](https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit-project-ssot/main/assets/mas-workflow-kit-install.png) — user clicks the **MAS Workflow Kit** card in the preview.
 1. Run **`workflow_activate`** or `cursor_workflow activate`
 2. Hand user to personalize `user_settings/`
 3. Optionally delegate **`/integrator-mas-agent`** for extensions

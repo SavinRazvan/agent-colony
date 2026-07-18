@@ -39,7 +39,7 @@ Own **board triage and Status transitions** for the experiment Project SSOT. Han
 |----|--------|
 | Drive board via `cursor_workflow project` | Bypass `prepare.py` gates |
 | Use YAML field/option ids | Dual-write board + tracker SSOT |
-| Hand off code slices to implementer | Mutate production `mas-workflow-kit` |
+| Hand off code slices to implementer | Mutate upstream `mas-workflow-kit` |
 | Fall back to local trackers when disabled | Invent MCP tools |
 
 ## Handoff format
