@@ -1,15 +1,18 @@
 # AI Project Playground (board SSOT)
 
-This GitHub Project is the **only writable SSOT** for backlog, Status, and multi-agent continuation when `project_ssot.enabled` and `sync_policy: board_only` in each collaborator's `.local/user_settings/github.collaboration.yaml`.
+This GitHub Project is the **only writable SSOT** for backlog, Status, and multi-agent continuation when `project_ssot.enabled` and `sync_policy: board_only`.
 
 ## Agents (CLI — never paste this page into a shell)
 
 ```bash
 python3 -m cursor_workflow project doctor
-python3 -m cursor_workflow project list --status ready
-python3 -m cursor_workflow project claim --id PVTI_… --agent implementer
-python3 -m cursor_workflow project handoff --id PVTI_… --agent implementer --next verifier --to in_review
+python3 -m cursor_workflow project guide --agent implementer
+python3 -m cursor_workflow project create-from-template --title "[SLICE] short-name" --template slice --status ready
+python3 -m cursor_workflow project claim --last --agent implementer
+python3 -m cursor_workflow project handoff --last --agent implementer --next verifier --to in_review
 ```
+
+Use `--last` after create (saved under `.local/generated-data/project-last-item.json`). Do **not** invent or paste placeholder ids from docs.
 
 Notes are attributed as `@github_user/agent` (from `owner.github_user`).
 

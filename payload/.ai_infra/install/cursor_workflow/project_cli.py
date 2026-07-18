@@ -35,6 +35,7 @@ EXIT_VALIDATION = 5
 
 _TEMPLATE_NAMES = ("slice", "bug")
 _PLACEHOLDER_RE = re.compile(r"\{\{(\w+)\}\}")
+_SESSION_REL = Path(".local") / "generated-data" / "project-last-item.json"
 
 
 def fail(cmd: str, code: int, reason: str) -> int:
@@ -89,6 +90,94 @@ def render_card_template(
         return values.get(m.group(1), m.group(0))
 
     return _PLACEHOLDER_RE.sub(_sub, template).rstrip() + "\n"
+
+
+def session_last_path(root: Path) -> Path:
+    return root / _SESSION_REL
+
+
+def save_last_item_id(root: Path, item_id: str, *, title: str = "", action: str = "") -> None:
+    """Persist last board item id for --last (machine-local, not a second SSOT)."""
+    path = session_last_path(root)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "schema": "project-last-item/v1",
+        "item_id": item_id,
+        "title": title,
+        "action": action,
+    }
+    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+def load_last_item_id(root: Path) -> str | None:
+    path = session_last_path(root)
+    if not path.is_file():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    iid = str(data.get("item_id") or "").strip()
+    return iid or None
+
+
+def is_placeholder_item_id(raw: str) -> bool:
+    """True for docs ellipsis / truncated ids agents must never paste."""
+    s = (raw or "").strip()
+    if not s:
+        return True
+    if "…" in s or "..." in s:
+        return True
+    if s in ("<id>", "$ITEM_ID", "ITEM_ID", "PVTI_", "DI_"):
+        return True
+    # Docs form with only punctuation after prefix
+    if re.match(r"^(PVTI_|DI_)[\.…_-]*$", s):
+        return True
+    return False
+
+
+def resolve_item_id_arg(
+    root: Path, args: argparse.Namespace, cmd: str
+) -> tuple[str | None, int]:
+    """Resolve --id or --last. Rejects placeholder ids (CODE=2)."""
+    use_last = bool(getattr(args, "last", False))
+    raw = str(getattr(args, "id", None) or "").strip()
+    if use_last and raw:
+        return None, fail(cmd, EXIT_USAGE, "pass --last OR --id, not both")
+    if use_last:
+        lid = load_last_item_id(root)
+        if not lid:
+            return None, fail(
+                cmd,
+                EXIT_USAGE,
+                "no last item — run create-from-template (or claim) first, then --last",
+            )
+        return lid, EXIT_OK
+    if not raw:
+        return None, fail(cmd, EXIT_USAGE, "--id required (or use --last after create)")
+    if is_placeholder_item_id(raw):
+        return None, fail(
+            cmd,
+            EXIT_USAGE,
+            f"placeholder id {raw!r} — never paste PVTI_… from docs; "
+            f"use --last or the real item_id= from create output",
+        )
+    return raw, EXIT_OK
+
+
+def _add_id_or_last(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--id",
+        default="",
+        help="Real PVTI_ id from create output. Prefer --last.",
+    )
+    parser.add_argument(
+        "--last",
+        action="store_true",
+        help="Use item_id saved by last create/claim (.local/generated-data/project-last-item.json)",
+    )
 
 
 def _import_user_settings(root: Path):
@@ -526,7 +615,9 @@ def cmd_create(args: argparse.Namespace) -> int:
         return fail("create", EXIT_GH, err)
     print(raw or item_id or "")
     if item_id:
+        save_last_item_id(root, item_id, title=args.title, action="create")
         print(f"item_id={item_id}")
+        print("next: python3 -m cursor_workflow project claim --last --agent <agent>")
     return EXIT_OK
 
 
@@ -565,9 +656,11 @@ def cmd_create_from_template(args: argparse.Namespace) -> int:
     if raw:
         print(raw)
     if item_id:
+        save_last_item_id(root, item_id, title=args.title, action="create-from-template")
         print(f"item_id={item_id}")
         if status_to:
             print(f"status={status_to}")
+        print("next: python3 -m cursor_workflow project claim --last --agent <agent>")
     return EXIT_OK
 
 
@@ -576,6 +669,9 @@ def cmd_set_status(args: argparse.Namespace) -> int:
     ssot, code = _load_enabled_ssot(root, "set-status")
     if ssot is None:
         return code
+    item_id, id_code = resolve_item_id_arg(root, args, "set-status")
+    if item_id is None:
+        return id_code
     try:
         option_id = resolve_status_option_id(ssot, args.to)
         field_id = status_field_id(ssot)
@@ -589,7 +685,7 @@ def cmd_set_status(args: argparse.Namespace) -> int:
             "--project-id",
             project_id,
             "--id",
-            args.id,
+            item_id,
             "--field-id",
             field_id,
             "--single-select-option-id",
@@ -602,7 +698,7 @@ def cmd_set_status(args: argparse.Namespace) -> int:
             EXIT_GH,
             (proc.stderr or proc.stdout or "gh project item-edit failed").strip(),
         )
-    print(f"set-status: {args.id} → {args.to} ({option_id})")
+    print(f"set-status: {item_id} → {args.to} ({option_id})")
     return EXIT_OK
 
 
@@ -611,6 +707,9 @@ def cmd_set_field(args: argparse.Namespace) -> int:
     ssot, code = _load_enabled_ssot(root, "set-field")
     if ssot is None:
         return code
+    item_id, id_code = resolve_item_id_arg(root, args, "set-field")
+    if item_id is None:
+        return id_code
     field = args.field.strip().lower()
     if field not in ("priority", "size"):
         return fail("set-field", EXIT_USAGE, "--field must be priority or size")
@@ -626,7 +725,7 @@ def cmd_set_field(args: argparse.Namespace) -> int:
             "--project-id",
             project_id,
             "--id",
-            args.id,
+            item_id,
             "--field-id",
             field_id,
             "--single-select-option-id",
@@ -639,7 +738,7 @@ def cmd_set_field(args: argparse.Namespace) -> int:
             EXIT_GH,
             (proc.stderr or proc.stdout or "gh project item-edit failed").strip(),
         )
-    print(f"set-field: {args.id} {field} → {args.to} ({option_id})")
+    print(f"set-field: {item_id} {field} → {args.to} ({option_id})")
     return EXIT_OK
 
 
@@ -1026,12 +1125,15 @@ def cmd_get(args: argparse.Namespace) -> int:
     ssot, code = _load_enabled_ssot(root, "get")
     if ssot is None:
         return code
+    item_id, id_code = resolve_item_id_arg(root, args, "get")
+    if item_id is None:
+        return id_code
     items, err = fetch_project_items(ssot, limit=args.limit)
     if err:
         return fail("get", EXIT_GH, err)
-    item = find_item_by_id(items, args.id)
+    item = find_item_by_id(items, item_id)
     if item is None:
-        return fail("get", EXIT_NOT_FOUND, f"item not found: {args.id}")
+        return fail("get", EXIT_NOT_FOUND, f"item not found: {item_id}")
     payload = {
         "id": item.get("id"),
         "title": _item_title(item),
@@ -1058,10 +1160,13 @@ def cmd_append_notes(args: argparse.Namespace) -> int:
     ssot, code = _load_enabled_ssot(root, "append-notes")
     if ssot is None:
         return code
+    item_id, id_code = resolve_item_id_arg(root, args, "append-notes")
+    if item_id is None:
+        return id_code
     ok, detail, err_code = append_notes_helper(
         root,
         ssot,
-        args.id,
+        item_id,
         agent=getattr(args, "agent", None) or "",
         text=args.text,
         limit=args.limit,
@@ -1069,9 +1174,9 @@ def cmd_append_notes(args: argparse.Namespace) -> int:
     if not ok:
         return fail("append-notes", err_code, detail)
     if detail == "idempotent":
-        print(f"append-notes: {args.id} — already present (idempotent skip)")
+        print(f"append-notes: {item_id} — already present (idempotent skip)")
     else:
-        print(f"append-notes: {args.id} — updated")
+        print(f"append-notes: {item_id} — updated")
     return EXIT_OK
 
 
@@ -1080,6 +1185,9 @@ def cmd_set_assignee(args: argparse.Namespace) -> int:
     ssot, code = _load_enabled_ssot(root, "set-assignee")
     if ssot is None:
         return code
+    item_id, id_code = resolve_item_id_arg(root, args, "set-assignee")
+    if item_id is None:
+        return id_code
     login = (getattr(args, "login", None) or "").strip()
     if not login:
         try:
@@ -1092,12 +1200,12 @@ def cmd_set_assignee(args: argparse.Namespace) -> int:
             EXIT_USAGE,
             "no login (pass --login or set owner.github_user)",
         )
-    ok, detail = set_item_assignee(ssot, args.id, login)
+    ok, detail = set_item_assignee(ssot, item_id, login)
     if not ok:
         # DraftIssue / unsupported → validation; gh failures look like network
         code_out = EXIT_VALIDATION if "DraftIssue" in detail or "unsupported" in detail else EXIT_GH
         return fail("set-assignee", code_out, detail)
-    print(f"set-assignee: {args.id} → @{detail.lstrip('@')}")
+    print(f"set-assignee: {item_id} → @{detail.lstrip('@')}")
     return EXIT_OK
 
 
@@ -1107,6 +1215,9 @@ def cmd_claim(args: argparse.Namespace) -> int:
     ssot, code = _load_enabled_ssot(root, "claim")
     if ssot is None:
         return code
+    item_id, id_code = resolve_item_id_arg(root, args, "claim")
+    if item_id is None:
+        return id_code
     agent = (getattr(args, "agent", None) or "").strip()
     if not agent:
         return fail("claim", EXIT_USAGE, "--agent required")
@@ -1120,13 +1231,13 @@ def cmd_claim(args: argparse.Namespace) -> int:
     items, err = fetch_project_items(ssot, limit=args.limit)
     if err:
         return fail("claim", EXIT_GH, err)
-    item = find_item_by_id(items, args.id)
+    item = find_item_by_id(items, item_id)
     if item is None:
-        return fail("claim", EXIT_NOT_FOUND, f"item not found: {args.id}")
+        return fail("claim", EXIT_NOT_FOUND, f"item not found: {item_id}")
     before = _normalize_status(str(item.get("status") or ""))
     if conventions.get("one_in_progress_per_assignee", True):
         conflicts = in_progress_conflicts_for_user(
-            items, user_handle=user, exclude_id=args.id
+            items, user_handle=user, exclude_id=item_id
         )
         if conflicts:
             ids = ", ".join(str(c.get("id")) for c in conflicts[:5])
@@ -1135,25 +1246,30 @@ def cmd_claim(args: argparse.Namespace) -> int:
                 EXIT_VALIDATION,
                 f"one_in_progress_per_assignee: already In progress for {user}: {ids}",
             )
-    ok, detail = set_item_status(ssot, args.id, "in_progress")
+    ok, detail = set_item_status(ssot, item_id, "in_progress")
     if not ok:
         return fail("claim", EXIT_GH if "unknown status" not in detail else EXIT_USAGE, detail)
     claim_mode = str(conventions.get("claim") or "set_assignee")
     if claim_mode == "set_assignee":
-        a_ok, a_detail = set_item_assignee(ssot, args.id, user.lstrip("@"))
+        a_ok, a_detail = set_item_assignee(ssot, item_id, user.lstrip("@"))
         if not a_ok:
             print(f"claim: WARN — assignee skipped: {a_detail}", file=sys.stderr)
         else:
             print(f"claim: assignee=@{a_detail.lstrip('@')}")
     note = getattr(args, "text", None) or "claimed"
     n_ok, n_detail, n_code = append_notes_helper(
-        root, ssot, args.id, agent=agent, text=note, limit=args.limit
+        root, ssot, item_id, agent=agent, text=note, limit=args.limit
     )
     if not n_ok:
         return fail("claim", n_code, f"status set but Notes failed: {n_detail}")
+    save_last_item_id(root, item_id, title=_item_title(item), action="claim")
     attr = format_agent_attribution(root, agent)
-    print(f"claim: {args.id} → in_progress ({n_detail})")
-    print(f"item_id={args.id} · {attr} · Status={before or '?'}→in_progress")
+    print(f"claim: {item_id} → in_progress ({n_detail})")
+    print(f"item_id={item_id} · {attr} · Status={before or '?'}→in_progress")
+    print(
+        f"next: python3 -m cursor_workflow project handoff --last --agent {agent} "
+        f"--next <agent> --to in_review"
+    )
     return EXIT_OK
 
 
@@ -1163,6 +1279,9 @@ def cmd_handoff(args: argparse.Namespace) -> int:
     ssot, code = _load_enabled_ssot(root, "handoff")
     if ssot is None:
         return code
+    item_id, id_code = resolve_item_id_arg(root, args, "handoff")
+    if item_id is None:
+        return id_code
     agent = (getattr(args, "agent", None) or "").strip()
     next_agent = (getattr(args, "next", None) or "").strip().lstrip("@")
     if not agent:
@@ -1177,9 +1296,9 @@ def cmd_handoff(args: argparse.Namespace) -> int:
     items, err = fetch_project_items(ssot, limit=args.limit)
     if err:
         return fail("handoff", EXIT_GH, err)
-    item = find_item_by_id(items, args.id)
+    item = find_item_by_id(items, item_id)
     if item is None:
-        return fail("handoff", EXIT_NOT_FOUND, f"item not found: {args.id}")
+        return fail("handoff", EXIT_NOT_FOUND, f"item not found: {item_id}")
     before = _normalize_status(str(item.get("status") or ""))
     extra = (getattr(args, "text", None) or "").strip()
     note_core = f"next={next_attr}"
@@ -1187,7 +1306,7 @@ def cmd_handoff(args: argparse.Namespace) -> int:
         note_core = f"{extra} · {note_core}"
     status_to = (getattr(args, "to", None) or "").strip()
     if status_to:
-        ok, detail = set_item_status(ssot, args.id, status_to)
+        ok, detail = set_item_status(ssot, item_id, status_to)
         if not ok:
             return fail(
                 "handoff",
@@ -1195,14 +1314,15 @@ def cmd_handoff(args: argparse.Namespace) -> int:
                 detail,
             )
     n_ok, n_detail, n_code = append_notes_helper(
-        root, ssot, args.id, agent=agent, text=note_core, limit=args.limit
+        root, ssot, item_id, agent=agent, text=note_core, limit=args.limit
     )
     if not n_ok:
         return fail("handoff", n_code, n_detail)
+    save_last_item_id(root, item_id, title=_item_title(item), action="handoff")
     after = status_to or before or "?"
-    print(f"handoff: {args.id} — {n_detail}")
+    print(f"handoff: {item_id} — {n_detail}")
     print(
-        f"item_id={args.id} · {self_attr} · Status={before or '?'}→{after} · next={next_attr}"
+        f"item_id={item_id} · {self_attr} · Status={before or '?'}→{after} · next={next_attr}"
     )
     return EXIT_OK
 
@@ -1212,12 +1332,15 @@ def cmd_validate_item(args: argparse.Namespace) -> int:
     ssot, code = _load_enabled_ssot(root, "validate-item")
     if ssot is None:
         return code
+    item_id, id_code = resolve_item_id_arg(root, args, "validate-item")
+    if item_id is None:
+        return id_code
     items, err = fetch_project_items(ssot, limit=args.limit)
     if err:
         return fail("validate-item", EXIT_GH, err)
-    item = find_item_by_id(items, args.id)
+    item = find_item_by_id(items, item_id)
     if item is None:
-        return fail("validate-item", EXIT_NOT_FOUND, f"item not found: {args.id}")
+        return fail("validate-item", EXIT_NOT_FOUND, f"item not found: {item_id}")
     body = _item_body(item)
     sections = list((ssot.get("conventions") or {}).get("body_sections") or [])
     missing = validate_card_body(body, sections)
@@ -1227,7 +1350,6 @@ def cmd_validate_item(args: argparse.Namespace) -> int:
     status = _normalize_status(str(item.get("status") or ""))
     options = ((ssot.get("fields") or {}).get("status") or {}).get("options") or {}
     if status and status not in options and str(item.get("status") or "").strip():
-        # Allow display labels that normalize to known keys only
         if status not in set(options):
             problems.append(f"unknown status {item.get('status')!r}")
     if attribution_required(ssot):
@@ -1236,8 +1358,40 @@ def cmd_validate_item(args: argparse.Namespace) -> int:
             problems.append(f"latest Notes line not attributed: {line[:80]}")
     if problems:
         return fail("validate-item", EXIT_VALIDATION, "; ".join(problems))
-    print(f"validate-item: {args.id} — ok")
+    print(f"validate-item: {item_id} — ok")
     print(f"status={item.get('status')}")
+    return EXIT_OK
+
+
+def cmd_last(args: argparse.Namespace) -> int:
+    """Print last saved item_id (token-efficient)."""
+    root = Path(args.directory).resolve()
+    lid = load_last_item_id(root)
+    if not lid:
+        return fail("last", EXIT_USAGE, "no last item — create-from-template first")
+    print(lid)
+    return EXIT_OK
+
+
+def cmd_guide(args: argparse.Namespace) -> int:
+    """Print safe agent recipe with --last (no placeholder ids)."""
+    root = Path(args.directory).resolve()
+    agent = (getattr(args, "agent", None) or "implementer").strip()
+    nxt = (getattr(args, "next", None) or "verifier").strip()
+    lid = load_last_item_id(root) or "(none — create first)"
+    print("# Safe board recipes — use --last; never paste docs placeholders as --id")
+    print(f"# last item_id: {lid}")
+    print("python3 -m cursor_workflow project doctor")
+    print(
+        'python3 -m cursor_workflow project create-from-template '
+        '--title "[SLICE] short-name" --template slice --status ready'
+    )
+    print(f"python3 -m cursor_workflow project claim --last --agent {agent}")
+    print(
+        f"python3 -m cursor_workflow project handoff --last --agent {agent} "
+        f"--next {nxt} --to in_review"
+    )
+    print("python3 -m cursor_workflow project validate-item --last")
     return EXIT_OK
 
 
@@ -1398,7 +1552,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
 
     set_status = project_sub.add_parser("set-status", help="Set item Status from YAML option ids")
     set_status.add_argument("--directory", type=Path, default=".")
-    set_status.add_argument("--id", required=True, help="Project item id (PVTI_…)")
+    _add_id_or_last(set_status)
     set_status.add_argument(
         "--to",
         required=True,
@@ -1408,14 +1562,14 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
 
     set_field = project_sub.add_parser("set-field", help="Set Priority or Size from YAML option ids")
     set_field.add_argument("--directory", type=Path, default=".")
-    set_field.add_argument("--id", required=True)
+    _add_id_or_last(set_field)
     set_field.add_argument("--field", required=True, choices=("priority", "size"))
     set_field.add_argument("--to", required=True, help="e.g. p1 or s")
     set_field.set_defaults(func=cmd_set_field)
 
     get_cmd = project_sub.add_parser("get", help="Get one project item by id")
     get_cmd.add_argument("--directory", type=Path, default=".")
-    get_cmd.add_argument("--id", required=True, help="Project item id (PVTI_…)")
+    _add_id_or_last(get_cmd)
     get_cmd.add_argument("--limit", type=int, default=100)
     get_cmd.add_argument("--json", action="store_true")
     get_cmd.set_defaults(func=cmd_get)
@@ -1425,7 +1579,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         help="Append a line under ## Notes (prefix @user/agent when --agent set)",
     )
     notes_cmd.add_argument("--directory", type=Path, default=".")
-    notes_cmd.add_argument("--id", required=True)
+    _add_id_or_last(notes_cmd)
     notes_cmd.add_argument("--text", required=True)
     notes_cmd.add_argument(
         "--agent",
@@ -1440,7 +1594,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         help="Pattern A: In progress + Notes (+ assignee when Issue-backed)",
     )
     claim_cmd.add_argument("--directory", type=Path, default=".")
-    claim_cmd.add_argument("--id", required=True)
+    _add_id_or_last(claim_cmd)
     claim_cmd.add_argument("--agent", required=True, help="Agent id for @user/agent Notes")
     claim_cmd.add_argument("--text", default="claimed", help="Notes text after attribution")
     claim_cmd.add_argument("--limit", type=int, default=100)
@@ -1451,7 +1605,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         help="Pattern A: Notes next=@user/agent + optional set-status",
     )
     handoff_cmd.add_argument("--directory", type=Path, default=".")
-    handoff_cmd.add_argument("--id", required=True)
+    _add_id_or_last(handoff_cmd)
     handoff_cmd.add_argument("--agent", required=True)
     handoff_cmd.add_argument("--next", required=True, help="Next agent name (no @user/ needed)")
     handoff_cmd.add_argument("--to", default="", help="Optional status: in_review|done|…")
@@ -1464,9 +1618,22 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         help="Check body sections / attribution / status (exit 5 on fail)",
     )
     val_cmd.add_argument("--directory", type=Path, default=".")
-    val_cmd.add_argument("--id", required=True)
+    _add_id_or_last(val_cmd)
     val_cmd.add_argument("--limit", type=int, default=100)
     val_cmd.set_defaults(func=cmd_validate_item)
+
+    last_cmd = project_sub.add_parser("last", help="Print last saved item_id (after create/claim)")
+    last_cmd.add_argument("--directory", type=Path, default=".")
+    last_cmd.set_defaults(func=cmd_last)
+
+    guide_cmd = project_sub.add_parser(
+        "guide",
+        help="Print safe recipes using --last (no placeholder ids)",
+    )
+    guide_cmd.add_argument("--directory", type=Path, default=".")
+    guide_cmd.add_argument("--agent", default="implementer")
+    guide_cmd.add_argument("--next", default="verifier")
+    guide_cmd.set_defaults(func=cmd_guide)
 
     doc_cmd = project_sub.add_parser(
         "doctor",
@@ -1480,7 +1647,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         help="Assign GitHub human user (Issue-backed); default owner.github_user",
     )
     assignee_cmd.add_argument("--directory", type=Path, default=".")
-    assignee_cmd.add_argument("--id", required=True, help="Project item id (PVTI_…)")
+    _add_id_or_last(assignee_cmd)
     assignee_cmd.add_argument(
         "--login",
         default="",

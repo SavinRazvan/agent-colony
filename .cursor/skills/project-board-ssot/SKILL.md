@@ -44,8 +44,10 @@ Work is **indexed on the Project**, not in chat alone.
 Handoff line (chat + card Notes):
 
 ```text
-item_id=PVTI_… · @User/implementer · Status=before→after · next=@User/verifier
+item_id=<real PVTI_ from create or project last> · @User/implementer · Status=before→after · next=@User/verifier
 ```
+
+Prefer `--last` after create so agents never invent ids.
 
 Multi-collaborator: each human’s `owner.github_user` namespaces their agents (`@Alice/implementer` vs `@Bob/implementer`) on the same board.
 ## When to use
@@ -110,18 +112,20 @@ Ready → In progress → In review → Done
 
 ## Procedure (CLI) — prefer Pattern A recipes
 
-**Never paste GitHub Project settings UI text into a shell.** Use recipes below. Human Project README: paste `.ai_infra/templates/project-board/project-readme.md` in the Project settings UI.
+**Never paste docs placeholders as `--id`.** After create, use `--last`. Print recipes: `project guide`.
 
-1. **Doctor:** `python -m cursor_workflow project doctor --directory .`
+Human Project README: paste `.ai_infra/templates/project-board/project-readme.md` in the Project settings UI (not into a shell).
+
+1. **Doctor / guide:** `project doctor` · `project guide --agent implementer`
 2. **Status / list:** `project status` · `project list [--status ready|in_progress|in_review]`
-3. **Create (template):** `project create-from-template --title "…" --template slice|bug [--status ready] [--acceptance …] [--rollback …]`
-4. **Claim (one command):** `project claim --id PVTI_… --agent <this-agent>` — In progress + Notes `@user/agent` (+ assignee when Issue-backed)
-5. **Handoff (one command):** `project handoff --id PVTI_… --agent <this-agent> --next <agent> [--to in_review|done] [--text …]`
-6. **Validate:** `project validate-item --id PVTI_…` (exit 5 if missing sections / bad Notes)
-7. **Atomics (power use):** `set-status` · `set-field` · `append-notes --agent` · `set-assignee` · `get` · `export`
-8. **Verify:** `project list` matches intent + handoff line printed
+3. **Create:** `project create-from-template --title "[SLICE] short-name" --template slice --status ready`
+4. **Claim:** `project claim --last --agent <this-agent>`
+5. **Handoff:** `project handoff --last --agent <this-agent> --next <agent> [--to in_review|done]`
+6. **Validate:** `project validate-item --last`
+7. **Atomics (power use):** `set-status` · `set-field` · `append-notes --agent` · `get --last` · `export`
+8. **Verify:** `project list` + handoff line; `project last` prints saved id
 
-Exit codes: `0` ok · `2` usage/config · `3` gh · `4` not found · `5` validation. Failures: `project <cmd>: FAIL — CODE=n · reason`.
+Exit codes: `0` ok · `2` usage/config (includes placeholder `--id`) · `3` gh · `4` not found · `5` validation.
 
 ## Dual-write ban
 

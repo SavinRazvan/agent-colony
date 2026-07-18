@@ -82,11 +82,11 @@ Do **not** run individual gates in chat when `prepare.py` exists unless `verifie
 |--------|---------|
 | Health | `python -m cursor_workflow project doctor` |
 | Create card | `python -m cursor_workflow project create-from-template --title "…" --template slice` |
-| Claim | `python -m cursor_workflow project claim --id PVTI_… --agent <name>` |
-| Handoff | `python -m cursor_workflow project handoff --id PVTI_… --agent <name> --next <agent> [--to in_review]` |
-| Validate card | `python -m cursor_workflow project validate-item --id PVTI_…` |
+| Claim | `python -m cursor_workflow project claim --last --agent <name>` |
+| Handoff | `python -m cursor_workflow project handoff --last --agent <name> --next <agent> [--to in_review]` |
+| Safe recipes | `python -m cursor_workflow project guide` |
 
-Prefer recipes over multi-step `set-status` + `append-notes`. Never paste Project settings UI into the shell.
+Prefer `--last` after `create-from-template`. Never paste docs placeholder ids. Never paste Project settings UI into the shell.
 
 ## Maintainer lane
 
