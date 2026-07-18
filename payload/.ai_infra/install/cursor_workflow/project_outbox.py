@@ -31,7 +31,15 @@ EXIT_VALIDATION = 5
 EXIT_QUEUED = 6
 
 _OUTBOX_OPS = frozenset(
-    {"append-notes", "set-status", "handoff", "claim", "set-assignee", "set-field"}
+    {
+        "append-notes",
+        "set-status",
+        "handoff",
+        "claim",
+        "set-assignee",
+        "set-field",
+        "promote-to-issue",
+    }
 )
 _DEFAULT_PATH = ".local/generated-data/board-outbox.jsonl"
 _RATE_LIMIT_RE = re.compile(
@@ -403,6 +411,27 @@ def apply_outbox_entry(
                 ).strip()
             return True, f"{field}={to_val}"
         return False, f"unsupported set-field {field!r}"
+
+    if op == "promote-to-issue":
+        from project_cli import promote_draft_item_to_issue  # noqa: PLC0415
+
+        repo = str(payload.get("repo") or ssot.get("default_repo") or "")
+        ok, detail, meta = promote_draft_item_to_issue(ssot, item_id, repo=repo)
+        if not ok:
+            return False, detail
+        note = str(payload.get("text") or "").strip()
+        if not note:
+            n = meta.get("issue_number")
+            url = meta.get("url") or ""
+            note = f"promoted to Issue #{n}: {url}" if url else f"promoted to Issue #{n}"
+        if agent and note:
+            n_ok, n_detail, _ = append_notes_helper(
+                root, ssot, str(meta.get("item_id") or item_id),
+                agent=agent, text=note, limit=limit,
+            )
+            if not n_ok:
+                return False, f"promoted but Notes failed: {n_detail}"
+        return True, detail
 
     if op == "handoff":
         next_agent = str(payload.get("next") or "").strip().lstrip("@")

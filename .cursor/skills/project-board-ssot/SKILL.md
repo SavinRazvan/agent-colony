@@ -79,8 +79,18 @@ Multi-collaborator: each human’s `owner.github_user` namespaces their agents (
 |----------------|------|-----|-------|
 | **Start date** | Claim | `project claim --last --agent <agent>` | UTC today when `conventions.set_start_date_on_claim: true` and `fields.start_date.field_id` is set; WARN only on failure — claim still succeeds |
 | **Estimate** | Triage / own card | `project set-field --field estimate --to N` | Number field; N ≥ 0 |
-| **Linked PR** | PR open | `project mention-pr --pr N --last --agent <agent>` | Appends Notes with canonical PR URL; GitHub **Linked pull requests** column is derived (Issue↔PR; DraftIssue warns) |
+| **Promote Draft→Issue** | Before PR / explicit | `project promote-to-issue --last --agent <name> [--repo owner/repo]` | GraphQL `convertProjectV2DraftIssueItemToIssue`; **same PVTI_** preserved; Assignees + Linked PRs work after promote; Notes line `promoted to Issue #N`; fine-grained PAT caveat (`doctor` / `guide`); **claim does NOT auto-promote** |
+| **Linked PR** | PR open (Issue-backed) | `project mention-pr --pr N --last --agent <agent>` | Auto-promotes Draft when `conventions.promote_to_issue_on_pr` (default true) — **FAIL** if promote fails; **WARN-only** if convention false; Notes with canonical PR URL; GitHub **Linked pull requests** column derived (Issue↔PR) |
 | **Out of scope (agents default)** | — | — | Iteration, Labels, Reviewers, End date — human / UI only |
+
+### Issue lifecycle (Draft vs Issue)
+
+| Path | CLI / config | Notes |
+|------|--------------|-------|
+| Default create | `create-from-template` + `item_kind_default: draft` | DraftIssue on the Project |
+| Issue at create | `create-from-template` + `item_kind_default: issue` | `gh issue create` + `gh project item-add` |
+| Explicit promote | `promote-to-issue --last --agent <name>` | Same `PVTI_`; claim does **not** auto-promote |
+| Auto on PR | `mention-pr` | When `promote_to_issue_on_pr: true` (default) |
 
 ### Rules
 
@@ -147,7 +157,7 @@ Index: `.ai_infra/templates/project-board/README.md`. After create, always `clai
 4. **Claim:** `project claim --last --agent <this-agent>`
 5. **Handoff:** `project handoff --last --agent <this-agent> --next <agent> [--to in_review|done]`
 6. **Validate:** `project validate-item --last`
-7. **Atomics (power use):** `set-status` · `set-field` (priority · size · estimate) · `mention-pr` · `append-notes --agent` · `get --last` · `export`
+7. **Atomics (power use):** `set-status` · `set-field` (priority · size · estimate) · `promote-to-issue` · `mention-pr` · `append-notes --agent` · `get --last` · `export`
 8. **Verify:** `project list` + handoff line; `project last` prints saved id
 
 Exit codes: `0` ok · `2` usage/config (includes placeholder `--id`) · `3` gh · `4` not found · `5` validation · `6` queued (outbox; soft-success — flush later).

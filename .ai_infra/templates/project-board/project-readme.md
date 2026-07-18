@@ -15,7 +15,7 @@ This GitHub Project is the **only writable SSOT** for backlog, Status, and multi
 - Status path: **Ready → In progress → In review → Done**
 - Card body (Acceptance / Rollback / Notes) = continuation index — not chat alone
 - Notes attributed as `@github_user/agent · UTC timestamp · text`
-- **Tier-1 fields (agents):** claim may set **Start date** (UTC today); triage may set **Estimate** (`set-field --field estimate --to N`); open PR → `mention-pr --pr N` (Notes + derived Linked PRs). Agents do not set Iteration, Labels, Reviewers, or End date by default.
+- **Tier-1 fields (agents):** claim may set **Start date** (UTC today); triage may set **Estimate** (`set-field --field estimate --to N`); promote Draft→Issue (`promote-to-issue --last --agent <name>`); open PR → `mention-pr --pr N` (auto-promotes when `promote_to_issue_on_pr`, default true). Agents do not set Iteration, Labels, Reviewers, or End date by default.
 
 ## Agents (CLI — never paste this README into a shell)
 
@@ -26,7 +26,8 @@ python3 -m cursor_workflow project outbox status
 python3 -m cursor_workflow project create-from-template --title "[SLICE] short-name" --template slice --status ready
 python3 -m cursor_workflow project claim --last --agent implementer   # + Start date (UTC) when configured
 python3 -m cursor_workflow project set-field --field estimate --to 3 --last
-python3 -m cursor_workflow project mention-pr --pr <n> --last --agent implementer
+python3 -m cursor_workflow project promote-to-issue --last --agent implementer   # Draft→Issue; same PVTI_; before PR if not using mention-pr auto
+python3 -m cursor_workflow project mention-pr --pr <n> --last --agent implementer   # auto-promotes Draft when promote_to_issue_on_pr (default true)
 python3 -m cursor_workflow project handoff --last --agent implementer --next verifier --to in_review
 ```
 

@@ -122,11 +122,18 @@ const BOARD_TIER1 = [
     "Number field via YAML field_id",
   ],
   [
-    "Linked PR",
-    "PR open",
-    "mention-pr --pr N → Notes with canonical PR URL",
+    "Promote Draft→Issue",
+    "Before PR / explicit",
+    "promote-to-issue --last --agent <name> [--repo owner/repo]",
     "implementer (typical)",
-    "Linked pull requests column derived (Issue↔PR; DraftIssue warns)",
+    "convertProjectV2DraftIssueItemToIssue; same PVTI_; claim does NOT auto-promote; fine-grained PAT caveat",
+  ],
+  [
+    "Linked PR",
+    "PR open (Issue-backed)",
+    "mention-pr --pr N → Notes; auto-promote when promote_to_issue_on_pr (default true)",
+    "implementer (typical)",
+    "FAIL if promote fails; Linked pull requests column works after Issue",
   ],
 ];
 

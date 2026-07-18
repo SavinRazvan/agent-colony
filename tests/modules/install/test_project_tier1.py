@@ -288,7 +288,8 @@ def test_cmd_mention_pr_appends_notes(
 def test_cmd_mention_pr_draft_warn(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_tier1_ssot(), []))
+    ssot = _tier1_ssot(conventions={"promote_to_issue_on_pr": False})
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
     monkeypatch.setattr(
         project_cli,
         "run_gh",
