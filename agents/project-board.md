@@ -12,7 +12,7 @@ description: Independent-governed helper — list/create/move GitHub Project SSO
 
 **Exit:** Board Status updated via CLI for every triage action; append `change-index.md` (Agent: `project-board`); one line in `history/updates-log.md`. Print handoff line (`next=implementer|…`). Do **not** dual-write `work-tracker.md` when `sync_policy: board_only`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `project claim` / `project handoff --agent project-board` (→ `@owner.github_user/project-board`); atomics `append-notes --agent project-board` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+**Board rights:** Status + Notes on the card you touch. Tier-1: claim may set Start date (UTC); triage may set Estimate; use `mention-pr` for PR Notes — do not set Iteration/End date/Reviewers by default. Prefer `project claim` / `project handoff --agent project-board` (→ `@owner.github_user/project-board`); atomics `append-notes --agent project-board` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
 
 **Templates:** feature/`chore/` → `--template slice`; defect/`fix/` → `--template bug`; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
 

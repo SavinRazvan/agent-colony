@@ -27,7 +27,8 @@
         "set-status",
         "handoff",
         "claim",
-        "set-assignee"
+        "set-assignee",
+        "set-field"
       ]
     },
     "item_id": {

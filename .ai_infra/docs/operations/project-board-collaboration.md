@@ -33,6 +33,9 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 |---------|-------|--------|--------|
 | Card Status | Yes | Yes — every agent Exit | — |
 | Priority / Size | Yes | Triage + own card | — |
+| Start date | Yes (UI) | Claim sets UTC today when `set_start_date_on_claim` + `fields.start_date.field_id` | — |
+| Estimate | Yes (UI) | Triage + own card — `set-field --field estimate --to N` | — |
+| Linked PRs | Yes (UI link) | `mention-pr --pr N` → Notes with PR URL | GitHub **Linked pull requests** column derived from Issue↔PR |
 | Create cards | Yes | project-board, implementer, integrator | — |
 | Ready prioritization | **Owner** | Consume; create agreed work | — |
 | Views / workflows / Insights / README / status updates | **Owner only** | Never | Insights auto |
@@ -81,7 +84,7 @@ GitHub GraphQL quota (~5000/hour) can block board writes. When `project_ssot.out
 1. Live write fails with rate-limit → CLI **enqueues** to `.local/generated-data/board-outbox.jsonl` and returns **EXIT_QUEUED (6)**.
 2. Agent continues local evidence (`change-index`, handoff line) — **do not** hammer `gh` / retry loops.
 3. After quota recovers: `python3 -m cursor_workflow project outbox status` then `outbox flush` (capped by `max_flush_per_run`; refuses if `remaining < min_graphql_remaining`).
-4. Explicit enqueue: `project queue --op append-notes|set-status|handoff|claim|set-assignee …`
+4. Explicit enqueue: `project queue --op append-notes|set-status|handoff|claim|set-assignee|set-field …`
 5. Outbox is a **local buffer**, never a second Status SSOT.
 
 Who flushes: any agent/human after reset; prefer implementer or project-board at slice close. Pending outbox is **not** a DRIFT failure.

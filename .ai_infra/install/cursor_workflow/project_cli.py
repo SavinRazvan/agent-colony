@@ -364,6 +364,82 @@ def resolve_field_option_id(ssot: dict[str, Any], field: str, logical: str) -> t
     return str(field_id), str(options[key])
 
 
+def resolve_plain_field_id(ssot: dict[str, Any], field: str) -> str:
+    """Return field_id for date/number fields (start_date, end_date, estimate)."""
+    fields = ssot.get("fields") or {}
+    block = fields.get(field)
+    if not isinstance(block, dict):
+        raise KeyError(f"project_ssot.fields.{field} missing")
+    field_id = block.get("field_id")
+    if not field_id:
+        raise KeyError(f"project_ssot.fields.{field}.field_id missing")
+    return str(field_id)
+
+
+def utc_today_iso() -> str:
+    """UTC calendar date YYYY-MM-DD for Project date fields."""
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
+def set_item_date(
+    ssot: dict[str, Any], item_id: str, field_key: str, date_iso: str
+) -> tuple[bool, str]:
+    """Set a DATE Project field via gh project item-edit --date."""
+    try:
+        field_id = resolve_plain_field_id(ssot, field_key)
+    except KeyError as exc:
+        return False, str(exc)
+    date_iso = str(date_iso or "").strip()
+    if len(date_iso) != 10 or date_iso[4] != "-" or date_iso[7] != "-":
+        return False, f"date must be YYYY-MM-DD, got {date_iso!r}"
+    project_id = str(ssot["project_id"])
+    proc = run_gh(
+        [
+            "project",
+            "item-edit",
+            "--project-id",
+            project_id,
+            "--id",
+            item_id,
+            "--field-id",
+            field_id,
+            "--date",
+            date_iso,
+        ]
+    )
+    if proc.returncode != 0:
+        return False, (proc.stderr or proc.stdout or "gh project item-edit --date failed").strip()
+    return True, date_iso
+
+
+def set_item_number(
+    ssot: dict[str, Any], item_id: str, field_key: str, value: float
+) -> tuple[bool, str]:
+    """Set a NUMBER Project field via gh project item-edit --number."""
+    try:
+        field_id = resolve_plain_field_id(ssot, field_key)
+    except KeyError as exc:
+        return False, str(exc)
+    project_id = str(ssot["project_id"])
+    proc = run_gh(
+        [
+            "project",
+            "item-edit",
+            "--project-id",
+            project_id,
+            "--id",
+            item_id,
+            "--field-id",
+            field_id,
+            "--number",
+            str(value),
+        ]
+    )
+    if proc.returncode != 0:
+        return False, (proc.stderr or proc.stdout or "gh project item-edit --number failed").strip()
+    return True, str(value)
+
+
 def status_field_id(ssot: dict[str, Any]) -> str:
     fields = ssot.get("fields") or {}
     status = fields.get("status") or {}
@@ -773,8 +849,36 @@ def cmd_set_field(args: argparse.Namespace) -> int:
     if item_id is None:
         return id_code
     field = args.field.strip().lower()
-    if field not in ("priority", "size"):
-        return fail("set-field", EXIT_USAGE, "--field must be priority or size")
+    if field not in ("priority", "size", "estimate"):
+        return fail(
+            "set-field",
+            EXIT_USAGE,
+            "--field must be priority, size, or estimate",
+        )
+    if field == "estimate":
+        try:
+            num = float(str(args.to).strip())
+        except ValueError:
+            return fail("set-field", EXIT_USAGE, "--to must be a number for estimate")
+        if num < 0:
+            return fail("set-field", EXIT_USAGE, "estimate must be >= 0")
+        ok, detail = set_item_number(ssot, item_id, "estimate", num)
+        if not ok:
+            queued = _try_queue_rate_limit(
+                root,
+                ssot,
+                cmd="set-field",
+                err_detail=detail,
+                op="set-field",
+                item_id=item_id,
+                agent=(getattr(args, "agent", None) or "project-cli"),
+                payload={"field": "estimate", "to": num},
+            )
+            if queued is not None:
+                return queued
+            return fail("set-field", EXIT_GH, detail)
+        print(f"set-field: {item_id} estimate → {num}")
+        return EXIT_OK
     try:
         field_id, option_id = resolve_field_option_id(ssot, field, args.to)
     except KeyError as exc:
@@ -795,11 +899,20 @@ def cmd_set_field(args: argparse.Namespace) -> int:
         ]
     )
     if proc.returncode != 0:
-        return fail(
-            "set-field",
-            EXIT_GH,
-            (proc.stderr or proc.stdout or "gh project item-edit failed").strip(),
+        detail = (proc.stderr or proc.stdout or "gh project item-edit failed").strip()
+        queued = _try_queue_rate_limit(
+            root,
+            ssot,
+            cmd="set-field",
+            err_detail=detail,
+            op="set-field",
+            item_id=item_id,
+            agent=(getattr(args, "agent", None) or "project-cli"),
+            payload={"field": field, "to": args.to},
         )
+        if queued is not None:
+            return queued
+        return fail("set-field", EXIT_GH, detail)
     print(f"set-field: {item_id} {field} → {args.to} ({option_id})")
     return EXIT_OK
 
@@ -1163,6 +1276,10 @@ def build_export_snapshot(ssot: dict[str, Any], items: list[dict[str, Any]]) -> 
                 "status_normalized": _normalize_status(str(item.get("status") or "")),
                 "priority": item.get("priority"),
                 "size": item.get("size"),
+                "start_date": item.get("start date")
+                or item.get("Start date")
+                or item.get("start_date"),
+                "estimate": item.get("estimate") or item.get("Estimate"),
                 "body_excerpt": excerpt,
                 "updated_at": item.get("updatedAt") or item.get("updated_at"),
             }
@@ -1202,6 +1319,10 @@ def cmd_get(args: argparse.Namespace) -> int:
         "status": item.get("status"),
         "priority": item.get("priority"),
         "size": item.get("size"),
+        "start_date": item.get("start date")
+        or item.get("Start date")
+        or item.get("start_date"),
+        "estimate": item.get("estimate") or item.get("Estimate"),
         "body": _item_body(item),
     }
     if args.json:
@@ -1212,6 +1333,8 @@ def cmd_get(args: argparse.Namespace) -> int:
         print(f"status: {payload['status']}")
         print(f"priority: {payload['priority']}")
         print(f"size: {payload['size']}")
+        print(f"start_date: {payload['start_date']}")
+        print(f"estimate: {payload['estimate']}")
         print("--- body ---")
         print(payload["body"] or "(empty)")
     return EXIT_OK
@@ -1316,10 +1439,17 @@ def cmd_claim(args: argparse.Namespace) -> int:
     if not user:
         return fail("claim", EXIT_USAGE, "owner.github_user missing")
     conventions = ssot.get("conventions") or {}
-    claim_payload = {
+    claim_payload: dict[str, Any] = {
         "to": "in_progress",
         "text": getattr(args, "text", None) or "claimed",
     }
+    # Best-effort: include planned Start date for outbox flush if rate-limited mid-flight
+    fields_block = ssot.get("fields") if isinstance(ssot.get("fields"), dict) else {}
+    start_cfg = fields_block.get("start_date") if isinstance(fields_block, dict) else None
+    if conventions.get("set_start_date_on_claim", True) and isinstance(
+        start_cfg, dict
+    ) and start_cfg.get("field_id"):
+        claim_payload["start_date"] = utc_today_iso()
     items, err = fetch_project_items(ssot, limit=args.limit)
     if err:
         queued = _try_queue_rate_limit(
@@ -1374,6 +1504,14 @@ def cmd_claim(args: argparse.Namespace) -> int:
             print(f"claim: WARN — assignee skipped: {a_detail}", file=sys.stderr)
         else:
             print(f"claim: assignee=@{a_detail.lstrip('@')}")
+    # Tier-1: Start date = UTC today (WARN on failure; do not fail claim)
+    if claim_payload.get("start_date"):
+        today = str(claim_payload["start_date"])
+        d_ok, d_detail = set_item_date(ssot, item_id, "start_date", today)
+        if not d_ok:
+            print(f"claim: WARN — start_date skipped: {d_detail}", file=sys.stderr)
+        else:
+            print(f"claim: start_date={d_detail}")
     note = getattr(args, "text", None) or "claimed"
     n_ok, n_detail, n_code = append_notes_helper(
         root, ssot, item_id, agent=agent, text=note, limit=args.limit
@@ -1547,6 +1685,89 @@ def cmd_last(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
+def cmd_mention_pr(args: argparse.Namespace) -> int:
+    """
+    Append Notes with canonical PR URL + print find-by-pr candidates.
+    Does not write LINKED_PULL_REQUESTS (derived on GitHub for Issue↔PR links).
+    """
+    root = Path(args.directory).resolve()
+    ssot, code = _load_enabled_ssot(root, "mention-pr")
+    if ssot is None:
+        return code
+    item_id, id_code = resolve_item_id_arg(root, args, "mention-pr")
+    if item_id is None:
+        return id_code
+    agent = (getattr(args, "agent", None) or "").strip()
+    if not agent:
+        return fail("mention-pr", EXIT_USAGE, "--agent required")
+    pr_ref = (getattr(args, "pr", None) or "").strip()
+    if not pr_ref:
+        return fail("mention-pr", EXIT_USAGE, "--pr required")
+    repo = str(ssot.get("default_repo") or "").strip()
+    view_args = ["pr", "view", pr_ref, "--json", "url,number,title"]
+    if repo:
+        view_args.extend(["--repo", repo])
+    proc = run_gh(view_args)
+    if proc.returncode != 0:
+        return fail(
+            "mention-pr",
+            EXIT_GH,
+            (proc.stderr or proc.stdout or "gh pr view failed").strip(),
+        )
+    try:
+        pdata = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError:
+        return fail("mention-pr", EXIT_GH, "invalid gh pr view JSON")
+    pr_url = str(pdata.get("url") or "").strip()
+    pr_num = pdata.get("number")
+    if not pr_url:
+        return fail("mention-pr", EXIT_GH, "pr view missing url")
+    # DraftIssue warn (Linked PRs column needs Issue)
+    kind, _cid, _meta, kerr = resolve_item_content(ssot, item_id)
+    conventions = ssot.get("conventions") or {}
+    if kind == "draft" or (kerr and "Draft" in str(kerr)):
+        print(
+            "mention-pr: WARN — card looks DraftIssue; GitHub Linked pull requests "
+            "fills for Issue-backed items. Promote/convert to Issue when linking a PR "
+            f"(promote_to_issue_on_pr={conventions.get('promote_to_issue_on_pr', True)}).",
+            file=sys.stderr,
+        )
+    note = f"PR {pr_num}: {pr_url}"
+    ok, detail, err_code = append_notes_helper(
+        root, ssot, item_id, agent=agent, text=note, limit=args.limit
+    )
+    if not ok:
+        if err_code == EXIT_GH:
+            queued = _try_queue_rate_limit(
+                root,
+                ssot,
+                cmd="mention-pr",
+                err_detail=detail,
+                op="append-notes",
+                item_id=item_id,
+                agent=agent,
+                payload={"text": note},
+            )
+            if queued is not None:
+                return queued
+        return fail("mention-pr", err_code, detail)
+    print(f"mention-pr: {item_id} — Notes {note}")
+    # Verification print (find-by-pr style)
+    items, err = fetch_project_items(ssot, limit=args.limit)
+    if not err:
+        matches = find_items_mentioning_pr(
+            items, pr_number=str(pr_num or ""), pr_url=pr_url
+        )
+        if matches:
+            print(
+                "mention-pr: find-by-pr candidates: "
+                + ", ".join(str(m.get("id")) for m in matches[:5])
+            )
+        else:
+            print("mention-pr: find-by-pr — no other matches yet (Notes just written)")
+    return EXIT_OK
+
+
 def cmd_guide(args: argparse.Namespace) -> int:
     """Print safe agent recipe with --last (no placeholder ids)."""
     root = Path(args.directory).resolve()
@@ -1561,10 +1782,19 @@ def cmd_guide(args: argparse.Namespace) -> int:
         'python3 -m cursor_workflow project create-from-template '
         '--title "[SLICE] short-name" --template slice --status ready'
     )
-    print(f"python3 -m cursor_workflow project claim --last --agent {agent}")
+    print(
+        f"python3 -m cursor_workflow project claim --last --agent {agent}  "
+        "# In progress + assignee + Start date (UTC)"
+    )
+    print(
+        "python3 -m cursor_workflow project set-field --field estimate --to 3 --last"
+    )
     print(
         f"python3 -m cursor_workflow project handoff --last --agent {agent} "
         f"--next {nxt} --to in_review"
+    )
+    print(
+        f"python3 -m cursor_workflow project mention-pr --pr <n> --last --agent {agent}"
     )
     print("python3 -m cursor_workflow project validate-item --last")
     print("# If EXIT_QUEUED (6): python3 -m cursor_workflow project outbox flush")
@@ -1743,6 +1973,20 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     print(f"project: {ssot.get('name')} ({ssot.get('url')})")
     print(f"human: {user}")
     print(f"templates: {tpl_dir}")
+    fields = ssot.get("fields") if isinstance(ssot.get("fields"), dict) else {}
+    for key in ("start_date", "estimate"):
+        block = fields.get(key) if isinstance(fields, dict) else None
+        if isinstance(block, dict) and block.get("field_id"):
+            print(f"tier1.{key}: {block['field_id']}")
+        else:
+            print(
+                f"doctor: WARN — fields.{key}.field_id missing (Tier-1 claim/estimate)",
+                file=sys.stderr,
+            )
+    conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
+    print(
+        f"set_start_date_on_claim: {conventions.get('set_start_date_on_claim', True)}"
+    )
     cfg = cfg_pre
     path = _outbox.outbox_path(root, cfg)
     counts = _outbox.count_outbox(path)
@@ -1897,11 +2141,25 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     )
     set_status.set_defaults(func=cmd_set_status)
 
-    set_field = project_sub.add_parser("set-field", help="Set Priority or Size from YAML option ids")
+    set_field = project_sub.add_parser(
+        "set-field",
+        help="Set Priority, Size, or Estimate from YAML field ids",
+    )
     set_field.add_argument("--directory", type=Path, default=".")
     _add_id_or_last(set_field)
-    set_field.add_argument("--field", required=True, choices=("priority", "size"))
-    set_field.add_argument("--to", required=True, help="e.g. p1 or s")
+    set_field.add_argument(
+        "--field", required=True, choices=("priority", "size", "estimate")
+    )
+    set_field.add_argument(
+        "--to",
+        required=True,
+        help="e.g. p1, s, or number for estimate",
+    )
+    set_field.add_argument(
+        "--agent",
+        default="project-cli",
+        help="Agent id for outbox attribution if rate-limited",
+    )
     set_field.set_defaults(func=cmd_set_field)
 
     get_cmd = project_sub.add_parser("get", help="Get one project item by id")
@@ -1936,6 +2194,17 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     claim_cmd.add_argument("--text", default="claimed", help="Notes text after attribution")
     claim_cmd.add_argument("--limit", type=int, default=100)
     claim_cmd.set_defaults(func=cmd_claim)
+
+    mention_cmd = project_sub.add_parser(
+        "mention-pr",
+        help="Notes with PR URL + find-by-pr check (Linked PRs column is derived)",
+    )
+    mention_cmd.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(mention_cmd)
+    mention_cmd.add_argument("--pr", required=True, help="PR number or URL")
+    mention_cmd.add_argument("--agent", required=True)
+    mention_cmd.add_argument("--limit", type=int, default=100)
+    mention_cmd.set_defaults(func=cmd_mention_pr)
 
     handoff_cmd = project_sub.add_parser(
         "handoff",

@@ -12,7 +12,7 @@ description: Operational workflow drift detection; plan/tracker/session coherenc
 
 **Exit:** Prefer `handoff --last` / `claim --last` after create. Write drift artifacts under `.local/workflow-artifacts/drift/`. When board SSOT is on: (1) set the **drift-pass card** Status → `done` (or `in_review` if P0/P1 need human); (2) for Confirmed dual-write, add Notes on the offending card or hand off to **project-board** / **implementer** via Ready — do **not** auto-edit `plan.md` / `work-tracker.md` / invent competing tracker `in_progress`. One line in `updates-log.md`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent workflow-drift-guard` (→ `@owner.github_user/workflow-drift-guard`); atomics `append-notes --agent workflow-drift-guard` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+**Board rights:** Status + Notes on the card you touch. Tier-1: claim may set Start date (UTC); triage may set Estimate; use `mention-pr` for PR Notes — do not set Iteration/End date/Reviewers by default. Prefer `claim --last` / `handoff --last --agent workflow-drift-guard` (→ `@owner.github_user/workflow-drift-guard`); atomics `append-notes --agent workflow-drift-guard` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
 
 **Templates:** skill § Template routing when creating a drift-pass card; prefer claim existing. Notes timestamps via CLI; do not hand-forge times.
 

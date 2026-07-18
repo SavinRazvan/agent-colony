@@ -76,6 +76,13 @@ project_ssot:
         m: "SIZE_M_OPTION_ID"
         l: "SIZE_L_OPTION_ID"
         xl: "SIZE_XL_OPTION_ID"
+    # Tier-1 (replace ids from `gh project field-list`)
+    start_date:
+      field_id: PVTF_PLACEHOLDER_START_DATE
+    end_date:
+      field_id: PVTF_PLACEHOLDER_END_DATE   # reserved; no CLI write yet
+    estimate:
+      field_id: PVTF_PLACEHOLDER_ESTIMATE
 
   # Multi-agent / multi-collaborator conventions
   conventions:
@@ -84,6 +91,7 @@ project_ssot:
     review_status: in_review
     done_status: done
     claim: set_assignee                   # set_assignee | title_prefix | none
+    set_start_date_on_claim: true         # no-op if start_date.field_id missing
     one_in_progress_per_assignee: true
     item_kind_default: draft              # draft | issue
     promote_to_issue_on_pr: true

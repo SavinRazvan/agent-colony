@@ -106,6 +106,30 @@ const PER_AGENT_ENTRY_EXIT = [
   ],
 ];
 
+const BOARD_TIER1 = [
+  [
+    "Start date",
+    "claim (In progress)",
+    "UTC today when set_start_date_on_claim + fields.start_date.field_id",
+    "All agents on claim",
+    "WARN only on failure; claim still succeeds",
+  ],
+  [
+    "Estimate",
+    "Triage / own card",
+    "set-field --field estimate --to N (N ≥ 0)",
+    "project-board, implementer, integrator",
+    "Number field via YAML field_id",
+  ],
+  [
+    "Linked PR",
+    "PR open",
+    "mention-pr --pr N → Notes with canonical PR URL",
+    "implementer (typical)",
+    "Linked pull requests column derived (Issue↔PR; DraftIssue warns)",
+  ],
+];
+
 const ARTIFACT_FLOWS = [
   [
     "Board card body (Acceptance / Rollback / Notes)",
@@ -418,6 +442,21 @@ export default function AgentBoardCollaborationCanvas() {
             headers={["Agent", "Entry", "Exit (board)"]}
             rows={PER_AGENT_ENTRY_EXIT}
           />
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader>Tier-1 board fields (agents — facts from project CLI)</CardHeader>
+        <CardBody>
+          <Table
+            headers={["Field", "When", "CLI / config", "Typical actor", "Notes"]}
+            rows={BOARD_TIER1}
+          />
+          <Spacer size={8} />
+          <Text tone="tertiary" size="small">
+            Out of scope for agents by default: Iteration, Labels, Reviewers, End date
+            (human / UI).
+          </Text>
         </CardBody>
       </Card>
 
