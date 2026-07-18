@@ -26,6 +26,8 @@ python3 -m cursor_workflow research validate --slug <slug>
 
 Terse chat (`/researcher https://github.com/owner/repo`) is valid: agent derives Brief defaults per skill § Intake.
 
+**Public vs private:** fetch uses `gh repo clone` (preferred) then `git clone`. Private repos require the consumer’s local `gh auth` / git credentials. Anti-loop: max 6 deepen rounds; no re-init/re-fetch without `--force`; stop after `status: complete`.
+
 | File | Role |
 |------|------|
 | `RESEARCH_BOUNDARIES.md` | Hard stop + enable rules (copied to corpus root on first init) |

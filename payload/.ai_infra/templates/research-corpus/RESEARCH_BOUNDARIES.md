@@ -20,6 +20,8 @@ Notes:
 3. **Do not** `git commit`, `git push`, or create PRs for research-only work.
 4. **External runs need a Brief** — derive from user chat, peer agent handoff/Notes, or board card; persist as `sources/<slug>/BRIEF.md`. Terse `/researcher <url>` is enough (skill defaults apply).
 5. Pin every pack to a **path or commit SHA** in `SOURCE.md`; do not invent evidence.
+6. **Anti-loop:** deepen ≤ `rounds_max` (default 6); after `status: complete` + validate, exit — no endless deepen/re-fetch without explicit `--force` redo.
+7. **GitHub:** public clones work with network; private clones need consumer `gh`/git auth (same as local `gh repo clone`).
 
 ## Modes
 
