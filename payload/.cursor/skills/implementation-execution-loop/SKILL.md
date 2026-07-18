@@ -17,6 +17,7 @@ New or continued `feature/` | `fix/` | `chore/` work; recovery from blocked slic
 - Test trackers when tests change: `test-plan.md`, `test-index.md`
 - Closure detail: `.ai_infra/docs/operations/workflow-complete.md` §F
 - Boundaries: `overlays/rules/*.mdc` when installed; universal rules in `.cursor/rules/`; ADR-008
+- If Notes/user cite `_research_results/sources/<slug>/AGENT_BRIEF.md`, read it before implementing
 
 ## Steps
 

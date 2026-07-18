@@ -123,7 +123,7 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 | Audit orchestration | `.cursor/skills/audit-orchestration/SKILL.md` — parent runs verify-all + Task delegation (no dedicated agent) |
 | Audit module map | `.cursor/skills/audit-module-map/SKILL.md` — optional deep map; invoke via **`enterprise-auditor`** |
 | Maintainer PR | `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` → `merge-pr` |
-| Research corpus (optional) | `.cursor/agents/researcher.md` — off by default |
+| Research corpus (optional) | `.cursor/agents/researcher.md` — brief-driven external packs; `research init\|fetch\|validate`; off until `_research_results/` init |
 | MCP | `.ai_infra/mcp_servers/workflow_mcp/` — `python -m workflow_mcp`; [`.cursor/mcp.json.kit.example`](.cursor/mcp.json.kit.example) + [connect-external-mcp](.ai_infra/docs/operations/connect-external-mcp.md) |
 
 Scripts:

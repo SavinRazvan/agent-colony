@@ -145,6 +145,7 @@ Human Project README: paste `.ai_infra/templates/project-board/project-readme.md
 |------|-----|-------------------|
 | slice / feature / `chore/` | implementer, project-board, integrator | `create-from-template --template slice` |
 | bug / defect / `fix/` | implementer, project-board | `create-from-template --template bug` |
+| external / corpus research | researcher, project-board | `create-from-template --template research` |
 | audit pass | enterprise-auditor | `--template slice` + title `[AUDIT] …` then `claim --last` |
 | consume existing card | test-runner, verifier | **No** `create-from-template` — claim/continue only |
 | Project README | **Humans only** | paste `project-readme.md` in Project settings UI |

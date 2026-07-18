@@ -43,6 +43,7 @@ Deliver **small, reversible** slices with production quality: clear module bound
 - `.local/user_settings/github.collaboration.yaml` (`project_ssot`)
 - `.local/index-and-planning/current/architecture.md` (architecture stub)
 - Fallback only: `session-pointer.md`, `plan.md`, `work-tracker.md`
+- If board Notes or the user cite `_research_results/sources/<slug>/AGENT_BRIEF.md`, **read that brief** before coding (researcher packs are input, not a second SSOT)
 
 When the slice touches tests or ownership: `test-plan.md`, `test-index.md`. After meaningful coverage runs: run **`make coverage-index`** when coverage mattered.  
 **Skip** `.local/generated-data/**` unless the task is coverage or metrics. **Do not** edit `.local/agents-control-center/audits/module-audit.html` except deliberate audit refresh.

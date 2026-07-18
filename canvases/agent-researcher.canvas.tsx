@@ -25,57 +25,57 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-18";
 const SOURCES =
-  ".cursor/agents/researcher.md · research-corpus-execution/SKILL.md · _research_results/RESEARCH_BOUNDARIES.md";
+  ".cursor/agents/researcher.md · research-corpus-execution/SKILL.md · research_cli.py · _research_results/";
 
 const GOALS = [
-  "Optional local research corpus",
-  "Hard-stop on product code without explicit scope",
-  "Write only _research_results/ — no src/tests/scripts/git/PR",
+  "Brief-driven multi-round research (GitHub or local path)",
+  "Packs under _research_results/sources/<slug>/ + AGENT_BRIEF for MAS",
+  "Hard-stop: write only _research_results/ — no product git/PR",
 ];
 
 const BOARD_NODES = [
   { id: "status" },
-  { id: "list" },
-  { id: "boundaries" },
-  { id: "corpus" },
+  { id: "brief" },
+  { id: "cli" },
+  { id: "rounds" },
   { id: "done" },
   { id: "notes" },
 ];
 
 const BOARD_EDGES = [
-  { from: "status", to: "list" },
-  { from: "list", to: "boundaries" },
-  { from: "boundaries", to: "corpus" },
-  { from: "corpus", to: "done" },
+  { from: "status", to: "brief" },
+  { from: "brief", to: "cli" },
+  { from: "cli", to: "rounds" },
+  { from: "rounds", to: "done" },
   { from: "done", to: "notes" },
 ];
 
 const FALLBACK_NODES = [
   { id: "session" },
-  { id: "boundaries" },
-  { id: "corpus" },
+  { id: "brief" },
+  { id: "rounds" },
   { id: "close" },
 ];
 
 const FALLBACK_EDGES = [
-  { from: "session", to: "boundaries" },
-  { from: "boundaries", to: "corpus" },
-  { from: "corpus", to: "close" },
+  { from: "session", to: "brief" },
+  { from: "brief", to: "rounds" },
+  { from: "rounds", to: "close" },
 ];
 
 const BOARD_LABELS: Record<string, string> = {
   status: "project status",
-  list: "research card list",
-  boundaries: "RESEARCH_BOUNDARIES",
-  corpus: "_research_results/",
+  brief: "Research Brief",
+  cli: "research init/fetch",
+  rounds: "rounds 1-6 + validate",
   done: "set-status done",
-  notes: "corpus paths",
+  notes: "AGENT_BRIEF paths",
 };
 
 const FALLBACK_LABELS: Record<string, string> = {
   session: "session-pointer.md",
-  boundaries: "RESEARCH_BOUNDARIES",
-  corpus: "_research_results/",
+  brief: "Research Brief",
+  rounds: "rounds 1-6 + validate",
   close: "local close",
 };
 
@@ -87,16 +87,16 @@ const READ_FIRST = [
 
 const PATTERNS = [
   ["Hard stop", "Write only _research_results/"],
-  ["Board lifecycle", "Research card → done + corpus paths in Notes"],
-  ["Tier-1", "Shared Board rights; read-only board if no research card"],
-  ["Forbidden", "No src/tests/scripts; no git commit/push/PR"],
-  ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
+  ["Brief required", "External mode refuses without BRIEF.md"],
+  ["CLI", "research init | fetch | validate"],
+  ["Board lifecycle", "create-from-template research → done + pack paths"],
+  ["Consumers", "implementer / integrator read AGENT_BRIEF.md"],
   ["Attribution", "@owner.github_user/researcher via --agent"],
 ];
 
 const ARTIFACTS = [
-  ["_research_results/", "Exit", "Humans / implementer (read-only input)"],
-  ["Board Status + Notes", "Research card done + corpus paths", "Next agents"],
+  ["_research_results/sources/<slug>/", "Pack + AGENT_BRIEF", "implementer / integrator"],
+  ["Board Status + Notes", "Research card done + pack paths", "Next agents"],
   [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
 ];
 

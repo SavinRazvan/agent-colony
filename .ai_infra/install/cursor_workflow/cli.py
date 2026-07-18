@@ -46,6 +46,7 @@ import doc_cli  # noqa: E402
 import verify_cli  # noqa: E402
 import activate_cli  # noqa: E402
 import project_cli  # noqa: E402
+import research_cli  # noqa: E402
 
 
 def _scaffold_script() -> Path:
@@ -285,6 +286,7 @@ def build_parser() -> argparse.ArgumentParser:
     verify_cli.register_verify_subparser(sub)
     activate_cli.register_activate_subparser(sub)
     project_cli.register_project_subparser(sub)
+    research_cli.register_research_subparser(sub)
 
     return parser
 
