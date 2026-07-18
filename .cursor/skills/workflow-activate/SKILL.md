@@ -1,11 +1,11 @@
 ---
 name: workflow-activate
-description: Install MAS Workflow Kit infrastructure into the current workspace from the plugin payload (ADR-001 Option B).
+description: Install MAS Workflow Kit — Project SSOT infrastructure into the current workspace from the plugin payload (ADR-001 Option B).
 ---
 <!--
 File: SKILL.md
 Path: .cursor/skills/workflow-activate/SKILL.md
-Role: Install MAS Workflow Kit three planes into the open workspace (ADR-001 Option B).
+Role: Install MAS Workflow Kit — Project SSOT three planes into the open workspace (ADR-001 Option B).
 Used By:
  - PLUGIN-ARCHITECTURE.md
  - sync_plugin_bundle.py (canonical; template fallback at .ai_infra/templates/plugin/skills/)
@@ -19,15 +19,15 @@ Notes:
 
 ## When
 
-User enabled the **MAS Workflow Kit** plugin and opened **their project** (not the kit repo). Run on first use or when planes are missing.
+User enabled the **MAS Workflow Kit — Project SSOT** plugin (`mas-workflow-kit-project-ssot`) and opened **their app** (not this kit product repo). Run on first use or when planes are missing.
 
 ## Guide the user (keep it simple)
 
-1. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` (chat only — not terminal). Show [install screenshot](https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit-project-ssot/main/assets/mas-workflow-kit-install.png) or [consumer-quickstart § step 1](../../.ai_infra/docs/operations/consumer-quickstart.md#step-1-detail--install-plugin-from-github) — user clicks the **MAS Workflow Kit** card in the preview.
-2. Confirm the open folder is **their app**, not `mas-workflow-kit`.
+1. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` (chat only — not terminal). Show [install screenshot](https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit-project-ssot/main/assets/mas-workflow-kit-install.png) or [consumer-quickstart § step 1](../../.ai_infra/docs/operations/consumer-quickstart.md#step-1-detail--install-plugin-from-github) — user clicks the **MAS Workflow Kit — Project SSOT** card in the preview.
+2. Confirm the open folder is **their app**, not the kit product repo (`mas-workflow-kit-project-ssot`).
 3. Run activate (below) — or tell them to pick **`/workflow-activate`** from the **`/`** menu.
-4. Tell them to edit `.local/user_settings/github.collaboration.yaml` → `contributors validate`.
-5. Point them to **`/implementer`** (from **`/`** menu). When `project_ssot.enabled` in `github.collaboration.yaml`, Entry is **`python -m cursor_workflow project status`** (board SSOT); else read `session-pointer.md` first.
+4. Tell them to edit `.local/user_settings/github.collaboration.yaml` → `contributors validate` (set `project_ssot` for board SSOT).
+5. Point them to **`/implementer`** (from **`/`** menu). When `project_ssot.enabled`, Entry is **`python -m cursor_workflow project status`** (board SSOT); else read `session-pointer.md` first.
 
 Do **not** dump gate lists or maintainer `make` commands.
 

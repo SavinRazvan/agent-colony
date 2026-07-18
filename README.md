@@ -24,15 +24,17 @@ cd mas-workflow-kit-project-ssot
 
 Open the folder in Cursor → point the agent at **`HANDOFF.md`**.
 
-## Install the plugin (consumers)
+## Install the plugin (consumers — other app repos)
 
-In **Agent chat** (not terminal):
+In **Agent chat** (not terminal), from **your application** workspace:
 
 ```text
 /add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot
 ```
 
-Then open **your app** and run `/workflow-activate`.
+Click the **MAS Workflow Kit — Project SSOT** card, then run **`/workflow-activate`** in that same app folder. That copies `.cursor/`, `.ai_infra/`, `.local/` trackers, and agents into the consumer project.
+
+This repository is the **product kit** (develop + ship). Consumer apps **install + activate** it; they do not need upstream `mas-workflow-kit`.
 
 ## Kit quick navigation
 

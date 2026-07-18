@@ -1,6 +1,6 @@
 # Plugin assets
 
-Marketplace logotype and docs screenshots for **MAS Workflow Kit**.
+Marketplace logotype and docs screenshots for **MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`).
 
 ## Files
 
@@ -23,6 +23,6 @@ https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit-project-ssot/main
 
 ## Install screenshot
 
-`mas-workflow-kit-install.png` — Agent chat with `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` and the plugin preview card. Linked from root `README.md` § Get started step 1.
+`mas-workflow-kit-install.png` — Agent chat with `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` and the **MAS Workflow Kit — Project SSOT** preview card. Linked from root `README.md` § Get started step 1.
 
 Publisher: Savin Ionuț Răzvan · [razvansavin.com](https://razvansavin.com/) · [GitHub](https://github.com/SavinRazvan)

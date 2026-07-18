@@ -14,7 +14,7 @@ Notes:
  - Copied to consumer projects via manifest copy_ai_infra: docs/operations.
 -->
 
-# MAS Workflow Kit — Plugin User Guide
+# MAS Workflow Kit — Project SSOT · Plugin User Guide
 
 Single entry point for **installing**, **activating**, and **using** the kit in your project. Deeper runbooks are linked as chapters — you do not need the kit maintainer repo open.
 
@@ -63,9 +63,9 @@ In **Agent chat** (not the terminal):
 /add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot
 ```
 
-Cursor shows an **Add Plugin** preview — click the **MAS Workflow Kit** card to install:
+Cursor shows an **Add Plugin** preview — click the **MAS Workflow Kit — Project SSOT** card to install:
 
-![Install MAS Workflow Kit from Agent chat](assets/mas-workflow-kit-install.png)
+![Install MAS Workflow Kit — Project SSOT from Agent chat](assets/mas-workflow-kit-install.png)
 
 Optional — explicit branch:
 
@@ -75,13 +75,13 @@ Optional — explicit branch:
 
 This loads agents, skills, and rules into Cursor. Your project may only get `.cursor/settings.json` until you activate (§2).
 
-**When listed:** **Cursor → Marketplace → MAS Workflow Kit → Install** — same two-step flow; you still run **`/workflow-activate`** afterward.
+**When listed:** **Cursor → Marketplace → MAS Workflow Kit — Project SSOT → Install** — same two-step flow; you still run **`/workflow-activate`** afterward.
 
 ---
 
 ## 2. Quick start (4 steps)
 
-**Need:** Cursor · Python 3.11+ · **your project** open (not `mas-workflow-kit`).
+**Need:** Cursor · Python 3.11+ · **your project** open (not the kit product repo `mas-workflow-kit-project-ssot`).
 
 | Step | Action |
 |------|--------|
