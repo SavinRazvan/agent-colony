@@ -98,6 +98,7 @@ const PATTERNS = [
   ["Board lifecycle", "list --status in_progress; close drift-pass → done"],
   ["Tier-1", "Shared Board rights; no silent tracker dual-write"],
   ["Dual-write remediation", "Notes or handoff to project-board / implementer via Ready"],
+  ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/workflow-drift-guard via --agent"],
 ];
 
@@ -106,6 +107,11 @@ const ARTIFACTS = [
   [".local/workflow-artifacts/drift/drift-todos.md", "Exit", "Maintainers / implementer"],
   ["history/updates-log.md", "Exit", "Continuity readers"],
   ["Board drift-pass card Status", "done / in_review", "project-board / implementer"],
+  [
+    ".local/generated-data/project-board-snapshot.json",
+    "project export",
+    "DRIFT-010 · ICC (EA-010) read-only",
+  ],
   [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
 ];
 

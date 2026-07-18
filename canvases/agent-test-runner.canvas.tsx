@@ -104,6 +104,7 @@ const PATTERNS = [
   ["Board lifecycle", "Exit in_review if tests gate PR else done"],
   ["Tier-1", "Shared Board rights; promote only if opening a shippable PR"],
   ["Module layout", "tests/modules/<module>/ matching source boundaries"],
+  ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/test-runner via --agent test-runner"],
 ];
 

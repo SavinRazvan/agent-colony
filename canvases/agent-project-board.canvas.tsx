@@ -90,7 +90,8 @@ const PATTERNS = [
   ["Independent-governed", "Not in default PR pipelines"],
   ["Loop", "status → list ready → create-from-template + claim --last → handoff"],
   ["Triage Tier-1", "set-field Priority/Size/Estimate on new/moved cards"],
-  ["Promote", "promote-to-issue before PR if shipping triage work as Issue"],
+  ["Promote", "promote-to-issue OR mention-pr auto (promote_to_issue_on_pr) before shippable PR"],
+  ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/project-board via --agent"],
 ];
 

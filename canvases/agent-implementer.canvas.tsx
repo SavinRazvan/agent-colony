@@ -148,6 +148,7 @@ const PATTERNS = [
   ["Module headers", "file-docstring-header-relations.mdc on new sources"],
   ["Commit trailers", "Author + GitHub-User via contributors commit-trailers"],
   ["Gates", "prepare.py GATES; check_governance_consistency when policy docs change"],
+  ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/implementer via --agent implementer"],
 ];
 

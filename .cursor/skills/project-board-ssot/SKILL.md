@@ -13,6 +13,10 @@ Used By:
 Depends On:
  - .local/user_settings/github.collaboration.yaml (project_ssot)
  - .ai_infra/install/cursor_workflow/project_cli.py
+ - .ai_infra/install/cursor_workflow/project_atomics.py
+ - .ai_infra/install/cursor_workflow/gh_project_adapter.py
+ - .ai_infra/install/cursor_workflow/project_recipes.py
+ - .ai_infra/install/cursor_workflow/project_outbox.py
  - .ai_infra/docs/operations/project-board-collaboration.md
  - ADR-008-project-board-ssot.md
 Notes:

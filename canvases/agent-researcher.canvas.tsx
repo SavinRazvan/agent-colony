@@ -90,6 +90,7 @@ const PATTERNS = [
   ["Board lifecycle", "Research card → done + corpus paths in Notes"],
   ["Tier-1", "Shared Board rights; read-only board if no research card"],
   ["Forbidden", "No src/tests/scripts; no git commit/push/PR"],
+  ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/researcher via --agent"],
 ];
 
