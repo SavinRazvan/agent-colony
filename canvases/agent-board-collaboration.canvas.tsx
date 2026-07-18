@@ -212,7 +212,7 @@ const ARTIFACT_FLOWS = [
     ".local/generated-data/project-board-snapshot.json",
     "project export (read-only)",
     "DRIFT-010 refresh",
-    "workflow-drift-guard",
+    "workflow-drift-guard · ICC (EA-010)",
     "Read-only export; never writes Status",
   ],
   [
@@ -499,7 +499,8 @@ export default function AgentBoardCollaborationCanvas() {
       </Callout>
 
       <Text tone="tertiary" size="small">
-        Peer view: canvases/agent-roster.canvas.tsx (explicit handoff edges only)
+        Peer views: canvases/agent-relations.canvas.tsx (handoff graph) ·
+        agent-roster.canvas.tsx (explicit card edges)
       </Text>
 
       <Text tone="tertiary" size="small">

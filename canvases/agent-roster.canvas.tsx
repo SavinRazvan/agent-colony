@@ -193,13 +193,16 @@ export default function AgentRosterCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          Explicit handoff edges from agent cards only. researcher is non-product —
-          redirects to product agents.
+          Explicit handoff edges from agent cards (skill chain test-runner→verifier
+          when tests gate PR). researcher is non-product — redirects to product
+          agents.
         </Text>
         <Callout tone="info" title="Board lifecycle (all 8)">
           Tier-1: claim may set Start date; triage/own card may set Estimate.
-          Promote Draft→Issue via promote-to-issue or mention-pr before shippable PR
-          (claim does not auto-promote). See agent-board-collaboration canvas.
+          Promote Draft→Issue via promote-to-issue or mention-pr (auto when
+          promote_to_issue_on_pr) before shippable PR — claim does not auto-promote.
+          Notes: @owner.github_user/&lt;agent&gt; · YYYY-MM-DDTHH:MM:SSZ · … via
+          append-notes --agent. See agent-board-collaboration canvas.
         </Callout>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only

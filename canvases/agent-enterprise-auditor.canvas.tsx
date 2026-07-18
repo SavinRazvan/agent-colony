@@ -95,6 +95,7 @@ const PATTERNS = [
   ["Board lifecycle", "Notes = artifact paths; Status in_review/done"],
   ["Tier-1", "Shared Board rights; Start date on claim"],
   ["Tracker etiquette", "Propose edits in audit-actions; implementer applies"],
+  ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/enterprise-auditor via --agent"],
 ];
 
@@ -122,6 +123,11 @@ const ARTIFACTS = [
   ["change-index.md", "Exit", "Next agents / humans"],
   ["history/updates-log.md", "Exit", "Continuity readers"],
   ["Board Status + Notes", "in_review / done", "implementer"],
+  [
+    ".local/generated-data/project-board-snapshot.json",
+    "project export (read-only)",
+    "ICC (EA-010) board panel — read-only",
+  ],
   [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
 ];
 

@@ -97,6 +97,7 @@ const PATTERNS = [
   ["Promote before PR", "promote-to-issue OR mention-pr when shipping integration"],
   ["Tier-1", "claim → Start date; set-field estimate on own card"],
   ["STANDALONE", "Product lives only in mas-workflow-kit-project-ssot"],
+  ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/integrator-mas-agent via --agent"],
 ];
 

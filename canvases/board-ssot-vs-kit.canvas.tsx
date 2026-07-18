@@ -127,12 +127,10 @@ const FOLLOWUP_SLICES = [
     card: "FIX-NOTES-DI",
     title: "append-notes on DraftIssue",
     color: "green" as const,
-    status: "local" as const,
     items: [
       "Resolves PVTI_ → DI_ + title for DraftIssue content",
       "Status stays on PVTI_; Issue-backed via gh issue edit",
-      "Smoke OK; board card Done",
-      "Local / pending PR (not yet on main)",
+      "Shipped on main (PR #3)",
     ],
   },
   {
@@ -140,11 +138,10 @@ const FOLLOWUP_SLICES = [
     card: "Edge-case tests",
     title: "CLI + merge coverage",
     color: "blue" as const,
-    status: "local" as const,
     items: [
       "Issue body, GraphQL errors, merge Notes warn",
-      "set_item_status PVTI-only paths",
-      "Focused suite 36+; collect ~669",
+      "set_item_status PVTI-only paths; outbox queue/flush",
+      "929 tests collected; drift validate green",
     ],
   },
   {
@@ -152,27 +149,43 @@ const FOLLOWUP_SLICES = [
     card: "Doc-drift residuals",
     title: "Skill board_only caveats",
     color: "blue" as const,
-    status: "local" as const,
     items: [
       "audit-orchestration, workflow-activate",
       "mas-infrastructure-integration, test-module-coverage",
       "review-pr board_only caveats",
-      "DRIFT validate P0=0 P1=0 P2=0",
+      "DRIFT validate P0=0 P1=0 P2=0 — shipped on main",
     ],
   },
 ];
 
-const CLI_ROWS = [
-  ["status", "Board health + config"],
+const CLI_RECIPE_ROWS = [
+  ["claim", "Pattern A — In progress + Start date + Notes @user/agent · UTC"],
+  ["handoff", "Pattern A — Status + Notes + next=@user/agent"],
+  ["create-from-template", "Pattern A — slice/bug card + body sections"],
+  ["mention-pr", "Pattern A — PR Notes; auto-promote when promote_to_issue_on_pr"],
+  ["promote-to-issue", "Pattern A — Draft→Issue (same PVTI_; claim does not auto-promote)"],
+  ["guide", "Copy-safe recipes for --agent <name>"],
+  ["last", "Resolve --last item_id after create"],
+  ["validate-item", "Card body / field sanity check"],
+];
+
+const CLI_ATOMIC_ROWS = [
+  ["status", "Board health + project_ssot config"],
   ["list", "Filter by Status / assignee"],
-  ["create", "New slice card"],
-  ["set-status", "Claim / In review / Done (PVTI_ only)"],
-  ["set-field", "Priority, Size, etc."],
+  ["create", "New slice card (low-level)"],
+  ["set-status", "In progress / In review / Done (PVTI_ only)"],
+  ["set-field", "Priority, Size, Estimate, etc."],
   ["get", "Card body + fields"],
   ["append-notes", "Handoff lines; DraftIssue DI_ resolve + Issue edit"],
+  ["set-assignee", "Human assignee (UI or PAT)"],
   ["find-by-pr", "Resolve card from PR number"],
-  ["export", "Read-only snapshot (no Status write)"],
+  ["export", "Read-only snapshot → project-board-snapshot.json"],
+  ["doctor", "Config / PAT / field-id diagnostics"],
+  ["queue", "Enqueue deferred board write"],
+  ["outbox", "status | flush — EXIT_QUEUED (6) buffer"],
 ];
+
+const CLI_ROWS = [...CLI_RECIPE_ROWS, ...CLI_ATOMIC_ROWS];
 
 function FlowDiagram({ mode }: { mode: "classic" | "shipped" }) {
   const theme = useHostTheme();
@@ -315,8 +328,8 @@ export default function BoardSsotVsKitCanvas() {
         <H1>MAS Workflow Kit → Board SSOT (shipped)</H1>
         <Text tone="secondary">
           Before/after comparison for mas-workflow-kit-project-ssot as of 2026-07-18.
-          PR #2 merged A→B→C on main; FIX-NOTES-DI + doc-drift residuals + expanded
-          tests are done locally and pending PR.
+          PR #2 merged A→B→C on main; FIX-NOTES-DI, doc-drift residuals, EA-001/004,
+          and expanded tests (929 collected) are shipped on main.
         </Text>
       </Stack>
 
@@ -381,7 +394,7 @@ export default function BoardSsotVsKitCanvas() {
         ))}
       </Grid>
 
-      <H2>Post A→B→C follow-ups (local / pending PR)</H2>
+      <H2>Post A→B→C follow-ups (shipped on main)</H2>
       <TodoListCard
         defaultExpanded
         todos={FOLLOWUP_SLICES.map((s) => ({
@@ -398,7 +411,7 @@ export default function BoardSsotVsKitCanvas() {
                 <Row gap={6} align="center">
                   <Swatch color={slice.color} />
                   <Pill size="sm" active>
-                    Local
+                    Done
                   </Pill>
                 </Row>
               }
@@ -481,12 +494,24 @@ export default function BoardSsotVsKitCanvas() {
 
       <Divider />
 
-      <H2>project CLI (shipped surface)</H2>
+      <H2>project CLI — 21 subcommands (shipped)</H2>
+      <Callout tone="info" title="Module split (EA-001 shipped)">
+        Dispatcher: project_cli.py · atomics: project_atomics.py · GraphQL adapter:
+        gh_project_adapter.py · Pattern A recipes: project_recipes.py · rate-limit
+        buffer: project_outbox.py → .local/generated-data/board-outbox.jsonl
+        (EXIT_QUEUED=6).
+      </Callout>
       <Table
         headers={["Command", "Role"]}
         rows={CLI_ROWS}
         striped
       />
+      <Text tone="tertiary" size="small">
+        Full list: status · list · create · create-from-template · set-status ·
+        set-field · get · append-notes · claim · mention-pr · promote-to-issue ·
+        handoff · validate-item · last · guide · doctor · set-assignee · find-by-pr ·
+        export · queue · outbox
+      </Text>
 
       <Grid columns={2} gap={12}>
         <Card>
@@ -587,18 +612,19 @@ export default function BoardSsotVsKitCanvas() {
           <CardBody>
             <Stack gap={4}>
               <Text size="small">project_ssot + board_only in collab YAML</Text>
-              <Text size="small">cursor_workflow project CLI (9 commands)</Text>
+              <Text size="small">cursor_workflow project CLI (21 subcommands)</Text>
               <Text size="small">8 agent Anchors + continuation contract</Text>
               <Text size="small">ADR-008 + project-ssot-precedence overlay</Text>
               <Text size="small">A→B→C merged (PR #2); FIX-NOTES-DI on main (PR #3)</Text>
-              <Text size="small">Edge-case tests: focused 36+; collect ~669</Text>
-              <Text size="small">DRIFT validate P0=0 P1=0 P2=0</Text>
+              <Text size="small">929 tests collected; DRIFT validate P0=0 P1=0 P2=0</Text>
               <Text size="small">STANDALONE decided — this repo is the product</Text>
               <Text size="small">
                 BOARD-PROMOTE: Draft→Issue via promote-to-issue / mention-pr auto
                 (promote_to_issue_on_pr default true); claim does not auto-promote
               </Text>
               <Text size="small">BOARD-TIER1: claim Start date + Estimate set-field + mention-pr</Text>
+              <Text size="small">EA-001: project_cli split (atomics/adapter/recipes/outbox)</Text>
+              <Text size="small">EA-004: pyright blocking in kit-quality CI</Text>
               <Text size="small">EA-010: ICC Project Board tab (read-only export snapshot)</Text>
             </Stack>
           </CardBody>
@@ -610,7 +636,7 @@ export default function BoardSsotVsKitCanvas() {
           <CardBody>
             <Stack gap={4}>
               <Text size="small">Install screenshot asset TBD if UI text differs</Text>
-              <Text size="small">EA-001 split project_cli / EA-004 pyright (audit P1)</Text>
+              <Text size="small">Consumer marketplace publish channel TBD</Text>
             </Stack>
           </CardBody>
         </Card>

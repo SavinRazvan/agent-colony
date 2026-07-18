@@ -100,6 +100,7 @@ const PATTERNS = [
   ["Tier-1", "Shared Board rights; Start date on claim if reclaiming"],
   ["Checks", "pytest · GATES category · governance · verify_publish"],
   ["Merge gate", "Do not approve merge without pr/ artifacts when maintainer workflow active"],
+  ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/verifier via --agent verifier"],
 ];
 
