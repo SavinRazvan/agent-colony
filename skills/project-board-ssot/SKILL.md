@@ -136,4 +136,4 @@ When `sync_policy: board_only`, do **not** mark the same slice `in_progress` in 
 - Reshuffling Ready/P0 without human or project-board ask
 - Editing Project views, workflows, Insights, or status updates
 - Dual-write board + tracker under `board_only`
-- Port to production kit without PORT-GATE
+- Do not push to upstream mas-workflow-kit

@@ -1,11 +1,11 @@
 # ADR-008: GitHub Project board as agent SSOT
 
-**Status:** accepted (experiment — this sibling repo only)  
-**Date:** 2026-07-17
+**Status:** accepted — **product doctrine for this repository** (`mas-workflow-kit-project-ssot`)  
+**Date:** 2026-07-17 · **STANDALONE:** 2026-07-18
 
 ## Context
 
-MAS Workflow Kit defaults to local markdown trackers under `.local/index-and-planning/current/` as session SSOT. Collaborators cannot share that state. This experiment (`mas-workflow-kit-project-ssot`) configures a GitHub Project in `.local/user_settings/github.collaboration.yaml` → `project_ssot` and drives it via `python -m cursor_workflow project`.
+Classic MAS Workflow Kit used local markdown trackers under `.local/index-and-planning/current/` as session SSOT. Collaborators cannot share that state. **This repository is the product** — already separated from upstream `mas-workflow-kit` — and configures a GitHub Project in `.local/user_settings/github.collaboration.yaml` → `project_ssot`, driven via `python3 -m cursor_workflow project`. Local artifacts remain for PR gates, audits, and evidence.
 
 Related: [ADR-006](ADR-006-agent-integration-model.md), [HANDOFF.md](../../../HANDOFF.md).
 
@@ -20,8 +20,8 @@ Related: [ADR-006](ADR-006-agent-integration-model.md), [HANDOFF.md](../../../HA
 7. **Item kind:** default DraftIssue; promote to Issue when linking PRs (`promote_to_issue_on_pr`).
 8. **`project-board` agent:** independent-governed helper; not in PR pipelines. **All agents** Anchor on `project_ssot` when enabled: **Entry reads** the Project; **Exit updates** Status (and Notes) so work stays indexed for the next agent (continuation contract in `project-board-ssot` skill).
 9. **Post-merge card close:** Pattern A (`merge.py` + project CLI) sets Status → Done and appends Notes (PR URL + SHA) — **not** a dedicated post-merge agent.
-10. **Production port deferred** until demo + implementer Anchor + dual-write drift check + human sign-off. Marketplace kit stays markdown SSOT until then.
-11. **Human-only Project surfaces:** views, workflows, Insights, Project README, status updates, Ready prioritization — agents never edit these.
+10. **Permanent decoupling (STANDALONE):** this repo is the board-SSOT product. Do **not** merge doctrine into upstream `mas-workflow-kit`. Upstream is historical lineage only.
+11. **Human-only Project surfaces:** views, workflows, Insights, Project README, status updates, Ready prioritization / product roadmap — agents never edit these.
 
 ## Consequences
 

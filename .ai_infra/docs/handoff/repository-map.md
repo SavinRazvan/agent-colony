@@ -16,9 +16,11 @@ Notes:
 
 # Repository map (kit maintainers)
 
-**Audience:** People working in the **`mas-workflow-kit`** git repo — not consumer app projects.
+**Audience:** People working in **this product repo** (`mas-workflow-kit-project-ssot`) — not consumer app projects.
 
 **Not shipped to consumers.** This file lives under `docs/handoff/` (excluded from `manifest.yaml` `copy_ai_infra`). Do not link it from consumer quickstart or PLUGIN-USER-GUIDE body text.
+
+**Lineage:** Originally mirrored from upstream `mas-workflow-kit`; folder layout below still uses that tree shape. This repository is the permanent product (STANDALONE 2026-07-18).
 
 ---
 
@@ -33,10 +35,10 @@ Notes:
 
 ---
 
-## Kit repository (mas-workflow-kit)
+## Product repository (`mas-workflow-kit-project-ssot`)
 
 ```text
-mas-workflow-kit/
+mas-workflow-kit-project-ssot/
 ├── .cursor/                    SSOT — agents, rules, canonical skills
 ├── .agents/skills/             SSOT — maintainer slash skills (+ deprecated stubs)
 ├── agents/                     Generated → Marketplace plugin surface (mirror of .cursor/agents)

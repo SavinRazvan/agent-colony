@@ -2,9 +2,9 @@
 
 ## Project intent
 
-**MAS Workflow Kit** (`mas-workflow-kit`) — universal, installable infrastructure for multi-agent development workflows. Agents call **one script command** per maintainer action; `GATES` are hardcoded in `.ai_infra/scripts/pr/prepare.py` (customize once at install). This is **not** a product application repo unless you add overlays.
+**MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) — this repository **is** the product: installable multi-agent workflow infrastructure with a **GitHub Project** as the **only writable SSOT** for backlog, Status, and multi-agent continuation when `project_ssot.enabled` and `sync_policy: board_only`. **Local artifacts** (PR Pattern A, audits, gates, secrets) stay on disk as evidence — never a second Status writer under `board_only`. Agents call **one script command** per maintainer action; `GATES` live in `.ai_infra/scripts/pr/prepare.py`.
 
-**This sibling experiment (`mas-workflow-kit-project-ssot`):** when `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project** is the **only writable SSOT** for backlog, Status, and multi-agent continuation. Agents use `python -m cursor_workflow project …` (see `.cursor/skills/project-board-ssot/SKILL.md` § Collaboration, ADR-008, `overlays/rules/project-ssot-precedence.mdc`). Ops mirror: `.ai_infra/docs/operations/project-board-collaboration.md`. Local trackers are offline fallback only; read-only exports never compete with board Status — no dual-write under `board_only`. Read [`HANDOFF.md`](HANDOFF.md) first.
+**Continuation:** Entry reads the board (`python3 -m cursor_workflow project status`); Exit updates Status and Notes (see `.cursor/skills/project-board-ssot/SKILL.md` § Collaboration, ADR-008, `overlays/rules/project-ssot-precedence.mdc`). Ops: `.ai_infra/docs/operations/project-board-collaboration.md`. Offline fallback trackers only when board unavailable. **STANDALONE:** permanently decoupled from upstream `mas-workflow-kit` (lineage only — do not merge doctrine back). Read [`HANDOFF.md`](HANDOFF.md) first.
 
 ## First reads (onboarding)
 
@@ -32,7 +32,7 @@ Abbreviations: [`.ai_infra/docs/operations/abbreviations-notepad.md`](.ai_infra/
 | `.cursor/rules/file-docstring-header-relations.mdc` | File headers |
 | `.cursor/rules/local-artifact-protection.mdc` | Protected local paths (`.coverage`, `.env`) |
 | `.cursor/rules/advisory-audit-alignment-enforcement.mdc` | Architecture-impacting audits → **`enterprise-auditor`** + alignment artifacts |
-| `.cursor/rules/project-ssot-precedence.mdc` | **Experiment:** board SSOT precedes local trackers when `project_ssot.enabled` (ADR-008) |
+| `.cursor/rules/project-ssot-precedence.mdc` | Board SSOT precedes local trackers when `project_ssot.enabled` (ADR-008) |
 
 **Product rules** belong in **`overlays/rules/`** at install — see [`overlays/README.md`](overlays/README.md). **Do not duplicate gate lists** in chat or `updates-log.md` — say *prepare gates green* or paste failing command output only.
 

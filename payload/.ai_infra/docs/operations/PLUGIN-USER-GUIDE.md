@@ -60,7 +60,7 @@ flowchart LR
 In **Agent chat** (not the terminal):
 
 ```text
-/add-plugin https://github.com/SavinRazvan/mas-workflow-kit
+/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot
 ```
 
 Cursor shows an **Add Plugin** preview — click the **MAS Workflow Kit** card to install:
@@ -70,7 +70,7 @@ Cursor shows an **Add Plugin** preview — click the **MAS Workflow Kit** card t
 Optional — explicit branch:
 
 ```text
-/add-plugin https://github.com/SavinRazvan/mas-workflow-kit/tree/main
+/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/tree/main
 ```
 
 This loads agents, skills, and rules into Cursor. Your project may only get `.cursor/settings.json` until you activate (§2).
@@ -85,10 +85,10 @@ This loads agents, skills, and rules into Cursor. Your project may only get `.cu
 
 | Step | Action |
 |------|--------|
-| 1. Plugin | Agent chat: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` *(or Marketplace when listed)* |
+| 1. Plugin | Agent chat: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` *(or Marketplace when listed)* |
 | 2. Activate | Open **your app** → Agent chat → **`/workflow-activate`** → wait for **`VERIFY PASS`** and all planes **ready** |
 | 3. Your name | Edit `.local/user_settings/github.collaboration.yaml` → `python3 -m cursor_workflow contributors validate` |
-| 4. Build | **`/implementer`** · read `session-pointer.md` → `plan.md` → `work-tracker.md` |
+| 4. Build | **`/implementer`** · when `project_ssot.enabled`, Entry = `python3 -m cursor_workflow project status` (board first); else `session-pointer.md` → `plan.md` → `work-tracker.md` |
 
 **Step 2 — in Agent chat (not the terminal):**
 
@@ -131,7 +131,7 @@ your-project/
 └── tests/modules/smoke/           # install smoke test only
 ```
 
-**Not installed:** kit full `tests/`, `Makefile`, `docs/handoff/`, CI/release scripts, maintainer megadocs. Those exist only in the [kit repository](https://github.com/SavinRazvan/mas-workflow-kit).
+**Not installed:** kit full `tests/`, `Makefile`, `docs/handoff/`, CI/release scripts, maintainer megadocs. Those exist only in the [kit repository](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot).
 
 **Re-activate is safe:** existing trackers, `user_settings/`, and `AGENTS.md` are not overwritten. Kit-managed **dashboard HTML**, JS/CSS, `module-audit.html`, and `pages.json` **are refreshed** on each activate.
 
@@ -148,7 +148,7 @@ your-project/
 
 | Goal | Type in chat |
 |------|--------------|
-| Install plugin | `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` |
+| Install plugin | `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` |
 | Activate / refresh | `/workflow-activate` |
 | Implement | `/implementer` |
 | Tests | `/test-runner` |
@@ -246,8 +246,8 @@ Cursor may also auto-delegate subagents when the task matches their `description
 
 Every session:
 
-1. `.local/index-and-planning/current/session-pointer.md`
-2. `plan.md` → `work-tracker.md`
+1. When `project_ssot.enabled`: `python3 -m cursor_workflow project status` (board first); else `.local/index-and-planning/current/session-pointer.md`
+2. Board card Status/Notes (local `plan.md` / `work-tracker.md` = offline fallback under `board_only`)
 3. **`/implementer`** (or specialist agent from §6)
 4. Optional: [Control Center dashboards](#5-control-center-dashboards) — `http.server` + full URL in §5
 
@@ -340,4 +340,4 @@ More: [consumer-quickstart.md](consumer-quickstart.md) § Troubleshooting.
 | Upgrade / semver | [upgrade-kit.md](upgrade-kit.md) |
 | Optional project metadata | [project-config.md](project-config.md) |
 
-**Kit maintainers** (not copied to your project): `PLUGIN-ARCHITECTURE.md` and `IMPLEMENTATION-STATUS.md` in the [GitHub kit repo](https://github.com/SavinRazvan/mas-workflow-kit/tree/main/.ai_infra/docs/handoff).
+**Kit maintainers** (not copied to your project): `PLUGIN-ARCHITECTURE.md` and `IMPLEMENTATION-STATUS.md` in the [GitHub kit repo](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/tree/main/.ai_infra/docs/handoff).

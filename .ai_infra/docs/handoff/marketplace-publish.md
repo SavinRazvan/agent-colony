@@ -13,6 +13,9 @@ Notes:
 
 # Marketplace publish checklist
 
+<!-- Publish target: this product repo (mas-workflow-kit-project-ssot). STANDALONE 2026-07-18 — not upstream mas-workflow-kit. -->
+
+
 **Product:** MAS Workflow Kit · **Plugin id:** `mas-workflow-kit`
 
 ## Pre-publish (kit repo)
@@ -86,7 +89,7 @@ export TARGET=~/Projects/my-app
 mkdir -p "$TARGET"
 ```
 
-1. **Agent chat** (not terminal): `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` — click the **MAS Workflow Kit** card in the preview ([screenshot](../../../assets/mas-workflow-kit-install.png) · [README](https://github.com/SavinRazvan/mas-workflow-kit#1-install-the-plugin-cursor-chat--not-the-terminal))
+1. **Agent chat** (not terminal): `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` — click the **MAS Workflow Kit** card in the preview ([screenshot](../../../assets/mas-workflow-kit-install.png) · [README](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot#1-install-the-plugin-cursor-chat--not-the-terminal))
 2. **File → Open Folder** → `"$TARGET"` (your app — not the kit repo)
 3. **Agent chat:** `/workflow-activate` → wait for **VERIFY PASS**
 4. Edit `.local/user_settings/github.collaboration.yaml` → `python3 -m cursor_workflow contributors validate`
@@ -132,7 +135,7 @@ python3 -m cursor_workflow drift validate --directory . --profile consumer
 ### Quick plugin smoke (from kit repo)
 
 1. Run `make sync-plugin`
-2. In Agent chat: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit`
+2. In Agent chat: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot`
 3. Confirm agents: `implementer`, `enterprise-auditor`, maintainer slash skills
 4. Run **`/workflow-activate`** in Agent chat with a **non-kit** project folder open
 
@@ -189,9 +192,9 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 | Organization name | Savin Ionuț Răzvan |
 | Organization handle | `savin-razvan` (or `mas-workflow-kit`) |
 | Contact email | razvan.i.savin@gmail.com |
-| Logotype URL | `https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit/main/assets/logo.png` |
+| Logotype URL | `https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit-project-ssot/main/assets/logo.png` |
 | Description | MAS Workflow Kit installs multi-agent workflow infrastructure into any Cursor project: agents, skills, rules, PR lifecycle scripts, `.local/` trackers, and optional MCP. Run **`/workflow-activate`** once to scaffold three planes. Pattern A: one script per maintainer action. For teams using agents, audits, and PR-first governance. |
-| GitHub repository | https://github.com/SavinRazvan/mas-workflow-kit |
+| GitHub repository | https://github.com/SavinRazvan/mas-workflow-kit-project-ssot |
 | Owner | Individual · razvan.i.savin@gmail.com |
 | Website URL | https://razvansavin.com/ |
 

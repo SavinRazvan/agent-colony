@@ -27,7 +27,7 @@ Notes:
 
 Enabling the **plugin** loads agents/skills/rules in the IDE only — it does **not** write files to your project. Run activate to install all three planes on disk:
 
-1. **Plugin from GitHub (recommended):** Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` → open your app → **`/workflow-activate`** (or `python -m cursor_workflow activate --directory .`)
+1. **Plugin from GitHub (recommended):** Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` → open your app → **`/workflow-activate`** (or `python -m cursor_workflow activate --directory .`)
 2. **Marketplace (when listed):** same flow after **Cursor → Marketplace** install
 3. **Kit clone / advanced:** `python -m cursor_workflow install --target . --verify`
 

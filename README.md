@@ -1,18 +1,19 @@
 # mas-workflow-kit-project-ssot
 
-**Experiment:** Make a **GitHub Project** the SSOT for backlog/status — replace local tracker markdown so collaborators and agents share one board (configured in `github.collaboration.yaml` like identity).
+**Product:** MAS Workflow Kit — Project SSOT. Collaborators and agents share one **GitHub Project** as the **only writable SSOT** for backlog/status; **local artifacts** hold PR gates, audits, and evidence. Configured in `github.collaboration.yaml` like identity.
 
 | | |
 |--|--|
 | **Board** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
-| **Production kit (do not break)** | [mas-workflow-kit](https://github.com/SavinRazvan/mas-workflow-kit) |
+| **Product repo** | [mas-workflow-kit-project-ssot](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot) |
+| **Lineage (read-only)** | [mas-workflow-kit](https://github.com/SavinRazvan/mas-workflow-kit) — historical upstream; never merge doctrine back |
 | **Agent handoff (READ FIRST)** | [HANDOFF.md](./HANDOFF.md) |
 
-**Experiment agents (8):** `implementer`, `test-runner`, `verifier`, `enterprise-auditor`, `researcher`, `integrator-mas-agent`, `workflow-drift-guard`, `project-board` — see [AGENTS.md](./AGENTS.md). Board CLI: `python -m cursor_workflow project …`. **Continuation:** every agent reads the Project on Entry and updates Status/Notes on Exit ([project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md)).
+**Agents (8):** `implementer`, `test-runner`, `verifier`, `enterprise-auditor`, `researcher`, `integrator-mas-agent`, `workflow-drift-guard`, `project-board` — see [AGENTS.md](./AGENTS.md). Board CLI: `python3 -m cursor_workflow project …`. **Continuation:** every agent reads the Project on Entry and updates Status/Notes on Exit ([project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md)).
 
-This repository is an isolated sibling sandbox. If the experiment fails, abandon this repo; leave marketplace `mas-workflow-kit` on markdown SSOT.
+**STANDALONE 2026-07-18:** this repository **is** the product (already separated). Do not treat it as a temporary sandbox or a port queue into upstream `mas-workflow-kit`.
 
-**Kit mirror:** This tree includes a full merge of production [`mas-workflow-kit`](https://github.com/SavinRazvan/mas-workflow-kit) `main` (tip `8a779fa` / tag `v0.4.0`). Use kit docs below for agents, skills, PR workflow, and CLI — but follow [HANDOFF.md](./HANDOFF.md) for experiment scope and board-first work. This experiment workspace applies **7 universal** Cursor rules (6 kit + `project-ssot-precedence`).
+**Lineage:** Tree originally mirrored from [`mas-workflow-kit`](https://github.com/SavinRazvan/mas-workflow-kit) `main` (tip `8a779fa` / tag `v0.4.0`). Follow [HANDOFF.md](./HANDOFF.md) for board+local SSOT. This workspace applies **7 universal** Cursor rules (6 kit + `project-ssot-precedence`).
 
 ## Clone (new Cursor window)
 
@@ -23,7 +24,17 @@ cd mas-workflow-kit-project-ssot
 
 Open the folder in Cursor → point the agent at **`HANDOFF.md`**.
 
-## Kit quick navigation (mirrored from production)
+## Install the plugin (consumers)
+
+In **Agent chat** (not terminal):
+
+```text
+/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot
+```
+
+Then open **your app** and run `/workflow-activate`.
+
+## Kit quick navigation
 
 - **Plugin manual** — [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md)
 - **Consumer quickstart** — [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md)

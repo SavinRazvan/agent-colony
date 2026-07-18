@@ -18,11 +18,11 @@ Place **`logo.png`** or **`logo.svg`** here (1:1 aspect ratio, recommended 512×
 After commit to `main`, the marketplace **Logotype URL** is:
 
 ```bash
-https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit/main/assets/logo.png
+https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit-project-ssot/main/assets/logo.png
 ```
 
 ## Install screenshot
 
-`mas-workflow-kit-install.png` — Agent chat with `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit` and the plugin preview card. Linked from root `README.md` § Get started step 1.
+`mas-workflow-kit-install.png` — Agent chat with `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` and the plugin preview card. Linked from root `README.md` § Get started step 1.
 
 Publisher: Savin Ionuț Răzvan · [razvansavin.com](https://razvansavin.com/) · [GitHub](https://github.com/SavinRazvan)

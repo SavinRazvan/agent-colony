@@ -72,4 +72,4 @@ Handoff: `item_id=PVTI_… · Status=a→b · next=<agent>`
 
 ## Human-only
 
-Views, workflows, Insights, Project README, status updates, Ready prioritization, PORT-GATE.
+Views, workflows, Insights, Project README, status updates, Ready prioritization / product roadmap.
