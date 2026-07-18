@@ -1,7 +1,7 @@
 """
 File: test_check_doc_facts.py
 Path: tests/modules/architecture_scripts/test_check_doc_facts.py
-Role: Tests for canonical doc fact validation (DOC-001…006).
+Role: Tests for canonical doc fact validation (DOC-001…008).
 Used By:
  - pytest
 Depends On:
@@ -59,6 +59,43 @@ def test_consumer_profile_skips_doc_facts(tmp_path: Path) -> None:
     assert exit_code_for(results) == 0
 
 
+def test_unknown_agent_in_canvas_fails_doc008(tmp_path: Path) -> None:
+    _copy_minimal_kit(tmp_path)
+    relations = tmp_path / "canvases" / "agent-relations.canvas.tsx"
+    relations.write_text(
+        relations.read_text(encoding="utf-8").replace(
+            'from: "project-board"',
+            'from: "ghost-agent"',
+        ),
+        encoding="utf-8",
+    )
+    results = run_checks(tmp_path)
+    doc008 = next(r for r in results if r.check_id == "DOC-008")
+    assert not doc008.passed
+    assert "ghost-agent" in doc008.detail
+
+
+def test_missing_agent_in_roster_hub_fails_doc008(tmp_path: Path) -> None:
+    _copy_minimal_kit(tmp_path)
+    relations = tmp_path / "canvases" / "agent-relations.canvas.tsx"
+    relations.write_text(
+        relations.read_text(encoding="utf-8").replace(
+            """  {
+    id: "researcher",
+    role: "Local research corpus only (no product PRs)",
+    lane: "Optional",
+  },
+""",
+            "",
+        ),
+        encoding="utf-8",
+    )
+    results = run_checks(tmp_path)
+    doc008 = next(r for r in results if r.check_id == "DOC-008")
+    assert not doc008.passed
+    assert "researcher" in doc008.detail
+
+
 def _copy_minimal_kit(target: Path) -> None:
     import shutil
 
@@ -74,6 +111,7 @@ def _copy_minimal_kit(target: Path) -> None:
         ".ai_infra/templates/local-workspace/exemplars",
         ".ai_infra/bootstrap.py",
         ".ai_infra/paths.py",
+        "canvases",
     ):
         src = REPO_ROOT / rel
         dst = target / rel

@@ -246,7 +246,7 @@ python3 -m cursor_workflow project claim --last --agent implementer
 1. Verify consumer CLI / gates vs kit 0.4.0; recreate clean `v0.4.0` release (upstream).
 2. Prove Cursor agent can drive GitHub Projects with `project` scope → **yes**.
 3. Isolate in **sibling repo**; mirror full kit (**done** — this workspace).
-4. **North star:** replace local tracker Status SSOT with Project board; configure board in **`github.collaboration.yaml`**; **all agent procedures** create/load/update tasks on that Project.
+4. **North star (achieved 2026-07-18):** Project board is the writable Status SSOT when `board_only`; local trackers are offline fallback only. Board configured in **`github.collaboration.yaml`**; **all agent procedures** create/load/update tasks on that Project.
 5. **STANDALONE 2026-07-18:** this repo is the permanent product — **no** port back to `mas-workflow-kit`.
 
 ---

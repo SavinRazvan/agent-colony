@@ -1,7 +1,7 @@
 """
 File: doc_facts_checks.py
 Path: .ai_infra/scripts/architecture/doc_facts_checks.py
-Role: Individual DOC-001…007 checks for canonical doc vs repo fact parity.
+Role: Individual DOC-001…008 checks for canonical doc vs repo fact parity.
 Used By:
  - .ai_infra/scripts/architecture/check_doc_facts.py
 Depends On:
@@ -379,6 +379,174 @@ def check_doc007_agent_board_rights(paths: DocFactsPaths) -> CheckResult:
     )
 
 
+CANVAS_ROSTER_FILES = (
+    "agent-relations.canvas.tsx",
+    "agent-roster.canvas.tsx",
+    "agent-board-collaboration.canvas.tsx",
+)
+
+CANVAS_ROSTER_HUBS = (
+    "agent-relations.canvas.tsx",
+    "agent-roster.canvas.tsx",
+)
+
+# Flow/UI tokens in canvases — not agent ids (DOC-008 allowlist).
+_CANVAS_NON_AGENT_TOKENS = frozenset(
+    {
+        "all",
+        "agent",
+        "a",
+        "b",
+        "c",
+        "board",
+        "claim",
+        "cli",
+        "close",
+        "code",
+        "corpus",
+        "create",
+        "doc-drift",
+        "done",
+        "export",
+        "fix-notes",
+        "gates",
+        "handoff",
+        "index",
+        "list",
+        "merge",
+        "next",
+        "notes",
+        "plan",
+        "pr",
+        "session",
+        "skill",
+        "snapshot",
+        "status",
+        "tests",
+        "tracker",
+        "trackers",
+        "close",
+        "triage",
+        "validate",
+        "verdict",
+        "yaml",
+        "audit",
+        "artifacts",
+        "boundaries",
+        "checks",
+        "coverage",
+        "evidence",
+        "intake",
+        "promote",
+        "restate",
+        "todo",
+        "todos",
+        "card",
+        "wire",
+        "verify",
+        "pr-workflow",
+    }
+)
+
+
+def _canvas_paths(root: Path) -> list[Path]:
+    canvases = root / "canvases"
+    if not canvases.is_dir():
+        return []
+    paths: list[Path] = []
+    for name in CANVAS_ROSTER_FILES:
+        path = canvases / name
+        if path.is_file():
+            paths.append(path)
+    paths.extend(sorted(canvases.glob("agent-*.canvas.tsx")))
+    # Dedupe while preserving order
+    seen: set[str] = set()
+    unique: list[Path] = []
+    for path in paths:
+        key = path.as_posix()
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(path)
+    return unique
+
+
+def _parse_agents_array_ids(text: str) -> set[str]:
+    """Extract `id: \"agent-id\"` entries from AGENTS / AgentId roster blocks."""
+    ids: set[str] = set()
+    for match in re.finditer(r'\bid:\s*"([a-z][a-z0-9-]*)"', text):
+        ids.add(match.group(1))
+    return ids
+
+
+def _canvas_agent_refs(text: str) -> set[str]:
+    refs: set[str] = set()
+    for match in re.finditer(
+        r'(?:from|to|value|label):\s*"([a-z][a-z0-9-]*)"', text
+    ):
+        refs.add(match.group(1))
+    for match in re.finditer(
+        r'\|\s*"([a-z][a-z0-9-]+)"\s*\|', text
+    ):
+        refs.add(match.group(1))
+    return refs
+
+
+def check_doc008_canvas_roster(paths: DocFactsPaths) -> CheckResult:
+    """Canvas agent ids must match .cursor/agents roster; hub canvases list all live agents."""
+    live = set(list_agent_ids(paths))
+    if not live:
+        return CheckResult(
+            check_id="DOC-008",
+            severity=Severity.P2,
+            passed=False,
+            detail="missing .cursor/agents/*.md",
+        )
+    canvas_paths = _canvas_paths(paths.root)
+    if not canvas_paths:
+        return CheckResult(
+            check_id="DOC-008",
+            severity=Severity.P2,
+            passed=False,
+            detail="missing canvases/agent-*.canvas.tsx",
+        )
+
+    unknown: list[str] = []
+    missing_roster: list[str] = []
+    for path in canvas_paths:
+        rel = path.relative_to(paths.root).as_posix()
+        text = _read(path)
+        for ref in sorted(_canvas_agent_refs(text)):
+            if ref in _CANVAS_NON_AGENT_TOKENS or ref in live:
+                continue
+            unknown.append(f"{rel}: unknown agent {ref}")
+
+    for hub_name in CANVAS_ROSTER_HUBS:
+        hub = paths.root / "canvases" / hub_name
+        if not hub.is_file():
+            missing_roster.append(f"{hub_name}: file missing")
+            continue
+        listed = _parse_agents_array_ids(_read(hub))
+        for agent_id in sorted(live):
+            if agent_id not in listed:
+                missing_roster.append(f"{hub_name}: missing {agent_id}")
+
+    passed = not unknown and not missing_roster
+    if passed:
+        detail = f"canvas roster aligned ({len(live)} agents, {len(canvas_paths)} canvases)"
+    else:
+        parts = unknown[:4] + missing_roster[:4]
+        detail = "; ".join(parts)
+        if len(unknown) + len(missing_roster) > 4:
+            detail += f"; +{len(unknown) + len(missing_roster) - 4} more"
+    return CheckResult(
+        check_id="DOC-008",
+        severity=Severity.P2,
+        passed=passed,
+        detail=detail,
+    )
+
+
 KIT_DEV_CHECKS = (
     check_doc001_agent_roster,
     check_doc002_status_agent_count,
@@ -387,4 +555,5 @@ KIT_DEV_CHECKS = (
     check_doc005_prepare_gate_facts,
     check_doc006_implementation_test_count,
     check_doc007_agent_board_rights,
+    check_doc008_canvas_roster,
 )

@@ -27,6 +27,14 @@ Path SSOT: `.ai_infra/scripts/pr/local_workflow_paths.py`.
 
 ## Session entry (every agent slice)
 
+When `.local/user_settings/github.collaboration.yaml` → `project_ssot.enabled: true`:
+
+1. `python -m cursor_workflow project status` — board health + active card
+2. Claim or read In progress card; Acceptance/Rollback on **card body** (`body_sections`)
+3. `.cursor/skills/project-board-ssot/SKILL.md` § Continuation — Pattern A claim/handoff/mention-pr/promote
+
+**Offline fallback** (`project_ssot` disabled or board unreachable with `fallback: local_trackers`):
+
 1. `.local/index-and-planning/current/session-pointer.md` — what to read next
 2. `plan.md` — active slice scope and acceptance criteria
 3. `work-tracker.md` — exactly one primary `in_progress` task

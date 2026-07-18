@@ -20,7 +20,7 @@ Three gate surfaces exist by design (Pattern A).
 |---------|------|-------|-----------------|
 | **`prepare.py` GATES** | PR merge prep | **2** universal (testing artifacts + pytest); **4** on kit-dev (auto-appends drift + doc facts) | `.ai_infra/scripts/pr/prepare.py` `resolve_gates()` |
 | **`cursor-workflow gates`** | Kit dev / maintainer hygiene | 5: testing artifacts + pytest + governance + debrand + doc facts | `.ai_infra/install/cursor_workflow/cli.py` |
-| **`make doc-validate`** | After doc/agent/rule changes | DOC-001…006 canonical fact checks | `.ai_infra/scripts/architecture/check_doc_facts.py` |
+| **`make doc-validate`** | After doc/agent/rule changes | DOC-001…008 canonical fact checks | `.ai_infra/scripts/architecture/check_doc_facts.py` |
 | **`make verify-all`** | Pre-audit / release readiness | 7 (+ optional ci-seed): sync-plugin → gates → drift → integrate → check-plugin → health → contributors | `.ai_infra/scripts/architecture/verify_all.py` |
 | **`scaffold --verify`** | Post-install smoke on consumer | 4: testing artifacts + pytest + governance + debrand (no doc facts) | `.ai_infra/scripts/install/scaffold.py` `_run_verify` |
 | **`make drift-validate`** | Slice closure / maintainer hygiene | Operational drift (DRIFT-001…010 + 004b on kit-dev; consumer profile subset) | `.ai_infra/scripts/workflow/check_drift.py` |
