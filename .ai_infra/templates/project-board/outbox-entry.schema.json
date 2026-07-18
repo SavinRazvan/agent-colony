@@ -28,7 +28,8 @@
         "handoff",
         "claim",
         "set-assignee",
-        "set-field"
+        "set-field",
+        "promote-to-issue"
       ]
     },
     "item_id": {

@@ -110,8 +110,14 @@
               "description": "When true and fields.start_date.field_id set, claim writes UTC YYYY-MM-DD"
             },
             "one_in_progress_per_assignee": { "type": "boolean" },
-            "item_kind_default": { "type": "string" },
-            "promote_to_issue_on_pr": { "type": "boolean" },
+            "item_kind_default": {
+              "type": "string",
+              "description": "Default card kind on create-from-template: draft (DraftIssue) or issue (gh issue create + gh project item-add)"
+            },
+            "promote_to_issue_on_pr": {
+              "type": "boolean",
+              "description": "When true (default), mention-pr auto-promotes Draft via convertProjectV2DraftIssueItemToIssue; FAIL if promote fails. WARN-only when false."
+            },
             "attribution_format": {
               "type": "string",
               "description": "Template for Notes prefix; rendered as @github_user/agent"

@@ -12,6 +12,7 @@ Notes:
  - Pattern A: one gh invocation per action; recipes (claim/handoff/create-from-template)
    are one lifecycle command each; no dual-write of local trackers.
  - DraftIssue body edits resolve PVTI_… → DI_… (+ --title); Status stays on PVTI_….
+ - Promote Draft→Issue: convertProjectV2DraftIssueItemToIssue (same PVTI_); mention-pr auto when promote_to_issue_on_pr.
  - Notes attribution: @owner.github_user/agent · ISO-8601-UTC · text via append-notes --agent.
  - Exit codes: 0 ok; 2 usage/config; 3 gh/network; 4 not found; 5 validation; 6 queued (outbox).
  - Rate-limit outbox: project_outbox.py + project_ssot.outbox (local buffer, not SSOT).
@@ -471,6 +472,19 @@ def _load_enabled_ssot(root: Path, cmd: str) -> tuple[dict[str, Any] | None, int
     return ssot, EXIT_OK
 
 
+def _parse_pvti_from_gh_json(raw: str) -> str | None:
+    try:
+        data = json.loads(raw or "{}")
+        if isinstance(data, dict):
+            item_id = str(data.get("id") or data.get("itemId") or "") or None
+            if item_id and item_id.startswith("PVTI_"):
+                return item_id
+    except json.JSONDecodeError:
+        pass
+    m = re.search(r"(PVTI_[A-Za-z0-9_-]+)", raw or "")
+    return m.group(1) if m else None
+
+
 def create_draft_item(ssot: dict[str, Any], title: str, body: str) -> tuple[str | None, str | None, str | None]:
     """
     Create DraftIssue. Returns (item_id, raw_stdout, error).
@@ -495,16 +509,216 @@ def create_draft_item(ssot: dict[str, Any], title: str, body: str) -> tuple[str 
     if proc.returncode != 0:
         return None, None, (proc.stderr or proc.stdout or "gh project item-create failed").strip()
     raw = (proc.stdout or "").strip()
-    item_id: str | None = None
+    return _parse_pvti_from_gh_json(raw), raw, None
+
+
+def create_issue_item(ssot: dict[str, Any], title: str, body: str) -> tuple[str | None, str | None, str | None]:
+    """
+    Create a GitHub Issue then add it to the Project.
+    Returns (item_id PVTI_, raw_stdout, error).
+    """
+    repo = str(ssot.get("default_repo") or "").strip()
+    if not repo or "/" not in repo:
+        return None, None, "project_ssot.default_repo required for item_kind_default=issue"
+    create_args = ["issue", "create", "--repo", repo, "--title", title]
+    if body:
+        create_args.extend(["--body", body])
+    proc = run_gh(create_args)
+    if proc.returncode != 0:
+        return None, None, (proc.stderr or proc.stdout or "gh issue create failed").strip()
+    out = (proc.stdout or "").strip()
+    url_m = re.search(r"(https://github\.com/[^\s]+/issues/\d+)", out)
+    if not url_m:
+        return None, out, f"gh issue create succeeded but no issue URL in output: {out!r}"
+    issue_url = url_m.group(1)
+    owner = str(ssot["owner"])
+    number = int(ssot["number"])
+    add_args = [
+        "project",
+        "item-add",
+        str(number),
+        "--owner",
+        owner,
+        "--url",
+        issue_url,
+        "--format",
+        "json",
+    ]
+    add_proc = run_gh(add_args)
+    if add_proc.returncode != 0:
+        return (
+            None,
+            None,
+            (
+                f"issue created ({issue_url}) but item-add failed: "
+                + (add_proc.stderr or add_proc.stdout or "gh project item-add failed").strip()
+            ),
+        )
+    raw = (add_proc.stdout or "").strip()
+    item_id = _parse_pvti_from_gh_json(raw)
+    if not item_id:
+        return None, raw, f"item-add ok but no PVTI_ in output (issue={issue_url})"
+    return item_id, raw or issue_url, None
+
+
+def create_board_item(ssot: dict[str, Any], title: str, body: str) -> tuple[str | None, str | None, str | None]:
+    """Route create by conventions.item_kind_default: draft (default) | issue."""
+    conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
+    kind = str((conventions or {}).get("item_kind_default") or "draft").strip().lower()
+    if kind == "issue":
+        return create_issue_item(ssot, title, body)
+    return create_draft_item(ssot, title, body)
+
+
+_REPO_ID_CACHE: dict[str, str] = {}
+
+
+def resolve_repository_id(ssot: dict[str, Any], repo: str = "") -> tuple[str | None, str | None]:
+    """
+    Resolve GitHub repository node id (R_…) for promote / issue create.
+    Returns (repository_id, error).
+    """
+    repo_s = (repo or str(ssot.get("default_repo") or "")).strip()
+    if not repo_s or "/" not in repo_s:
+        return None, "repository required as owner/repo (set project_ssot.default_repo or --repo)"
+    if repo_s in _REPO_ID_CACHE:
+        return _REPO_ID_CACHE[repo_s], None
+    owner, _, name = repo_s.partition("/")
+    owner, name = owner.strip(), name.strip()
+    if not owner or not name:
+        return None, f"invalid repository {repo_s!r}"
+    query = (
+        "query($owner:String!,$name:String!){repository(owner:$owner,name:$name){id}}"
+    )
+    proc = run_gh(
+        [
+            "api",
+            "graphql",
+            "-f",
+            f"query={query}",
+            "-f",
+            f"owner={owner}",
+            "-f",
+            f"name={name}",
+        ]
+    )
+    if proc.returncode != 0:
+        return None, (proc.stderr or proc.stdout or "graphql repository id failed").strip()
     try:
-        data = json.loads(raw or "{}")
-        if isinstance(data, dict):
-            item_id = str(data.get("id") or data.get("itemId") or "") or None
-    except json.JSONDecodeError:
-        m = re.search(r"(PVTI_[A-Za-z0-9_-]+)", raw)
-        if m:
-            item_id = m.group(1)
-    return item_id, raw, None
+        data = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError as exc:
+        return None, f"invalid graphql JSON: {exc}"
+    errors = data.get("errors")
+    if errors:
+        msg = errors[0].get("message") if isinstance(errors[0], dict) else errors
+        return None, str(msg)
+    node = ((data.get("data") or {}).get("repository")) or {}
+    rid = str(node.get("id") or "") if isinstance(node, dict) else ""
+    if not rid:
+        return None, f"repository not found: {repo_s}"
+    _REPO_ID_CACHE[repo_s] = rid
+    return rid, None
+
+
+def promote_draft_item_to_issue(
+    ssot: dict[str, Any],
+    item_id: str,
+    *,
+    repo: str = "",
+) -> tuple[bool, str, dict[str, Any]]:
+    """
+    Convert Project DraftIssue → Issue via convertProjectV2DraftIssueItemToIssue.
+    Same PVTI_ is preserved. Returns (ok, detail, meta) with issue_number/url/repo when ok.
+    Already-Issue is a successful no-op.
+    """
+    kind, cid, meta, err = resolve_item_content(ssot, item_id)
+    if err:
+        return False, err, {}
+    if kind == "issue":
+        repo_s = str((meta or {}).get("repo") or ssot.get("default_repo") or "")
+        return (
+            True,
+            f"already Issue #{cid}",
+            {
+                "item_id": item_id,
+                "issue_number": cid,
+                "repo": repo_s,
+                "url": f"https://github.com/{repo_s}/issues/{cid}" if repo_s and cid else "",
+                "noop": True,
+            },
+        )
+    if kind != "draft":
+        return False, f"cannot promote content kind {kind!r}", {}
+
+    repo_s = (repo or str(ssot.get("default_repo") or "")).strip()
+    repo_id, rerr = resolve_repository_id(ssot, repo_s)
+    if not repo_id:
+        return False, rerr or "repositoryId missing", {}
+
+    mutation = (
+        "mutation($input: ConvertProjectV2DraftIssueItemToIssueInput!) {"
+        " convertProjectV2DraftIssueItemToIssue(input: $input) {"
+        "  item { id content { __typename"
+        "   ... on Issue { number url repository { nameWithOwner } }"
+        "  } } } }"
+    )
+    proc = run_gh(
+        [
+            "api",
+            "graphql",
+            "-f",
+            f"query={mutation}",
+            "-F",
+            f"input[itemId]={item_id}",
+            "-F",
+            f"input[repositoryId]={repo_id}",
+        ]
+    )
+    if proc.returncode != 0:
+        detail = (proc.stderr or proc.stdout or "convertProjectV2DraftIssueItemToIssue failed").strip()
+        if "fine-grained" in detail.lower() or "Resource not accessible" in detail:
+            detail += (
+                " · hint: convertProjectV2DraftIssueItemToIssue often needs classic PAT "
+                "(project+repo), not fine-grained"
+            )
+        return False, detail, {}
+    try:
+        data = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError as exc:
+        return False, f"invalid promote JSON: {exc}", {}
+    errors = data.get("errors")
+    if errors:
+        msg = errors[0].get("message") if isinstance(errors[0], dict) else errors
+        return False, str(msg), {}
+    item = (
+        ((data.get("data") or {}).get("convertProjectV2DraftIssueItemToIssue") or {}).get("item")
+    )
+    if not isinstance(item, dict):
+        return False, "promote mutation returned no item", {}
+    out_id = str(item.get("id") or item_id)
+    content = item.get("content") if isinstance(item.get("content"), dict) else {}
+    number = content.get("number")
+    url = str(content.get("url") or "")
+    rmeta = content.get("repository") if isinstance(content.get("repository"), dict) else {}
+    repo_out = str(rmeta.get("nameWithOwner") or repo_s)
+    if number is None:
+        kind2, cid2, meta2, err2 = resolve_item_content(ssot, out_id)
+        if err2 or kind2 != "issue":
+            return False, err2 or "promote succeeded but content is not Issue", {}
+        number = cid2
+        repo_out = str((meta2 or {}).get("repo") or repo_out)
+        url = f"https://github.com/{repo_out}/issues/{number}" if repo_out else url
+    return (
+        True,
+        f"Issue #{number}",
+        {
+            "item_id": out_id,
+            "issue_number": str(number),
+            "repo": repo_out,
+            "url": url or f"https://github.com/{repo_out}/issues/{number}",
+            "noop": False,
+        },
+    )
 
 
 def in_progress_conflicts_for_user(
@@ -702,7 +916,7 @@ def cmd_list(args: argparse.Namespace) -> int:
 
 
 def cmd_create(args: argparse.Namespace) -> int:
-    """Create DraftIssue; --template routes to create-from-template."""
+    """Create DraftIssue or Issue per item_kind_default; --template routes to create-from-template."""
     if getattr(args, "template", None):
         return cmd_create_from_template(args)
     root = Path(args.directory).resolve()
@@ -713,7 +927,7 @@ def cmd_create(args: argparse.Namespace) -> int:
     sections = (ssot.get("conventions") or {}).get("body_sections") or []
     if not body and sections:
         body = "\n\n".join(f"## {s}\n\n(TBD)" for s in sections)
-    item_id, raw, err = create_draft_item(ssot, args.title, body)
+    item_id, raw, err = create_board_item(ssot, args.title, body)
     if err:
         return fail("create", EXIT_GH, err)
     print(raw or item_id or "")
@@ -748,7 +962,7 @@ def cmd_create_from_template(args: argparse.Namespace) -> int:
             EXIT_VALIDATION,
             f"template missing sections: {', '.join(missing)}",
         )
-    item_id, raw, err = create_draft_item(ssot, args.title, body)
+    item_id, raw, err = create_board_item(ssot, args.title, body)
     if err:
         return fail("create-from-template", EXIT_GH, err)
     status_to = (getattr(args, "status", None) or "").strip()
@@ -1688,6 +1902,7 @@ def cmd_last(args: argparse.Namespace) -> int:
 def cmd_mention_pr(args: argparse.Namespace) -> int:
     """
     Append Notes with canonical PR URL + print find-by-pr candidates.
+    When Draft + promote_to_issue_on_pr: promote first (FAIL on promote error).
     Does not write LINKED_PULL_REQUESTS (derived on GitHub for Issue↔PR links).
     """
     root = Path(args.directory).resolve()
@@ -1722,16 +1937,41 @@ def cmd_mention_pr(args: argparse.Namespace) -> int:
     pr_num = pdata.get("number")
     if not pr_url:
         return fail("mention-pr", EXIT_GH, "pr view missing url")
-    # DraftIssue warn (Linked PRs column needs Issue)
     kind, _cid, _meta, kerr = resolve_item_content(ssot, item_id)
     conventions = ssot.get("conventions") or {}
+    promote_on = conventions.get("promote_to_issue_on_pr", True)
     if kind == "draft" or (kerr and "Draft" in str(kerr)):
-        print(
-            "mention-pr: WARN — card looks DraftIssue; GitHub Linked pull requests "
-            "fills for Issue-backed items. Promote/convert to Issue when linking a PR "
-            f"(promote_to_issue_on_pr={conventions.get('promote_to_issue_on_pr', True)}).",
-            file=sys.stderr,
-        )
+        if promote_on:
+            p_ok, p_detail, p_meta = promote_draft_item_to_issue(ssot, item_id, repo=repo)
+            if not p_ok:
+                queued = _try_queue_rate_limit(
+                    root,
+                    ssot,
+                    cmd="mention-pr",
+                    err_detail=p_detail,
+                    op="promote-to-issue",
+                    item_id=item_id,
+                    agent=agent,
+                    payload={"repo": repo, "text": f"PR {pr_num}: {pr_url}"},
+                )
+                if queued is not None:
+                    return queued
+                return fail(
+                    "mention-pr",
+                    EXIT_GH,
+                    f"promote_to_issue_on_pr failed: {p_detail}",
+                )
+            print(
+                f"mention-pr: promoted {item_id} → Issue #{p_meta.get('issue_number')}",
+                file=sys.stderr,
+            )
+        else:
+            print(
+                "mention-pr: WARN — card looks DraftIssue; GitHub Linked pull requests "
+                "fills for Issue-backed items. Run: project promote-to-issue --last "
+                f"(promote_to_issue_on_pr={promote_on}).",
+                file=sys.stderr,
+            )
     note = f"PR {pr_num}: {pr_url}"
     ok, detail, err_code = append_notes_helper(
         root, ssot, item_id, agent=agent, text=note, limit=args.limit
@@ -1752,7 +1992,6 @@ def cmd_mention_pr(args: argparse.Namespace) -> int:
                 return queued
         return fail("mention-pr", err_code, detail)
     print(f"mention-pr: {item_id} — Notes {note}")
-    # Verification print (find-by-pr style)
     items, err = fetch_project_items(ssot, limit=args.limit)
     if not err:
         matches = find_items_mentioning_pr(
@@ -1765,6 +2004,87 @@ def cmd_mention_pr(args: argparse.Namespace) -> int:
             )
         else:
             print("mention-pr: find-by-pr — no other matches yet (Notes just written)")
+    return EXIT_OK
+
+
+def cmd_promote_to_issue(args: argparse.Namespace) -> int:
+    """Convert DraftIssue project item to Issue (same PVTI_); Notes + optional assignee."""
+    root = Path(args.directory).resolve()
+    ssot, code = _load_enabled_ssot(root, "promote-to-issue")
+    if ssot is None:
+        return code
+    item_id, id_code = resolve_item_id_arg(root, args, "promote-to-issue")
+    if item_id is None:
+        return id_code
+    agent = (getattr(args, "agent", None) or "").strip()
+    if not agent:
+        return fail("promote-to-issue", EXIT_USAGE, "--agent required")
+    repo = (getattr(args, "repo", None) or "").strip() or str(
+        ssot.get("default_repo") or ""
+    ).strip()
+    ok, detail, meta = promote_draft_item_to_issue(ssot, item_id, repo=repo)
+    if not ok:
+        queued = _try_queue_rate_limit(
+            root,
+            ssot,
+            cmd="promote-to-issue",
+            err_detail=detail,
+            op="promote-to-issue",
+            item_id=item_id,
+            agent=agent,
+            payload={"repo": repo},
+        )
+        if queued is not None:
+            return queued
+        return fail("promote-to-issue", EXIT_GH, detail)
+    issue_n = meta.get("issue_number")
+    url = str(meta.get("url") or "")
+    out_id = str(meta.get("item_id") or item_id)
+    if meta.get("noop"):
+        print(f"promote-to-issue: {out_id} already Issue #{issue_n}")
+    else:
+        print(f"promote-to-issue: {out_id} → Issue #{issue_n} ({url})")
+    # Best-effort assignee (human)
+    try:
+        user = resolve_human_github_user(root)
+    except Exception:  # noqa: BLE001
+        user = ""
+    if user:
+        a_ok, a_detail = set_item_assignee(ssot, out_id, user.lstrip("@"))
+        if not a_ok:
+            print(f"promote-to-issue: WARN — assignee skipped: {a_detail}", file=sys.stderr)
+        else:
+            print(f"promote-to-issue: assignee=@{a_detail.lstrip('@')}")
+    note = f"promoted to Issue #{issue_n}: {url}" if url else f"promoted to Issue #{issue_n}"
+    n_ok, n_detail, n_code = append_notes_helper(
+        root, ssot, out_id, agent=agent, text=note, limit=args.limit
+    )
+    if not n_ok:
+        if n_code == EXIT_GH:
+            queued = _try_queue_rate_limit(
+                root,
+                ssot,
+                cmd="promote-to-issue",
+                err_detail=n_detail,
+                op="append-notes",
+                item_id=out_id,
+                agent=agent,
+                payload={"text": note},
+            )
+            if queued is not None:
+                print(
+                    "promote-to-issue: Issue converted; Notes QUEUED due to rate-limit",
+                    file=sys.stderr,
+                )
+                return queued
+        return fail("promote-to-issue", n_code, f"promoted but Notes failed: {n_detail}")
+    save_last_item_id(root, out_id, title="", action="promote-to-issue")
+    attr = format_agent_attribution(root, agent)
+    print(f"promote-to-issue: Notes {n_detail}")
+    print(f"item_id={out_id} · {attr} · Issue=#{issue_n}")
+    print(
+        f"next: python3 -m cursor_workflow project mention-pr --pr <n> --last --agent {agent}"
+    )
     return EXIT_OK
 
 
@@ -1784,7 +2104,11 @@ def cmd_guide(args: argparse.Namespace) -> int:
     )
     print(
         f"python3 -m cursor_workflow project claim --last --agent {agent}  "
-        "# In progress + assignee + Start date (UTC)"
+        "# In progress + assignee (Issue) + Start date (UTC)"
+    )
+    print(
+        f"python3 -m cursor_workflow project promote-to-issue --last --agent {agent}  "
+        "# Draft→Issue (same PVTI_); before PR"
     )
     print(
         "python3 -m cursor_workflow project set-field --field estimate --to 3 --last"
@@ -1794,7 +2118,8 @@ def cmd_guide(args: argparse.Namespace) -> int:
         f"--next {nxt} --to in_review"
     )
     print(
-        f"python3 -m cursor_workflow project mention-pr --pr <n> --last --agent {agent}"
+        f"python3 -m cursor_workflow project mention-pr --pr <n> --last --agent {agent}  "
+        "# auto-promotes Draft when promote_to_issue_on_pr"
     )
     print("python3 -m cursor_workflow project validate-item --last")
     print("# If EXIT_QUEUED (6): python3 -m cursor_workflow project outbox flush")
@@ -1986,6 +2311,21 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
     print(
         f"set_start_date_on_claim: {conventions.get('set_start_date_on_claim', True)}"
+    )
+    print(f"item_kind_default: {conventions.get('item_kind_default', 'draft')}")
+    print(f"promote_to_issue_on_pr: {conventions.get('promote_to_issue_on_pr', True)}")
+    default_repo = str(ssot.get("default_repo") or "").strip()
+    if default_repo:
+        print(f"default_repo: {default_repo}")
+    else:
+        print(
+            "doctor: WARN — project_ssot.default_repo missing "
+            "(required for promote-to-issue / item_kind_default=issue)",
+            file=sys.stderr,
+        )
+    print(
+        "doctor: note — convertProjectV2DraftIssueItemToIssue may fail on fine-grained PATs; "
+        "use classic PAT with project+repo scopes if promote fails"
     )
     cfg = cfg_pre
     path = _outbox.outbox_path(root, cfg)
@@ -2197,7 +2537,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
 
     mention_cmd = project_sub.add_parser(
         "mention-pr",
-        help="Notes with PR URL + find-by-pr check (Linked PRs column is derived)",
+        help="Notes with PR URL + find-by-pr (auto-promote Draft when promote_to_issue_on_pr)",
     )
     mention_cmd.add_argument("--directory", type=Path, default=".")
     _add_id_or_last(mention_cmd)
@@ -2205,6 +2545,21 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     mention_cmd.add_argument("--agent", required=True)
     mention_cmd.add_argument("--limit", type=int, default=100)
     mention_cmd.set_defaults(func=cmd_mention_pr)
+
+    promote_cmd = project_sub.add_parser(
+        "promote-to-issue",
+        help="Convert DraftIssue → Issue (same PVTI_); assignee + Notes",
+    )
+    promote_cmd.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(promote_cmd)
+    promote_cmd.add_argument("--agent", required=True)
+    promote_cmd.add_argument(
+        "--repo",
+        default="",
+        help="owner/repo (defaults to project_ssot.default_repo)",
+    )
+    promote_cmd.add_argument("--limit", type=int, default=100)
+    promote_cmd.set_defaults(func=cmd_promote_to_issue)
 
     handoff_cmd = project_sub.add_parser(
         "handoff",

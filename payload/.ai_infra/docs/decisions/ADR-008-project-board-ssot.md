@@ -18,13 +18,13 @@ Related: [ADR-006](ADR-006-agent-integration-model.md), [HANDOFF.md](../../../HA
 5. **Read-only exports:** optional snapshots (`project export`) may cache board state for audits/ICC later; they **must not** write Status and must never become a competing SSOT.
 6. **Config habit:** board identity and field ids live next to `owner` in `github.collaboration.yaml` (not a separate primary settings file).
 7. **Tooling:** Pattern A CLI (`cursor_workflow project`) wrapping `gh project`; MCP optional later.
-8. **Item kind:** default DraftIssue; promote to Issue when linking PRs (`promote_to_issue_on_pr`).
+8. **Item kind / promote:** `item_kind_default: draft|issue` — draft (default) creates DraftIssue; issue path = `gh issue create` + `gh project item-add`. CLI `project promote-to-issue` implements GraphQL `convertProjectV2DraftIssueItemToIssue` (**same PVTI_** preserved). `mention-pr` auto-promotes Draft when `promote_to_issue_on_pr` (default true) — FAIL if promote fails; WARN-only if false. Claim does **not** auto-promote. After promote: Assignees + Linked PRs work; Notes line `promoted to Issue #N`. Fine-grained PAT caveat in `doctor` / `guide`.
 9. **`project-board` agent:** independent-governed helper; not in PR pipelines. **All agents** Anchor on `project_ssot` when enabled: **Entry reads** the Project; **Exit updates** Status (and Notes) so work stays indexed for the next agent (continuation contract in `project-board-ssot` skill).
 10. **Post-merge card close:** Pattern A (`merge.py` + project CLI) sets Status → Done and appends Notes (PR URL + SHA) — **not** a dedicated post-merge agent.
 11. **Permanent decoupling (STANDALONE):** this repo is the board-SSOT product. Do **not** merge doctrine into upstream `mas-workflow-kit`. Upstream is historical lineage only.
 12. **Human-only Project surfaces:** views, workflows, Insights, Project README, status updates, Ready prioritization / product roadmap — agents never edit these.
 13. **Multi-collaborator attribution:** card Notes use `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (from each person’s `github.collaboration.yaml`; CLI stamps UTC). CLI: `append-notes --agent <name>` when `require_attribution_on_exit`. GitHub Assignees are humans only (`set-assignee`); agent role lives in Notes. Handoff: `next=@user/agent`. Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime.
-14. **Board Pattern A recipes:** lifecycle actions are one CLI command each — `create-from-template`, `claim`, `handoff`, `validate-item`, `doctor`, `queue`, `outbox status|flush` — wrapping atomics. Prefer recipes over multi-step shell. Exit codes: `0` ok; `2` usage/config; `3` gh/network; `4` not found; `5` validation; `6` queued. Card body templates live under `.ai_infra/templates/project-board/`. Project README/settings remain human-only (paste `project-readme.md` in the UI — never into a shell).
+14. **Board Pattern A recipes:** lifecycle actions are one CLI command each — `create-from-template`, `claim`, `handoff`, `promote-to-issue`, `validate-item`, `doctor`, `queue`, `outbox status|flush` — wrapping atomics. Prefer recipes over multi-step shell. Exit codes: `0` ok; `2` usage/config; `3` gh/network; `4` not found; `5` validation; `6` queued. Card body templates live under `.ai_infra/templates/project-board/`. Project README/settings remain human-only (paste `project-readme.md` in the UI — never into a shell).
 15. **Tier-1 board fields:** agents may set **Start date** on claim when `conventions.set_start_date_on_claim` and `fields.start_date.field_id` are configured; **Estimate** via `set-field --field estimate --to N`; PR linkage via `mention-pr --pr N` (Notes + GitHub-derived Linked pull requests column). **Out of scope for agents by default:** Iteration, Labels, Reviewers, End date (human / UI).
 
 ## Consequences
@@ -38,6 +38,7 @@ Related: [ADR-006](ADR-006-agent-integration-model.md), [HANDOFF.md](../../../HA
 - DraftIssue body edits: `append-notes` / `edit_item_body` resolve project item `PVTI_…` → content `DI_…` (+ preserve `--title`); Status/field edits stay on `PVTI_…`
 - Attribution: `append-notes --agent` prefixes `@github_user/agent · <ISO-8601-UTC> ·`; `merge.py` Notes use `@user/merge.py`; `set-assignee` for human My items (Issue-backed)
 - Board Pattern A recipes + templates + structured `CODE=` exit lines; rate-limit outbox (`project_ssot.outbox`); atomics remain for power use
+- Promote Draft→Issue: `project promote-to-issue` (GraphQL `convertProjectV2DraftIssueItemToIssue`; same `PVTI_`); `mention-pr` auto when `promote_to_issue_on_pr`
 
 ## References
 

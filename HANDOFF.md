@@ -279,7 +279,6 @@ Do **not** run upstream marketplace publish from this repo against `mas-workflow
 - ICC Control Center board tab (EA-010 Ready)
 - Always-on GitHub Actions bot
 - Requiring GitHub MCP before `gh` path works
-- Optional `promote_to_issue_on_pr`
 
 ---
 
@@ -288,7 +287,7 @@ Do **not** run upstream marketplace publish from this repo against `mas-workflow
 | Question | Notes |
 |----------|-------|
 | Board-only vs dual mirror? | **Board wins — only writable SSOT.** Offline fallback only; no dual writers “for safety.” |
-| DraftIssue vs real Issues? | Drafts OK for smoke; Issues better for PR linking. |
+| DraftIssue vs real Issues? | Default Draft (`item_kind_default: draft`); promote via `python3 -m cursor_workflow project promote-to-issue --last --agent <name>` or `mention-pr` auto when `promote_to_issue_on_pr` (default true). Issue-at-create when `item_kind_default: issue`. Do not leave shippable work as Draft through merge. |
 | Consumer installs? | Install plugin from **this** repo: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` |
 | Offline / no `gh`? | `fallback: local_trackers` then resume board sync. |
 | GraphQL rate-limit? | `project_ssot.outbox` — EXIT_QUEUED (6); `outbox flush` after reset. Never hammer API; outbox ≠ Status SSOT. |
@@ -315,14 +314,14 @@ Do **not** run upstream marketplace publish from this repo against `mas-workflow
 - [x] Confirm `gh` has `project` scope  
 - [x] Open board URL  
 - [x] Mirror / merge upstream kit into this repo (done historically)  
-- [x] BOARD-SPIKE / ANCHOR / ROLL / A→B→C / FIX-NOTES-DI shipped  
+- [x] BOARD-SPIKE / ANCHOR / ROLL / A→B→C / FIX-NOTES-DI / BOARD-PROMOTE shipped  
 - [x] **STANDALONE 2026-07-18** — no upstream port  
 - [ ] Update this file’s “Last agent / Last updated” when you finish a slice  
 
 **Last agent (writer):** implementer (Cursor) · **Last updated:** 2026-07-18  
 **Next agent:** any agent — Entry=`project status`; Ready backlog includes EA-010.
 
-**Implemented:** `cursor_workflow project` CLI, `project-board` agent/skill, ADR-008, all agent Anchors board-first, DRIFT-009/010, merge.py board sync, FIX-NOTES-DI, payload sync, `project-ssot-precedence` overlay.
+**Implemented:** `cursor_workflow project` CLI, `project-board` agent/skill, ADR-008, all agent Anchors board-first, DRIFT-009/010, merge.py board sync, FIX-NOTES-DI, BOARD-PROMOTE (`promote-to-issue` + `mention-pr` auto), payload sync, `project-ssot-precedence` overlay.
 
 ### STANDALONE decision (human)
 
