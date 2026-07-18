@@ -38,7 +38,32 @@
         },
         "fallback": { "type": "string", "enum": ["local_trackers", "none"] },
         "fields": { "type": "object", "additionalProperties": true },
-        "conventions": { "type": "object", "additionalProperties": true },
+        "conventions": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "queue_status": { "type": "string" },
+            "active_status": { "type": "string" },
+            "review_status": { "type": "string" },
+            "done_status": { "type": "string" },
+            "claim": { "type": "string" },
+            "one_in_progress_per_assignee": { "type": "boolean" },
+            "item_kind_default": { "type": "string" },
+            "promote_to_issue_on_pr": { "type": "boolean" },
+            "attribution_format": {
+              "type": "string",
+              "description": "Template for Notes prefix; rendered as @github_user/agent"
+            },
+            "require_attribution_on_exit": {
+              "type": "boolean",
+              "description": "When true, project append-notes requires --agent"
+            },
+            "body_sections": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
         "local_only": {
           "type": "array",
           "items": { "type": "string" }

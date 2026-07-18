@@ -25,7 +25,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Status drifts from reality | Status column = truth (DRIFT-009 watches dual-write) |
 | Humans cannot see progress | Project UI is the shared dashboard |
 
-**Rule:** Entry = read board. Exit = update Status (and Notes) for the card you touched.
+**Rule:** Entry = read board. Exit = update Status and **attributed Notes** (`append-notes --agent <name>` → `@owner.github_user/<agent>`) for the card you touched.
 
 ## Surfaces — who may write
 
@@ -36,10 +36,10 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Create cards | Yes | project-board, implementer, integrator | — |
 | Ready prioritization | **Owner** | Consume; create agreed work | — |
 | Views / workflows / Insights / README / status updates | **Owner only** | Never | Insights auto |
-| Assignee / My items | Yes | Claim = In progress | My items view |
+| Assignee / My items | Yes (`set-assignee` / UI) | Claim = In progress; assignee = **human** only | My items view |
+| Card Notes (`append-notes --agent`) | Yes | Yes — `@user/agent · …`; `next=@user/agent` | — |
 | PR / audits / secrets | Local | Local | — |
-| Post-merge Status → Done | — | Via `merge.py` (Pattern A) | — |
-| Card Notes (`append-notes`) | Yes | Yes — pass `PVTI_…`; CLI resolves `DI_…` for DraftIssue body | — |
+| Post-merge Status → Done | — | Via `merge.py` (Pattern A); Notes `@user/merge.py` | — |
 | Read-only board export | Consume | `project export` (never writes Status) | — |
 
 ## Per-agent Entry / Exit
@@ -47,13 +47,13 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Agent | Entry | Exit (board) |
 |-------|-------|--------------|
 | **project-board** | status + list | Full triage; handoff to implementer |
-| **implementer** | status + Ready/claim | →In review / →Done; Notes for next |
-| **test-runner** | status + slice card | →In review or →Done when tests finish |
-| **verifier** | status + related card | →Done or leave In review + Notes |
-| **integrator-mas-agent** | status + claim | →Done on integration card |
-| **enterprise-auditor** | status + audit card | →In review/Done; Notes → artifact paths |
-| **workflow-drift-guard** | **Must** status + list In progress | Drift card →Done; cite board in drift-audit; remediation via Notes/Ready handoff — no silent tracker edits |
-| **researcher** | status (+ research card) | Research card →Done + corpus paths in Notes |
+| **implementer** | status + Ready/claim | →In review / →Done; `append-notes --agent implementer` |
+| **test-runner** | status + slice card | →In review or →Done; `--agent test-runner` |
+| **verifier** | status + related card | →Done or leave In review; `--agent verifier` |
+| **integrator-mas-agent** | status + claim | →Done; `--agent integrator-mas-agent` |
+| **enterprise-auditor** | status + audit card | →In review/Done; `--agent enterprise-auditor` + artifact paths |
+| **workflow-drift-guard** | **Must** status + list In progress | Drift card →Done; `--agent workflow-drift-guard`; remediation via Notes/Ready — no silent tracker edits |
+| **researcher** | status (+ research card) | Research card →Done; `--agent researcher` + corpus paths |
 
 ## Status path
 
@@ -61,7 +61,9 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 Ready → In progress → In review → Done
 ```
 
-Handoff: `item_id=PVTI_… · Status=a→b · next=<agent>`
+Handoff: `item_id=PVTI_… · @User/implementer · Status=a→b · next=@User/verifier`
+
+**Attribution:** Notes use `@owner.github_user/<agent>` from each collaborator’s `github.collaboration.yaml` so multi-user boards do not collide.
 
 ## workflow-drift-guard specifically
 

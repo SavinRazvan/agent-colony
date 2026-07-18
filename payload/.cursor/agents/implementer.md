@@ -16,12 +16,13 @@ description: Disciplined implementation slices with trackers and Pattern A gates
 
 **Exit (board-first when enabled):**
 
-1. `python -m cursor_workflow project set-status --id PVTI_… --to in_review` (PR open / handoff) or `--to done` (slice closed). Put next agent in card Notes when handing off.
-2. Append `change-index.md`; one line in `history/updates-log.md`.
-3. When `sync_policy: board_only`, do **not** dual-write competing `in_progress` into `work-tracker.md` as SSOT.
-4. Print handoff line. Say *prepare gates green* — do not paste full `GATES`.
+1. `python3 -m cursor_workflow project set-status --id PVTI_… --to in_review` (PR open / handoff) or `--to done` (slice closed).
+2. `python3 -m cursor_workflow project append-notes --id PVTI_… --agent implementer --text "… · next=@User/verifier"` (required attribution).
+3. Append `change-index.md`; one line in `history/updates-log.md`.
+4. When `sync_policy: board_only`, do **not** dual-write competing `in_progress` into `work-tracker.md` as SSOT.
+5. Print handoff line. Say *prepare gates green* — do not paste full `GATES`.
 
-**Board rights:** claim Ready→In progress; In review on PR; Done on close; Priority/Size on **own** card; may create slice cards. **Exit Status update is mandatory** for continuation. Do **not** edit Project views/workflows/README. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract.
+**Board rights:** Status + Notes on the card you touch. Exit Notes **must** use `append-notes --agent implementer` (prefixes `@owner.github_user/implementer`). Handoff `next=@user/agent`. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
 
 **Tier note:** Tier 1 local trackers are **offline fallback**. Tier 2 `.local/workflow-artifacts/` stay local (PR/audit). See ADR-008 and `overlays/rules/project-ssot-precedence.mdc`.
 

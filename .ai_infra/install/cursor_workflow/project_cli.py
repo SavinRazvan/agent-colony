@@ -11,6 +11,7 @@ Depends On:
 Notes:
  - Pattern A: one gh invocation per action; no dual-write of local trackers.
  - DraftIssue body edits resolve PVTI_… → DI_… (+ --title); Status stays on PVTI_….
+ - Notes attribution: @owner.github_user/agent via append-notes --agent.
 """
 
 from __future__ import annotations
@@ -63,6 +64,88 @@ def require_enabled(ssot: dict[str, Any]) -> list[str]:
         if ssot.get(key) in (None, ""):
             return [f"project_ssot.{key} is required when enabled"]
     return []
+
+
+def normalize_github_handle(raw: str) -> str:
+    """Ensure leading @ on a GitHub login."""
+    s = (raw or "").strip()
+    if not s:
+        return ""
+    return s if s.startswith("@") else f"@{s}"
+
+
+def resolve_human_github_user(root: Path) -> str:
+    """Human identity from owner.github_user (not project_ssot.owner)."""
+    us = _import_user_settings(root)
+    handle = us.resolve_github_user(root)
+    return normalize_github_handle(str(handle or ""))
+
+
+def attribution_required(ssot: dict[str, Any]) -> bool:
+    conventions = ssot.get("conventions") or {}
+    return bool(conventions.get("require_attribution_on_exit", True))
+
+
+def format_agent_attribution(root: Path, agent: str) -> str:
+    """Return @github_user/agent for board Notes."""
+    user = resolve_human_github_user(root)
+    agent_key = (agent or "").strip().lstrip("@")
+    if not user:
+        raise ValueError("owner.github_user missing — set github.collaboration.yaml")
+    if not agent_key:
+        raise ValueError("agent name required for attribution")
+    return f"{user}/{agent_key}"
+
+
+def format_note_line(root: Path, agent: str, text: str) -> str:
+    """
+    Prefix note with @user/agent · text.
+    Idempotent if text already starts with that attribution.
+    """
+    attr = format_agent_attribution(root, agent)
+    body = (text or "").strip()
+    if body.startswith(attr):
+        return body
+    # Also accept without requiring exact agent if already @user/something
+    if re.match(r"^@[^\s/]+/[^\s·]+", body):
+        return body
+    if not body:
+        return attr
+    return f"{attr} · {body}"
+
+
+def set_item_assignee(
+    ssot: dict[str, Any], item_id: str, login: str
+) -> tuple[bool, str]:
+    """
+    Assign a GitHub human user to an Issue-backed project item.
+    DraftIssue: not supported — return False with hint to use Notes or promote.
+    """
+    kind, cid, meta, err = resolve_item_content(ssot, item_id)
+    if err or not kind or not cid:
+        return False, err or "could not resolve content for assignee"
+    login_clean = (login or "").strip().lstrip("@")
+    if not login_clean:
+        return False, "assignee login empty"
+
+    if kind == "issue":
+        meta = meta or {}
+        repo = str(meta.get("repo") or ssot.get("default_repo") or "")
+        gh_args = ["issue", "edit", cid, "--add-assignee", login_clean]
+        if repo:
+            gh_args.extend(["--repo", repo])
+        proc = run_gh(gh_args)
+        if proc.returncode != 0:
+            return False, (proc.stderr or proc.stdout or "gh issue edit --add-assignee failed").strip()
+        return True, login_clean
+
+    if kind == "draft":
+        return (
+            False,
+            "DraftIssue has no GitHub Assignees; use Notes @user/agent "
+            "or promote to Issue (promote_to_issue_on_pr)",
+        )
+    return False, f"unsupported content kind {kind!r} for assignee"
 
 
 def resolve_status_option_id(ssot: dict[str, Any], logical: str) -> str:
@@ -781,6 +864,21 @@ def cmd_append_notes(args: argparse.Namespace) -> int:
         for e in enabled_errs:
             print(f"project append-notes: FAIL — {e}", file=sys.stderr)
         return 2
+    agent = getattr(args, "agent", None) or ""
+    if attribution_required(ssot) and not str(agent).strip():
+        print(
+            "project append-notes: FAIL — --agent required "
+            "(project_ssot.conventions.require_attribution_on_exit)",
+            file=sys.stderr,
+        )
+        return 2
+    note_text = args.text
+    if str(agent).strip():
+        try:
+            note_text = format_note_line(root, str(agent), args.text)
+        except ValueError as exc:
+            print(f"project append-notes: FAIL — {exc}", file=sys.stderr)
+            return 2
     items, err = fetch_project_items(ssot, limit=args.limit)
     if err:
         print(f"project append-notes: FAIL — {err}", file=sys.stderr)
@@ -790,7 +888,7 @@ def cmd_append_notes(args: argparse.Namespace) -> int:
         print(f"project append-notes: FAIL — item not found: {args.id}", file=sys.stderr)
         return 1
     body = _item_body(item)
-    new_body, changed = append_notes_to_body(body, args.text)
+    new_body, changed = append_notes_to_body(body, note_text)
     if not changed:
         print(f"append-notes: {args.id} — already present (idempotent skip)")
         return 0
@@ -799,6 +897,40 @@ def cmd_append_notes(args: argparse.Namespace) -> int:
         print(f"project append-notes: FAIL — {detail}", file=sys.stderr)
         return 1
     print(f"append-notes: {args.id} — updated")
+    return 0
+
+
+def cmd_set_assignee(args: argparse.Namespace) -> int:
+    root = Path(args.directory).resolve()
+    ssot, errs = load_project_ssot(root)
+    if errs or ssot is None:
+        for e in errs:
+            print(f"project set-assignee: FAIL — {e}", file=sys.stderr)
+        return 1
+    enabled_errs = require_enabled(ssot)
+    if enabled_errs:
+        for e in enabled_errs:
+            print(f"project set-assignee: FAIL — {e}", file=sys.stderr)
+        return 2
+    login = (getattr(args, "login", None) or "").strip()
+    if not login:
+        try:
+            login = resolve_human_github_user(root).lstrip("@")
+        except Exception as exc:  # noqa: BLE001
+            print(f"project set-assignee: FAIL — {exc}", file=sys.stderr)
+            return 2
+    if not login:
+        print(
+            "project set-assignee: FAIL — no login "
+            "(pass --login or set owner.github_user)",
+            file=sys.stderr,
+        )
+        return 2
+    ok, detail = set_item_assignee(ssot, args.id, login)
+    if not ok:
+        print(f"project set-assignee: FAIL — {detail}", file=sys.stderr)
+        return 1
+    print(f"set-assignee: {args.id} → @{detail.lstrip('@')}")
     return 0
 
 
@@ -922,13 +1054,32 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     get_cmd.set_defaults(func=cmd_get)
 
     notes_cmd = project_sub.add_parser(
-        "append-notes", help="Append a line under ## Notes on the card body"
+        "append-notes",
+        help="Append a line under ## Notes (prefix @user/agent when --agent set)",
     )
     notes_cmd.add_argument("--directory", type=Path, default=".")
     notes_cmd.add_argument("--id", required=True)
     notes_cmd.add_argument("--text", required=True)
+    notes_cmd.add_argument(
+        "--agent",
+        default="",
+        help="Agent id for attribution (required when require_attribution_on_exit)",
+    )
     notes_cmd.add_argument("--limit", type=int, default=100)
     notes_cmd.set_defaults(func=cmd_append_notes)
+
+    assignee_cmd = project_sub.add_parser(
+        "set-assignee",
+        help="Assign GitHub human user (Issue-backed); default owner.github_user",
+    )
+    assignee_cmd.add_argument("--directory", type=Path, default=".")
+    assignee_cmd.add_argument("--id", required=True, help="Project item id (PVTI_…)")
+    assignee_cmd.add_argument(
+        "--login",
+        default="",
+        help="GitHub login (default: owner.github_user from collab YAML)",
+    )
+    assignee_cmd.set_defaults(func=cmd_set_assignee)
 
     find_cmd = project_sub.add_parser(
         "find-by-pr", help="Resolve project item id from PR (Board-Item or body scan)"

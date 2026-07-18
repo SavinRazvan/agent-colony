@@ -12,7 +12,7 @@ description: Independent-governed helper — list/create/move GitHub Project SSO
 
 **Exit:** Board Status updated via CLI for every triage action; append `change-index.md` (Agent: `project-board`); one line in `history/updates-log.md`. Print handoff line (`next=implementer|…`). Do **not** dual-write `work-tracker.md` when `sync_policy: board_only`.
 
-**Board rights:** Full triage — create cards; any Status; Priority/Size. Own Ready queue hygiene so other agents can claim. Never edit Project views/workflows/README/Insights. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract.
+**Board rights:** Status + Notes on the card you touch. Exit Notes **must** use `append-notes --agent project-board` (prefixes `@owner.github_user/project-board`). Handoff `next=@user/agent`. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
 
 ## Role
 

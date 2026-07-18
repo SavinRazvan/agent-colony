@@ -18,7 +18,7 @@ You **extend the multi-agent system** without breaking planes, gates, or procedu
 
 **Exit:** **Must** set integration card Status → `done` (or `in_review` if verify failed); Notes with validate outcomes; print handoff line. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`.
 
-**Board rights:** Create integration cards; claim→Done; fields on own card. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract.
+**Board rights:** Status + Notes on the card you touch. Exit Notes **must** use `append-notes --agent integrator-mas-agent` (prefixes `@owner.github_user/integrator-mas-agent`). Handoff `next=@user/agent`. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
 
 ## Read first (evidence before edits)
 

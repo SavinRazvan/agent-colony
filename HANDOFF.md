@@ -126,7 +126,8 @@ GitHub Project #3       →  create / list / claim / status (human + all agents)
 
 | Rule | Detail |
 |------|--------|
-| One claim | Prefer one primary **In progress** card per agent/assignee |
+| One claim | Prefer one primary **In progress** card per **human** assignee |
+| Attribution | Notes: `@owner.github_user/<agent>` via `append-notes --agent`; `next=@user/agent` |
 | Queue | **Ready** (+ Priority P0/P1) = next work |
 | Review | **In review** when PR open; **Done** after merge/close |
 | Create | Agents may create DraftIssue/Issue on the Project when scoping work |
