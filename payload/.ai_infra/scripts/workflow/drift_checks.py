@@ -257,7 +257,8 @@ def _parse_session_board_field(board_cell: str) -> tuple[str | None, str]:
     if not m:
         return None, ""
     item_id = m.group(1)
-    rest = (cell[: m.start()] + cell[m.end() :]).strip(" -–—|,;")
+    # Strip markdown backticks left when cell is like `PVTI_…` Done
+    rest = (cell[: m.start()] + cell[m.end() :]).strip(" -–—|,;`")
     return item_id, rest
 
 
