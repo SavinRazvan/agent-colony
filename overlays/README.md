@@ -9,7 +9,7 @@ Per-project rules and optional docs that **extend** the universal **MAS Workflow
 | `overlays/rules/*.mdc` | Product- or domain-specific Cursor rules (install → target `.cursor/rules/`) |
 | `overlays/docs/` | Optional ops docs merged into project `docs/` at install |
 
-**Core ships exactly 6 universal rules** in `.cursor/rules/`. Overlays add constraints for *your* product (adapter walls, layer policies, protected paths, etc.).
+**Kit-dev (this product repo) ships 7 rules** in `.cursor/rules/` — 6 universal kit rules plus `project-ssot-precedence.mdc`. **Consumer activate** copies **6** rules from `payload/.cursor/rules/` (no product-only overlay). **Overlays** add project-specific `.mdc` files at install for *your* app (adapter walls, layer policies, protected paths, etc.).
 
 ## Install
 

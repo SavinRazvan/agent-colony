@@ -541,7 +541,7 @@ export default function BoardSsotVsKitCanvas() {
 
       <H2>Classic vs shipped</H2>
       <Table
-        headers={["Concern", "Classic kit", "Shipped experiment"]}
+        headers={["Concern", "Classic kit", "STANDALONE product"]}
         rows={[
           ["Backlog / status SSOT", "Local markdown trackers", "GitHub Project"],
           [
@@ -607,7 +607,7 @@ export default function BoardSsotVsKitCanvas() {
       <Grid columns={2} gap={12}>
         <Card>
           <CardHeader trailing={<Pill size="sm" active>Done</Pill>}>
-            Shipped on experiment
+            Shipped on product (STANDALONE)
           </CardHeader>
           <CardBody>
             <Stack gap={4}>

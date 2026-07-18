@@ -22,7 +22,7 @@ import {
 
 const VERIFIED = "2026-07-18";
 const SOURCES =
-  ".cursor/agents/*.md PEERS · project-board-ssot § Continuation · agent-roster edges";
+  ".cursor/agents/*.md PEERS · audit-orchestration Phase 3 · project-board-ssot § Continuation · agent-roster edges";
 
 const NODE_W = 128;
 const NODE_H = 40;
@@ -129,6 +129,18 @@ const RELATIONS: {
     to: "implementer",
     via: "Notes + artifact paths",
     when: "Audit card closed; implementer applies actions",
+  },
+  {
+    from: "enterprise-auditor",
+    to: "workflow-drift-guard",
+    via: "audit-orchestration Phase 3",
+    when: "After tracker/doc edits; P0/P1 drift findings",
+  },
+  {
+    from: "enterprise-auditor",
+    to: "verifier",
+    via: "audit-orchestration Phase 3",
+    when: "Spot-check top audit claims vs preflight + repo paths",
   },
   {
     from: "integrator-mas-agent",
