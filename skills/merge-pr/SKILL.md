@@ -20,9 +20,9 @@ disable-model-invocation: true
 6. Note merge SHA: `gh api repos/.../pulls/<n> -q .merge_commit_sha` (or `gh pr view` if working).
 7. **Record:**  
    `python .ai_infra/scripts/pr/merge.py --pr <id|url> --pipeline default --merge-sha <sha>`  
-   Optional: `--item-id PVTI_…` when known; `--skip-board-sync` to bypass board close.  
+   Optional: `--item-id <from PR Board-Item line or find-by-pr>` when known; `--skip-board-sync` to bypass board close.  
    When `project_ssot.enabled`, this sets the card → **Done** and appends Notes (`Merged: <PR URL> @ <sha>`). Failure is a **warn** only — merge artifact still writes.  
-   Prefer PR body line `- Board-Item: PVTI_…` under Collaboration so find-by-pr can resolve without `--item-id`.  
+   Prefer PR body line `- Board-Item: <item_id>` under Collaboration (from `project last` or create output) so `find-by-pr` resolves without `--item-id`.  
    (same `--arch-impacting` if used above). Enrich `merge.md` with method + follow-ups.
 8. **Finalize:** `git checkout main`; `python .ai_infra/scripts/pr/finalize.py --branch <branch>`; prune remotes; confirm feature branch gone on origin.
 

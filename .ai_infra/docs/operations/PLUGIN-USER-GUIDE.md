@@ -108,7 +108,7 @@ From `manifest.yaml` (default profile **`with_mcp`**):
 your-project/
 ├── AGENTS.md                      # thin router (not overwritten on re-activate)
 ├── .cursor/
-│   ├── agents/                    # 7 subagents
+│   ├── agents/                    # 8 subagents (incl. project-board)
 │   ├── skills/                    # protocols (activate, audit, integration, …)
 │   ├── rules/                     # always-applied governance
 │   └── mcp.json                   # with_mcp profile
@@ -220,7 +220,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | **Check install health** | — | `python3 -m cursor_workflow health` | [gate-matrix.md](gate-matrix.md) |
 | **Dry-run install preview** | — | `scaffold.py --dry-run` | [install-dry-run.md](install-dry-run.md) |
 
-### Full `/` menu (7 agents + skills)
+### Full `/` menu (8 agents + skills)
 
 | Chat name | Disk path |
 |-----------|-----------|

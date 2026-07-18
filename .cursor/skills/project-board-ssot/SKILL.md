@@ -44,7 +44,7 @@ Work is **indexed on the Project**, not in chat alone.
 Handoff line (chat + card Notes):
 
 ```text
-item_id=<real PVTI_ from create or project last> · @User/implementer · Status=before→after · next=@User/verifier
+item_id=<from project last or create> · @User/implementer · Status=before→after · next=@User/verifier
 ```
 
 Prefer `--last` after create so agents never invent ids.

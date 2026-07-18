@@ -87,7 +87,7 @@ What **`/workflow-activate`** copies into **your app** (e.g. Smart-Notes):
 my-app/
 ├── AGENTS.md                       Stub router (from template)
 ├── .cursor/
-│   ├── agents/                     7 agents (from payload)
+│   ├── agents/                     8 agents (from payload; incl. project-board)
 │   ├── rules/                      6 rules
 │   └── skills/                     10 canonical skills only (no repo-root skills/ merge)
 ├── .agents/skills/                 5 maintainer slash folders (+ audit-alignment stub)

@@ -78,4 +78,4 @@ Per [local-artifact-protection.mdc](../../../.cursor/rules/local-artifact-protec
 - **Tier 2 runtime content** — filled under `.local/workflow-artifacts/*` during slices (PR, alignment, drift, enterprise audit, release, audit preflight).
 - Live slice trackers — **`.local/index-and-planning/current/`** (summarize in `updates-log.md`).
 - Generated coverage/CI JSON — **`.local/generated-data/`**.
-- Product application code — out of scope for **mas-workflow-kit**; use consumer `overlays/rules/` when needed.
+- Product application code — out of scope for the kit product repo; use consumer `overlays/rules/` when needed.

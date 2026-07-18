@@ -67,7 +67,7 @@ flowchart LR
 ## Kit dev repo (where we build the plugin)
 
 ```text
-mas-workflow-kit/
+mas-workflow-kit-project-ssot/
 ├── AGENTS.md
 ├── .cursor-plugin/plugin.json  # marketplace manifest — no path fields (spec-exact discovery)
 ├── agents/                     # generated (make sync-plugin) — COMMITTED, sibling of .cursor-plugin/

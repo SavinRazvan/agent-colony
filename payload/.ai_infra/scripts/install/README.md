@@ -4,7 +4,7 @@ Scaffold the universal **MAS Workflow Kit** into a consumer project.
 
 ## Usage
 
-From the **mas-workflow-kit** repo root:
+From the **mas-workflow-kit-project-ssot** product repo root:
 
 ```bash
 # Preview

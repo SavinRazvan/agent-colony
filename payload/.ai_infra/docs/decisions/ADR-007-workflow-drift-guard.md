@@ -28,7 +28,7 @@ Introduce a script-first drift validator and MAS-integrated agent per [ADR-006](
 
 | Profile | When | Checks |
 |---------|------|--------|
-| `kit-dev` | Default for mas-workflow-kit repo | DRIFT-001…008 (full set) |
+| `kit-dev` | Default for `mas-workflow-kit-project-ssot` (kit product repo) | DRIFT-001…008 (full set) |
 | `consumer` | `work-tracker.md` contains exemplar `STARTER-001` | DRIFT-005, DRIFT-008 (relaxed tracker rules) |
 
 Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
