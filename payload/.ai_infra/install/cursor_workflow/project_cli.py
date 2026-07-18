@@ -1,21 +1,18 @@
 """
 File: project_cli.py
 Path: .ai_infra/install/cursor_workflow/project_cli.py
-Role: CLI for GitHub Project SSOT — load project_ssot from collab YAML; drive gh project.
+Role: Thin CLI dispatcher for GitHub Project SSOT — cmd_* handlers and register_project_subparser.
 Used By:
  - .ai_infra/install/cursor_workflow/cli.py
  - .cursor/skills/project-board-ssot/SKILL.md
  - .cursor/agents/project-board.md
 Depends On:
- - .ai_infra/scripts/pr/user_settings.py (load_github_collaboration)
+ - .ai_infra/install/cursor_workflow/project_atomics.py
+ - .ai_infra/install/cursor_workflow/gh_project_adapter.py
+ - .ai_infra/install/cursor_workflow/project_recipes.py
 Notes:
- - Pattern A: one gh invocation per action; recipes (claim/handoff/create-from-template)
-   are one lifecycle command each; no dual-write of local trackers.
- - DraftIssue body edits resolve PVTI_… → DI_… (+ --title); Status stays on PVTI_….
- - Promote Draft→Issue: convertProjectV2DraftIssueItemToIssue (same PVTI_); mention-pr auto when promote_to_issue_on_pr.
- - Notes attribution: @owner.github_user/agent · ISO-8601-UTC · text via append-notes --agent.
- - Exit codes: 0 ok; 2 usage/config; 3 gh/network; 4 not found; 5 validation; 6 queued (outbox).
- - Rate-limit outbox: project_outbox.py + project_ssot.outbox (local buffer, not SSOT).
+ - Re-exports public symbols for tests and project_outbox late imports.
+ - Pattern A: one gh invocation per action; exit codes in project_atomics.
 """
 
 from __future__ import annotations
@@ -29,437 +26,71 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-# Board Pattern A exit codes
-EXIT_OK = 0
-EXIT_USAGE = 2
-EXIT_GH = 3
-EXIT_NOT_FOUND = 4
-EXIT_VALIDATION = 5
-EXIT_QUEUED = 6
-
-_TEMPLATE_NAMES = ("slice", "bug")
-_PLACEHOLDER_RE = re.compile(r"\{\{(\w+)\}\}")
-_SESSION_REL = Path(".local") / "generated-data" / "project-last-item.json"
-
-
-def fail(cmd: str, code: int, reason: str) -> int:
-    """Print structured FAIL and return exit code."""
-    print(f"project {cmd}: FAIL — CODE={code} · {reason}", file=sys.stderr)
-    return code
-
-
-def validate_card_body(text: str, sections: list[str]) -> list[str]:
-    """Return missing ## Heading names from conventions.body_sections."""
-    body = text or ""
-    missing: list[str] = []
-    for section in sections:
-        name = str(section).strip()
-        if not name:
-            continue
-        if f"## {name}" not in body:
-            missing.append(name)
-    return missing
-
-
-def project_templates_dir(root: Path) -> Path:
-    return root / ".ai_infra" / "templates" / "project-board"
-
-
-def load_card_template(root: Path, name: str) -> str:
-    """Load card-body-{name}.md; raise FileNotFoundError if missing."""
-    key = (name or "").strip().lower()
-    if key not in _TEMPLATE_NAMES:
-        raise ValueError(f"unknown template {name!r} — known: {', '.join(_TEMPLATE_NAMES)}")
-    path = project_templates_dir(root) / f"card-body-{key}.md"
-    if not path.is_file():
-        raise FileNotFoundError(f"missing template {path}")
-    return path.read_text(encoding="utf-8")
-
-
-def render_card_template(
-    template: str,
-    *,
-    acceptance: str = "(TBD)",
-    rollback: str = "(TBD)",
-    notes: str = "",
-) -> str:
-    """Replace {{acceptance}}, {{rollback}}, {{notes}} placeholders."""
-    values = {
-        "acceptance": (acceptance or "(TBD)").strip() or "(TBD)",
-        "rollback": (rollback or "(TBD)").strip() or "(TBD)",
-        "notes": (notes or "").rstrip(),
-    }
-
-    def _sub(m: re.Match[str]) -> str:
-        return values.get(m.group(1), m.group(0))
-
-    return _PLACEHOLDER_RE.sub(_sub, template).rstrip() + "\n"
-
-
-def session_last_path(root: Path) -> Path:
-    return root / _SESSION_REL
-
-
-def save_last_item_id(root: Path, item_id: str, *, title: str = "", action: str = "") -> None:
-    """Persist last board item id for --last (machine-local, not a second SSOT)."""
-    path = session_last_path(root)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    payload = {
-        "schema": "project-last-item/v1",
-        "item_id": item_id,
-        "title": title,
-        "action": action,
-    }
-    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-
-
-def load_last_item_id(root: Path) -> str | None:
-    path = session_last_path(root)
-    if not path.is_file():
-        return None
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return None
-    if not isinstance(data, dict):
-        return None
-    iid = str(data.get("item_id") or "").strip()
-    return iid or None
-
-
-def is_placeholder_item_id(raw: str) -> bool:
-    """True for docs ellipsis / truncated ids agents must never paste."""
-    s = (raw or "").strip()
-    if not s:
-        return True
-    if "…" in s or "..." in s:
-        return True
-    if s in ("<id>", "$ITEM_ID", "ITEM_ID", "PVTI_", "DI_"):
-        return True
-    # Docs form with only punctuation after prefix
-    if re.match(r"^(PVTI_|DI_)[\.…_-]*$", s):
-        return True
-    # Real GitHub Project item ids are long (e.g. PVTI_lAHO…); reject stubs
-    if re.match(r"^PVTI_", s) and len(s) < 20:
-        return True
-    if re.match(r"^DI_", s) and len(s) < 12:
-        return True
-    return False
-
-
-def resolve_item_id_arg(
-    root: Path, args: argparse.Namespace, cmd: str
-) -> tuple[str | None, int]:
-    """Resolve --id or --last. Rejects placeholder ids (CODE=2)."""
-    use_last = bool(getattr(args, "last", False))
-    raw = str(getattr(args, "id", None) or "").strip()
-    if use_last and raw:
-        return None, fail(cmd, EXIT_USAGE, "pass --last OR --id, not both")
-    if use_last:
-        lid = load_last_item_id(root)
-        if not lid:
-            return None, fail(
-                cmd,
-                EXIT_USAGE,
-                "no last item — run create-from-template (or claim) first, then --last",
-            )
-        return lid, EXIT_OK
-    if not raw:
-        return None, fail(cmd, EXIT_USAGE, "--id required (or use --last after create)")
-    if is_placeholder_item_id(raw):
-        return None, fail(
-            cmd,
-            EXIT_USAGE,
-            f"placeholder id {raw!r} — never paste PVTI_… from docs; "
-            f"use --last or the real item_id= from create output",
-        )
-    return raw, EXIT_OK
-
-
-def _add_id_or_last(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "--id",
-        default="",
-        help="Real PVTI_ id from create output. Prefer --last.",
-    )
-    parser.add_argument(
-        "--last",
-        action="store_true",
-        help="Use item_id saved by last create/claim (.local/generated-data/project-last-item.json)",
-    )
-
-
-def _import_user_settings(root: Path):
-    pr_dir = root / ".ai_infra" / "scripts" / "pr"
-    if not pr_dir.is_dir():
-        raise FileNotFoundError(f"missing {pr_dir}")
-    pr_str = str(pr_dir)
-    if pr_str not in sys.path:
-        sys.path.insert(0, pr_str)
-    import importlib
-
-    return importlib.import_module("user_settings")
-
-
-def load_project_ssot(root: Path) -> tuple[dict[str, Any] | None, list[str]]:
-    """Return (project_ssot dict or None, error messages)."""
-    errors: list[str] = []
-    try:
-        us = _import_user_settings(root)
-    except FileNotFoundError as exc:
-        return None, [str(exc)]
-    cfg = us.load_github_collaboration(root)
-    if cfg is None:
-        return None, [f"missing or empty {us.GITHUB_COLLAB_REL}"]
-    ssot = cfg.get("project_ssot")
-    if not isinstance(ssot, dict):
-        return None, ["project_ssot: missing block in github.collaboration.yaml"]
-    return ssot, errors
-
-
-def require_enabled(ssot: dict[str, Any]) -> list[str]:
-    if not ssot.get("enabled"):
-        fallback = ssot.get("fallback", "local_trackers")
-        msg = "project_ssot.enabled is false — board SSOT inactive"
-        if fallback == "local_trackers":
-            msg += "; fallback: local_trackers (.local/index-and-planning/current/)"
-        return [msg]
-    for key in ("owner", "number", "project_id"):
-        if ssot.get(key) in (None, ""):
-            return [f"project_ssot.{key} is required when enabled"]
-    return []
-
-
-def normalize_github_handle(raw: str) -> str:
-    """Ensure leading @ on a GitHub login."""
-    s = (raw or "").strip()
-    if not s:
-        return ""
-    return s if s.startswith("@") else f"@{s}"
-
-
-def resolve_human_github_user(root: Path) -> str:
-    """Human identity from owner.github_user (not project_ssot.owner)."""
-    us = _import_user_settings(root)
-    handle = us.resolve_github_user(root)
-    return normalize_github_handle(str(handle or ""))
-
-
-def attribution_required(ssot: dict[str, Any]) -> bool:
-    conventions = ssot.get("conventions") or {}
-    return bool(conventions.get("require_attribution_on_exit", True))
-
-
-def format_agent_attribution(root: Path, agent: str) -> str:
-    """Return @github_user/agent for board Notes."""
-    user = resolve_human_github_user(root)
-    agent_key = (agent or "").strip().lstrip("@")
-    if not user:
-        raise ValueError("owner.github_user missing — set github.collaboration.yaml")
-    if not agent_key:
-        raise ValueError("agent name required for attribution")
-    return f"{user}/{agent_key}"
-
-
-NOTE_LINE_WITH_TIMESTAMP_RE = re.compile(
-    r"^@[^\s/]+/[^\s·]+\s*·\s*\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z(?:\s*·\s*|$)"
+from gh_project_adapter import (
+    _REPO_ID_CACHE,
+    _parse_pvti_from_gh_json,
+    create_board_item,
+    create_draft_item,
+    create_issue_item,
+    edit_item_body,
+    fetch_project_items,
+    find_item_by_id,
+    promote_draft_item_to_issue,
+    resolve_draft_content,
+    resolve_item_content,
+    resolve_repository_id,
+    run_gh,
+    set_item_assignee,
+    set_item_date,
+    set_item_number,
+    set_item_status,
 )
-NOTE_ATTRIBUTION_PREFIX_RE = re.compile(r"^(@[^\s/]+/[^\s·]+)")
-
-
-def utc_note_timestamp() -> str:
-    """Return current UTC timestamp for board Notes (test hook)."""
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-def format_note_line(root: Path, agent: str, text: str) -> str:
-    """
-    Prefix note with @user/agent · ISO-8601-UTC · text.
-    Idempotent if text already has a UTC timestamp after attribution.
-    """
-    attr = format_agent_attribution(root, agent)
-    body = (text or "").strip()
-    if NOTE_LINE_WITH_TIMESTAMP_RE.match(body):
-        return body
-    attr_match = NOTE_ATTRIBUTION_PREFIX_RE.match(body)
-    if attr_match:
-        prefix = attr_match.group(1)
-        rest = body[len(prefix) :].lstrip()
-        if rest.startswith("·"):
-            rest = rest[1:].strip()
-        ts = utc_note_timestamp()
-        if rest:
-            return f"{prefix} · {ts} · {rest}"
-        return f"{prefix} · {ts}"
-    ts = utc_note_timestamp()
-    if not body:
-        return f"{attr} · {ts}"
-    return f"{attr} · {ts} · {body}"
-
-
-def set_item_assignee(
-    ssot: dict[str, Any], item_id: str, login: str
-) -> tuple[bool, str]:
-    """
-    Assign a GitHub human user to an Issue-backed project item.
-    DraftIssue: not supported — return False with hint to use Notes or promote.
-    """
-    kind, cid, meta, err = resolve_item_content(ssot, item_id)
-    if err or not kind or not cid:
-        return False, err or "could not resolve content for assignee"
-    login_clean = (login or "").strip().lstrip("@")
-    if not login_clean:
-        return False, "assignee login empty"
-
-    if kind == "issue":
-        meta = meta or {}
-        repo = str(meta.get("repo") or ssot.get("default_repo") or "")
-        gh_args = ["issue", "edit", cid, "--add-assignee", login_clean]
-        if repo:
-            gh_args.extend(["--repo", repo])
-        proc = run_gh(gh_args)
-        if proc.returncode != 0:
-            return False, (proc.stderr or proc.stdout or "gh issue edit --add-assignee failed").strip()
-        return True, login_clean
-
-    if kind == "draft":
-        return (
-            False,
-            "DraftIssue has no GitHub Assignees; use Notes @user/agent "
-            "or promote to Issue (promote_to_issue_on_pr)",
-        )
-    return False, f"unsupported content kind {kind!r} for assignee"
-
-
-def resolve_status_option_id(ssot: dict[str, Any], logical: str) -> str:
-    fields = ssot.get("fields") or {}
-    status = fields.get("status") or {}
-    options = status.get("options") or {}
-    key = logical.strip().lower().replace("-", "_").replace(" ", "_")
-    aliases = {
-        "inprogress": "in_progress",
-        "in_review": "in_review",
-        "review": "in_review",
-    }
-    key = aliases.get(key, key)
-    if key not in options:
-        known = ", ".join(sorted(options)) or "(none)"
-        raise KeyError(f"unknown status '{logical}' — known: {known}")
-    return str(options[key])
-
-
-def resolve_field_option_id(ssot: dict[str, Any], field: str, logical: str) -> tuple[str, str]:
-    """Return (field_id, option_id) for priority or size."""
-    fields = ssot.get("fields") or {}
-    block = fields.get(field)
-    if not isinstance(block, dict):
-        raise KeyError(f"project_ssot.fields.{field} missing")
-    field_id = block.get("field_id")
-    if not field_id:
-        raise KeyError(f"project_ssot.fields.{field}.field_id missing")
-    options = block.get("options") or {}
-    key = logical.strip().lower().replace("-", "_")
-    if key not in options:
-        known = ", ".join(sorted(options)) or "(none)"
-        raise KeyError(f"unknown {field} '{logical}' — known: {known}")
-    return str(field_id), str(options[key])
-
-
-def resolve_plain_field_id(ssot: dict[str, Any], field: str) -> str:
-    """Return field_id for date/number fields (start_date, end_date, estimate)."""
-    fields = ssot.get("fields") or {}
-    block = fields.get(field)
-    if not isinstance(block, dict):
-        raise KeyError(f"project_ssot.fields.{field} missing")
-    field_id = block.get("field_id")
-    if not field_id:
-        raise KeyError(f"project_ssot.fields.{field}.field_id missing")
-    return str(field_id)
-
-
-def utc_today_iso() -> str:
-    """UTC calendar date YYYY-MM-DD for Project date fields."""
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
-
-
-def set_item_date(
-    ssot: dict[str, Any], item_id: str, field_key: str, date_iso: str
-) -> tuple[bool, str]:
-    """Set a DATE Project field via gh project item-edit --date."""
-    try:
-        field_id = resolve_plain_field_id(ssot, field_key)
-    except KeyError as exc:
-        return False, str(exc)
-    date_iso = str(date_iso or "").strip()
-    if len(date_iso) != 10 or date_iso[4] != "-" or date_iso[7] != "-":
-        return False, f"date must be YYYY-MM-DD, got {date_iso!r}"
-    project_id = str(ssot["project_id"])
-    proc = run_gh(
-        [
-            "project",
-            "item-edit",
-            "--project-id",
-            project_id,
-            "--id",
-            item_id,
-            "--field-id",
-            field_id,
-            "--date",
-            date_iso,
-        ]
-    )
-    if proc.returncode != 0:
-        return False, (proc.stderr or proc.stdout or "gh project item-edit --date failed").strip()
-    return True, date_iso
-
-
-def set_item_number(
-    ssot: dict[str, Any], item_id: str, field_key: str, value: float
-) -> tuple[bool, str]:
-    """Set a NUMBER Project field via gh project item-edit --number."""
-    try:
-        field_id = resolve_plain_field_id(ssot, field_key)
-    except KeyError as exc:
-        return False, str(exc)
-    project_id = str(ssot["project_id"])
-    proc = run_gh(
-        [
-            "project",
-            "item-edit",
-            "--project-id",
-            project_id,
-            "--id",
-            item_id,
-            "--field-id",
-            field_id,
-            "--number",
-            str(value),
-        ]
-    )
-    if proc.returncode != 0:
-        return False, (proc.stderr or proc.stdout or "gh project item-edit --number failed").strip()
-    return True, str(value)
-
-
-def status_field_id(ssot: dict[str, Any]) -> str:
-    fields = ssot.get("fields") or {}
-    status = fields.get("status") or {}
-    fid = status.get("field_id")
-    if not fid:
-        raise KeyError("project_ssot.fields.status.field_id missing")
-    return str(fid)
-
-
-def run_gh(args: list[str], *, timeout_s: float = 60.0) -> subprocess.CompletedProcess[str]:
-    cmd = ["gh", *args]
-    return subprocess.run(
-        cmd,
-        capture_output=True,
-        text=True,
-        timeout=timeout_s,
-        check=False,
-    )
-
+from project_atomics import (
+    EXIT_GH,
+    EXIT_NOT_FOUND,
+    EXIT_OK,
+    EXIT_QUEUED,
+    EXIT_USAGE,
+    EXIT_VALIDATION,
+    NOTE_ATTRIBUTION_PREFIX_RE,
+    NOTE_LINE_WITH_TIMESTAMP_RE,
+    _PLACEHOLDER_RE,
+    _SESSION_REL,
+    _TEMPLATE_NAMES,
+    _add_id_or_last,
+    _import_user_settings,
+    _item_body,
+    _item_title,
+    _normalize_status,
+    append_notes_to_body,
+    attribution_required,
+    build_export_snapshot,
+    fail,
+    format_agent_attribution,
+    format_note_line,
+    is_placeholder_item_id,
+    latest_notes_line,
+    load_card_template,
+    load_last_item_id,
+    load_project_ssot,
+    normalize_github_handle,
+    notes_line_attributed,
+    parse_board_item_from_text,
+    project_templates_dir,
+    render_card_template,
+    require_enabled,
+    resolve_field_option_id,
+    resolve_human_github_user,
+    resolve_item_id_arg,
+    resolve_plain_field_id,
+    resolve_status_option_id,
+    save_last_item_id,
+    session_last_path,
+    status_field_id,
+    utc_note_timestamp,
+    utc_today_iso,
+    validate_card_body,
+)
 
 def _load_enabled_ssot(root: Path, cmd: str) -> tuple[dict[str, Any] | None, int]:
     """Return (ssot, 0) or (None, exit_code) after printing FAIL."""
@@ -471,347 +102,13 @@ def _load_enabled_ssot(root: Path, cmd: str) -> tuple[dict[str, Any] | None, int
         return None, fail(cmd, EXIT_USAGE, enabled_errs[0])
     return ssot, EXIT_OK
 
-
-def _parse_pvti_from_gh_json(raw: str) -> str | None:
-    try:
-        data = json.loads(raw or "{}")
-        if isinstance(data, dict):
-            item_id = str(data.get("id") or data.get("itemId") or "") or None
-            if item_id and item_id.startswith("PVTI_"):
-                return item_id
-    except json.JSONDecodeError:
-        pass
-    m = re.search(r"(PVTI_[A-Za-z0-9_-]+)", raw or "")
-    return m.group(1) if m else None
-
-
-def create_draft_item(ssot: dict[str, Any], title: str, body: str) -> tuple[str | None, str | None, str | None]:
-    """
-    Create DraftIssue. Returns (item_id, raw_stdout, error).
-    item_id parsed from gh JSON when possible.
-    """
-    owner = str(ssot["owner"])
-    number = int(ssot["number"])
-    gh_args = [
-        "project",
-        "item-create",
-        str(number),
-        "--owner",
-        owner,
-        "--title",
-        title,
-        "--format",
-        "json",
-    ]
-    if body:
-        gh_args.extend(["--body", body])
-    proc = run_gh(gh_args)
-    if proc.returncode != 0:
-        return None, None, (proc.stderr or proc.stdout or "gh project item-create failed").strip()
-    raw = (proc.stdout or "").strip()
-    return _parse_pvti_from_gh_json(raw), raw, None
-
-
-def create_issue_item(ssot: dict[str, Any], title: str, body: str) -> tuple[str | None, str | None, str | None]:
-    """
-    Create a GitHub Issue then add it to the Project.
-    Returns (item_id PVTI_, raw_stdout, error).
-    """
-    repo = str(ssot.get("default_repo") or "").strip()
-    if not repo or "/" not in repo:
-        return None, None, "project_ssot.default_repo required for item_kind_default=issue"
-    create_args = ["issue", "create", "--repo", repo, "--title", title]
-    if body:
-        create_args.extend(["--body", body])
-    proc = run_gh(create_args)
-    if proc.returncode != 0:
-        return None, None, (proc.stderr or proc.stdout or "gh issue create failed").strip()
-    out = (proc.stdout or "").strip()
-    url_m = re.search(r"(https://github\.com/[^\s]+/issues/\d+)", out)
-    if not url_m:
-        return None, out, f"gh issue create succeeded but no issue URL in output: {out!r}"
-    issue_url = url_m.group(1)
-    owner = str(ssot["owner"])
-    number = int(ssot["number"])
-    add_args = [
-        "project",
-        "item-add",
-        str(number),
-        "--owner",
-        owner,
-        "--url",
-        issue_url,
-        "--format",
-        "json",
-    ]
-    add_proc = run_gh(add_args)
-    if add_proc.returncode != 0:
-        return (
-            None,
-            None,
-            (
-                f"issue created ({issue_url}) but item-add failed: "
-                + (add_proc.stderr or add_proc.stdout or "gh project item-add failed").strip()
-            ),
-        )
-    raw = (add_proc.stdout or "").strip()
-    item_id = _parse_pvti_from_gh_json(raw)
-    if not item_id:
-        return None, raw, f"item-add ok but no PVTI_ in output (issue={issue_url})"
-    return item_id, raw or issue_url, None
-
-
-def create_board_item(ssot: dict[str, Any], title: str, body: str) -> tuple[str | None, str | None, str | None]:
-    """Route create by conventions.item_kind_default: draft (default) | issue."""
-    conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
-    kind = str((conventions or {}).get("item_kind_default") or "draft").strip().lower()
-    if kind == "issue":
-        return create_issue_item(ssot, title, body)
-    return create_draft_item(ssot, title, body)
-
-
-_REPO_ID_CACHE: dict[str, str] = {}
-
-
-def resolve_repository_id(ssot: dict[str, Any], repo: str = "") -> tuple[str | None, str | None]:
-    """
-    Resolve GitHub repository node id (R_…) for promote / issue create.
-    Returns (repository_id, error).
-    """
-    repo_s = (repo or str(ssot.get("default_repo") or "")).strip()
-    if not repo_s or "/" not in repo_s:
-        return None, "repository required as owner/repo (set project_ssot.default_repo or --repo)"
-    if repo_s in _REPO_ID_CACHE:
-        return _REPO_ID_CACHE[repo_s], None
-    owner, _, name = repo_s.partition("/")
-    owner, name = owner.strip(), name.strip()
-    if not owner or not name:
-        return None, f"invalid repository {repo_s!r}"
-    query = (
-        "query($owner:String!,$name:String!){repository(owner:$owner,name:$name){id}}"
-    )
-    proc = run_gh(
-        [
-            "api",
-            "graphql",
-            "-f",
-            f"query={query}",
-            "-f",
-            f"owner={owner}",
-            "-f",
-            f"name={name}",
-        ]
-    )
-    if proc.returncode != 0:
-        return None, (proc.stderr or proc.stdout or "graphql repository id failed").strip()
-    try:
-        data = json.loads(proc.stdout or "{}")
-    except json.JSONDecodeError as exc:
-        return None, f"invalid graphql JSON: {exc}"
-    errors = data.get("errors")
-    if errors:
-        msg = errors[0].get("message") if isinstance(errors[0], dict) else errors
-        return None, str(msg)
-    node = ((data.get("data") or {}).get("repository")) or {}
-    rid = str(node.get("id") or "") if isinstance(node, dict) else ""
-    if not rid:
-        return None, f"repository not found: {repo_s}"
-    _REPO_ID_CACHE[repo_s] = rid
-    return rid, None
-
-
-def promote_draft_item_to_issue(
-    ssot: dict[str, Any],
-    item_id: str,
-    *,
-    repo: str = "",
-) -> tuple[bool, str, dict[str, Any]]:
-    """
-    Convert Project DraftIssue → Issue via convertProjectV2DraftIssueItemToIssue.
-    Same PVTI_ is preserved. Returns (ok, detail, meta) with issue_number/url/repo when ok.
-    Already-Issue is a successful no-op.
-    """
-    kind, cid, meta, err = resolve_item_content(ssot, item_id)
-    if err:
-        return False, err, {}
-    if kind == "issue":
-        repo_s = str((meta or {}).get("repo") or ssot.get("default_repo") or "")
-        return (
-            True,
-            f"already Issue #{cid}",
-            {
-                "item_id": item_id,
-                "issue_number": cid,
-                "repo": repo_s,
-                "url": f"https://github.com/{repo_s}/issues/{cid}" if repo_s and cid else "",
-                "noop": True,
-            },
-        )
-    if kind != "draft":
-        return False, f"cannot promote content kind {kind!r}", {}
-
-    repo_s = (repo or str(ssot.get("default_repo") or "")).strip()
-    repo_id, rerr = resolve_repository_id(ssot, repo_s)
-    if not repo_id:
-        return False, rerr or "repositoryId missing", {}
-
-    mutation = (
-        "mutation($input: ConvertProjectV2DraftIssueItemToIssueInput!) {"
-        " convertProjectV2DraftIssueItemToIssue(input: $input) {"
-        "  item { id content { __typename"
-        "   ... on Issue { number url repository { nameWithOwner } }"
-        "  } } } }"
-    )
-    proc = run_gh(
-        [
-            "api",
-            "graphql",
-            "-f",
-            f"query={mutation}",
-            "-F",
-            f"input[itemId]={item_id}",
-            "-F",
-            f"input[repositoryId]={repo_id}",
-        ]
-    )
-    if proc.returncode != 0:
-        detail = (proc.stderr or proc.stdout or "convertProjectV2DraftIssueItemToIssue failed").strip()
-        if "fine-grained" in detail.lower() or "Resource not accessible" in detail:
-            detail += (
-                " · hint: convertProjectV2DraftIssueItemToIssue often needs classic PAT "
-                "(project+repo), not fine-grained"
-            )
-        return False, detail, {}
-    try:
-        data = json.loads(proc.stdout or "{}")
-    except json.JSONDecodeError as exc:
-        return False, f"invalid promote JSON: {exc}", {}
-    errors = data.get("errors")
-    if errors:
-        msg = errors[0].get("message") if isinstance(errors[0], dict) else errors
-        return False, str(msg), {}
-    item = (
-        ((data.get("data") or {}).get("convertProjectV2DraftIssueItemToIssue") or {}).get("item")
-    )
-    if not isinstance(item, dict):
-        return False, "promote mutation returned no item", {}
-    out_id = str(item.get("id") or item_id)
-    content = item.get("content") if isinstance(item.get("content"), dict) else {}
-    number = content.get("number")
-    url = str(content.get("url") or "")
-    rmeta = content.get("repository") if isinstance(content.get("repository"), dict) else {}
-    repo_out = str(rmeta.get("nameWithOwner") or repo_s)
-    if number is None:
-        kind2, cid2, meta2, err2 = resolve_item_content(ssot, out_id)
-        if err2 or kind2 != "issue":
-            return False, err2 or "promote succeeded but content is not Issue", {}
-        number = cid2
-        repo_out = str((meta2 or {}).get("repo") or repo_out)
-        url = f"https://github.com/{repo_out}/issues/{number}" if repo_out else url
-    return (
-        True,
-        f"Issue #{number}",
-        {
-            "item_id": out_id,
-            "issue_number": str(number),
-            "repo": repo_out,
-            "url": url or f"https://github.com/{repo_out}/issues/{number}",
-            "noop": False,
-        },
-    )
-
-
-def in_progress_conflicts_for_user(
-    items: list[dict[str, Any]],
-    *,
-    user_handle: str,
-    exclude_id: str,
-) -> list[dict[str, Any]]:
-    """Other In progress items attributed to the same human (@user/ in body/title or assignees)."""
-    user = normalize_github_handle(user_handle)
-    login = user.lstrip("@").lower()
-    conflicts: list[dict[str, Any]] = []
-    for item in items:
-        if not isinstance(item, dict):
-            continue
-        if str(item.get("id") or "") == exclude_id:
-            continue
-        if _normalize_status(str(item.get("status") or "")) != "in_progress":
-            continue
-        blob = f"{_item_title(item)}\n{_item_body(item)}".lower()
-        assignees = item.get("assignees") or item.get("assignees.login") or []
-        assignee_blob = ""
-        if isinstance(assignees, list):
-            parts: list[str] = []
-            for a in assignees:
-                if isinstance(a, dict):
-                    parts.append(str(a.get("login") or ""))
-                else:
-                    parts.append(str(a))
-            assignee_blob = " ".join(parts).lower()
-        else:
-            assignee_blob = str(assignees).lower()
-        if login and (f"@{login}/" in blob or login in assignee_blob.split()):
-            conflicts.append(item)
-    return conflicts
-
-
-def append_notes_helper(
-    root: Path,
-    ssot: dict[str, Any],
-    item_id: str,
-    *,
-    agent: str,
-    text: str,
-    limit: int = 100,
-) -> tuple[bool, str, int]:
-    """
-    Append attributed Notes. Returns (ok, detail, exit_code_on_fail).
-    detail is human message; on success may be 'updated' or 'idempotent'.
-    """
-    if attribution_required(ssot) and not str(agent).strip():
-        return False, "--agent required (require_attribution_on_exit)", EXIT_USAGE
-    note_text = text
-    if str(agent).strip():
-        try:
-            note_text = format_note_line(root, str(agent), text)
-        except ValueError as exc:
-            return False, str(exc), EXIT_USAGE
-    items, err = fetch_project_items(ssot, limit=limit)
-    if err:
-        return False, err, EXIT_GH
-    item = find_item_by_id(items, item_id)
-    if item is None:
-        return False, f"item not found: {item_id}", EXIT_NOT_FOUND
-    body = _item_body(item)
-    new_body, changed = append_notes_to_body(body, note_text)
-    if not changed:
-        return True, "idempotent", EXIT_OK
-    ok, detail = edit_item_body(ssot, item_id, new_body)
-    if not ok:
-        return False, detail, EXIT_GH
-    return True, "updated", EXIT_OK
-
-
-def latest_notes_line(body: str) -> str | None:
-    """Last bullet under ## Notes, or None."""
-    if "## Notes" not in (body or ""):
-        return None
-    idx = body.find("## Notes")
-    rest = body[idx + len("## Notes") :]
-    next_h = rest.find("\n## ")
-    block = rest if next_h < 0 else rest[:next_h]
-    lines = [ln.strip() for ln in block.splitlines() if ln.strip().startswith("- ")]
-    if not lines:
-        return None
-    return lines[-1][2:].strip()
-
-
-def notes_line_attributed(line: str | None) -> bool:
-    if not line:
-        return False
-    return bool(re.match(r"^@[^\s/]+/[^\s·]+", line.strip()))
-
+from project_recipes import (
+    _try_queue_rate_limit,
+    append_notes_helper,
+    find_items_mentioning_pr,
+    in_progress_conflicts_for_user,
+    resolve_item_id_for_pr,
+)
 
 def cmd_status(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
@@ -849,8 +146,6 @@ def cmd_status(args: argparse.Namespace) -> int:
             for e in enabled_errs:
                 print(f"note: {e}", file=sys.stderr)
     return EXIT_OK if enabled else EXIT_USAGE
-
-
 def cmd_list(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "list")
@@ -913,8 +208,6 @@ def cmd_list(args: argparse.Namespace) -> int:
         for it in out_items:
             print(f"{it.get('id')}\t{it.get('status')}\t{it.get('title')}")
     return EXIT_OK
-
-
 def cmd_create(args: argparse.Namespace) -> int:
     """Create DraftIssue or Issue per item_kind_default; --template routes to create-from-template."""
     if getattr(args, "template", None):
@@ -936,8 +229,6 @@ def cmd_create(args: argparse.Namespace) -> int:
         print(f"item_id={item_id}")
         print("next: python3 -m cursor_workflow project claim --last --agent <agent>")
     return EXIT_OK
-
-
 def cmd_create_from_template(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "create-from-template")
@@ -979,8 +270,6 @@ def cmd_create_from_template(args: argparse.Namespace) -> int:
             print(f"status={status_to}")
         print("next: python3 -m cursor_workflow project claim --last --agent <agent>")
     return EXIT_OK
-
-
 def cmd_set_status(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "set-status")
@@ -1026,34 +315,6 @@ def cmd_set_status(args: argparse.Namespace) -> int:
         return fail("set-status", EXIT_GH, detail)
     print(f"set-status: {item_id} → {args.to} ({option_id})")
     return EXIT_OK
-
-
-def _try_queue_rate_limit(
-    root: Path,
-    ssot: dict[str, Any],
-    *,
-    cmd: str,
-    err_detail: str,
-    op: str,
-    item_id: str,
-    agent: str,
-    payload: dict[str, Any],
-) -> int | None:
-    """Delegate to project_outbox.maybe_enqueue_on_gh_fail."""
-    import project_outbox as _outbox  # noqa: PLC0415
-
-    return _outbox.maybe_enqueue_on_gh_fail(
-        root,
-        ssot,
-        cmd=cmd,
-        err_detail=err_detail,
-        op=op,
-        item_id=item_id,
-        agent=agent,
-        payload=payload,
-    )
-
-
 def cmd_set_field(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "set-field")
@@ -1129,390 +390,6 @@ def cmd_set_field(args: argparse.Namespace) -> int:
         return fail("set-field", EXIT_GH, detail)
     print(f"set-field: {item_id} {field} → {args.to} ({option_id})")
     return EXIT_OK
-
-
-def _normalize_status(raw: str) -> str:
-    key = str(raw or "").strip().lower().replace(" ", "_").replace("-", "_")
-    if key in ("inprogress",):
-        return "in_progress"
-    if key in ("review",):
-        return "in_review"
-    return key
-
-
-def _item_body(item: dict[str, Any]) -> str:
-    content = item.get("content")
-    if isinstance(content, dict):
-        body = content.get("body")
-        if isinstance(body, str):
-            return body
-    body = item.get("body")
-    return body if isinstance(body, str) else ""
-
-
-def _item_title(item: dict[str, Any]) -> str:
-    title = item.get("title")
-    if isinstance(title, str) and title:
-        return title
-    content = item.get("content")
-    if isinstance(content, dict):
-        t = content.get("title")
-        if isinstance(t, str):
-            return t
-    return ""
-
-
-def fetch_project_items(ssot: dict[str, Any], *, limit: int = 100) -> tuple[list[dict[str, Any]], str | None]:
-    """Return (items, error). Each item keeps gh JSON fields plus normalized helpers."""
-    owner = str(ssot["owner"])
-    number = int(ssot["number"])
-    proc = run_gh(
-        [
-            "project",
-            "item-list",
-            str(number),
-            "--owner",
-            owner,
-            "--format",
-            "json",
-            "--limit",
-            str(limit),
-        ]
-    )
-    if proc.returncode != 0:
-        return [], (proc.stderr or proc.stdout or "gh project item-list failed").strip()
-    try:
-        data = json.loads(proc.stdout or "{}")
-    except json.JSONDecodeError as exc:
-        return [], f"invalid JSON from gh: {exc}"
-    raw = data.get("items") if isinstance(data, dict) else data
-    if not isinstance(raw, list):
-        return [], None
-    items: list[dict[str, Any]] = []
-    for item in raw:
-        if isinstance(item, dict):
-            items.append(item)
-    return items, None
-
-
-def find_item_by_id(items: list[dict[str, Any]], item_id: str) -> dict[str, Any] | None:
-    for item in items:
-        if str(item.get("id") or "") == item_id:
-            return item
-    return None
-
-
-def append_notes_to_body(body: str, text: str) -> tuple[str, bool]:
-    """
-    Append text under ## Notes. Returns (new_body, changed).
-    Idempotent when the exact text line is already present.
-    """
-    note_line = text.strip()
-    if not note_line:
-        return body, False
-    if note_line in (body or ""):
-        return body, False
-    body = body or ""
-    marker = "## Notes"
-    if marker in body:
-        # Append after the Notes heading block (before next ## or end).
-        idx = body.find(marker)
-        rest = body[idx + len(marker) :]
-        next_h = rest.find("\n## ")
-        if next_h >= 0:
-            insert_at = idx + len(marker) + next_h
-            new_body = body[:insert_at].rstrip() + f"\n\n- {note_line}\n" + body[insert_at:]
-        else:
-            new_body = body.rstrip() + f"\n\n- {note_line}\n"
-    else:
-        new_body = body.rstrip() + f"\n\n## Notes\n\n- {note_line}\n"
-    return new_body, True
-
-
-def parse_board_item_from_text(text: str) -> str | None:
-    """Extract PVTI_… from a Board-Item: line in PR or card body."""
-    m = re.search(r"(?i)Board-Item:\s*(PVTI_[A-Za-z0-9_-]+)", text or "")
-    return m.group(1) if m else None
-
-
-def find_items_mentioning_pr(
-    items: list[dict[str, Any]],
-    *,
-    pr_number: str,
-    pr_url: str = "",
-) -> list[dict[str, Any]]:
-    """Items whose body/title mention the PR number or URL; prefer in_review/in_progress."""
-    needle_num = str(pr_number).strip().lstrip("#")
-    needles = [n for n in (pr_url, f"#{needle_num}", f"/pull/{needle_num}", needle_num) if n]
-    matches: list[dict[str, Any]] = []
-    for item in items:
-        blob = f"{_item_title(item)}\n{_item_body(item)}"
-        if not any(n and n in blob for n in needles):
-            continue
-        status = _normalize_status(str(item.get("status") or ""))
-        if status in ("in_review", "in_progress", "ready"):
-            matches.append(item)
-        else:
-            matches.append(item)
-    # Prefer in_review then in_progress
-    def rank(it: dict[str, Any]) -> int:
-        s = _normalize_status(str(it.get("status") or ""))
-        return {"in_review": 0, "in_progress": 1, "ready": 2}.get(s, 9)
-
-    matches.sort(key=rank)
-    return matches
-
-
-def resolve_item_id_for_pr(
-    ssot: dict[str, Any],
-    *,
-    pr: str,
-    repo: str | None = None,
-    limit: int = 100,
-) -> tuple[str | None, list[str], str | None]:
-    """
-    Resolve project item id for a PR.
-    Returns (item_id | None, candidate_ids, error | None).
-    Prefers Board-Item in PR body; else body/URL scan of active cards.
-    """
-    pr_ref = str(pr).strip()
-    # Accept URL or number
-    pr_number = pr_ref.rstrip("/").split("/")[-1] if "/" in pr_ref else pr_ref.lstrip("#")
-    repo_flag = repo or str(ssot.get("default_repo") or "")
-    view_args = ["pr", "view", pr_number, "--json", "body,url,number"]
-    if repo_flag:
-        view_args.extend(["--repo", repo_flag])
-    proc = run_gh(view_args)
-    pr_body = ""
-    pr_url = ""
-    if proc.returncode == 0:
-        try:
-            pdata = json.loads(proc.stdout or "{}")
-            pr_body = str(pdata.get("body") or "")
-            pr_url = str(pdata.get("url") or "")
-            if pdata.get("number") is not None:
-                pr_number = str(pdata["number"])
-        except json.JSONDecodeError:
-            pass
-    board_item = parse_board_item_from_text(pr_body)
-    if board_item:
-        return board_item, [board_item], None
-
-    items, err = fetch_project_items(ssot, limit=limit)
-    if err:
-        return None, [], err
-    matches = find_items_mentioning_pr(items, pr_number=pr_number, pr_url=pr_url)
-    ids = [str(m.get("id")) for m in matches if m.get("id")]
-    if len(ids) == 1:
-        return ids[0], ids, None
-    if len(ids) > 1:
-        return None, ids, "ambiguous: multiple project items mention this PR"
-    return None, [], "no project item found for this PR (add Board-Item: PVTI_… to PR body)"
-
-
-def resolve_item_content(
-    ssot: dict[str, Any], item_id: str
-) -> tuple[str | None, str | None, dict[str, Any] | None, str | None]:
-    """
-    Resolve project item content for body edits.
-
-    Returns (kind, content_id_or_number, meta, error) where kind is:
-      - "draft" → content_id is DI_…, meta has title
-      - "issue" → content_id is issue number str, meta has title/repo hints
-      - None on error
-    If item_id already starts with DI_, treat as draft content id (title fetched if possible).
-    """
-    iid = (item_id or "").strip()
-    if not iid:
-        return None, None, None, "empty item id"
-
-    if iid.startswith("DI_"):
-        query = "query($id:ID!){node(id:$id){...on DraftIssue{id title}}}"
-        proc = run_gh(["api", "graphql", "-f", f"query={query}", "-f", f"id={iid}"])
-        title = ""
-        if proc.returncode == 0:
-            try:
-                data = json.loads(proc.stdout or "{}")
-                node = (data.get("data") or {}).get("node") or {}
-                if isinstance(node, dict) and node.get("title"):
-                    title = str(node["title"])
-            except json.JSONDecodeError:
-                pass
-        return "draft", iid, {"title": title}, None
-
-    query = (
-        "query($id:ID!){node(id:$id){...on ProjectV2Item{id content{"
-        "__typename "
-        "...on DraftIssue{id title body} "
-        "...on Issue{id number title body repository{nameWithOwner}}"
-        "}}}}"
-    )
-    proc = run_gh(["api", "graphql", "-f", f"query={query}", "-f", f"id={iid}"])
-    if proc.returncode != 0:
-        return None, None, None, (proc.stderr or proc.stdout or "graphql resolve failed").strip()
-    try:
-        data = json.loads(proc.stdout or "{}")
-    except json.JSONDecodeError as exc:
-        return None, None, None, f"invalid graphql JSON: {exc}"
-    errors = data.get("errors")
-    if errors:
-        return None, None, None, str(errors[0].get("message") if isinstance(errors[0], dict) else errors)
-    node = (data.get("data") or {}).get("node")
-    if not isinstance(node, dict):
-        return None, None, None, f"project item not found: {iid}"
-    content = node.get("content")
-    if not isinstance(content, dict):
-        return None, None, None, f"project item has no content: {iid}"
-    typename = str(content.get("__typename") or "")
-    if typename == "DraftIssue":
-        di = str(content.get("id") or "")
-        if not di.startswith("DI_"):
-            return None, None, None, f"unexpected draft id: {di!r}"
-        return "draft", di, {"title": str(content.get("title") or "")}, None
-    if typename == "Issue":
-        number = content.get("number")
-        if number is None:
-            return None, None, None, "issue content missing number"
-        repo = ""
-        repository = content.get("repository")
-        if isinstance(repository, dict):
-            repo = str(repository.get("nameWithOwner") or "")
-        if not repo:
-            repo = str(ssot.get("default_repo") or "")
-        return (
-            "issue",
-            str(number),
-            {
-                "title": str(content.get("title") or ""),
-                "repo": repo,
-                "body": str(content.get("body") or ""),
-            },
-            None,
-        )
-    return None, None, None, f"unsupported content type {typename!r} for body edit"
-
-
-# Back-compat alias used in plan / docs
-def resolve_draft_content(
-    ssot: dict[str, Any], item_id: str
-) -> tuple[str | None, str | None, str | None]:
-    """Return (content_id, title, error) for DraftIssue; error if not a draft."""
-    kind, cid, meta, err = resolve_item_content(ssot, item_id)
-    if err:
-        return None, None, err
-    if kind != "draft":
-        return None, None, f"not a DraftIssue (got {kind})"
-    title = (meta or {}).get("title") or ""
-    return cid, title, None
-
-
-def edit_item_body(ssot: dict[str, Any], item_id: str, body: str) -> tuple[bool, str]:
-    """
-    Update card body. Agents pass PVTI_…; DraftIssue edits require DI_… + --title.
-    Issue-backed items use gh issue edit.
-    """
-    kind, cid, meta, err = resolve_item_content(ssot, item_id)
-    if err or not kind or not cid:
-        return False, err or "could not resolve content id for body edit"
-    meta = meta or {}
-    project_id = str(ssot["project_id"])
-
-    if kind == "draft":
-        title = str(meta.get("title") or "").strip() or "(untitled)"
-        proc = run_gh(
-            [
-                "project",
-                "item-edit",
-                "--project-id",
-                project_id,
-                "--id",
-                cid,
-                "--title",
-                title,
-                "--body",
-                body,
-            ]
-        )
-        if proc.returncode != 0:
-            return False, (proc.stderr or proc.stdout or "gh project item-edit --body failed").strip()
-        return True, "ok"
-
-    if kind == "issue":
-        repo = str(meta.get("repo") or ssot.get("default_repo") or "")
-        gh_args = ["issue", "edit", cid, "--body", body]
-        if repo:
-            gh_args.extend(["--repo", repo])
-        proc = run_gh(gh_args)
-        if proc.returncode != 0:
-            return False, (proc.stderr or proc.stdout or "gh issue edit --body failed").strip()
-        return True, "ok"
-
-    return False, f"unsupported content kind {kind!r}"
-
-
-def set_item_status(ssot: dict[str, Any], item_id: str, logical: str) -> tuple[bool, str]:
-    try:
-        option_id = resolve_status_option_id(ssot, logical)
-        field_id = status_field_id(ssot)
-    except KeyError as exc:
-        return False, str(exc)
-    project_id = str(ssot["project_id"])
-    proc = run_gh(
-        [
-            "project",
-            "item-edit",
-            "--project-id",
-            project_id,
-            "--id",
-            item_id,
-            "--field-id",
-            field_id,
-            "--single-select-option-id",
-            option_id,
-        ]
-    )
-    if proc.returncode != 0:
-        return False, (proc.stderr or proc.stdout or "gh project item-edit failed").strip()
-    return True, option_id
-
-
-def build_export_snapshot(ssot: dict[str, Any], items: list[dict[str, Any]]) -> dict[str, Any]:
-    """Read-only snapshot shape for project export / DRIFT-010."""
-    out_items: list[dict[str, Any]] = []
-    for item in items:
-        body = _item_body(item)
-        excerpt = body if len(body) <= 500 else body[:497] + "..."
-        out_items.append(
-            {
-                "id": item.get("id"),
-                "title": _item_title(item),
-                "status": item.get("status"),
-                "status_normalized": _normalize_status(str(item.get("status") or "")),
-                "priority": item.get("priority"),
-                "size": item.get("size"),
-                "start_date": item.get("start date")
-                or item.get("Start date")
-                or item.get("start_date"),
-                "estimate": item.get("estimate") or item.get("Estimate"),
-                "body_excerpt": excerpt,
-                "updated_at": item.get("updatedAt") or item.get("updated_at"),
-            }
-        )
-    return {
-        "schema": "project-board-snapshot/v1",
-        "project": {
-            "name": ssot.get("name"),
-            "owner": ssot.get("owner"),
-            "number": ssot.get("number"),
-            "url": ssot.get("url"),
-            "project_id": ssot.get("project_id"),
-            "default_repo": ssot.get("default_repo"),
-        },
-        "items": out_items,
-        "totalCount": len(out_items),
-    }
-
-
 def cmd_get(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "get")
@@ -1552,8 +429,6 @@ def cmd_get(args: argparse.Namespace) -> int:
         print("--- body ---")
         print(payload["body"] or "(empty)")
     return EXIT_OK
-
-
 def cmd_append_notes(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "append-notes")
@@ -1590,8 +465,6 @@ def cmd_append_notes(args: argparse.Namespace) -> int:
     else:
         print(f"append-notes: {item_id} — updated")
     return EXIT_OK
-
-
 def cmd_set_assignee(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "set-assignee")
@@ -1632,8 +505,6 @@ def cmd_set_assignee(args: argparse.Namespace) -> int:
         return fail("set-assignee", EXIT_GH, detail)
     print(f"set-assignee: {item_id} → @{detail.lstrip('@')}")
     return EXIT_OK
-
-
 def cmd_claim(args: argparse.Namespace) -> int:
     """Pattern A: set in_progress + optional assignee + attributed Notes."""
     root = Path(args.directory).resolve()
@@ -1758,8 +629,6 @@ def cmd_claim(args: argparse.Namespace) -> int:
         f"--next <agent> --to in_review"
     )
     return EXIT_OK
-
-
 def cmd_handoff(args: argparse.Namespace) -> int:
     """Pattern A: attributed Notes with next=@user/agent + optional status."""
     root = Path(args.directory).resolve()
@@ -1851,8 +720,6 @@ def cmd_handoff(args: argparse.Namespace) -> int:
         f"item_id={item_id} · {self_attr} · Status={before or '?'}→{after} · next={next_attr}"
     )
     return EXIT_OK
-
-
 def cmd_validate_item(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "validate-item")
@@ -1887,8 +754,6 @@ def cmd_validate_item(args: argparse.Namespace) -> int:
     print(f"validate-item: {item_id} — ok")
     print(f"status={item.get('status')}")
     return EXIT_OK
-
-
 def cmd_last(args: argparse.Namespace) -> int:
     """Print last saved item_id (token-efficient)."""
     root = Path(args.directory).resolve()
@@ -1897,8 +762,6 @@ def cmd_last(args: argparse.Namespace) -> int:
         return fail("last", EXIT_USAGE, "no last item — create-from-template first")
     print(lid)
     return EXIT_OK
-
-
 def cmd_mention_pr(args: argparse.Namespace) -> int:
     """
     Append Notes with canonical PR URL + print find-by-pr candidates.
@@ -2005,8 +868,6 @@ def cmd_mention_pr(args: argparse.Namespace) -> int:
         else:
             print("mention-pr: find-by-pr — no other matches yet (Notes just written)")
     return EXIT_OK
-
-
 def cmd_promote_to_issue(args: argparse.Namespace) -> int:
     """Convert DraftIssue project item to Issue (same PVTI_); Notes + optional assignee."""
     root = Path(args.directory).resolve()
@@ -2086,8 +947,6 @@ def cmd_promote_to_issue(args: argparse.Namespace) -> int:
         f"next: python3 -m cursor_workflow project mention-pr --pr <n> --last --agent {agent}"
     )
     return EXIT_OK
-
-
 def cmd_guide(args: argparse.Namespace) -> int:
     """Print safe agent recipe with --last (no placeholder ids)."""
     root = Path(args.directory).resolve()
@@ -2124,8 +983,6 @@ def cmd_guide(args: argparse.Namespace) -> int:
     print("python3 -m cursor_workflow project validate-item --last")
     print("# If EXIT_QUEUED (6): python3 -m cursor_workflow project outbox flush")
     return EXIT_OK
-
-
 def cmd_queue(args: argparse.Namespace) -> int:
     """Explicit enqueue (no live board write)."""
     import project_outbox as _outbox  # noqa: PLC0415
@@ -2187,8 +1044,6 @@ def cmd_queue(args: argparse.Namespace) -> int:
         return fail("queue", EXIT_VALIDATION, err)
     print(_outbox.queued_message("queue", entry))
     return EXIT_QUEUED
-
-
 def cmd_outbox_status(args: argparse.Namespace) -> int:
     import project_outbox as _outbox  # noqa: PLC0415
 
@@ -2215,8 +1070,6 @@ def cmd_outbox_status(args: argparse.Namespace) -> int:
             f"reset={reset} min_flush={cfg['min_graphql_remaining']}"
         )
     return EXIT_OK
-
-
 def cmd_outbox_flush(args: argparse.Namespace) -> int:
     import project_outbox as _outbox  # noqa: PLC0415
 
@@ -2232,8 +1085,6 @@ def cmd_outbox_flush(args: argparse.Namespace) -> int:
         return fail("outbox flush", code_out, summary)
     print(f"outbox flush: {summary}")
     return EXIT_OK
-
-
 def cmd_doctor(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, errs = load_project_ssot(root)
@@ -2356,8 +1207,6 @@ def cmd_doctor(args: argparse.Namespace) -> int:
             file=sys.stderr,
         )
     return EXIT_OK
-
-
 def cmd_find_by_pr(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "find-by-pr")
@@ -2382,8 +1231,6 @@ def cmd_find_by_pr(args: argparse.Namespace) -> int:
                 print("candidates:", ", ".join(candidates), file=sys.stderr)
             return EXIT_NOT_FOUND
     return EXIT_OK if item_id else EXIT_NOT_FOUND
-
-
 def cmd_export(args: argparse.Namespace) -> int:
     """Read-only snapshot — never mutates the board."""
     root = Path(args.directory).resolve()
@@ -2407,8 +1254,6 @@ def cmd_export(args: argparse.Namespace) -> int:
     if args.json:
         print(text, end="")
     return EXIT_OK
-
-
 def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     project = sub.add_parser(
         "project",
