@@ -76,7 +76,7 @@ const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
   },
   {
     id: "researcher",
-    role: "Local research corpus only (no product PRs)",
+    role: "Adaptive Brief research packs (no product PRs)",
     lane: "Optional",
   },
 ];

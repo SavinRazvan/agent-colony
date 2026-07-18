@@ -55,7 +55,7 @@ const AGENTS = [
   {
     id: "researcher",
     description:
-      "Optional local research corpus; hard-stop on product code without explicit scope",
+      "Brief-driven multi-round research (chat/agent adaptive intake); packs under _research_results/; hard-stop on product code",
   },
 ];
 
@@ -243,8 +243,9 @@ export default function AgentRosterCanvas() {
             rows={RESEARCHER_REDIRECTS}
           />
           <Callout tone="warning" title="Non-product agent">
-            researcher writes only _research_results/. No src/tests/scripts; no
-            git/PR. Not connected in product handoff DAG.
+            researcher writes only _research_results/ (adaptive Brief from
+            chat/agents). No src/tests/scripts; no git/PR. Not connected in
+            product handoff DAG — consumers read AGENT_BRIEF.md.
           </Callout>
         </CardBody>
       </Card>

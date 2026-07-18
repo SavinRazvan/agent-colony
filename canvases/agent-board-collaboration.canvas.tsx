@@ -102,7 +102,7 @@ const PER_AGENT_ENTRY_EXIT = [
   [
     "researcher",
     "status (+ research card)",
-    "Research card →Done; --agent researcher + corpus paths",
+    "Research card →Done; --agent researcher + AGENT_BRIEF / pack paths",
   ],
 ];
 

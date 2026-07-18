@@ -78,18 +78,16 @@ def test_unknown_agent_in_canvas_fails_doc008(tmp_path: Path) -> None:
 def test_missing_agent_in_roster_hub_fails_doc008(tmp_path: Path) -> None:
     _copy_minimal_kit(tmp_path)
     relations = tmp_path / "canvases" / "agent-relations.canvas.tsx"
-    relations.write_text(
-        relations.read_text(encoding="utf-8").replace(
-            """  {
-    id: "researcher",
-    role: "Local research corpus only (no product PRs)",
-    lane: "Optional",
-  },
-""",
-            "",
-        ),
-        encoding="utf-8",
+    text = relations.read_text(encoding="utf-8")
+    needle = (
+        '  {\n'
+        '    id: "researcher",\n'
+        '    role: "Adaptive Brief research packs (no product PRs)",\n'
+        '    lane: "Optional",\n'
+        "  },\n"
     )
+    assert needle in text, "fixture must match agent-relations researcher AGENTS row"
+    relations.write_text(text.replace(needle, "", 1), encoding="utf-8")
     results = run_checks(tmp_path)
     doc008 = next(r for r in results if r.check_id == "DOC-008")
     assert not doc008.passed
