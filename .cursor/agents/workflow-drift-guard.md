@@ -12,7 +12,7 @@ description: Operational workflow drift detection; plan/tracker/session coherenc
 
 **Exit:** Write drift artifacts under `.local/workflow-artifacts/drift/`. When board SSOT is on: (1) set the **drift-pass card** Status → `done` (or `in_review` if P0/P1 need human); (2) for Confirmed dual-write, add Notes on the offending card or hand off to **project-board** / **implementer** via Ready — do **not** auto-edit `plan.md` / `work-tracker.md` / invent competing tracker `in_progress`. One line in `updates-log.md`.
 
-**Board rights:** Status + Notes on the card you touch. Exit Notes **must** use `append-notes --agent workflow-drift-guard` (prefixes `@owner.github_user/workflow-drift-guard`). Handoff `next=@user/agent`. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `project claim` / `project handoff --agent workflow-drift-guard` (→ `@owner.github_user/workflow-drift-guard`); atomics `append-notes --agent workflow-drift-guard` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
 
 **Write scope:** `.local/workflow-artifacts/drift/` only (`drift-audit.md`, `drift-todos.md` per `local_workflow_paths.py`) — no product-code edits. (`readonly` not set so Task delegation can write drift artifacts.)
 

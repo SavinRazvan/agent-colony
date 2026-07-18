@@ -16,7 +16,7 @@ Depends On:
  - .ai_infra/docs/operations/project-board-collaboration.md
  - ADR-008-project-board-ssot.md
 Notes:
- - Pattern A: one CLI command per action; no dual-write of work-tracker when board_only.
+ - Pattern A: prefer recipes (claim/handoff/create-from-template); atomics for power use; no dual-write when board_only.
  - Continuation is board-anchored: every agent Entry reads the Project; Exit updates Status.
 -->
 
@@ -108,16 +108,20 @@ Ready → In progress → In review → Done
 | Drift / audit pass closed | drift-guard / auditor | `set-status --to done` (their card) |
 | Queue triage | project-board or human | create / set-status / set-field |
 
-## Procedure (CLI)
+## Procedure (CLI) — prefer Pattern A recipes
 
-1. **Status:** `python -m cursor_workflow project status --directory .`
-2. **List:** `python -m cursor_workflow project list [--status ready|in_progress|in_review] --directory .`
-3. **Claim:** `set-status --id PVTI_… --to in_progress` then optional `set-assignee --id PVTI_…` (human) + `append-notes --id … --agent implementer --text "claimed · next=@User/test-runner"`
-4. **Create:** `project create --title "…" [--body "…"]`
-5. **Fields:** `set-field --id … --field priority|size --to …`
-6. **Close / handoff:** `set-status --to in_review|done`
-7. **Notes:** `append-notes --id PVTI_… --agent <agent> --text "…"` — required `--agent` when `require_attribution_on_exit`; CLI prefixes `@owner.github_user/agent ·`. Pass `PVTI_…`; CLI resolves `DI_…` for DraftIssue body.
+**Never paste GitHub Project settings UI text into a shell.** Use recipes below. Human Project README: paste `.ai_infra/templates/project-board/project-readme.md` in the Project settings UI.
+
+1. **Doctor:** `python -m cursor_workflow project doctor --directory .`
+2. **Status / list:** `project status` · `project list [--status ready|in_progress|in_review]`
+3. **Create (template):** `project create-from-template --title "…" --template slice|bug [--status ready] [--acceptance …] [--rollback …]`
+4. **Claim (one command):** `project claim --id PVTI_… --agent <this-agent>` — In progress + Notes `@user/agent` (+ assignee when Issue-backed)
+5. **Handoff (one command):** `project handoff --id PVTI_… --agent <this-agent> --next <agent> [--to in_review|done] [--text …]`
+6. **Validate:** `project validate-item --id PVTI_…` (exit 5 if missing sections / bad Notes)
+7. **Atomics (power use):** `set-status` · `set-field` · `append-notes --agent` · `set-assignee` · `get` · `export`
 8. **Verify:** `project list` matches intent + handoff line printed
+
+Exit codes: `0` ok · `2` usage/config · `3` gh · `4` not found · `5` validation. Failures: `project <cmd>: FAIL — CODE=n · reason`.
 
 ## Dual-write ban
 
@@ -136,5 +140,7 @@ When `sync_policy: board_only`, do **not** mark the same slice `in_progress` in 
 - Hardcoding field/option ids
 - Reshuffling Ready/P0 without human or project-board ask
 - Editing Project views, workflows, Insights, or status updates
+- Pasting Project settings UI text into a terminal
 - Dual-write board + tracker under `board_only`
+- Multi-step claim without `project claim` / bare Notes without `--agent`
 - Do not push to upstream mas-workflow-kit

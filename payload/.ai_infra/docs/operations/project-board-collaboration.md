@@ -25,7 +25,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Status drifts from reality | Status column = truth (DRIFT-009 watches dual-write) |
 | Humans cannot see progress | Project UI is the shared dashboard |
 
-**Rule:** Entry = read board. Exit = update Status and **attributed Notes** (`append-notes --agent <name>` → `@owner.github_user/<agent>`) for the card you touched.
+**Rule:** Entry = read board. Exit = update Status and **attributed Notes** for the card you touched. Prefer Pattern A recipes: `project claim` / `project handoff` (one command each). Atomics (`append-notes --agent`) remain for power use. **Never** paste Project settings UI text into a shell — humans paste `.ai_infra/templates/project-board/project-readme.md` into Project README settings.
 
 ## Surfaces — who may write
 
@@ -47,7 +47,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Agent | Entry | Exit (board) |
 |-------|-------|--------------|
 | **project-board** | status + list | Full triage; handoff to implementer |
-| **implementer** | status + Ready/claim | →In review / →Done; `append-notes --agent implementer` |
+| **implementer** | status + `claim --agent implementer` | `handoff --agent implementer --next … --to in_review` or →Done |
 | **test-runner** | status + slice card | →In review or →Done; `--agent test-runner` |
 | **verifier** | status + related card | →Done or leave In review; `--agent verifier` |
 | **integrator-mas-agent** | status + claim | →Done; `--agent integrator-mas-agent` |
@@ -72,6 +72,18 @@ Handoff: `item_id=PVTI_… · @User/implementer · Status=a→b · next=@User/ve
 3. Write `.local/workflow-artifacts/drift/*` (evidence stays local).
 4. **Update board:** close the drift-pass card; if dual-write Confirmed, add Notes on the offending card or ask project-board to queue a Ready fix — do not write competing `in_progress` into `work-tracker.md`.
 
+## Exit codes (board Pattern A)
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success |
+| 2 | Usage / config / policy |
+| 3 | `gh` / network |
+| 4 | Item not found |
+| 5 | Validation (sections, claim policy, attribution) |
+
+Stderr: `project <cmd>: FAIL — CODE=n · reason`.
+
 ## Human-only
 
-Views, workflows, Insights, Project README, status updates, Ready prioritization / product roadmap.
+Views, workflows, Insights, Project README, status updates, Ready prioritization / product roadmap. Paste README from `.ai_infra/templates/project-board/project-readme.md` in the GitHub UI only.

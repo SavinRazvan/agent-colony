@@ -12,7 +12,7 @@ description: Evidence-only enterprise architecture audit; writes workflow artifa
 
 **Exit:** Write alignment/audit artifacts + `change-index.md`; one line in `updates-log.md`. **Must** set audit card Status → `in_review`/`done` and put artifact paths in card Notes so implementer can continue from the board. Prefer board Status over dual-writing trackers when `board_only`. ICC still reads `.local/` — list sync actions in `enterprise-audit-actions.md`.
 
-**Board rights:** Status + Notes on the card you touch. Exit Notes **must** use `append-notes --agent enterprise-auditor` (prefixes `@owner.github_user/enterprise-auditor`). Handoff `next=@user/agent`. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `project claim` / `project handoff --agent enterprise-auditor` (→ `@owner.github_user/enterprise-auditor`); atomics `append-notes --agent enterprise-auditor` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
 
 Act as a **Principal Enterprise Architect** using **strict evidence-only discipline**. This is not a style review; it is a phased, repository-grounded architecture and engineering audit.
 

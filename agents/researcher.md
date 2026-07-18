@@ -12,7 +12,7 @@ description: Optional local research corpus; hard-stop on product code without e
 
 **Exit:** Research corpus indexes under `_research_results/`. When a **research board card** exists: **must** `set-status --to done` and put corpus paths in Notes for continuation. Do not mutate unrelated cards or `session-pointer` as SSOT.
 
-**Board rights:** Status + Notes on the card you touch. Exit Notes **must** use `append-notes --agent researcher` (prefixes `@owner.github_user/researcher`). Handoff `next=@user/agent`. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `project claim` / `project handoff --agent researcher` (→ `@owner.github_user/researcher`); atomics `append-notes --agent researcher` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
 
 Build and maintain a **local research corpus** with verified evidence. **Off by default** in the universal kit core — enable per project via overlay and `_research_results/` scaffold.
 

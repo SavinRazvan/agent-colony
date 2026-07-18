@@ -9,9 +9,11 @@ Used By:
 Depends On:
  - .ai_infra/scripts/pr/user_settings.py (load_github_collaboration)
 Notes:
- - Pattern A: one gh invocation per action; no dual-write of local trackers.
+ - Pattern A: one gh invocation per action; recipes (claim/handoff/create-from-template)
+   are one lifecycle command each; no dual-write of local trackers.
  - DraftIssue body edits resolve PVTI_… → DI_… (+ --title); Status stays on PVTI_….
  - Notes attribution: @owner.github_user/agent via append-notes --agent.
+ - Exit codes: 0 ok; 2 usage/config; 3 gh/network; 4 not found; 5 validation.
 """
 
 from __future__ import annotations
@@ -23,6 +25,70 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Any
+
+# Board Pattern A exit codes
+EXIT_OK = 0
+EXIT_USAGE = 2
+EXIT_GH = 3
+EXIT_NOT_FOUND = 4
+EXIT_VALIDATION = 5
+
+_TEMPLATE_NAMES = ("slice", "bug")
+_PLACEHOLDER_RE = re.compile(r"\{\{(\w+)\}\}")
+
+
+def fail(cmd: str, code: int, reason: str) -> int:
+    """Print structured FAIL and return exit code."""
+    print(f"project {cmd}: FAIL — CODE={code} · {reason}", file=sys.stderr)
+    return code
+
+
+def validate_card_body(text: str, sections: list[str]) -> list[str]:
+    """Return missing ## Heading names from conventions.body_sections."""
+    body = text or ""
+    missing: list[str] = []
+    for section in sections:
+        name = str(section).strip()
+        if not name:
+            continue
+        if f"## {name}" not in body:
+            missing.append(name)
+    return missing
+
+
+def project_templates_dir(root: Path) -> Path:
+    return root / ".ai_infra" / "templates" / "project-board"
+
+
+def load_card_template(root: Path, name: str) -> str:
+    """Load card-body-{name}.md; raise FileNotFoundError if missing."""
+    key = (name or "").strip().lower()
+    if key not in _TEMPLATE_NAMES:
+        raise ValueError(f"unknown template {name!r} — known: {', '.join(_TEMPLATE_NAMES)}")
+    path = project_templates_dir(root) / f"card-body-{key}.md"
+    if not path.is_file():
+        raise FileNotFoundError(f"missing template {path}")
+    return path.read_text(encoding="utf-8")
+
+
+def render_card_template(
+    template: str,
+    *,
+    acceptance: str = "(TBD)",
+    rollback: str = "(TBD)",
+    notes: str = "",
+) -> str:
+    """Replace {{acceptance}}, {{rollback}}, {{notes}} placeholders."""
+    values = {
+        "acceptance": (acceptance or "(TBD)").strip() or "(TBD)",
+        "rollback": (rollback or "(TBD)").strip() or "(TBD)",
+        "notes": (notes or "").rstrip(),
+    }
+
+    def _sub(m: re.Match[str]) -> str:
+        return values.get(m.group(1), m.group(0))
+
+    return _PLACEHOLDER_RE.sub(_sub, template).rstrip() + "\n"
 
 
 def _import_user_settings(root: Path):
@@ -202,13 +268,150 @@ def run_gh(args: list[str], *, timeout_s: float = 60.0) -> subprocess.CompletedP
     )
 
 
+def _load_enabled_ssot(root: Path, cmd: str) -> tuple[dict[str, Any] | None, int]:
+    """Return (ssot, 0) or (None, exit_code) after printing FAIL."""
+    ssot, errs = load_project_ssot(root)
+    if errs or ssot is None:
+        return None, fail(cmd, EXIT_USAGE, errs[0] if errs else "project_ssot missing")
+    enabled_errs = require_enabled(ssot)
+    if enabled_errs:
+        return None, fail(cmd, EXIT_USAGE, enabled_errs[0])
+    return ssot, EXIT_OK
+
+
+def create_draft_item(ssot: dict[str, Any], title: str, body: str) -> tuple[str | None, str | None, str | None]:
+    """
+    Create DraftIssue. Returns (item_id, raw_stdout, error).
+    item_id parsed from gh JSON when possible.
+    """
+    owner = str(ssot["owner"])
+    number = int(ssot["number"])
+    gh_args = [
+        "project",
+        "item-create",
+        str(number),
+        "--owner",
+        owner,
+        "--title",
+        title,
+        "--format",
+        "json",
+    ]
+    if body:
+        gh_args.extend(["--body", body])
+    proc = run_gh(gh_args)
+    if proc.returncode != 0:
+        return None, None, (proc.stderr or proc.stdout or "gh project item-create failed").strip()
+    raw = (proc.stdout or "").strip()
+    item_id: str | None = None
+    try:
+        data = json.loads(raw or "{}")
+        if isinstance(data, dict):
+            item_id = str(data.get("id") or data.get("itemId") or "") or None
+    except json.JSONDecodeError:
+        m = re.search(r"(PVTI_[A-Za-z0-9_-]+)", raw)
+        if m:
+            item_id = m.group(1)
+    return item_id, raw, None
+
+
+def in_progress_conflicts_for_user(
+    items: list[dict[str, Any]],
+    *,
+    user_handle: str,
+    exclude_id: str,
+) -> list[dict[str, Any]]:
+    """Other In progress items attributed to the same human (@user/ in body/title or assignees)."""
+    user = normalize_github_handle(user_handle)
+    login = user.lstrip("@").lower()
+    conflicts: list[dict[str, Any]] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        if str(item.get("id") or "") == exclude_id:
+            continue
+        if _normalize_status(str(item.get("status") or "")) != "in_progress":
+            continue
+        blob = f"{_item_title(item)}\n{_item_body(item)}".lower()
+        assignees = item.get("assignees") or item.get("assignees.login") or []
+        assignee_blob = ""
+        if isinstance(assignees, list):
+            parts: list[str] = []
+            for a in assignees:
+                if isinstance(a, dict):
+                    parts.append(str(a.get("login") or ""))
+                else:
+                    parts.append(str(a))
+            assignee_blob = " ".join(parts).lower()
+        else:
+            assignee_blob = str(assignees).lower()
+        if login and (f"@{login}/" in blob or login in assignee_blob.split()):
+            conflicts.append(item)
+    return conflicts
+
+
+def append_notes_helper(
+    root: Path,
+    ssot: dict[str, Any],
+    item_id: str,
+    *,
+    agent: str,
+    text: str,
+    limit: int = 100,
+) -> tuple[bool, str, int]:
+    """
+    Append attributed Notes. Returns (ok, detail, exit_code_on_fail).
+    detail is human message; on success may be 'updated' or 'idempotent'.
+    """
+    if attribution_required(ssot) and not str(agent).strip():
+        return False, "--agent required (require_attribution_on_exit)", EXIT_USAGE
+    note_text = text
+    if str(agent).strip():
+        try:
+            note_text = format_note_line(root, str(agent), text)
+        except ValueError as exc:
+            return False, str(exc), EXIT_USAGE
+    items, err = fetch_project_items(ssot, limit=limit)
+    if err:
+        return False, err, EXIT_GH
+    item = find_item_by_id(items, item_id)
+    if item is None:
+        return False, f"item not found: {item_id}", EXIT_NOT_FOUND
+    body = _item_body(item)
+    new_body, changed = append_notes_to_body(body, note_text)
+    if not changed:
+        return True, "idempotent", EXIT_OK
+    ok, detail = edit_item_body(ssot, item_id, new_body)
+    if not ok:
+        return False, detail, EXIT_GH
+    return True, "updated", EXIT_OK
+
+
+def latest_notes_line(body: str) -> str | None:
+    """Last bullet under ## Notes, or None."""
+    if "## Notes" not in (body or ""):
+        return None
+    idx = body.find("## Notes")
+    rest = body[idx + len("## Notes") :]
+    next_h = rest.find("\n## ")
+    block = rest if next_h < 0 else rest[:next_h]
+    lines = [ln.strip() for ln in block.splitlines() if ln.strip().startswith("- ")]
+    if not lines:
+        return None
+    return lines[-1][2:].strip()
+
+
+def notes_line_attributed(line: str | None) -> bool:
+    if not line:
+        return False
+    return bool(re.match(r"^@[^\s/]+/[^\s·]+", line.strip()))
+
+
 def cmd_status(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, errs = load_project_ssot(root)
     if errs or ssot is None:
-        for e in errs:
-            print(f"project status: FAIL — {e}", file=sys.stderr)
-        return 1
+        return fail("status", EXIT_USAGE, errs[0] if errs else "project_ssot missing")
     enabled_errs = require_enabled(ssot)
     enabled = not enabled_errs
     payload = {
@@ -239,21 +442,14 @@ def cmd_status(args: argparse.Namespace) -> int:
         if enabled_errs:
             for e in enabled_errs:
                 print(f"note: {e}", file=sys.stderr)
-    return 0 if enabled else 2
+    return EXIT_OK if enabled else EXIT_USAGE
 
 
 def cmd_list(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
-    ssot, errs = load_project_ssot(root)
-    if errs or ssot is None:
-        for e in errs:
-            print(f"project list: FAIL — {e}", file=sys.stderr)
-        return 1
-    enabled_errs = require_enabled(ssot)
-    if enabled_errs:
-        for e in enabled_errs:
-            print(f"project list: FAIL — {e}", file=sys.stderr)
-        return 2
+    ssot, code = _load_enabled_ssot(root, "list")
+    if ssot is None:
+        return code
     owner = str(ssot["owner"])
     number = int(ssot["number"])
     proc = run_gh(
@@ -270,13 +466,15 @@ def cmd_list(args: argparse.Namespace) -> int:
         ]
     )
     if proc.returncode != 0:
-        print(proc.stderr or proc.stdout or "gh project item-list failed", file=sys.stderr)
-        return proc.returncode or 1
+        return fail(
+            "list",
+            EXIT_GH,
+            (proc.stderr or proc.stdout or "gh project item-list failed").strip(),
+        )
     try:
         data = json.loads(proc.stdout or "{}")
     except json.JSONDecodeError as exc:
-        print(f"project list: FAIL — invalid JSON from gh: {exc}", file=sys.stderr)
-        return 1
+        return fail("list", EXIT_GH, f"invalid JSON from gh: {exc}")
     items = data.get("items") if isinstance(data, dict) else data
     if not isinstance(items, list):
         items = []
@@ -308,66 +506,81 @@ def cmd_list(args: argparse.Namespace) -> int:
             print("(no items)")
         for it in out_items:
             print(f"{it.get('id')}\t{it.get('status')}\t{it.get('title')}")
-    return 0
+    return EXIT_OK
 
 
 def cmd_create(args: argparse.Namespace) -> int:
+    """Create DraftIssue; --template routes to create-from-template."""
+    if getattr(args, "template", None):
+        return cmd_create_from_template(args)
     root = Path(args.directory).resolve()
-    ssot, errs = load_project_ssot(root)
-    if errs or ssot is None:
-        for e in errs:
-            print(f"project create: FAIL — {e}", file=sys.stderr)
-        return 1
-    enabled_errs = require_enabled(ssot)
-    if enabled_errs:
-        for e in enabled_errs:
-            print(f"project create: FAIL — {e}", file=sys.stderr)
-        return 2
-    owner = str(ssot["owner"])
-    number = int(ssot["number"])
+    ssot, code = _load_enabled_ssot(root, "create")
+    if ssot is None:
+        return code
     body = args.body or ""
     sections = (ssot.get("conventions") or {}).get("body_sections") or []
     if not body and sections:
         body = "\n\n".join(f"## {s}\n\n(TBD)" for s in sections)
-    gh_args = [
-        "project",
-        "item-create",
-        str(number),
-        "--owner",
-        owner,
-        "--title",
-        args.title,
-        "--format",
-        "json",
-    ]
-    if body:
-        gh_args.extend(["--body", body])
-    proc = run_gh(gh_args)
-    if proc.returncode != 0:
-        print(proc.stderr or proc.stdout or "gh project item-create failed", file=sys.stderr)
-        return proc.returncode or 1
-    print(proc.stdout.strip())
-    return 0
+    item_id, raw, err = create_draft_item(ssot, args.title, body)
+    if err:
+        return fail("create", EXIT_GH, err)
+    print(raw or item_id or "")
+    if item_id:
+        print(f"item_id={item_id}")
+    return EXIT_OK
+
+
+def cmd_create_from_template(args: argparse.Namespace) -> int:
+    root = Path(args.directory).resolve()
+    ssot, code = _load_enabled_ssot(root, "create-from-template")
+    if ssot is None:
+        return code
+    tmpl_name = getattr(args, "template", None) or "slice"
+    try:
+        tmpl = load_card_template(root, str(tmpl_name))
+    except (ValueError, FileNotFoundError) as exc:
+        return fail("create-from-template", EXIT_USAGE, str(exc))
+    body = render_card_template(
+        tmpl,
+        acceptance=getattr(args, "acceptance", "") or "(TBD)",
+        rollback=getattr(args, "rollback", "") or "(TBD)",
+        notes=getattr(args, "notes", "") or "",
+    )
+    sections = list((ssot.get("conventions") or {}).get("body_sections") or [])
+    missing = validate_card_body(body, sections)
+    if missing:
+        return fail(
+            "create-from-template",
+            EXIT_VALIDATION,
+            f"template missing sections: {', '.join(missing)}",
+        )
+    item_id, raw, err = create_draft_item(ssot, args.title, body)
+    if err:
+        return fail("create-from-template", EXIT_GH, err)
+    status_to = (getattr(args, "status", None) or "").strip()
+    if status_to and item_id:
+        ok, detail = set_item_status(ssot, item_id, status_to)
+        if not ok:
+            return fail("create-from-template", EXIT_GH, f"created but set-status failed: {detail}")
+    if raw:
+        print(raw)
+    if item_id:
+        print(f"item_id={item_id}")
+        if status_to:
+            print(f"status={status_to}")
+    return EXIT_OK
 
 
 def cmd_set_status(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
-    ssot, errs = load_project_ssot(root)
-    if errs or ssot is None:
-        for e in errs:
-            print(f"project set-status: FAIL — {e}", file=sys.stderr)
-        return 1
-    enabled_errs = require_enabled(ssot)
-    if enabled_errs:
-        for e in enabled_errs:
-            print(f"project set-status: FAIL — {e}", file=sys.stderr)
-        return 2
+    ssot, code = _load_enabled_ssot(root, "set-status")
+    if ssot is None:
+        return code
     try:
         option_id = resolve_status_option_id(ssot, args.to)
         field_id = status_field_id(ssot)
     except KeyError as exc:
-        print(f"project set-status: FAIL — {exc}", file=sys.stderr)
-        return 1
+        return fail("set-status", EXIT_USAGE, str(exc))
     project_id = str(ssot["project_id"])
     proc = run_gh(
         [
@@ -384,33 +597,27 @@ def cmd_set_status(args: argparse.Namespace) -> int:
         ]
     )
     if proc.returncode != 0:
-        print(proc.stderr or proc.stdout or "gh project item-edit failed", file=sys.stderr)
-        return proc.returncode or 1
+        return fail(
+            "set-status",
+            EXIT_GH,
+            (proc.stderr or proc.stdout or "gh project item-edit failed").strip(),
+        )
     print(f"set-status: {args.id} → {args.to} ({option_id})")
-    return 0
+    return EXIT_OK
 
 
 def cmd_set_field(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
-    ssot, errs = load_project_ssot(root)
-    if errs or ssot is None:
-        for e in errs:
-            print(f"project set-field: FAIL — {e}", file=sys.stderr)
-        return 1
-    enabled_errs = require_enabled(ssot)
-    if enabled_errs:
-        for e in enabled_errs:
-            print(f"project set-field: FAIL — {e}", file=sys.stderr)
-        return 2
+    ssot, code = _load_enabled_ssot(root, "set-field")
+    if ssot is None:
+        return code
     field = args.field.strip().lower()
     if field not in ("priority", "size"):
-        print("project set-field: FAIL — --field must be priority or size", file=sys.stderr)
-        return 1
+        return fail("set-field", EXIT_USAGE, "--field must be priority or size")
     try:
         field_id, option_id = resolve_field_option_id(ssot, field, args.to)
     except KeyError as exc:
-        print(f"project set-field: FAIL — {exc}", file=sys.stderr)
-        return 1
+        return fail("set-field", EXIT_USAGE, str(exc))
     project_id = str(ssot["project_id"])
     proc = run_gh(
         [
@@ -427,10 +634,13 @@ def cmd_set_field(args: argparse.Namespace) -> int:
         ]
     )
     if proc.returncode != 0:
-        print(proc.stderr or proc.stdout or "gh project item-edit failed", file=sys.stderr)
-        return proc.returncode or 1
+        return fail(
+            "set-field",
+            EXIT_GH,
+            (proc.stderr or proc.stdout or "gh project item-edit failed").strip(),
+        )
     print(f"set-field: {args.id} {field} → {args.to} ({option_id})")
-    return 0
+    return EXIT_OK
 
 
 def _normalize_status(raw: str) -> str:
@@ -813,24 +1023,15 @@ def build_export_snapshot(ssot: dict[str, Any], items: list[dict[str, Any]]) -> 
 
 def cmd_get(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
-    ssot, errs = load_project_ssot(root)
-    if errs or ssot is None:
-        for e in errs:
-            print(f"project get: FAIL — {e}", file=sys.stderr)
-        return 1
-    enabled_errs = require_enabled(ssot)
-    if enabled_errs:
-        for e in enabled_errs:
-            print(f"project get: FAIL — {e}", file=sys.stderr)
-        return 2
+    ssot, code = _load_enabled_ssot(root, "get")
+    if ssot is None:
+        return code
     items, err = fetch_project_items(ssot, limit=args.limit)
     if err:
-        print(f"project get: FAIL — {err}", file=sys.stderr)
-        return 1
+        return fail("get", EXIT_GH, err)
     item = find_item_by_id(items, args.id)
     if item is None:
-        print(f"project get: FAIL — item not found: {args.id}", file=sys.stderr)
-        return 1
+        return fail("get", EXIT_NOT_FOUND, f"item not found: {args.id}")
     payload = {
         "id": item.get("id"),
         "title": _item_title(item),
@@ -849,103 +1050,249 @@ def cmd_get(args: argparse.Namespace) -> int:
         print(f"size: {payload['size']}")
         print("--- body ---")
         print(payload["body"] or "(empty)")
-    return 0
+    return EXIT_OK
 
 
 def cmd_append_notes(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
-    ssot, errs = load_project_ssot(root)
-    if errs or ssot is None:
-        for e in errs:
-            print(f"project append-notes: FAIL — {e}", file=sys.stderr)
-        return 1
-    enabled_errs = require_enabled(ssot)
-    if enabled_errs:
-        for e in enabled_errs:
-            print(f"project append-notes: FAIL — {e}", file=sys.stderr)
-        return 2
-    agent = getattr(args, "agent", None) or ""
-    if attribution_required(ssot) and not str(agent).strip():
-        print(
-            "project append-notes: FAIL — --agent required "
-            "(project_ssot.conventions.require_attribution_on_exit)",
-            file=sys.stderr,
-        )
-        return 2
-    note_text = args.text
-    if str(agent).strip():
-        try:
-            note_text = format_note_line(root, str(agent), args.text)
-        except ValueError as exc:
-            print(f"project append-notes: FAIL — {exc}", file=sys.stderr)
-            return 2
-    items, err = fetch_project_items(ssot, limit=args.limit)
-    if err:
-        print(f"project append-notes: FAIL — {err}", file=sys.stderr)
-        return 1
-    item = find_item_by_id(items, args.id)
-    if item is None:
-        print(f"project append-notes: FAIL — item not found: {args.id}", file=sys.stderr)
-        return 1
-    body = _item_body(item)
-    new_body, changed = append_notes_to_body(body, note_text)
-    if not changed:
-        print(f"append-notes: {args.id} — already present (idempotent skip)")
-        return 0
-    ok, detail = edit_item_body(ssot, args.id, new_body)
+    ssot, code = _load_enabled_ssot(root, "append-notes")
+    if ssot is None:
+        return code
+    ok, detail, err_code = append_notes_helper(
+        root,
+        ssot,
+        args.id,
+        agent=getattr(args, "agent", None) or "",
+        text=args.text,
+        limit=args.limit,
+    )
     if not ok:
-        print(f"project append-notes: FAIL — {detail}", file=sys.stderr)
-        return 1
-    print(f"append-notes: {args.id} — updated")
-    return 0
+        return fail("append-notes", err_code, detail)
+    if detail == "idempotent":
+        print(f"append-notes: {args.id} — already present (idempotent skip)")
+    else:
+        print(f"append-notes: {args.id} — updated")
+    return EXIT_OK
 
 
 def cmd_set_assignee(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
-    ssot, errs = load_project_ssot(root)
-    if errs or ssot is None:
-        for e in errs:
-            print(f"project set-assignee: FAIL — {e}", file=sys.stderr)
-        return 1
-    enabled_errs = require_enabled(ssot)
-    if enabled_errs:
-        for e in enabled_errs:
-            print(f"project set-assignee: FAIL — {e}", file=sys.stderr)
-        return 2
+    ssot, code = _load_enabled_ssot(root, "set-assignee")
+    if ssot is None:
+        return code
     login = (getattr(args, "login", None) or "").strip()
     if not login:
         try:
             login = resolve_human_github_user(root).lstrip("@")
         except Exception as exc:  # noqa: BLE001
-            print(f"project set-assignee: FAIL — {exc}", file=sys.stderr)
-            return 2
+            return fail("set-assignee", EXIT_USAGE, str(exc))
     if not login:
-        print(
-            "project set-assignee: FAIL — no login "
-            "(pass --login or set owner.github_user)",
-            file=sys.stderr,
+        return fail(
+            "set-assignee",
+            EXIT_USAGE,
+            "no login (pass --login or set owner.github_user)",
         )
-        return 2
     ok, detail = set_item_assignee(ssot, args.id, login)
     if not ok:
-        print(f"project set-assignee: FAIL — {detail}", file=sys.stderr)
-        return 1
+        # DraftIssue / unsupported → validation; gh failures look like network
+        code_out = EXIT_VALIDATION if "DraftIssue" in detail or "unsupported" in detail else EXIT_GH
+        return fail("set-assignee", code_out, detail)
     print(f"set-assignee: {args.id} → @{detail.lstrip('@')}")
-    return 0
+    return EXIT_OK
+
+
+def cmd_claim(args: argparse.Namespace) -> int:
+    """Pattern A: set in_progress + optional assignee + attributed Notes."""
+    root = Path(args.directory).resolve()
+    ssot, code = _load_enabled_ssot(root, "claim")
+    if ssot is None:
+        return code
+    agent = (getattr(args, "agent", None) or "").strip()
+    if not agent:
+        return fail("claim", EXIT_USAGE, "--agent required")
+    try:
+        user = resolve_human_github_user(root)
+    except Exception as exc:  # noqa: BLE001
+        return fail("claim", EXIT_USAGE, str(exc))
+    if not user:
+        return fail("claim", EXIT_USAGE, "owner.github_user missing")
+    conventions = ssot.get("conventions") or {}
+    items, err = fetch_project_items(ssot, limit=args.limit)
+    if err:
+        return fail("claim", EXIT_GH, err)
+    item = find_item_by_id(items, args.id)
+    if item is None:
+        return fail("claim", EXIT_NOT_FOUND, f"item not found: {args.id}")
+    before = _normalize_status(str(item.get("status") or ""))
+    if conventions.get("one_in_progress_per_assignee", True):
+        conflicts = in_progress_conflicts_for_user(
+            items, user_handle=user, exclude_id=args.id
+        )
+        if conflicts:
+            ids = ", ".join(str(c.get("id")) for c in conflicts[:5])
+            return fail(
+                "claim",
+                EXIT_VALIDATION,
+                f"one_in_progress_per_assignee: already In progress for {user}: {ids}",
+            )
+    ok, detail = set_item_status(ssot, args.id, "in_progress")
+    if not ok:
+        return fail("claim", EXIT_GH if "unknown status" not in detail else EXIT_USAGE, detail)
+    claim_mode = str(conventions.get("claim") or "set_assignee")
+    if claim_mode == "set_assignee":
+        a_ok, a_detail = set_item_assignee(ssot, args.id, user.lstrip("@"))
+        if not a_ok:
+            print(f"claim: WARN — assignee skipped: {a_detail}", file=sys.stderr)
+        else:
+            print(f"claim: assignee=@{a_detail.lstrip('@')}")
+    note = getattr(args, "text", None) or "claimed"
+    n_ok, n_detail, n_code = append_notes_helper(
+        root, ssot, args.id, agent=agent, text=note, limit=args.limit
+    )
+    if not n_ok:
+        return fail("claim", n_code, f"status set but Notes failed: {n_detail}")
+    attr = format_agent_attribution(root, agent)
+    print(f"claim: {args.id} → in_progress ({n_detail})")
+    print(f"item_id={args.id} · {attr} · Status={before or '?'}→in_progress")
+    return EXIT_OK
+
+
+def cmd_handoff(args: argparse.Namespace) -> int:
+    """Pattern A: attributed Notes with next=@user/agent + optional status."""
+    root = Path(args.directory).resolve()
+    ssot, code = _load_enabled_ssot(root, "handoff")
+    if ssot is None:
+        return code
+    agent = (getattr(args, "agent", None) or "").strip()
+    next_agent = (getattr(args, "next", None) or "").strip().lstrip("@")
+    if not agent:
+        return fail("handoff", EXIT_USAGE, "--agent required")
+    if not next_agent:
+        return fail("handoff", EXIT_USAGE, "--next required (agent name)")
+    try:
+        next_attr = format_agent_attribution(root, next_agent)
+        self_attr = format_agent_attribution(root, agent)
+    except ValueError as exc:
+        return fail("handoff", EXIT_USAGE, str(exc))
+    items, err = fetch_project_items(ssot, limit=args.limit)
+    if err:
+        return fail("handoff", EXIT_GH, err)
+    item = find_item_by_id(items, args.id)
+    if item is None:
+        return fail("handoff", EXIT_NOT_FOUND, f"item not found: {args.id}")
+    before = _normalize_status(str(item.get("status") or ""))
+    extra = (getattr(args, "text", None) or "").strip()
+    note_core = f"next={next_attr}"
+    if extra:
+        note_core = f"{extra} · {note_core}"
+    status_to = (getattr(args, "to", None) or "").strip()
+    if status_to:
+        ok, detail = set_item_status(ssot, args.id, status_to)
+        if not ok:
+            return fail(
+                "handoff",
+                EXIT_USAGE if "unknown" in detail.lower() else EXIT_GH,
+                detail,
+            )
+    n_ok, n_detail, n_code = append_notes_helper(
+        root, ssot, args.id, agent=agent, text=note_core, limit=args.limit
+    )
+    if not n_ok:
+        return fail("handoff", n_code, n_detail)
+    after = status_to or before or "?"
+    print(f"handoff: {args.id} — {n_detail}")
+    print(
+        f"item_id={args.id} · {self_attr} · Status={before or '?'}→{after} · next={next_attr}"
+    )
+    return EXIT_OK
+
+
+def cmd_validate_item(args: argparse.Namespace) -> int:
+    root = Path(args.directory).resolve()
+    ssot, code = _load_enabled_ssot(root, "validate-item")
+    if ssot is None:
+        return code
+    items, err = fetch_project_items(ssot, limit=args.limit)
+    if err:
+        return fail("validate-item", EXIT_GH, err)
+    item = find_item_by_id(items, args.id)
+    if item is None:
+        return fail("validate-item", EXIT_NOT_FOUND, f"item not found: {args.id}")
+    body = _item_body(item)
+    sections = list((ssot.get("conventions") or {}).get("body_sections") or [])
+    missing = validate_card_body(body, sections)
+    problems: list[str] = []
+    if missing:
+        problems.append(f"missing sections: {', '.join(missing)}")
+    status = _normalize_status(str(item.get("status") or ""))
+    options = ((ssot.get("fields") or {}).get("status") or {}).get("options") or {}
+    if status and status not in options and str(item.get("status") or "").strip():
+        # Allow display labels that normalize to known keys only
+        if status not in set(options):
+            problems.append(f"unknown status {item.get('status')!r}")
+    if attribution_required(ssot):
+        line = latest_notes_line(body)
+        if line is not None and not notes_line_attributed(line):
+            problems.append(f"latest Notes line not attributed: {line[:80]}")
+    if problems:
+        return fail("validate-item", EXIT_VALIDATION, "; ".join(problems))
+    print(f"validate-item: {args.id} — ok")
+    print(f"status={item.get('status')}")
+    return EXIT_OK
+
+
+def cmd_doctor(args: argparse.Namespace) -> int:
+    root = Path(args.directory).resolve()
+    ssot, errs = load_project_ssot(root)
+    if errs or ssot is None:
+        return fail("doctor", EXIT_USAGE, errs[0] if errs else "project_ssot missing")
+    enabled_errs = require_enabled(ssot)
+    if enabled_errs:
+        return fail("doctor", EXIT_USAGE, enabled_errs[0])
+    try:
+        status_field_id(ssot)
+        resolve_status_option_id(ssot, "ready")
+    except KeyError as exc:
+        return fail("doctor", EXIT_USAGE, str(exc))
+    user = resolve_human_github_user(root)
+    if not user:
+        return fail("doctor", EXIT_USAGE, "owner.github_user missing")
+    tpl_dir = project_templates_dir(root)
+    for name in _TEMPLATE_NAMES:
+        path = tpl_dir / f"card-body-{name}.md"
+        if not path.is_file():
+            return fail("doctor", EXIT_USAGE, f"missing template {path}")
+    proc = run_gh(
+        [
+            "project",
+            "item-list",
+            str(ssot["number"]),
+            "--owner",
+            str(ssot["owner"]),
+            "--format",
+            "json",
+            "--limit",
+            "1",
+        ]
+    )
+    if proc.returncode != 0:
+        return fail(
+            "doctor",
+            EXIT_GH,
+            (proc.stderr or proc.stdout or "gh project not readable").strip(),
+        )
+    print("doctor: ok")
+    print(f"project: {ssot.get('name')} ({ssot.get('url')})")
+    print(f"human: {user}")
+    print(f"templates: {tpl_dir}")
+    return EXIT_OK
 
 
 def cmd_find_by_pr(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
-    ssot, errs = load_project_ssot(root)
-    if errs or ssot is None:
-        for e in errs:
-            print(f"project find-by-pr: FAIL — {e}", file=sys.stderr)
-        return 1
-    enabled_errs = require_enabled(ssot)
-    if enabled_errs:
-        for e in enabled_errs:
-            print(f"project find-by-pr: FAIL — {e}", file=sys.stderr)
-        return 2
+    ssot, code = _load_enabled_ssot(root, "find-by-pr")
+    if ssot is None:
+        return code
     item_id, candidates, err = resolve_item_id_for_pr(
         ssot, pr=args.pr, repo=args.repo or None, limit=args.limit
     )
@@ -960,35 +1307,27 @@ def cmd_find_by_pr(args: argparse.Namespace) -> int:
         if item_id:
             print(item_id)
         else:
-            print(f"project find-by-pr: FAIL — {err}", file=sys.stderr)
+            fail("find-by-pr", EXIT_NOT_FOUND, err or "not found")
             if candidates:
                 print("candidates:", ", ".join(candidates), file=sys.stderr)
-            return 1
-    return 0 if item_id else 1
+            return EXIT_NOT_FOUND
+    return EXIT_OK if item_id else EXIT_NOT_FOUND
 
 
 def cmd_export(args: argparse.Namespace) -> int:
     """Read-only snapshot — never mutates the board."""
     root = Path(args.directory).resolve()
-    ssot, errs = load_project_ssot(root)
-    if errs or ssot is None:
-        for e in errs:
-            print(f"project export: FAIL — {e}", file=sys.stderr)
-        return 1
-    enabled_errs = require_enabled(ssot)
-    if enabled_errs:
-        for e in enabled_errs:
-            print(f"project export: FAIL — {e}", file=sys.stderr)
-        return 2
+    ssot, code = _load_enabled_ssot(root, "export")
+    if ssot is None:
+        return code
     items, err = fetch_project_items(ssot, limit=args.limit)
     if err:
-        print(f"project export: FAIL — {err}", file=sys.stderr)
-        return 1
+        return fail("export", EXIT_GH, err)
     snapshot = build_export_snapshot(ssot, items)
     text = json.dumps(snapshot, indent=2) + "\n"
     if args.stdout:
         print(text, end="")
-        return 0
+        return EXIT_OK
     out_path = Path(args.output) if args.output else (
         root / ".local" / "generated-data" / "project-board-snapshot.json"
     )
@@ -997,7 +1336,7 @@ def cmd_export(args: argparse.Namespace) -> int:
     print(f"Wrote {out_path} ({snapshot['totalCount']} items)")
     if args.json:
         print(text, end="")
-    return 0
+    return EXIT_OK
 
 
 def register_project_subparser(sub: argparse._SubParsersAction) -> None:
@@ -1023,11 +1362,39 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     list_cmd.add_argument("--json", action="store_true")
     list_cmd.set_defaults(func=cmd_list)
 
-    create_cmd = project_sub.add_parser("create", help="Create a DraftIssue on the project")
+    create_cmd = project_sub.add_parser(
+        "create", help="Create a DraftIssue on the project (--template = create-from-template)"
+    )
     create_cmd.add_argument("--directory", type=Path, default=".")
     create_cmd.add_argument("--title", required=True)
     create_cmd.add_argument("--body", default="")
+    create_cmd.add_argument(
+        "--template",
+        default="",
+        help="slice|bug — use card body template (same as create-from-template)",
+    )
+    create_cmd.add_argument("--acceptance", default="")
+    create_cmd.add_argument("--rollback", default="")
+    create_cmd.add_argument("--notes", default="")
+    create_cmd.add_argument(
+        "--status",
+        default="",
+        help="Optional status after create (e.g. ready) when using --template",
+    )
     create_cmd.set_defaults(func=cmd_create)
+
+    cft = project_sub.add_parser(
+        "create-from-template",
+        help="Create DraftIssue from card-body template (Pattern A)",
+    )
+    cft.add_argument("--directory", type=Path, default=".")
+    cft.add_argument("--title", required=True)
+    cft.add_argument("--template", default="slice", choices=_TEMPLATE_NAMES)
+    cft.add_argument("--acceptance", default="")
+    cft.add_argument("--rollback", default="")
+    cft.add_argument("--notes", default="")
+    cft.add_argument("--status", default="", help="Optional: ready|backlog|…")
+    cft.set_defaults(func=cmd_create_from_template)
 
     set_status = project_sub.add_parser("set-status", help="Set item Status from YAML option ids")
     set_status.add_argument("--directory", type=Path, default=".")
@@ -1067,6 +1434,46 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     )
     notes_cmd.add_argument("--limit", type=int, default=100)
     notes_cmd.set_defaults(func=cmd_append_notes)
+
+    claim_cmd = project_sub.add_parser(
+        "claim",
+        help="Pattern A: In progress + Notes (+ assignee when Issue-backed)",
+    )
+    claim_cmd.add_argument("--directory", type=Path, default=".")
+    claim_cmd.add_argument("--id", required=True)
+    claim_cmd.add_argument("--agent", required=True, help="Agent id for @user/agent Notes")
+    claim_cmd.add_argument("--text", default="claimed", help="Notes text after attribution")
+    claim_cmd.add_argument("--limit", type=int, default=100)
+    claim_cmd.set_defaults(func=cmd_claim)
+
+    handoff_cmd = project_sub.add_parser(
+        "handoff",
+        help="Pattern A: Notes next=@user/agent + optional set-status",
+    )
+    handoff_cmd.add_argument("--directory", type=Path, default=".")
+    handoff_cmd.add_argument("--id", required=True)
+    handoff_cmd.add_argument("--agent", required=True)
+    handoff_cmd.add_argument("--next", required=True, help="Next agent name (no @user/ needed)")
+    handoff_cmd.add_argument("--to", default="", help="Optional status: in_review|done|…")
+    handoff_cmd.add_argument("--text", default="", help="Optional extra Notes text")
+    handoff_cmd.add_argument("--limit", type=int, default=100)
+    handoff_cmd.set_defaults(func=cmd_handoff)
+
+    val_cmd = project_sub.add_parser(
+        "validate-item",
+        help="Check body sections / attribution / status (exit 5 on fail)",
+    )
+    val_cmd.add_argument("--directory", type=Path, default=".")
+    val_cmd.add_argument("--id", required=True)
+    val_cmd.add_argument("--limit", type=int, default=100)
+    val_cmd.set_defaults(func=cmd_validate_item)
+
+    doc_cmd = project_sub.add_parser(
+        "doctor",
+        help="Validate project_ssot config, templates, and gh project access",
+    )
+    doc_cmd.add_argument("--directory", type=Path, default=".")
+    doc_cmd.set_defaults(func=cmd_doctor)
 
     assignee_cmd = project_sub.add_parser(
         "set-assignee",

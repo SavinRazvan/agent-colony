@@ -1,0 +1,316 @@
+"""
+File: test_project_recipes.py
+Path: tests/modules/install/test_project_recipes.py
+Role: Edge-case tests for board Pattern A recipes (claim/handoff/templates/doctor).
+Used By:
+ - pytest
+Depends On:
+ - .ai_infra/install/cursor_workflow/project_cli.py
+ - .ai_infra/templates/project-board/
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+if str(_PKG_DIR) not in sys.path:
+    sys.path.insert(0, str(_PKG_DIR))
+
+import project_cli  # noqa: E402
+from test_project_cli import SAMPLE_SSOT  # noqa: E402
+
+
+def _ssot(**overrides):
+    data = json.loads(json.dumps(SAMPLE_SSOT))
+    data["conventions"] = {
+        **data.get("conventions", {}),
+        "body_sections": ["Acceptance", "Rollback", "Notes"],
+        "require_attribution_on_exit": True,
+        "one_in_progress_per_assignee": True,
+        "claim": "set_assignee",
+    }
+    data.update(overrides)
+    if "conventions" in overrides:
+        data["conventions"] = {
+            **data["conventions"],
+            **overrides["conventions"],
+        }
+    return data
+
+
+def test_validate_card_body_missing() -> None:
+    missing = project_cli.validate_card_body("# x\n", ["Acceptance", "Notes"])
+    assert missing == ["Acceptance", "Notes"]
+    assert project_cli.validate_card_body("## Acceptance\n## Notes\n", ["Acceptance", "Notes"]) == []
+
+
+def test_render_card_template_placeholders() -> None:
+    tmpl = project_cli.load_card_template(REPO_ROOT, "slice")
+    body = project_cli.render_card_template(
+        tmpl, acceptance="A1", rollback="R1", notes="- seed"
+    )
+    assert "## Acceptance" in body
+    assert "A1" in body
+    assert "## Rollback" in body
+    assert "R1" in body
+    assert "## Notes" in body
+    assert project_cli.validate_card_body(body, ["Acceptance", "Rollback", "Notes"]) == []
+
+
+def test_fail_prints_code(capsys: pytest.CaptureFixture[str]) -> None:
+    code = project_cli.fail("claim", project_cli.EXIT_VALIDATION, "boom")
+    assert code == 5
+    err = capsys.readouterr().err
+    assert "CODE=5" in err
+    assert "boom" in err
+
+
+def test_cmd_create_from_template(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
+    calls: list[list[str]] = []
+
+    def fake_gh(args: list[str], *, timeout_s: float = 60.0):
+        calls.append(args)
+        if args[:2] == ["project", "item-create"]:
+            return SimpleNamespace(
+                returncode=0,
+                stdout=json.dumps({"id": "PVTI_new"}),
+                stderr="",
+            )
+        if args[:2] == ["project", "item-edit"]:
+            return SimpleNamespace(returncode=0, stdout="", stderr="")
+        return SimpleNamespace(returncode=1, stdout="", stderr="unexpected")
+
+    monkeypatch.setattr(project_cli, "run_gh", fake_gh)
+    # Templates load from real repo root via args.directory — point at REPO_ROOT
+    args = argparse.Namespace(
+        directory=REPO_ROOT,
+        title="[T] slice",
+        template="slice",
+        acceptance="do X",
+        rollback="revert",
+        notes="",
+        status="ready",
+    )
+    assert project_cli.cmd_create_from_template(args) == 0
+    out = capsys.readouterr().out
+    assert "item_id=PVTI_new" in out
+    assert any(c[:2] == ["project", "item-create"] for c in calls)
+    assert any("--single-select-option-id" in c for c in calls)
+
+
+def test_cmd_claim_draft_warns_assignee(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    ssot = _ssot()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: (
+            [
+                {
+                    "id": "PVTI_claim",
+                    "title": "Work",
+                    "status": "Ready",
+                    "content": {
+                        "body": "## Acceptance\n\nx\n\n## Rollback\n\ny\n\n## Notes\n\n"
+                    },
+                }
+            ],
+            None,
+        ),
+    )
+    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "oid"))
+    monkeypatch.setattr(
+        project_cli,
+        "set_item_assignee",
+        lambda *a, **k: (False, "DraftIssue has no GitHub Assignees"),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "edit_item_body",
+        lambda *a, **k: (True, "ok"),
+    )
+    args = argparse.Namespace(
+        directory=REPO_ROOT, id="PVTI_claim", agent="implementer", text="claimed", limit=100
+    )
+    assert project_cli.cmd_claim(args) == 0
+    captured = capsys.readouterr()
+    assert "WARN" in captured.err
+    assert "item_id=PVTI_claim" in captured.out
+    assert "@test/implementer" in captured.out
+
+
+def test_cmd_claim_conflict_one_in_progress(monkeypatch: pytest.MonkeyPatch) -> None:
+    ssot = _ssot()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: (
+            [
+                {
+                    "id": "PVTI_other",
+                    "title": "Other",
+                    "status": "In Progress",
+                    "content": {"body": "## Notes\n\n- @test/implementer · claimed\n"},
+                },
+                {
+                    "id": "PVTI_new",
+                    "title": "New",
+                    "status": "Ready",
+                    "content": {"body": "## Acceptance\n\n## Rollback\n\n## Notes\n"},
+                },
+            ],
+            None,
+        ),
+    )
+    args = argparse.Namespace(
+        directory=REPO_ROOT, id="PVTI_new", agent="implementer", text="claimed", limit=100
+    )
+    assert project_cli.cmd_claim(args) == project_cli.EXIT_VALIDATION
+
+
+def test_cmd_handoff_prefixes_next(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    ssot = _ssot()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    body_box = {
+        "body": "## Acceptance\n\na\n\n## Rollback\n\nb\n\n## Notes\n\n- @test/implementer · claimed\n"
+    }
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: (
+            [{"id": "PVTI_h", "title": "H", "status": "In Progress", "content": body_box}],
+            None,
+        ),
+    )
+    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "oid"))
+
+    def fake_edit(ssot, item_id, body):
+        body_box["body"] = body
+        return True, "ok"
+
+    monkeypatch.setattr(project_cli, "edit_item_body", fake_edit)
+    args = argparse.Namespace(
+        directory=REPO_ROOT,
+        id="PVTI_h",
+        agent="implementer",
+        next="verifier",
+        to="in_review",
+        text="PR opened",
+        limit=100,
+    )
+    assert project_cli.cmd_handoff(args) == 0
+    out = capsys.readouterr().out
+    assert "next=@test/verifier" in out
+    assert "@test/implementer" in out
+    assert "next=@test/verifier" in body_box["body"]
+
+
+def test_cmd_validate_item_missing_section(monkeypatch: pytest.MonkeyPatch) -> None:
+    ssot = _ssot()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: (
+            [{"id": "PVTI_v", "title": "V", "status": "Ready", "content": {"body": "# only\n"}}],
+            None,
+        ),
+    )
+    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_v", limit=100)
+    assert project_cli.cmd_validate_item(args) == project_cli.EXIT_VALIDATION
+
+
+def test_cmd_validate_item_ok(monkeypatch: pytest.MonkeyPatch) -> None:
+    ssot = _ssot()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: (
+            [
+                {
+                    "id": "PVTI_ok",
+                    "title": "OK",
+                    "status": "Ready",
+                    "content": {
+                        "body": (
+                            "## Acceptance\n\nx\n\n## Rollback\n\ny\n\n"
+                            "## Notes\n\n- @test/implementer · claimed\n"
+                        )
+                    },
+                }
+            ],
+            None,
+        ),
+    )
+    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_ok", limit=100)
+    assert project_cli.cmd_validate_item(args) == 0
+
+
+def test_cmd_doctor_ok(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    monkeypatch.setattr(
+        project_cli,
+        "run_gh",
+        lambda args, *, timeout_s=60.0: SimpleNamespace(
+            returncode=0, stdout='{"items":[]}', stderr=""
+        ),
+    )
+    args = argparse.Namespace(directory=REPO_ROOT)
+    assert project_cli.cmd_doctor(args) == 0
+
+
+def test_cmd_get_not_found(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
+    monkeypatch.setattr(
+        project_cli, "fetch_project_items", lambda ssot, limit=100: ([], None)
+    )
+    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_missing", limit=100, json=False)
+    assert project_cli.cmd_get(args) == project_cli.EXIT_NOT_FOUND
+
+
+def test_cmd_set_status_unknown_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
+    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_x", to="nope")
+    assert project_cli.cmd_set_status(args) == project_cli.EXIT_USAGE
+
+
+def test_cmd_list_gh_failure(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
+    monkeypatch.setattr(
+        project_cli,
+        "run_gh",
+        lambda args, *, timeout_s=60.0: SimpleNamespace(
+            returncode=1, stdout="", stderr="network down"
+        ),
+    )
+    args = argparse.Namespace(directory=REPO_ROOT, status="", limit=10, json=False)
+    assert project_cli.cmd_list(args) == project_cli.EXIT_GH
+
+
+def test_append_notes_requires_agent_code(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
+    args = argparse.Namespace(
+        directory=REPO_ROOT, id="PVTI_x", text="hi", agent="", limit=100
+    )
+    assert project_cli.cmd_append_notes(args) == project_cli.EXIT_USAGE
