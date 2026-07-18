@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://workflow-kit.local/schemas/board-outbox-entry.schema.json",
+  "title": "BoardOutboxEntry",
+  "type": "object",
+  "required": [
+    "id",
+    "ts",
+    "agent",
+    "github_user",
+    "op",
+    "item_id",
+    "payload",
+    "status",
+    "attempts"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "ts": { "type": "string", "minLength": 1 },
+    "agent": { "type": "string", "minLength": 1 },
+    "github_user": { "type": "string", "minLength": 1 },
+    "op": {
+      "type": "string",
+      "enum": [
+        "append-notes",
+        "set-status",
+        "handoff",
+        "claim",
+        "set-assignee"
+      ]
+    },
+    "item_id": {
+      "type": "string",
+      "pattern": "^PVTI_[A-Za-z0-9_-]+$"
+    },
+    "payload": { "type": "object", "additionalProperties": true },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "done", "failed"]
+    },
+    "attempts": { "type": "integer", "minimum": 0 },
+    "last_error": { "type": ["string", "null"] }
+  }
+}

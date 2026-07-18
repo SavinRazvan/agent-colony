@@ -4,7 +4,7 @@
 
 **MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) — this repository **is** the product: installable multi-agent workflow infrastructure with a **GitHub Project** as the **only writable SSOT** for backlog, Status, and multi-agent continuation when `project_ssot.enabled` and `sync_policy: board_only`. **Local artifacts** (PR Pattern A, audits, gates, secrets) stay on disk as evidence — never a second Status writer under `board_only`. Agents call **one script command** per maintainer action; `GATES` live in `.ai_infra/scripts/pr/prepare.py`.
 
-**Continuation:** Entry reads the board (`python3 -m cursor_workflow project status`); Exit updates Status and Notes (see `.cursor/skills/project-board-ssot/SKILL.md` § Collaboration, ADR-008, `overlays/rules/project-ssot-precedence.mdc`). Ops: `.ai_infra/docs/operations/project-board-collaboration.md`. Offline fallback trackers only when board unavailable. **STANDALONE:** permanently decoupled from upstream `mas-workflow-kit` (lineage only — do not merge doctrine back). Read [`HANDOFF.md`](HANDOFF.md) first.
+**Continuation:** Entry reads the board (`python3 -m cursor_workflow project status`); Exit updates Status and Notes (see `.cursor/skills/project-board-ssot/SKILL.md` § Collaboration, ADR-008, `overlays/rules/project-ssot-precedence.mdc`). Ops: `.ai_infra/docs/operations/project-board-collaboration.md`. Offline fallback trackers only when board unavailable. Rate-limit: EXIT_QUEUED (6) → `project outbox` (local buffer, not a second SSOT). **STANDALONE:** permanently decoupled from upstream `mas-workflow-kit` (lineage only — do not merge doctrine back). Read [`HANDOFF.md`](HANDOFF.md) first.
 
 ## First reads (onboarding)
 
@@ -43,7 +43,7 @@ Abbreviations: [`.ai_infra/docs/operations/abbreviations-notepad.md`](.ai_infra/
 1. If `project_ssot.enabled` → `python -m cursor_workflow project status` → board list/claim (`.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract). Read card Notes for prior handoffs.
 2. Else → `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
 
-**After every agent part:** update board Status (`in_review` / `done` / Notes + next agent) so continuation is indexed on the Project — not chat-only. Ops: `.ai_infra/docs/operations/project-board-collaboration.md`.
+**After every agent part:** update board Status (`in_review` / `done` / Notes + next agent) so continuation is indexed on the Project — not chat-only. Notes attribution: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC). Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime. Ops: `.ai_infra/docs/operations/project-board-collaboration.md`.
 
 Token contract: [`.ai_infra/docs/operations/token-efficiency.md`](.ai_infra/docs/operations/token-efficiency.md).
 
@@ -81,10 +81,10 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 
 | Root | Role |
 |------|------|
-| `.cursor/agents/` | Subagent cards (7) — Task delegation; **`model: auto`**; audit agents write `.local/` artifacts only |
-| `.cursor/skills/` | **Canonical protocols** (10 folders: audit, drift, implement loop, activate, …) |
+| `.cursor/agents/` | Subagent cards (8) — Task delegation; **`model: auto`**; audit agents write `.local/` artifacts only |
+| `.cursor/skills/` | **Canonical protocols** (11 folders: audit, drift, implement loop, activate, project-board, …) |
 | `.agents/skills/` | **Maintainer slash skills** (5 folders: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `audit-alignment` stub → `enterprise-auditor`) — additive in plugin sync |
-| `.cursor/rules/` | Six universal `alwaysApply` rules — high context cost by design |
+| `.cursor/rules/` | **7** `alwaysApply` rules in this product repo (6 kit + `project-ssot-precedence`) — high context cost by design |
 
 **Plugin sync:** `.cursor/skills/` wins; `.agents/skills/` never overwrites same folder name (`sync_plugin_bundle.py`).
 

@@ -38,7 +38,7 @@ Work is **indexed on the Project**, not in chat alone.
 |-------|----------|
 | **Entry** | `project status` → find/claim related card (`list --status ready` or your In progress). Read Acceptance / Rollback / Notes on the card body. |
 | **During** | Keep **one** In progress card for your assignee. Put progress notes on the card body when handing off mid-slice. |
-| **Exit** | **Always** update Status for the card you worked: → `in_review` (PR/handoff) or → `done` (your part closed) or leave `in_progress` with **Notes** naming the next agent. Notes **must** use `append-notes --agent <this-agent>` → `@owner.github_user/<agent>`. Print handoff line. |
+| **Exit** | **Always** update Status for the card you worked: → `in_review` (PR/handoff) or → `done` (your part closed) or leave `in_progress` with **Notes** naming the next agent. Notes **must** use `append-notes --agent <this-agent>` → `@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · …` (CLI stamps UTC). Print handoff line. **If EXIT_QUEUED (6)** / rate-limit: do **not** retry in a loop — op is in `.local/generated-data/board-outbox.jsonl`; continue local evidence; later `project outbox flush`. |
 | **Never** | Finish in chat only while leaving the card Stuck in Ready/Backlog. Never dual-write tracker `in_progress` under `board_only`. Never write bare `Agent: implementer` without `@user/` namespace. |
 
 Handoff line (chat + card Notes):
@@ -77,7 +77,7 @@ Multi-collaborator: each human’s `owner.github_user` namespaces their agents (
 
 1. One primary **In progress** per **human assignee** — do not steal others'.
 2. Pull from **Ready** or continue your In progress.
-3. Acceptance / Rollback / Notes on **card body** = continuation index. Attribution = `@owner.github_user/<agent>` via `append-notes --agent`.
+3. Acceptance / Rollback / Notes on **card body** = continuation index. Attribution = `@owner.github_user/<agent> · <ISO-8601-UTC> · …` via `append-notes --agent` (or `claim`/`handoff` recipes).
 4. Under `board_only`: no competing tracker `in_progress` (DRIFT-009); no dual-mirror “for safety.”
 5. Humans own views, workflows, README, Insights, status updates.
 6. Read-only `project export` (if used) never writes Status.
@@ -116,6 +116,22 @@ Ready → In progress → In review → Done
 
 Human Project README: paste `.ai_infra/templates/project-board/project-readme.md` in the Project settings UI (not into a shell).
 
+### Template routing
+
+| Need | Who | Template / action |
+|------|-----|-------------------|
+| slice / feature / `chore/` | implementer, project-board, integrator | `create-from-template --template slice` |
+| bug / defect / `fix/` | implementer, project-board | `create-from-template --template bug` |
+| audit pass | enterprise-auditor | `--template slice` + title `[AUDIT] …` then `claim --last` |
+| consume existing card | test-runner, verifier | **No** `create-from-template` — claim/continue only |
+| Project README | **Humans only** | paste `project-readme.md` in Project settings UI |
+
+Index: `.ai_infra/templates/project-board/README.md`. After create, always `claim --last` / `handoff --last` (never invent ids).
+
+**Notes format:** `@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · text` — auto-stamped by CLI on `claim`, `handoff`, and `append-notes --agent`. Idempotent when timestamp already present. Do not hand-forge times.
+
+**Local continuity:** append UTC-prefixed lines to `history/updates-log.md`; optional row in `history/continuity-index.md` (rolling ≥3 days). Board Notes retain full card lifetime.
+
 1. **Doctor / guide:** `project doctor` · `project guide --agent implementer`
 2. **Status / list:** `project status` · `project list [--status ready|in_progress|in_review]`
 3. **Create:** `project create-from-template --title "[SLICE] short-name" --template slice --status ready`
@@ -125,7 +141,9 @@ Human Project README: paste `.ai_infra/templates/project-board/project-readme.md
 7. **Atomics (power use):** `set-status` · `set-field` · `append-notes --agent` · `get --last` · `export`
 8. **Verify:** `project list` + handoff line; `project last` prints saved id
 
-Exit codes: `0` ok · `2` usage/config (includes placeholder `--id`) · `3` gh · `4` not found · `5` validation.
+Exit codes: `0` ok · `2` usage/config (includes placeholder `--id`) · `3` gh · `4` not found · `5` validation · `6` queued (outbox; soft-success — flush later).
+
+Rate-limit: `project outbox status` / `project queue` / `project outbox flush` — see `project_ssot.outbox` in collaboration YAML.
 
 ## Dual-write ban
 
@@ -135,6 +153,8 @@ When `sync_policy: board_only`, do **not** mark the same slice `in_progress` in 
 
 - [ ] Entry read board (or explicit offline fallback)
 - [ ] Exit updated Status (or Notes + next agent if still In progress)
+- [ ] If EXIT_QUEUED: confirmed via `outbox status`; no API hammering
+- [ ] Handoff line printed with real item_id
 - [ ] Handoff line printed when another agent continues
 - [ ] No dual-write; no edits to Project views/workflows/README/Insights
 

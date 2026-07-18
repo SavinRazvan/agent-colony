@@ -9,6 +9,6 @@
 | [ADR-005](ADR-005-docs-split.md) | Consumer vs maintainer docs split | accepted |
 | [ADR-006](ADR-006-agent-integration-model.md) | Agent integration model (MAS vs independent) | accepted |
 | [ADR-007](ADR-007-workflow-drift-guard.md) | Workflow drift guard (operational drift detection) | accepted |
-| [ADR-008](ADR-008-project-board-ssot.md) | GitHub Project board as agent SSOT (experiment) | accepted |
+| [ADR-008](ADR-008-project-board-ssot.md) | GitHub Project board as agent SSOT (product doctrine) | accepted |
 
 New decisions: add `ADR-NNN-short-title.md` and update this index.

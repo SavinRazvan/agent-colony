@@ -1,0 +1,12 @@
+{
+  "id": "00000000-0000-4000-8000-000000000001",
+  "ts": "2026-07-18T12:00:00Z",
+  "agent": "implementer",
+  "github_user": "@SavinRazvan",
+  "op": "append-notes",
+  "item_id": "PVTI_exampleRealIdFromCreate",
+  "payload": { "text": "queued while GraphQL rate-limited" },
+  "status": "pending",
+  "attempts": 0,
+  "last_error": null
+}

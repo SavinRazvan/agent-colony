@@ -28,7 +28,7 @@ Introduce a script-first drift validator and MAS-integrated agent per [ADR-006](
 
 | Profile | When | Checks |
 |---------|------|--------|
-| `kit-dev` | Default for `mas-workflow-kit-project-ssot` (kit product repo) | DRIFT-001…008 (full set) |
+| `kit-dev` | Default for `mas-workflow-kit-project-ssot` (kit product repo) | DRIFT-001…010 + 004b (full set; 004b/009–010 when `board_only`) |
 | `consumer` | `work-tracker.md` contains exemplar `STARTER-001` | DRIFT-005, DRIFT-008 (relaxed tracker rules) |
 
 Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
@@ -41,6 +41,7 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 | DRIFT-002 | P0 | kit-dev | At most one `in_progress` in work-tracker |
 | DRIFT-003 | P1 | kit-dev | Active task token appears in plan Current focus |
 | DRIFT-004 | P1 | kit-dev | session-pointer Phase/Next sanity vs plan |
+| DRIFT-004b | P1 | kit-dev | When `board_only`, session-pointer Board id/Status vs `project export` snapshot (stale In progress vs Done) |
 | DRIFT-005 | P1 (kit-dev) / P2 skip (consumer) | both | IMPLEMENTATION-STATUS test count vs pytest collect; **PASS (skip)** when file absent (consumer install — not a consumer failure) |
 | DRIFT-006 | P2 | kit-dev | test-index Owned tests paths resolve |
 | DRIFT-007 | P2 | kit-dev | updates-log fresh when git tree dirty |
@@ -48,7 +49,7 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 | DRIFT-009 | P1 | kit-dev | When `project_ssot.sync_policy: board_only`, no competing `in_progress` in work-tracker Active (ADR-008) |
 | DRIFT-010 | P1 | kit-dev | When `board_only`, board Status vs open PRs / stale In progress / merged-but-not-Done (uses read-only `project export` snapshot; skips offline) |
 
-**Exit policy:** exit code 1 on any P0 failure; P1/P2 advisory in output (same as `integrate validate`).
+**Exit policy:** exit code 1 on any P0 failure; P1/P2 advisory in output (same as `integrate validate`). Pending `project_ssot.outbox` ops are **not** a drift failure — cite `project outbox status` in artifacts when relevant.
 
 ### Gate placement
 

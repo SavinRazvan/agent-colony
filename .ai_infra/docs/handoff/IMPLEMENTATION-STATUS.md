@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (MAS Workflow Kit — Project SSOT)
 
-**Last updated:** 2026-07-18 (ATTR-USER-AGENT attribution)  
-**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 692
+**Last updated:** 2026-07-18 (COV-100 — scoped coverage)  
+**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 901
 
 ## Shipped (confirmed in repo)
 
@@ -30,7 +30,10 @@ Notes:
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
 | PR scripts + prepare gates | Pattern A — **2** universal; **4** on kit-dev (drift + doc facts) | `.ai_infra/scripts/pr/prepare.py` |
 | Governance + debrand scanners | CI-ready | `.ai_infra/scripts/architecture/` |
-| Workflow drift validate | ADR-007 | `.ai_infra/scripts/workflow/check_drift.py` |
+| Workflow drift validate | ADR-007 (+ DRIFT-004b) | `.ai_infra/scripts/workflow/check_drift.py` |
+| Timestamped board Notes (CONT-TS) | `@user/agent · <ISO-8601-UTC> · …` via CLI (`claim`/`handoff`/`append-notes`) | `project_cli.py` + skill § Notes |
+| Local continuity-index | Rolling ≥3-day UTC rows; board Notes = full card lifetime | `history/continuity-index.md` (+ exemplar) |
+| Board outbox (rate-limit) | `project queue` / `outbox status|flush`; EXIT_QUEUED=6; **58 mocked unit tests** | `project_outbox.py` + `project_cli.py` + `tests/modules/install/test_project_outbox.py` |
 | Doc facts validate | DOC-001…006 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
@@ -44,20 +47,20 @@ Notes:
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Kit version on install | `kit_version` 0.4.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 692 | `tests/modules/` |
+| Tests | 901 | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 
 `pytest --cov=.ai_infra --cov=cursor_workflow` measures the **import surface** of the
-installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-18: **~4396
-statements, ~94%** on a full suite pass. Primary gap: `project_cli.py` live-`gh` branches
-(~64% — integration paths exercised via targeted unit mocks elsewhere). Subprocess-only
-maintainer scanners (`check_governance_consistency.py`, `check_debrand.py`,
-`check_consumer_purity.py`, `check_file_headers.py`) have dedicated module tests but are
-excluded from this metric by design — they are launched via `subprocess` / `make gates`,
-not imported by the coverage run. Running `--cov=.` (tests included) reports higher
-because of order-dependent branches in test-helper cleanup code; scope shipped source for
-readiness claims.
+installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-18
+(COV-100): **5352 statements, 100%** on a full suite pass (900 passed, 1 skipped).
+One import-order `sys.path` bootstrap in `merge.py` is `# pragma: no cover`.
+Subprocess-only maintainer scanners (`check_governance_consistency.py`,
+`check_debrand.py`, `check_consumer_purity.py`, `check_file_headers.py`) have
+dedicated module tests but are excluded from this metric by design — they are
+launched via `subprocess` / `make gates`, not imported by the coverage run.
+Running `--cov=.` (tests included) reports higher because of order-dependent
+branches in test-helper cleanup code; scope shipped source for readiness claims.
 
 ## Verification commands
 

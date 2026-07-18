@@ -61,6 +61,7 @@ Notes:
 | Commit/PR attribution (`owner`, trailers, pipelines) | Already in collab YAML |
 | `.venv`, secrets, coverage dumps | Machine-local |
 | Offline fallback trackers | If no `project` scope / no `gh` — **resume-only** local trackers; never a second writer under `board_only` |
+| Rate-limit outbox | `.local/generated-data/board-outbox.jsonl` via `project queue` / auto-enqueue; flush with `outbox flush` — buffer only, not SSOT |
 | Read-only board export (optional) | Snapshot cache for audits/ICC later — never writes Status |
 
 **Non-goals:** Do **not** dual-mirror local trackers + board “for safety.” Do **not** push this product’s doctrine into upstream `mas-workflow-kit`. Do **not** treat this repo as a temporary sandbox awaiting a port.
@@ -127,7 +128,7 @@ GitHub Project #3       →  create / list / claim / status (human + all agents)
 | Rule | Detail |
 |------|--------|
 | One claim | Prefer one primary **In progress** card per **human** assignee |
-| Attribution | Notes: `@owner.github_user/<agent>` via `append-notes --agent`; `next=@user/agent` |
+| Attribution | Notes: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` via `append-notes --agent` (CLI stamps UTC); `next=@user/agent`; local `history/continuity-index.md` rolls ≥3 days |
 | Queue | **Ready** (+ Priority P0/P1) = next work |
 | Review | **In review** when PR open; **Done** after merge/close |
 | Create | Agents may create DraftIssue/Issue on the Project when scoping work |
@@ -290,6 +291,7 @@ Do **not** run upstream marketplace publish from this repo against `mas-workflow
 | DraftIssue vs real Issues? | Drafts OK for smoke; Issues better for PR linking. |
 | Consumer installs? | Install plugin from **this** repo: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` |
 | Offline / no `gh`? | `fallback: local_trackers` then resume board sync. |
+| GraphQL rate-limit? | `project_ssot.outbox` — EXIT_QUEUED (6); `outbox flush` after reset. Never hammer API; outbox ≠ Status SSOT. |
 | Card → which repo? | Convention: Repository field or body path; default = this product repo. |
 | Control Center dashboards? | **Deferred (EA-010).** Read-only `project export` may land first; ICC panel that *reads* the export is future — never a second writer. |
 | Who updates the Project? | **Every agent** Entry=read board; Exit=update Status/Notes. Post-merge Done = Pattern A (`merge.py`). Rights: `project-board-ssot` skill § Continuation; ops `project-board-collaboration.md`. **You:** views, workflows, Insights, README, status updates, Ready prioritization / product roadmap. |

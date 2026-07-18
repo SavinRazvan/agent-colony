@@ -29,7 +29,8 @@ _REPO_ROOT = _PR_DIR.parents[2]
 _INSTALL_CW = _REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
 if str(_PR_DIR) not in sys.path:
     sys.path.insert(0, str(_PR_DIR))
-if _INSTALL_CW.is_dir() and str(_INSTALL_CW) not in sys.path:
+if _INSTALL_CW.is_dir() and str(_INSTALL_CW) not in sys.path:  # pragma: no cover
+    # Import-order dependent: often already on path from project_cli tests.
     sys.path.insert(0, str(_INSTALL_CW))
 
 from local_workflow_paths import (

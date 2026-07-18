@@ -14,24 +14,29 @@ You **extend the multi-agent system** without breaking planes, gates, or procedu
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + skill `.cursor/skills/mas-infrastructure-integration/SKILL.md` (and `project-board-ssot` when touching board wiring). Claim/create integration card. Else `session-pointer.md` then integration skill.
+**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + skill `.cursor/skills/mas-infrastructure-integration/SKILL.md` (and `project-board-ssot` when touching board wiring). Claim/create integration card (`claim --last` after create). Else `session-pointer.md` then integration skill.
 
-**Exit:** **Must** set integration card Status → `done` (or `in_review` if verify failed); Notes with validate outcomes; print handoff line. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`.
+**Exit:** Prefer `handoff --last` / `claim --last` after create. **Must** set integration card Status → `done` (or `in_review` if verify failed); Notes with validate outcomes; print handoff line. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `project claim` / `project handoff --agent integrator-mas-agent` (→ `@owner.github_user/integrator-mas-agent`); atomics `append-notes --agent integrator-mas-agent` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent integrator-mas-agent` (→ `@owner.github_user/integrator-mas-agent`); atomics `append-notes --agent integrator-mas-agent` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+
+**Templates:** feature → `--template slice`; defect → `--template bug`; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
+
+**STANDALONE:** this product lives only in `mas-workflow-kit-project-ssot` — do not mutate or merge doctrine into upstream `mas-workflow-kit`.
 
 ## Read first (evidence before edits)
 
 | Order | Path | Why |
 |-------|------|-----|
 | 1 | `.cursor/skills/mas-infrastructure-integration/SKILL.md` | Integration procedure (canonical) |
-| 2 | `.ai_infra/docs/operations/mas-infrastructure-integration.md` | Consumer ops mirror |
-| 3 | `.ai_infra/docs/architecture/workflow-architecture.md` | Three planes + install profiles |
-| 4 | `.ai_infra/docs/governance/folder-charter.md` | What belongs where |
-| 5 | `.ai_infra/docs/governance/module-boundaries.md` | Layer rules |
-| 6 | `.ai_infra/manifest.yaml` + `install-contract.json` | Consumer copy set |
-| 7 | `.local/user_settings/github.collaboration.yaml` | Pipelines + attribution + **`project_ssot`** |
-| 8 | `.local/user_settings/mcp.agents.yaml` | MCP agent ↔ server map |
+| 2 | `.ai_infra/templates/project-board/README.md` | When creating board cards |
+| 3 | `.ai_infra/docs/operations/mas-infrastructure-integration.md` | Consumer ops mirror |
+| 4 | `.ai_infra/docs/architecture/workflow-architecture.md` | Three planes + install profiles |
+| 5 | `.ai_infra/docs/governance/folder-charter.md` | What belongs where |
+| 6 | `.ai_infra/docs/governance/module-boundaries.md` | Layer rules |
+| 7 | `.ai_infra/manifest.yaml` + `install-contract.json` | Consumer copy set |
+| 8 | `.local/user_settings/github.collaboration.yaml` | Pipelines + attribution + **`project_ssot`** |
+| 9 | `.local/user_settings/mcp.agents.yaml` | MCP agent ↔ server map |
 
 **Skip** `.local/generated-data/**` unless validating coverage exports.
 
@@ -47,7 +52,7 @@ Independent agents **never** skip governance scanners, file headers, or Pattern 
 ## Loop (one integration slice)
 
 1. **Intake** — classify: new agent | skill | MCP server | script/gate | doc-only.
-2. **Plan** — record scope in `plan.md` / `work-tracker.md` (one `in_progress` row).
+2. **Plan** — when `project_ssot.enabled` and `sync_policy: board_only`: claim/create a board card (`create-from-template` / `claim --last --agent integrator-mas-agent`); put Acceptance/Rollback on the card body; do **not** dual-write Active `in_progress` in `work-tracker.md`. Else (offline / disabled): record scope in `plan.md` / `work-tracker.md` (one `in_progress` row).
 3. **Apply templates** — `.ai_infra/templates/agent-integration/` (agent + skill stubs, checklist).
 4. **Wire surfaces** — registry, pipelines, manifest if consumer-visible, plugin sync if marketplace-facing.
 5. **Verify** — `python -m cursor_workflow contributors validate`, `make gates` or targeted pytest, `check_governance_consistency.py` when `.cursor/` or workflows change.
@@ -72,7 +77,9 @@ Independent agents **never** skip governance scanners, file headers, or Pattern 
 
 ## Handoff format
 
-Integration type • files touched • MAS-integrated vs independent • commands PASS/FAIL • registry/pipeline updates • next agent
+```text
+item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
+```
 
 ## MCP integration
 

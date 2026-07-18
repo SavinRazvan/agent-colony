@@ -11,7 +11,7 @@ Depends On:
  - .ai_infra/scripts/pr/local_workflow_paths.py
 Notes:
  - Executable behavior wins over prose; prose must link to scripts instead of copying steps.
- - Last reviewed: 2026-06-29
+ - Last reviewed: 2026-07-18
 -->
 
 # Workflow source owners
@@ -24,7 +24,7 @@ Notes:
 | Merge preconditions | `.ai_infra/scripts/pr/merge.py` | `merge-pr` skill |
 | Post-merge cleanup | `.ai_infra/scripts/pr/finalize.py` | `merge-pr` skill |
 | Maintainer narrative order | `.agents/skills/pr-workflow/SKILL.md` (slash `/pr-workflow`; redirect stub: `PR_WORKFLOW.md`) | Humans |
-| Canonical Cursor skills | `.cursor/skills/` (10 folders) | Plugin sync, agents |
+| Canonical Cursor skills | `.cursor/skills/` (11 folders) | Plugin sync, agents |
 | Maintainer slash skills | `.agents/skills/` (5 folders; no name overlap with `.cursor/skills/`) | Plugin sync additive merge |
 | Kit subagent model policy | `.cursor/agents/*.md` frontmatter `model: auto` | Task delegation cost control |
 | Durable maintainer checklist | `.ai_infra/docs/operations/workflow-complete.md` | Everyone (versioned) |

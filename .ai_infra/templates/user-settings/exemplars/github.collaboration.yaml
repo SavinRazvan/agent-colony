@@ -44,6 +44,14 @@ project_ssot:
   sync_policy: board_only
   fallback: local_trackers                # local_trackers | none
 
+  # Rate-limit outbox (local buffer — never a second Status SSOT)
+  outbox:
+    enabled: true
+    path: .local/generated-data/board-outbox.jsonl
+    min_graphql_remaining: 200
+    max_flush_per_run: 10
+    retry_backoff_seconds: 30
+
   # Project V2 single-select fields (replace ids from field-list)
   fields:
     status:

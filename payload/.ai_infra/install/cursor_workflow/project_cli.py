@@ -12,8 +12,9 @@ Notes:
  - Pattern A: one gh invocation per action; recipes (claim/handoff/create-from-template)
    are one lifecycle command each; no dual-write of local trackers.
  - DraftIssue body edits resolve PVTI_… → DI_… (+ --title); Status stays on PVTI_….
- - Notes attribution: @owner.github_user/agent via append-notes --agent.
- - Exit codes: 0 ok; 2 usage/config; 3 gh/network; 4 not found; 5 validation.
+ - Notes attribution: @owner.github_user/agent · ISO-8601-UTC · text via append-notes --agent.
+ - Exit codes: 0 ok; 2 usage/config; 3 gh/network; 4 not found; 5 validation; 6 queued (outbox).
+ - Rate-limit outbox: project_outbox.py + project_ssot.outbox (local buffer, not SSOT).
 """
 
 from __future__ import annotations
@@ -23,6 +24,7 @@ import json
 import re
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -32,6 +34,7 @@ EXIT_USAGE = 2
 EXIT_GH = 3
 EXIT_NOT_FOUND = 4
 EXIT_VALIDATION = 5
+EXIT_QUEUED = 6
 
 _TEMPLATE_NAMES = ("slice", "bug")
 _PLACEHOLDER_RE = re.compile(r"\{\{(\w+)\}\}")
@@ -134,6 +137,11 @@ def is_placeholder_item_id(raw: str) -> bool:
         return True
     # Docs form with only punctuation after prefix
     if re.match(r"^(PVTI_|DI_)[\.…_-]*$", s):
+        return True
+    # Real GitHub Project item ids are long (e.g. PVTI_lAHO…); reject stubs
+    if re.match(r"^PVTI_", s) and len(s) < 20:
+        return True
+    if re.match(r"^DI_", s) and len(s) < 12:
         return True
     return False
 
@@ -252,21 +260,40 @@ def format_agent_attribution(root: Path, agent: str) -> str:
     return f"{user}/{agent_key}"
 
 
+NOTE_LINE_WITH_TIMESTAMP_RE = re.compile(
+    r"^@[^\s/]+/[^\s·]+\s*·\s*\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z(?:\s*·\s*|$)"
+)
+NOTE_ATTRIBUTION_PREFIX_RE = re.compile(r"^(@[^\s/]+/[^\s·]+)")
+
+
+def utc_note_timestamp() -> str:
+    """Return current UTC timestamp for board Notes (test hook)."""
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def format_note_line(root: Path, agent: str, text: str) -> str:
     """
-    Prefix note with @user/agent · text.
-    Idempotent if text already starts with that attribution.
+    Prefix note with @user/agent · ISO-8601-UTC · text.
+    Idempotent if text already has a UTC timestamp after attribution.
     """
     attr = format_agent_attribution(root, agent)
     body = (text or "").strip()
-    if body.startswith(attr):
+    if NOTE_LINE_WITH_TIMESTAMP_RE.match(body):
         return body
-    # Also accept without requiring exact agent if already @user/something
-    if re.match(r"^@[^\s/]+/[^\s·]+", body):
-        return body
+    attr_match = NOTE_ATTRIBUTION_PREFIX_RE.match(body)
+    if attr_match:
+        prefix = attr_match.group(1)
+        rest = body[len(prefix) :].lstrip()
+        if rest.startswith("·"):
+            rest = rest[1:].strip()
+        ts = utc_note_timestamp()
+        if rest:
+            return f"{prefix} · {ts} · {rest}"
+        return f"{prefix} · {ts}"
+    ts = utc_note_timestamp()
     if not body:
-        return attr
-    return f"{attr} · {body}"
+        return f"{attr} · {ts}"
+    return f"{attr} · {ts} · {body}"
 
 
 def set_item_assignee(
@@ -693,13 +720,48 @@ def cmd_set_status(args: argparse.Namespace) -> int:
         ]
     )
     if proc.returncode != 0:
-        return fail(
-            "set-status",
-            EXIT_GH,
-            (proc.stderr or proc.stdout or "gh project item-edit failed").strip(),
+        detail = (proc.stderr or proc.stdout or "gh project item-edit failed").strip()
+        queued = _try_queue_rate_limit(
+            root,
+            ssot,
+            cmd="set-status",
+            err_detail=detail,
+            op="set-status",
+            item_id=item_id,
+            agent=(getattr(args, "agent", None) or "project-cli"),
+            payload={"to": args.to},
         )
+        if queued is not None:
+            return queued
+        return fail("set-status", EXIT_GH, detail)
     print(f"set-status: {item_id} → {args.to} ({option_id})")
     return EXIT_OK
+
+
+def _try_queue_rate_limit(
+    root: Path,
+    ssot: dict[str, Any],
+    *,
+    cmd: str,
+    err_detail: str,
+    op: str,
+    item_id: str,
+    agent: str,
+    payload: dict[str, Any],
+) -> int | None:
+    """Delegate to project_outbox.maybe_enqueue_on_gh_fail."""
+    import project_outbox as _outbox  # noqa: PLC0415
+
+    return _outbox.maybe_enqueue_on_gh_fail(
+        root,
+        ssot,
+        cmd=cmd,
+        err_detail=err_detail,
+        op=op,
+        item_id=item_id,
+        agent=agent,
+        payload=payload,
+    )
 
 
 def cmd_set_field(args: argparse.Namespace) -> int:
@@ -1172,6 +1234,19 @@ def cmd_append_notes(args: argparse.Namespace) -> int:
         limit=args.limit,
     )
     if not ok:
+        if err_code == EXIT_GH:
+            queued = _try_queue_rate_limit(
+                root,
+                ssot,
+                cmd="append-notes",
+                err_detail=detail,
+                op="append-notes",
+                item_id=item_id,
+                agent=getattr(args, "agent", None) or "project-cli",
+                payload={"text": args.text},
+            )
+            if queued is not None:
+                return queued
         return fail("append-notes", err_code, detail)
     if detail == "idempotent":
         print(f"append-notes: {item_id} — already present (idempotent skip)")
@@ -1203,8 +1278,21 @@ def cmd_set_assignee(args: argparse.Namespace) -> int:
     ok, detail = set_item_assignee(ssot, item_id, login)
     if not ok:
         # DraftIssue / unsupported → validation; gh failures look like network
-        code_out = EXIT_VALIDATION if "DraftIssue" in detail or "unsupported" in detail else EXIT_GH
-        return fail("set-assignee", code_out, detail)
+        if "DraftIssue" in detail or "unsupported" in detail:
+            return fail("set-assignee", EXIT_VALIDATION, detail)
+        queued = _try_queue_rate_limit(
+            root,
+            ssot,
+            cmd="set-assignee",
+            err_detail=detail,
+            op="set-assignee",
+            item_id=item_id,
+            agent=(getattr(args, "agent", None) or "project-cli"),
+            payload={"login": login},
+        )
+        if queued is not None:
+            return queued
+        return fail("set-assignee", EXIT_GH, detail)
     print(f"set-assignee: {item_id} → @{detail.lstrip('@')}")
     return EXIT_OK
 
@@ -1228,8 +1316,24 @@ def cmd_claim(args: argparse.Namespace) -> int:
     if not user:
         return fail("claim", EXIT_USAGE, "owner.github_user missing")
     conventions = ssot.get("conventions") or {}
+    claim_payload = {
+        "to": "in_progress",
+        "text": getattr(args, "text", None) or "claimed",
+    }
     items, err = fetch_project_items(ssot, limit=args.limit)
     if err:
+        queued = _try_queue_rate_limit(
+            root,
+            ssot,
+            cmd="claim",
+            err_detail=err,
+            op="claim",
+            item_id=item_id,
+            agent=agent,
+            payload=claim_payload,
+        )
+        if queued is not None:
+            return queued
         return fail("claim", EXIT_GH, err)
     item = find_item_by_id(items, item_id)
     if item is None:
@@ -1248,7 +1352,21 @@ def cmd_claim(args: argparse.Namespace) -> int:
             )
     ok, detail = set_item_status(ssot, item_id, "in_progress")
     if not ok:
-        return fail("claim", EXIT_GH if "unknown status" not in detail else EXIT_USAGE, detail)
+        if "unknown status" in detail:
+            return fail("claim", EXIT_USAGE, detail)
+        queued = _try_queue_rate_limit(
+            root,
+            ssot,
+            cmd="claim",
+            err_detail=detail,
+            op="claim",
+            item_id=item_id,
+            agent=agent,
+            payload=claim_payload,
+        )
+        if queued is not None:
+            return queued
+        return fail("claim", EXIT_GH, detail)
     claim_mode = str(conventions.get("claim") or "set_assignee")
     if claim_mode == "set_assignee":
         a_ok, a_detail = set_item_assignee(ssot, item_id, user.lstrip("@"))
@@ -1261,6 +1379,23 @@ def cmd_claim(args: argparse.Namespace) -> int:
         root, ssot, item_id, agent=agent, text=note, limit=args.limit
     )
     if not n_ok:
+        if n_code == EXIT_GH:
+            queued = _try_queue_rate_limit(
+                root,
+                ssot,
+                cmd="claim",
+                err_detail=n_detail,
+                op="append-notes",
+                item_id=item_id,
+                agent=agent,
+                payload={"text": note},
+            )
+            if queued is not None:
+                print(
+                    "claim: status set; Notes QUEUED due to rate-limit",
+                    file=sys.stderr,
+                )
+                return queued
         return fail("claim", n_code, f"status set but Notes failed: {n_detail}")
     save_last_item_id(root, item_id, title=_item_title(item), action="claim")
     attr = format_agent_attribution(root, agent)
@@ -1295,6 +1430,22 @@ def cmd_handoff(args: argparse.Namespace) -> int:
         return fail("handoff", EXIT_USAGE, str(exc))
     items, err = fetch_project_items(ssot, limit=args.limit)
     if err:
+        queued = _try_queue_rate_limit(
+            root,
+            ssot,
+            cmd="handoff",
+            err_detail=err,
+            op="handoff",
+            item_id=item_id,
+            agent=agent,
+            payload={
+                "next": next_agent,
+                "to": (getattr(args, "to", None) or "").strip(),
+                "note": (getattr(args, "text", None) or "").strip(),
+            },
+        )
+        if queued is not None:
+            return queued
         return fail("handoff", EXIT_GH, err)
     item = find_item_by_id(items, item_id)
     if item is None:
@@ -1308,15 +1459,38 @@ def cmd_handoff(args: argparse.Namespace) -> int:
     if status_to:
         ok, detail = set_item_status(ssot, item_id, status_to)
         if not ok:
-            return fail(
-                "handoff",
-                EXIT_USAGE if "unknown" in detail.lower() else EXIT_GH,
-                detail,
+            if "unknown" in detail.lower():
+                return fail("handoff", EXIT_USAGE, detail)
+            queued = _try_queue_rate_limit(
+                root,
+                ssot,
+                cmd="handoff",
+                err_detail=detail,
+                op="handoff",
+                item_id=item_id,
+                agent=agent,
+                payload={"next": next_agent, "to": status_to, "note": extra},
             )
+            if queued is not None:
+                return queued
+            return fail("handoff", EXIT_GH, detail)
     n_ok, n_detail, n_code = append_notes_helper(
         root, ssot, item_id, agent=agent, text=note_core, limit=args.limit
     )
     if not n_ok:
+        if n_code == EXIT_GH:
+            queued = _try_queue_rate_limit(
+                root,
+                ssot,
+                cmd="handoff",
+                err_detail=n_detail,
+                op="handoff",
+                item_id=item_id,
+                agent=agent,
+                payload={"next": next_agent, "to": status_to, "note": extra},
+            )
+            if queued is not None:
+                return queued
         return fail("handoff", n_code, n_detail)
     save_last_item_id(root, item_id, title=_item_title(item), action="handoff")
     after = status_to or before or "?"
@@ -1382,6 +1556,7 @@ def cmd_guide(args: argparse.Namespace) -> int:
     print("# Safe board recipes — use --last; never paste docs placeholders as --id")
     print(f"# last item_id: {lid}")
     print("python3 -m cursor_workflow project doctor")
+    print("python3 -m cursor_workflow project outbox status")
     print(
         'python3 -m cursor_workflow project create-from-template '
         '--title "[SLICE] short-name" --template slice --status ready'
@@ -1392,6 +1567,115 @@ def cmd_guide(args: argparse.Namespace) -> int:
         f"--next {nxt} --to in_review"
     )
     print("python3 -m cursor_workflow project validate-item --last")
+    print("# If EXIT_QUEUED (6): python3 -m cursor_workflow project outbox flush")
+    return EXIT_OK
+
+
+def cmd_queue(args: argparse.Namespace) -> int:
+    """Explicit enqueue (no live board write)."""
+    import project_outbox as _outbox  # noqa: PLC0415
+
+    root = Path(args.directory).resolve()
+    ssot, code = _load_enabled_ssot(root, "queue")
+    if ssot is None:
+        return code
+    item_id, id_code = resolve_item_id_arg(root, args, "queue")
+    if item_id is None:
+        return id_code
+    agent = (getattr(args, "agent", None) or "").strip()
+    if not agent:
+        return fail("queue", EXIT_USAGE, "--agent required")
+    op = (getattr(args, "op", None) or "").strip()
+    payload: dict[str, Any] = {}
+    if op == "append-notes":
+        text = (getattr(args, "text", None) or "").strip()
+        if not text:
+            return fail("queue", EXIT_USAGE, "--text required for append-notes")
+        payload = {"text": text}
+    elif op == "set-status":
+        to = (getattr(args, "to", None) or "").strip()
+        if not to:
+            return fail("queue", EXIT_USAGE, "--to required for set-status")
+        payload = {"to": to}
+    elif op == "handoff":
+        nxt = (getattr(args, "next", None) or "").strip()
+        if not nxt:
+            return fail("queue", EXIT_USAGE, "--next required for handoff")
+        payload = {
+            "next": nxt,
+            "to": (getattr(args, "to", None) or "").strip(),
+            "note": (getattr(args, "text", None) or "").strip(),
+        }
+    elif op == "claim":
+        payload = {
+            "to": (getattr(args, "to", None) or "in_progress").strip() or "in_progress",
+            "text": (getattr(args, "text", None) or "claimed").strip(),
+        }
+    elif op == "set-assignee":
+        login = (getattr(args, "login", None) or "").strip()
+        if not login:
+            try:
+                login = resolve_human_github_user(root)
+            except Exception as exc:  # noqa: BLE001
+                return fail("queue", EXIT_USAGE, str(exc))
+        payload = {"login": login.lstrip("@")}
+    else:
+        return fail(
+            "queue",
+            EXIT_USAGE,
+            "op must be append-notes|set-status|handoff|claim|set-assignee",
+        )
+    entry, err = _outbox.enqueue_op(
+        root, ssot, op=op, item_id=item_id, agent=agent, payload=payload
+    )
+    if entry is None:
+        return fail("queue", EXIT_VALIDATION, err)
+    print(_outbox.queued_message("queue", entry))
+    return EXIT_QUEUED
+
+
+def cmd_outbox_status(args: argparse.Namespace) -> int:
+    import project_outbox as _outbox  # noqa: PLC0415
+
+    root = Path(args.directory).resolve()
+    ssot, code = _load_enabled_ssot(root, "outbox")
+    if ssot is None:
+        return code
+    cfg = _outbox.load_outbox_config(ssot)
+    path = _outbox.outbox_path(root, cfg)
+    counts = _outbox.count_outbox(path)
+    rl = _outbox.graphql_rate_limit()
+    print(f"outbox.enabled: {cfg['enabled']}")
+    print(f"outbox.path: {path}")
+    print(
+        f"counts: pending={counts['pending']} failed={counts['failed']} "
+        f"done={counts['done']} total={counts['total']}"
+    )
+    if rl.get("error"):
+        print(f"graphql: error — {rl['error']}")
+    else:
+        reset = _outbox.format_reset_iso(rl.get("reset_epoch"))
+        print(
+            f"graphql: remaining={rl.get('remaining')}/{rl.get('limit')} "
+            f"reset={reset} min_flush={cfg['min_graphql_remaining']}"
+        )
+    return EXIT_OK
+
+
+def cmd_outbox_flush(args: argparse.Namespace) -> int:
+    import project_outbox as _outbox  # noqa: PLC0415
+
+    root = Path(args.directory).resolve()
+    ssot, code = _load_enabled_ssot(root, "outbox")
+    if ssot is None:
+        return code
+    max_ops = getattr(args, "max", None)
+    code_out, summary = _outbox.flush_outbox(
+        root, ssot, max_ops=max_ops, limit=getattr(args, "limit", 100) or 100
+    )
+    if code_out != EXIT_OK:
+        return fail("outbox flush", code_out, summary)
+    print(f"outbox flush: {summary}")
     return EXIT_OK
 
 
@@ -1416,29 +1700,77 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         path = tpl_dir / f"card-body-{name}.md"
         if not path.is_file():
             return fail("doctor", EXIT_USAGE, f"missing template {path}")
-    proc = run_gh(
-        [
-            "project",
-            "item-list",
-            str(ssot["number"]),
-            "--owner",
-            str(ssot["owner"]),
-            "--format",
-            "json",
-            "--limit",
-            "1",
-        ]
-    )
-    if proc.returncode != 0:
-        return fail(
-            "doctor",
-            EXIT_GH,
-            (proc.stderr or proc.stdout or "gh project not readable").strip(),
+    import project_outbox as _outbox  # noqa: PLC0415
+
+    cfg_pre = _outbox.load_outbox_config(ssot)
+    rl_pre = _outbox.graphql_rate_limit()
+    skip_live = False
+    if not rl_pre.get("error"):
+        try:
+            rem_pre = int(rl_pre.get("remaining")) if rl_pre.get("remaining") is not None else 9999
+        except (TypeError, ValueError):
+            rem_pre = 9999
+        if rem_pre < int(cfg_pre["min_graphql_remaining"]):
+            skip_live = True
+            print(
+                "doctor: WARN — skipping live gh project item-list (low GraphQL quota)",
+                file=sys.stderr,
+            )
+    if not skip_live:
+        proc = run_gh(
+            [
+                "project",
+                "item-list",
+                str(ssot["number"]),
+                "--owner",
+                str(ssot["owner"]),
+                "--format",
+                "json",
+                "--limit",
+                "1",
+            ]
         )
+        if proc.returncode != 0:
+            detail = (proc.stderr or proc.stdout or "gh project not readable").strip()
+            if _outbox.is_rate_limit_error(detail):
+                print(
+                    "doctor: WARN — gh project item-list rate-limited; config still ok",
+                    file=sys.stderr,
+                )
+            else:
+                return fail("doctor", EXIT_GH, detail)
     print("doctor: ok")
     print(f"project: {ssot.get('name')} ({ssot.get('url')})")
     print(f"human: {user}")
     print(f"templates: {tpl_dir}")
+    cfg = cfg_pre
+    path = _outbox.outbox_path(root, cfg)
+    counts = _outbox.count_outbox(path)
+    rl = rl_pre
+    print(f"outbox: enabled={cfg['enabled']} pending={counts['pending']} path={path}")
+    if rl.get("error"):
+        print(f"doctor: WARN — graphql rate_limit: {rl['error']}", file=sys.stderr)
+    else:
+        rem = rl.get("remaining")
+        try:
+            rem_i = int(rem) if rem is not None else -1
+        except (TypeError, ValueError):
+            rem_i = -1
+        reset = _outbox.format_reset_iso(rl.get("reset_epoch"))
+        print(f"graphql: remaining={rem}/{rl.get('limit')} reset={reset}")
+        if rem_i >= 0 and rem_i < int(cfg["min_graphql_remaining"]):
+            print(
+                f"doctor: WARN — GraphQL remaining {rem_i} < "
+                f"min_graphql_remaining {cfg['min_graphql_remaining']}; "
+                f"prefer outbox queue; flush after {reset}",
+                file=sys.stderr,
+            )
+    if counts["pending"] > 0:
+        print(
+            f"doctor: WARN — {counts['pending']} pending outbox ops; "
+            f"run: python3 -m cursor_workflow project outbox flush",
+            file=sys.stderr,
+        )
     return EXIT_OK
 
 
@@ -1557,6 +1889,11 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         "--to",
         required=True,
         help="Logical status: backlog|ready|in_progress|in_review|done",
+    )
+    set_status.add_argument(
+        "--agent",
+        default="project-cli",
+        help="Agent id for outbox attribution if rate-limited",
     )
     set_status.set_defaults(func=cmd_set_status)
 
@@ -1679,3 +2016,43 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     export_cmd.add_argument("--json", action="store_true", help="Also print JSON to stdout")
     export_cmd.add_argument("--stdout", action="store_true", help="Print JSON only (no file write)")
     export_cmd.set_defaults(func=cmd_export)
+
+    queue_cmd = project_sub.add_parser(
+        "queue",
+        help="Enqueue a board op to local outbox (no live write; EXIT_QUEUED=6)",
+    )
+    queue_cmd.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(queue_cmd)
+    queue_cmd.add_argument(
+        "--op",
+        required=True,
+        choices=("append-notes", "set-status", "handoff", "claim", "set-assignee"),
+    )
+    queue_cmd.add_argument("--agent", required=True)
+    queue_cmd.add_argument("--text", default="", help="Notes text / handoff note / claim text")
+    queue_cmd.add_argument("--to", default="", help="Status for set-status/handoff/claim")
+    queue_cmd.add_argument("--next", default="", help="Next agent for handoff")
+    queue_cmd.add_argument("--login", default="", help="Assignee login for set-assignee")
+    queue_cmd.set_defaults(func=cmd_queue)
+
+    outbox_cmd = project_sub.add_parser(
+        "outbox",
+        help="Inspect or flush rate-limit board outbox",
+    )
+    outbox_sub = outbox_cmd.add_subparsers(dest="outbox_command", required=True)
+    ob_status = outbox_sub.add_parser("status", help="Counts + GraphQL remaining")
+    ob_status.add_argument("--directory", type=Path, default=".")
+    ob_status.set_defaults(func=cmd_outbox_status)
+    ob_flush = outbox_sub.add_parser(
+        "flush",
+        help="Apply pending outbox ops (refuses if GraphQL remaining too low)",
+    )
+    ob_flush.add_argument("--directory", type=Path, default=".")
+    ob_flush.add_argument(
+        "--max",
+        type=int,
+        default=None,
+        help="Override max_flush_per_run from settings",
+    )
+    ob_flush.add_argument("--limit", type=int, default=100)
+    ob_flush.set_defaults(func=cmd_outbox_flush)

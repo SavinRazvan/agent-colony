@@ -10,9 +10,11 @@ description: Claims vs evidence; minimal high-signal checks.
 
 **Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + related board card (read Notes for prior handoff); else `session-pointer.md`. Always read claims to verify against evidence.
 
-**Exit:** Update board Status when the verified slice closes (`done` / leave `in_review` with failure Notes). Print handoff line. Update `change-index.md` if findings change slice status. No dual-write under `board_only`.
+**Exit:** Prefer `handoff --last` / `claim --last` after create. Update board Status when the verified slice closes (`done` / leave `in_review` with failure Notes). Print handoff line. Update `change-index.md` if findings change slice status. No dual-write under `board_only`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `project claim` / `project handoff --agent verifier` (→ `@owner.github_user/verifier`); atomics `append-notes --agent verifier` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent verifier` (→ `@owner.github_user/verifier`); atomics `append-notes --agent verifier` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+
+**Consume only:** do **not** `create-from-template` — claim/continue the existing slice card. Notes timestamps via CLI; do not hand-forge times.
 
 1. Restate what was claimed done.
 2. Point to files/lines or command output as evidence.
@@ -25,6 +27,12 @@ description: Claims vs evidence; minimal high-signal checks.
 5. Output: passed • failed • missing • **one** next action.
 
 Do not approve merge readiness without artifacts under `.local/workflow-artifacts/pr/` when the maintainer workflow is in play (`.ai_infra/scripts/pr/local_workflow_paths.py`). Flag drift vs `AGENTS.md` and `.cursor/rules/*`.
+
+## Handoff format
+
+```text
+item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
+```
 
 ## MCP integration
 

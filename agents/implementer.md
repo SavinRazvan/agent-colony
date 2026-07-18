@@ -22,7 +22,11 @@ description: Disciplined implementation slices with trackers and Pattern A gates
 4. When `sync_policy: board_only`, do **not** dual-write competing `in_progress` into `work-tracker.md` as SSOT.
 5. Print handoff line. Say *prepare gates green* — do not paste full `GATES`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last` (`--agent implementer` → `@owner.github_user/implementer`). Run `project guide` for copy-safe commands. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last` (`--agent implementer` → `@owner.github_user/implementer`). Run `project guide` for copy-safe commands. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+
+**Templates:** feature/`chore/` → `--template slice`; defect/`fix/` → `--template bug`; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
+
+**STANDALONE:** this product lives only in `mas-workflow-kit-project-ssot` — do not mutate or merge doctrine into upstream `mas-workflow-kit`.
 
 **Tier note:** Tier 1 local trackers are **offline fallback**. Tier 2 `.local/workflow-artifacts/` stay local (PR/audit). See ADR-008 and `overlays/rules/project-ssot-precedence.mdc`.
 
@@ -32,8 +36,9 @@ Deliver **small, reversible** slices with production quality: clear module bound
 
 - `.cursor/skills/implementation-execution-loop/SKILL.md` — slice lifecycle protocol
 - `.cursor/skills/project-board-ssot/SKILL.md` — when `project_ssot.enabled`
+- `.ai_infra/templates/project-board/README.md` — when creating cards
 - `.local/user_settings/github.collaboration.yaml` (`project_ssot`)
-- `.local/index-and-planning/current/architecture.md` (experiment stub)
+- `.local/index-and-planning/current/architecture.md` (architecture stub)
 - Fallback only: `session-pointer.md`, `plan.md`, `work-tracker.md`
 
 When the slice touches tests or ownership: `test-plan.md`, `test-index.md`. After meaningful coverage runs: run **`make coverage-index`** when coverage mattered.  
@@ -49,11 +54,13 @@ When the slice touches tests or ownership: `test-plan.md`, `test-index.md`. Afte
 
 ## Architecture
 
-Respect project overlay rules in `overlays/rules/` when installed. Universal governance: `.cursor/rules/implementation-workflow-governance.mdc`. Experiment precedence: `overlays/rules/project-ssot-precedence.mdc`.
+Respect project overlay rules in `overlays/rules/` when installed. Universal governance: `.cursor/rules/implementation-workflow-governance.mdc`. Board SSOT precedence: `overlays/rules/project-ssot-precedence.mdc`.
 
 ## Handoff format
 
-Slice name • item_id • Status • what changed • commands pass/fail • blockers • next step
+```text
+item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
+```
 
 ## MCP integration
 

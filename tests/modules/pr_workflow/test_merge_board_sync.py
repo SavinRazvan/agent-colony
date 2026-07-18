@@ -163,3 +163,116 @@ def test_sync_board_notes_via_edit_item_body(
     assert "Merged:" in edited[0][1]
     assert "abc123" in edited[0][1]
     assert "@test/merge.py" in edited[0][1]
+
+
+def test_pr_url_passthrough_http(tmp_path: Path) -> None:
+    url = "https://github.com/org/repo/pull/99"
+    assert merge_mod._pr_url(tmp_path, url, "") == url
+
+
+def test_pr_url_builds_from_gh_repo_view(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(
+        merge_mod.subprocess,
+        "run",
+        lambda *a, **k: SimpleNamespace(
+            returncode=0, stdout="acme/kit\n", stderr=""
+        ),
+    )
+    assert merge_mod._pr_url(tmp_path, "42", "") == "https://github.com/acme/kit/pull/42"
+
+
+def test_pr_url_fallback_without_repo(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(
+        merge_mod.subprocess,
+        "run",
+        lambda *a, **k: SimpleNamespace(returncode=1, stdout="", stderr="fail"),
+    )
+    assert merge_mod._pr_url(tmp_path, "#7", "") == "PR #7"
+
+
+def test_sync_board_import_error(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    import builtins
+
+    real_import = builtins.__import__
+
+    def blocker(name, *args, **kwargs):
+        if name == "project_cli" or name.endswith(".project_cli"):
+            raise ImportError("blocked")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", blocker)
+    # Force re-import path inside sync by temporarily removing from sys.modules
+    saved = sys.modules.pop("project_cli", None)
+    try:
+        line = merge_mod.sync_board_after_merge(root=tmp_path, pr="1", merge_sha="x")
+    finally:
+        if saved is not None:
+            sys.modules["project_cli"] = saved
+    assert "project_cli unavailable" in line
+
+
+def test_sync_board_candidates_in_warn(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_id_for_pr",
+        lambda *a, **k: (None, ["PVTI_a", "PVTI_b"], "ambiguous"),
+    )
+    line = merge_mod.sync_board_after_merge(root=tmp_path, pr="3", merge_sha="sha")
+    assert "warn" in line
+    assert "candidates=PVTI_a,PVTI_b" in line
+    assert "candidates=" in capsys.readouterr().err
+
+
+def test_sync_board_set_status_failure(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
+    monkeypatch.setattr(
+        project_cli, "set_item_status", lambda *a, **k: (False, "rate limited")
+    )
+    line = merge_mod.sync_board_after_merge(
+        root=tmp_path, pr="1", merge_sha="abc", item_id="PVTI_x"
+    )
+    assert "set-status failed" in line
+    assert "rate limited" in line
+    assert "[WARN] board sync set-status failed" in capsys.readouterr().err
+
+
+def test_sync_board_list_failure_after_status(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
+    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "oid"))
+    monkeypatch.setattr(
+        project_cli, "fetch_project_items", lambda *a, **k: ([], "list boom")
+    )
+    line = merge_mod.sync_board_after_merge(
+        root=tmp_path, pr="1", merge_sha="abc", item_id="PVTI_x"
+    )
+    assert "status→done on PVTI_x" in line
+    assert "notes warn (list boom)" in line
+    assert "append-notes list failed" in capsys.readouterr().err
+
+
+def test_merge_reload_sys_path_bootstrap() -> None:
+    """Re-exec merge module body after stripping CW path (covers line 33 when absent)."""
+    import importlib
+
+    cw_resolved = _CW_DIR.resolve()
+    sys.path[:] = [
+        p for p in sys.path if not (p and Path(p).resolve() == cw_resolved)
+    ]
+    reloaded = importlib.reload(merge_mod)
+    assert hasattr(reloaded, "sync_board_after_merge")
+    # Ensure project_cli remains importable for later tests in this module
+    if not any(p and Path(p).resolve() == cw_resolved for p in sys.path):
+        sys.path.insert(0, str(cw_resolved))
+    globals()["merge_mod"] = reloaded
+

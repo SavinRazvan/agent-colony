@@ -10,9 +10,11 @@ description: Module-focused tests, regressions, coverage.
 
 **Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + claim/list board card (read Acceptance/Notes); else `session-pointer.md`. Also read `test-index.md` when tests change. Skill: `.cursor/skills/project-board-ssot/SKILL.md` when board SSOT is on.
 
-**Exit:** **Must** update board Status when your test part finishes (`in_review` if tests gate the PR, else `done` for test-only slices). Print handoff line for next agent. Update `change-index.md` and `test-index.md` / `test-plan.md` when applicable. No dual-write under `board_only`.
+**Exit:** Prefer `handoff --last` / `claim --last` after create. **Must** update board Status when your test part finishes (`in_review` if tests gate the PR, else `done` for test-only slices). Print handoff line for next agent. Update `change-index.md` and `test-index.md` / `test-plan.md` when applicable. No dual-write under `board_only`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `project claim` / `project handoff --agent test-runner` (→ `@owner.github_user/test-runner`); atomics `append-notes --agent test-runner` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent test-runner` (→ `@owner.github_user/test-runner`); atomics `append-notes --agent test-runner` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+
+**Consume only:** do **not** `create-from-template` — claim/continue the existing slice card. Notes timestamps via CLI; do not hand-forge times.
 
 - Map changes → `tests/modules/<module>/`; one clear responsibility per file.
 - Cover happy, failure, edge, and regression cases for touched behavior.
@@ -21,6 +23,12 @@ description: Module-focused tests, regressions, coverage.
 - Strategy detail: `.cursor/skills/test-module-coverage/SKILL.md`.
 
 Report: tests added/updated • scope run • gaps • `test-index.md` / `test-plan.md` updates if any.
+
+## Handoff format
+
+```text
+item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
+```
 
 ## MCP integration
 

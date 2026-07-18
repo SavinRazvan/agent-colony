@@ -20,7 +20,7 @@ New or continued `feature/` | `fix/` | `chore/` work; recovery from blocked slic
 
 ## Steps
 
-1. **SSOT select:** `python -m cursor_workflow project status`. If operational → list/claim board card (`set-status --to in_progress`). Else read plan + tracker; one task `in_progress` locally.
+1. **SSOT select:** `python -m cursor_workflow project status`. If operational → list/claim board card (`claim --last` after create, or claim Ready). When creating: see `.ai_infra/templates/project-board/README.md` — `create-from-template --template slice` (feature/`chore/`) or `--template bug` (defect/`fix/`), then `claim --last --agent implementer`. Else read plan + tracker; one task `in_progress` locally.
 2. Document acceptance + rollback on **card body** (or `plan.md` if fallback). Mid-slice handoffs go in card **Notes** + handoff line.
 3. Implement: contracts → code → tests. **New Python/sources:** module header per `.cursor/rules/file-docstring-header-relations.mdc`.
 4. **Gates:** run commands in `.ai_infra/scripts/pr/prepare.py` `GATES` (plus `check_governance_consistency.py` when governance changes). Prefer scoped `pytest` with a short reason.

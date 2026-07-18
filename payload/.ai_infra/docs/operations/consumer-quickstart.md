@@ -154,9 +154,10 @@ Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → **`/connect
 ## Step 4 detail — daily workflow
 
 1. When `project_ssot.enabled`: `python3 -m cursor_workflow project status` (board first); else open `.local/index-and-planning/current/session-pointer.md`
-2. Claim/update the board card (Status + Notes); local `plan.md` / `work-tracker.md` only as offline fallback under `board_only`
-3. **`/implementer`** (or `/test-runner`, `/verifier`, `/enterprise-auditor`)
-4. Dashboard (optional): see [Control Center dashboards](#control-center-dashboards) below
+2. Claim/update the board card (Status + Notes `@user/agent · <ISO-8601-UTC> · …`); local `plan.md` / `work-tracker.md` only as offline fallback under `board_only`; optional `history/continuity-index.md` (≥3-day local rollup)
+3. If board writes hit GraphQL rate-limit (EXIT_QUEUED): `project outbox status` / later `outbox flush` — enable `project_ssot.outbox` defaults after activate
+4. **`/implementer`** (or `/test-runner`, `/verifier`, `/enterprise-auditor`)
+5. Dashboard (optional): see [Control Center dashboards](#control-center-dashboards) below
 
 **Add your own agent/skill/MCP:** **`/integrator-mas-agent`** + **`/mas-infrastructure-integration`**
 

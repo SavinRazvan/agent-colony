@@ -8,6 +8,7 @@ Depends On:
  - slice handoffs
 Notes:
  - One line per substantive change; see token-efficiency.md.
+ - New lines start with `YYYY-MM-DDTHH:MM:SSZ` (UTC preferred).
 -->
 
 # Updates log

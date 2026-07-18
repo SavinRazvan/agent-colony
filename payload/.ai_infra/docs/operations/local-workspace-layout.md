@@ -44,7 +44,7 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 | Path | Purpose |
 |------|---------|
 | `index-and-planning/current/` | Live trackers: `plan.md`, `work-tracker.md`, `session-pointer.md`, `change-index.md`, tests, `architecture.md` |
-| `index-and-planning/history/` | `updates-log.md` |
+| `index-and-planning/history/` | `updates-log.md` (UTC-prefixed lines), `continuity-index.md` (rolling ≥3-day board↔artifact index) |
 | `index-and-planning/audits/` | Local governance audit snapshots |
 | `agents-control-center/` | Dashboard config (`config/pages.json`) and optional HTML |
 | `workflow-artifacts/pr/` | `review.md`, `prep.md`, `merge.md` |

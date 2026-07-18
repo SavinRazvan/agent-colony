@@ -18,9 +18,19 @@ Notes:
 |------|-----|-----|
 | `card-body-slice.md` | Agents | `python3 -m cursor_workflow project create-from-template --template slice --title "…"` |
 | `card-body-bug.md` | Agents | `create-from-template --template bug` |
+| `outbox-entry.schema.json` | Agents / CLI | Validate lines in `.local/generated-data/board-outbox.jsonl` |
+| `outbox-entry.example.json` | Docs | Exemplar outbox line (never paste fake `item_id` as `--id`) |
 | `project-readme.md` | **Humans** | Copy into Project settings → README (GitHub UI). Do **not** paste into a terminal. |
 
 Card bodies always include `## Acceptance`, `## Rollback`, and `## Notes` so `validate-item` and Entry/Exit stay consistent.
+
+**Notes format (CLI):** `@github_user/agent · YYYY-MM-DDTHH:MM:SSZ · text` — stamped by `claim`, `handoff`, and `append-notes --agent`. Do not hand-forge timestamps.
+
+| Need | Template / action |
+|------|-------------------|
+| slice / feature work | `create-from-template --template slice` |
+| bug fix | `create-from-template --template bug` |
+| Project README | **Humans only** — paste `project-readme.md` in Project settings UI |
 
 **Do not** paste Project settings labels (`Project name`, `Short description`, `README`, …) into bash — use `cursor_workflow project` recipes instead.
 
@@ -34,3 +44,13 @@ python3 -m cursor_workflow project handoff --last --agent implementer --next ver
 ```
 
 `--last` reads `.local/generated-data/project-last-item.json` (machine-local pointer, not a second Status SSOT).
+
+**Rate-limit outbox (do not hammer GraphQL):**
+
+```bash
+python3 -m cursor_workflow project outbox status
+python3 -m cursor_workflow project queue --op append-notes --last --agent implementer --text "deferred note"
+python3 -m cursor_workflow project outbox flush
+```
+
+When a write returns `EXIT_QUEUED` (6), continue local evidence (`change-index` / handoff line); flush after `gh api rate_limit` recovers. Outbox is **not** a second Status SSOT.

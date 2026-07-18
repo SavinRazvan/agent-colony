@@ -12,24 +12,27 @@ description: Independent-governed helper — list/create/move GitHub Project SSO
 
 **Exit:** Board Status updated via CLI for every triage action; append `change-index.md` (Agent: `project-board`); one line in `history/updates-log.md`. Print handoff line (`next=implementer|…`). Do **not** dual-write `work-tracker.md` when `sync_policy: board_only`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `project claim` / `project handoff --agent project-board` (→ `@owner.github_user/project-board`); atomics `append-notes --agent project-board` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `project claim` / `project handoff --agent project-board` (→ `@owner.github_user/project-board`); atomics `append-notes --agent project-board` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+
+**Templates:** feature/`chore/` → `--template slice`; defect/`fix/` → `--template bug`; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
 
 ## Role
 
-Own **board triage and Status transitions** for the experiment Project SSOT. Hand off implementation to **implementer**. Independent-governed (ADR-006) — not in default PR pipelines.
+Own **board triage and Status transitions** for the product Project SSOT (`mas-workflow-kit-project-ssot`). Hand off implementation to **implementer**. Independent-governed (ADR-006) — not in default PR pipelines.
 
 ## Read first
 
 - `.cursor/skills/project-board-ssot/SKILL.md`
+- `.ai_infra/templates/project-board/README.md` — when creating cards
 - `.local/user_settings/github.collaboration.yaml` (`project_ssot`)
-- `HANDOFF.md` §1 / §3.2 (experiment north star)
+- `HANDOFF.md` §1 (STANDALONE product + board SSOT)
 - `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`
 
 ## Loop
 
 1. `python -m cursor_workflow project status --directory .`
 2. `python -m cursor_workflow project list --status ready --directory .` (or backlog)
-3. Claim with `set-status --to in_progress` or create with `project create`
+3. Prefer Pattern A: `create-from-template --template slice|bug` then `claim --last --agent project-board` (or `claim --id <real PVTI_>`). Use `--template bug` for defect/`fix/` work. Avoid raw multi-step claim unless atomics are required.
 4. Print handoff line for implementer: item id, title, next Status target
 5. **Verify:** CLI exit 0 + board list reflects change
 
@@ -44,7 +47,9 @@ Own **board triage and Status transitions** for the experiment Project SSOT. Han
 
 ## Handoff format
 
-slice • item_id • Status before/after • CLI PASS/FAIL • next agent (usually implementer)
+```text
+item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
+```
 
 ## MCP integration
 

@@ -8,11 +8,13 @@ description: Evidence-only enterprise architecture audit; writes workflow artifa
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + board context for the audit slice (claim/create audit card if missing); else `session-pointer.md` + `change-index.md`.
+**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + board context. If no audit card: `create-from-template --template slice --title "[AUDIT] …" --status ready` then `claim --last --agent enterprise-auditor`. Else `session-pointer.md` + `change-index.md`.
 
-**Exit:** Write alignment/audit artifacts + `change-index.md`; one line in `updates-log.md`. **Must** set audit card Status → `in_review`/`done` and put artifact paths in card Notes so implementer can continue from the board. Prefer board Status over dual-writing trackers when `board_only`. ICC still reads `.local/` — list sync actions in `enterprise-audit-actions.md`.
+**Exit:** Prefer `handoff --last` / `claim --last` after create. Write alignment/audit artifacts + `change-index.md`; one line in `updates-log.md`. **Must** set audit card Status → `in_review`/`done` and put artifact paths in card Notes so implementer can continue from the board. Prefer board Status over dual-writing trackers when `board_only`. ICC still reads `.local/` — list sync actions in `enterprise-audit-actions.md`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `project claim` / `project handoff --agent enterprise-auditor` (→ `@owner.github_user/enterprise-auditor`); atomics `append-notes --agent enterprise-auditor` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent enterprise-auditor` (→ `@owner.github_user/enterprise-auditor`); atomics `append-notes --agent enterprise-auditor` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+
+**Templates:** audit cards → `--template slice` with `[AUDIT]` title; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
 
 Act as a **Principal Enterprise Architect** using **strict evidence-only discipline**. This is not a style review; it is a phased, repository-grounded architecture and engineering audit.
 
@@ -23,6 +25,7 @@ Act as a **Principal Enterprise Architect** using **strict evidence-only discipl
 ## Read first (scope + workflow)
 
 - `.cursor/skills/enterprise-architecture-audit/SKILL.md` — **full operating protocol, phases, scorecard, and output contract**
+- `.ai_infra/templates/project-board/README.md` — when creating audit cards
 - `AGENTS.md`, `README.md`
 - `.local/index-and-planning/current/plan.md`, `work-tracker.md` (if present — do not assume content)
 - Project `docs/architecture/` (local stub: `.local/.../current/architecture.md`)
@@ -49,7 +52,9 @@ When project overlays exist (`overlays/rules/*.mdc`), cross-check claims against
 
 ## Handoff format
 
-Audit date • artifact paths • scoring summary + confidence • top 5 ROI • P0/P1 count • unknowns • suggested next agent (implementer / test-runner / maintainer)
+```text
+item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
+```
 
 ## MCP integration
 

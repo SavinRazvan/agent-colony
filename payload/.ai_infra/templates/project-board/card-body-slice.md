@@ -8,4 +8,6 @@
 
 ## Notes
 
+<!-- agents: Notes lines are auto-timestamped by CLI -->
+
 {{notes}}

@@ -84,7 +84,7 @@ def test_cmd_create_from_template(
         if args[:2] == ["project", "item-create"]:
             return SimpleNamespace(
                 returncode=0,
-                stdout=json.dumps({"id": "PVTI_new"}),
+                stdout=json.dumps({"id": "PVTI_lAHOBl46-84A9KZxnew001"}),
                 stderr="",
             )
         if args[:2] == ["project", "item-edit"]:
@@ -104,7 +104,7 @@ def test_cmd_create_from_template(
     )
     assert project_cli.cmd_create_from_template(args) == 0
     out = capsys.readouterr().out
-    assert "item_id=PVTI_new" in out
+    assert "item_id=PVTI_lAHOBl46-84A9KZxnew001" in out
     assert any(c[:2] == ["project", "item-create"] for c in calls)
     assert any("--single-select-option-id" in c for c in calls)
 
@@ -121,7 +121,7 @@ def test_cmd_claim_draft_warns_assignee(
         lambda ssot, limit=100: (
             [
                 {
-                    "id": "PVTI_claim",
+                    "id": "PVTI_lAHOBl46-84A9KZxclaim1",
                     "title": "Work",
                     "status": "Ready",
                     "content": {
@@ -144,12 +144,12 @@ def test_cmd_claim_draft_warns_assignee(
         lambda *a, **k: (True, "ok"),
     )
     args = argparse.Namespace(
-        directory=REPO_ROOT, id="PVTI_claim", agent="implementer", text="claimed", limit=100
+        directory=REPO_ROOT, id="PVTI_lAHOBl46-84A9KZxclaim1", agent="implementer", text="claimed", limit=100
     )
     assert project_cli.cmd_claim(args) == 0
     captured = capsys.readouterr()
     assert "WARN" in captured.err
-    assert "item_id=PVTI_claim" in captured.out
+    assert "item_id=PVTI_lAHOBl46-84A9KZxclaim1" in captured.out
     assert "@test/implementer" in captured.out
 
 
@@ -163,13 +163,13 @@ def test_cmd_claim_conflict_one_in_progress(monkeypatch: pytest.MonkeyPatch) -> 
         lambda ssot, limit=100: (
             [
                 {
-                    "id": "PVTI_other",
+                    "id": "PVTI_lAHOBl46-84A9KZxother1",
                     "title": "Other",
                     "status": "In Progress",
                     "content": {"body": "## Notes\n\n- @test/implementer · claimed\n"},
                 },
                 {
-                    "id": "PVTI_new",
+                    "id": "PVTI_lAHOBl46-84A9KZxnew001",
                     "title": "New",
                     "status": "Ready",
                     "content": {"body": "## Acceptance\n\n## Rollback\n\n## Notes\n"},
@@ -179,7 +179,7 @@ def test_cmd_claim_conflict_one_in_progress(monkeypatch: pytest.MonkeyPatch) -> 
         ),
     )
     args = argparse.Namespace(
-        directory=REPO_ROOT, id="PVTI_new", agent="implementer", text="claimed", limit=100
+        directory=REPO_ROOT, id="PVTI_lAHOBl46-84A9KZxnew001", agent="implementer", text="claimed", limit=100
     )
     assert project_cli.cmd_claim(args) == project_cli.EXIT_VALIDATION
 
@@ -197,7 +197,7 @@ def test_cmd_handoff_prefixes_next(
         project_cli,
         "fetch_project_items",
         lambda ssot, limit=100: (
-            [{"id": "PVTI_h", "title": "H", "status": "In Progress", "content": body_box}],
+            [{"id": "PVTI_lAHOBl46-84A9KZxhand01", "title": "H", "status": "In Progress", "content": body_box}],
             None,
         ),
     )
@@ -210,7 +210,7 @@ def test_cmd_handoff_prefixes_next(
     monkeypatch.setattr(project_cli, "edit_item_body", fake_edit)
     args = argparse.Namespace(
         directory=REPO_ROOT,
-        id="PVTI_h",
+        id="PVTI_lAHOBl46-84A9KZxhand01",
         agent="implementer",
         next="verifier",
         to="in_review",
@@ -231,11 +231,11 @@ def test_cmd_validate_item_missing_section(monkeypatch: pytest.MonkeyPatch) -> N
         project_cli,
         "fetch_project_items",
         lambda ssot, limit=100: (
-            [{"id": "PVTI_v", "title": "V", "status": "Ready", "content": {"body": "# only\n"}}],
+            [{"id": "PVTI_lAHOBl46-84A9KZxval001", "title": "V", "status": "Ready", "content": {"body": "# only\n"}}],
             None,
         ),
     )
-    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_v", limit=100)
+    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_lAHOBl46-84A9KZxval001", limit=100)
     assert project_cli.cmd_validate_item(args) == project_cli.EXIT_VALIDATION
 
 
@@ -248,7 +248,7 @@ def test_cmd_validate_item_ok(monkeypatch: pytest.MonkeyPatch) -> None:
         lambda ssot, limit=100: (
             [
                 {
-                    "id": "PVTI_ok",
+                    "id": "PVTI_lAHOBl46-84A9KZxok0001",
                     "title": "OK",
                     "status": "Ready",
                     "content": {
@@ -262,7 +262,7 @@ def test_cmd_validate_item_ok(monkeypatch: pytest.MonkeyPatch) -> None:
             None,
         ),
     )
-    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_ok", limit=100)
+    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_lAHOBl46-84A9KZxok0001", limit=100)
     assert project_cli.cmd_validate_item(args) == 0
 
 
@@ -285,13 +285,13 @@ def test_cmd_get_not_found(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         project_cli, "fetch_project_items", lambda ssot, limit=100: ([], None)
     )
-    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_missing", limit=100, json=False)
+    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_lAHOBl46-84A9KZxmiss01", limit=100, json=False)
     assert project_cli.cmd_get(args) == project_cli.EXIT_NOT_FOUND
 
 
 def test_cmd_set_status_unknown_key(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
-    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_x", to="nope")
+    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_lAHOBl46-84A9KZxstub01", to="nope")
     assert project_cli.cmd_set_status(args) == project_cli.EXIT_USAGE
 
 
@@ -311,7 +311,7 @@ def test_cmd_list_gh_failure(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_append_notes_requires_agent_code(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
     args = argparse.Namespace(
-        directory=REPO_ROOT, id="PVTI_x", text="hi", agent="", limit=100
+        directory=REPO_ROOT, id="PVTI_lAHOBl46-84A9KZxstub01", text="hi", agent="", limit=100
     )
     assert project_cli.cmd_append_notes(args) == project_cli.EXIT_USAGE
 
@@ -342,14 +342,14 @@ def test_claim_uses_last(
     ssot = _ssot()
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
     monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
-    project_cli.save_last_item_id(tmp_path, "PVTI_lastitem01", title="T", action="create")
+    project_cli.save_last_item_id(tmp_path, "PVTI_lAHOBl46-84A9KZxlast01", title="T", action="create")
     monkeypatch.setattr(
         project_cli,
         "fetch_project_items",
         lambda ssot, limit=100: (
             [
                 {
-                    "id": "PVTI_lastitem01",
+                    "id": "PVTI_lAHOBl46-84A9KZxlast01",
                     "title": "T",
                     "status": "Ready",
                     "content": {"body": "## Acceptance\n\nx\n\n## Rollback\n\ny\n\n## Notes\n\n"},
@@ -369,15 +369,15 @@ def test_claim_uses_last(
         directory=tmp_path, id="", last=True, agent="implementer", text="claimed", limit=100
     )
     assert project_cli.cmd_claim(args) == 0
-    assert project_cli.load_last_item_id(tmp_path) == "PVTI_lastitem01"
+    assert project_cli.load_last_item_id(tmp_path) == "PVTI_lAHOBl46-84A9KZxlast01"
 
 
 def test_cmd_guide_prints_last(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    project_cli.save_last_item_id(tmp_path, "PVTI_guidetest01")
+    project_cli.save_last_item_id(tmp_path, "PVTI_lAHOBl46-84A9KZxguide1")
     args = argparse.Namespace(directory=tmp_path, agent="implementer", next="verifier")
     assert project_cli.cmd_guide(args) == 0
     out = capsys.readouterr().out
     assert "--last" in out
     assert "PVTI_…" not in out
-    assert "PVTI_guidetest01" in out
+    assert "PVTI_lAHOBl46-84A9KZxguide1" in out
 
