@@ -38,7 +38,7 @@ EXIT_GH = 3
 EXIT_NOT_FOUND = 4
 EXIT_VALIDATION = 5
 EXIT_QUEUED = 6
-_TEMPLATE_NAMES = ("slice", "bug")
+_TEMPLATE_NAMES = ("slice", "bug", "research")
 _PLACEHOLDER_RE = re.compile(r"\{\{(\w+)\}\}")
 _SESSION_REL = Path(".local") / "generated-data" / "project-last-item.json"
 def fail(cmd: str, code: int, reason: str) -> int:

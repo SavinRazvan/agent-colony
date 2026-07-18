@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mas-workflow-kit.local/schemas/research-index.json",
+  "title": "ResearchPackIndex",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "slug", "mode", "source", "question", "lenses", "findings", "curated_count", "status"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1"
+    },
+    "slug": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["external", "self"]
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "question": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lenses": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "rounds_completed": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 6
+    },
+    "commit_sha": {
+      "type": ["string", "null"]
+    },
+    "resolved_path": {
+      "type": ["string", "null"]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "lens", "path", "summary"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "lens": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "lines": { "type": ["string", "null"] },
+          "summary": { "type": "string", "minLength": 1 },
+          "confidence": {
+            "type": "string",
+            "enum": ["high", "medium", "low"]
+          }
+        }
+      }
+    },
+    "curated_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "consumers": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "agent_brief": {
+      "type": "string",
+      "default": "AGENT_BRIEF.md"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["init", "fetched", "in_progress", "complete", "blocked"]
+    }
+  }
+}

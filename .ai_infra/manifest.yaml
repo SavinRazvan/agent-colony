@@ -22,6 +22,7 @@ profiles:
       - templates/user-settings
       - templates/agent-integration
       - templates/project-board
+      - templates/research-corpus
       - workflows
     copy_files:
       - bootstrap.py

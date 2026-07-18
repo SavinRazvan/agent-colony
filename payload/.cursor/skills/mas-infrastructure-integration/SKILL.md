@@ -43,6 +43,7 @@ Ask (or infer from request):
 1. **MAS-integrated** or **independent contract**? (see ADR-006: `.ai_infra/docs/decisions/ADR-006-agent-integration-model.md`)
 2. Touches **architecture / manifest / workflows**? → plan `enterprise-auditor` before merge prep.
 3. **Consumer-visible** (copied on install)? → update `manifest.yaml` + `install-contract.json`.
+4. Research pack cited? → read `_research_results/sources/<slug>/AGENT_BRIEF.md` before classifying.
 
 ---
 

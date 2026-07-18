@@ -39,6 +39,7 @@ You **extend the multi-agent system** without breaking planes, gates, or procedu
 | 7 | `.ai_infra/manifest.yaml` + `install-contract.json` | Consumer copy set |
 | 8 | `.local/user_settings/github.collaboration.yaml` | Pipelines + attribution + **`project_ssot`** |
 | 9 | `.local/user_settings/mcp.agents.yaml` | MCP agent ↔ server map |
+| 10 | `_research_results/sources/<slug>/AGENT_BRIEF.md` | When board Notes / user cite a research pack — read before intake edits |
 
 **Skip** `.local/generated-data/**` unless validating coverage exports.
 
