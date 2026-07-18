@@ -34,6 +34,7 @@ Notes:
 | Timestamped board Notes (CONT-TS) | `@user/agent · <ISO-8601-UTC> · …` via CLI (`claim`/`handoff`/`append-notes`) | `project_recipes.py` / `project_cli.py` + skill § Notes |
 | Local continuity-index | Rolling ≥3-day UTC rows; board Notes = full card lifetime | `history/continuity-index.md` (+ exemplar) |
 | Board outbox (rate-limit) | `project queue` / `outbox status|flush`; EXIT_QUEUED=6; **58 mocked unit tests** | `project_outbox.py` + `project_atomics.py` / `project_cli.py` + `tests/modules/install/test_project_outbox.py` |
+| EA-001 residual thin CLI | `project_cli.py` facade (~660 LOC) + `project_parser.py` + `project_handlers.py` | PR close-remaining-ea-gaps |
 | Doc facts validate | DOC-001…008 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
@@ -53,10 +54,10 @@ Notes:
 
 `pytest --cov=.ai_infra --cov=cursor_workflow` measures the **import surface** of the
 installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-18
-(COV-100): **5352 statements, 100%** on a full suite pass (**943 collected**;
-941 passed, 2 skipped). The **Tests** row uses collected count; executed pass/skip
-may differ by marker or import-order skips.
-One import-order `sys.path` bootstrap in `merge.py` is `# pragma: no cover`.
+(post-COV-100 growth): **6161 statements, 97.05%** on a full suite pass (**943
+collected**; 941 passed, 2 skipped). Primary gaps: `research_cli.py` (~75%),
+`gh_project_adapter.py` (~88%); secondary: `project_cli.py` / `project_outbox.py`
+(~95%). One import-order `sys.path` bootstrap in `merge.py` is `# pragma: no cover`.
 Subprocess-only maintainer scanners (`check_governance_consistency.py`,
 `check_debrand.py`, `check_consumer_purity.py`, `check_file_headers.py`) have
 dedicated module tests but are excluded from this metric by design — they are
