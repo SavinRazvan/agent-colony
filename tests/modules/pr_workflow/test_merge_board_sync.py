@@ -78,12 +78,18 @@ def test_sync_board_happy_with_item_id(
         ),
     )
     monkeypatch.setattr(project_cli, "edit_item_body", lambda *a, **k: (True, "ok"))
+    monkeypatch.setattr(
+        project_cli,
+        "format_note_line",
+        lambda root, agent, text: f"@test/{agent} · {text}",
+    )
     line = merge_mod.sync_board_after_merge(
         root=tmp_path, pr="42", merge_sha="deadbeef", item_id="PVTI_x"
     )
     assert "PVTI_x" in line
     assert "done" in line
     assert "Merged:" in line
+    assert "@test/merge.py" in line
 
 
 def test_sync_board_warn_when_no_item(
@@ -143,6 +149,11 @@ def test_sync_board_notes_via_edit_item_body(
         lambda *a, **k: ([{"id": "PVTI_x", "content": {"body": ""}}], None),
     )
     monkeypatch.setattr(project_cli, "edit_item_body", capture_edit)
+    monkeypatch.setattr(
+        project_cli,
+        "format_note_line",
+        lambda root, agent, text: f"@test/{agent} · {text}",
+    )
     line = merge_mod.sync_board_after_merge(
         root=tmp_path, pr="7", merge_sha="abc123", item_id="PVTI_x"
     )
@@ -151,3 +162,4 @@ def test_sync_board_notes_via_edit_item_body(
     assert edited[0][0] == "PVTI_x"
     assert "Merged:" in edited[0][1]
     assert "abc123" in edited[0][1]
+    assert "@test/merge.py" in edited[0][1]

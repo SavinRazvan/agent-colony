@@ -12,7 +12,7 @@ description: Module-focused tests, regressions, coverage.
 
 **Exit:** **Must** update board Status when your test part finishes (`in_review` if tests gate the PR, else `done` for test-only slices). Print handoff line for next agent. Update `change-index.md` and `test-index.md` / `test-plan.md` when applicable. No dual-write under `board_only`.
 
-**Board rights:** Stay on the slice card; Exit Status update required for continuation. Priority/Size only on own card. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract.
+**Board rights:** Status + Notes on the card you touch. Exit Notes **must** use `append-notes --agent test-runner` (prefixes `@owner.github_user/test-runner`). Handoff `next=@user/agent`. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
 
 - Map changes → `tests/modules/<module>/`; one clear responsibility per file.
 - Cover happy, failure, edge, and regression cases for touched behavior.

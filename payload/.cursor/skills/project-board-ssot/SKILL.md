@@ -38,15 +38,16 @@ Work is **indexed on the Project**, not in chat alone.
 |-------|----------|
 | **Entry** | `project status` → find/claim related card (`list --status ready` or your In progress). Read Acceptance / Rollback / Notes on the card body. |
 | **During** | Keep **one** In progress card for your assignee. Put progress notes on the card body when handing off mid-slice. |
-| **Exit** | **Always** update Status for the card you worked: → `in_review` (PR/handoff) or → `done` (your part closed) or leave `in_progress` with **Notes** naming the next agent. Print handoff line. |
-| **Never** | Finish in chat only while leaving the card Stuck in Ready/Backlog. Never dual-write tracker `in_progress` under `board_only`. |
+| **Exit** | **Always** update Status for the card you worked: → `in_review` (PR/handoff) or → `done` (your part closed) or leave `in_progress` with **Notes** naming the next agent. Notes **must** use `append-notes --agent <this-agent>` → `@owner.github_user/<agent>`. Print handoff line. |
+| **Never** | Finish in chat only while leaving the card Stuck in Ready/Backlog. Never dual-write tracker `in_progress` under `board_only`. Never write bare `Agent: implementer` without `@user/` namespace. |
 
-Handoff line (chat + optional card Notes):
+Handoff line (chat + card Notes):
 
 ```text
-item_id=PVTI_… · title=… · Status=before→after · next=implementer|verifier|test-runner|…
+item_id=PVTI_… · @User/implementer · Status=before→after · next=@User/verifier
 ```
 
+Multi-collaborator: each human’s `owner.github_user` namespaces their agents (`@Alice/implementer` vs `@Bob/implementer`) on the same board.
 ## When to use
 
 - Any session where `project_ssot.enabled: true`
@@ -67,18 +68,18 @@ item_id=PVTI_… · title=… · Status=before→after · next=implementer|verif
 | Status / Priority / Size / create cards | Yes | Yes (rights table) | — |
 | Ready prioritization / roadmap shape | **Owner** | Consume Ready; create cards for agreed work | — |
 | Views, workflows, Insights, Project README, status updates | **Owner only** | **Never** | Insights auto |
-| My items | Assign in UI | Claim = Status In progress (assignee CLI TBD) | View filter |
+| My items | Assign in UI or `project set-assignee` (human login) | Claim = Status In progress + Notes `@user/agent`; assignee = human only | View filter |
 | PR gates, audits, secrets | Local | Local (`local_only`) | — |
 
 ### Rules
 
-1. One primary **In progress** per assignee — do not steal others'.
+1. One primary **In progress** per **human assignee** — do not steal others'.
 2. Pull from **Ready** or continue your In progress.
-3. Acceptance / Rollback / Notes on **card body** = continuation index.
+3. Acceptance / Rollback / Notes on **card body** = continuation index. Attribution = `@owner.github_user/<agent>` via `append-notes --agent`.
 4. Under `board_only`: no competing tracker `in_progress` (DRIFT-009); no dual-mirror “for safety.”
 5. Humans own views, workflows, README, Insights, status updates.
 6. Read-only `project export` (if used) never writes Status.
-7. Post-merge Done is Pattern A (`merge.py`), not a dedicated agent.
+7. Post-merge Done is Pattern A (`merge.py`), Notes prefixed `@user/merge.py`.
 
 ### Per-agent rights (what / when / where)
 
@@ -111,11 +112,11 @@ Ready → In progress → In review → Done
 
 1. **Status:** `python -m cursor_workflow project status --directory .`
 2. **List:** `python -m cursor_workflow project list [--status ready|in_progress|in_review] --directory .`
-3. **Claim:** `set-status --id PVTI_… --to in_progress`
+3. **Claim:** `set-status --id PVTI_… --to in_progress` then optional `set-assignee --id PVTI_…` (human) + `append-notes --id … --agent implementer --text "claimed · next=@User/test-runner"`
 4. **Create:** `project create --title "…" [--body "…"]`
 5. **Fields:** `set-field --id … --field priority|size --to …`
 6. **Close / handoff:** `set-status --to in_review|done`
-7. **Notes:** `append-notes --id PVTI_… --text "…"` — agents always pass the project item id (`PVTI_…`); CLI resolves DraftIssue content id (`DI_…`) for body edits and keeps Status on `PVTI_…`
+7. **Notes:** `append-notes --id PVTI_… --agent <agent> --text "…"` — required `--agent` when `require_attribution_on_exit`; CLI prefixes `@owner.github_user/agent ·`. Pass `PVTI_…`; CLI resolves `DI_…` for DraftIssue body.
 8. **Verify:** `project list` matches intent + handoff line printed
 
 ## Dual-write ban

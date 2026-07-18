@@ -71,7 +71,11 @@ SAMPLE_SSOT = {
             "options": {"s": "9592a5a3", "m": "9728cbdc"},
         },
     },
-    "conventions": {"body_sections": ["Acceptance", "Rollback"]},
+    "conventions": {
+        "body_sections": ["Acceptance", "Rollback"],
+        "require_attribution_on_exit": True,
+        "attribution_format": "{github_user}/{agent}",
+    },
 }
 
 
@@ -240,8 +244,13 @@ def test_cmd_append_notes(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> No
 
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
     monkeypatch.setattr(project_cli, "run_gh", fake_gh)
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
     args = argparse.Namespace(
-        directory=tmp_path, id="PVTI_x", text="Merged: url @ sha", limit=50
+        directory=tmp_path,
+        id="PVTI_x",
+        text="Merged: url @ sha",
+        agent="implementer",
+        limit=50,
     )
     assert project_cli.cmd_append_notes(args) == 0
     assert any("--body" in c for c in calls)
@@ -250,6 +259,8 @@ def test_cmd_append_notes(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> No
     assert "DI_draft_x" in edit_calls[0]
     assert "--title" in edit_calls[0]
     assert "Slice" in edit_calls[0]
+    body_arg = edit_calls[0][edit_calls[0].index("--body") + 1]
+    assert "@test/implementer" in body_arg
 
 
 def test_edit_item_body_resolves_pvti_to_di(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -468,7 +479,7 @@ def test_cmd_append_notes_idempotent_skip_with_di_resolve(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     """Idempotent skip must not call item-edit even when DI resolve would run."""
-    note = "Merged: https://example/pull/1 @ abc"
+    note = "@test/implementer · Merged: https://example/pull/1 @ abc"
     payload = {
         "items": [
             {
@@ -507,10 +518,75 @@ def test_cmd_append_notes_idempotent_skip_with_di_resolve(
 
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
     monkeypatch.setattr(project_cli, "run_gh", fake_gh)
-    args = argparse.Namespace(directory=tmp_path, id="PVTI_x", text=note, limit=50)
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    args = argparse.Namespace(
+        directory=tmp_path, id="PVTI_x", text=note, agent="implementer", limit=50
+    )
     assert project_cli.cmd_append_notes(args) == 0
     assert not any(c[:2] == ["project", "item-edit"] for c in calls)
     assert not any(c[:2] == ["issue", "edit"] for c in calls)
+
+
+def test_format_agent_attribution_and_note_line(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@SavinRazvan")
+    assert project_cli.format_agent_attribution(tmp_path, "implementer") == (
+        "@SavinRazvan/implementer"
+    )
+    line = project_cli.format_note_line(tmp_path, "implementer", "claimed")
+    assert line == "@SavinRazvan/implementer · claimed"
+    same = project_cli.format_note_line(
+        tmp_path, "implementer", "@SavinRazvan/implementer · claimed"
+    )
+    assert same == "@SavinRazvan/implementer · claimed"
+
+
+def test_cmd_append_notes_requires_agent(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
+    args = argparse.Namespace(
+        directory=tmp_path, id="PVTI_x", text="no agent", agent="", limit=50
+    )
+    assert project_cli.cmd_append_notes(args) == 2
+
+
+def test_set_item_assignee_draft_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_content",
+        lambda *a, **k: ("draft", "DI_x", {"title": "T"}, None),
+    )
+    ok, detail = project_cli.set_item_assignee(SAMPLE_SSOT, "PVTI_x", "SavinRazvan")
+    assert not ok
+    assert "DraftIssue" in detail
+
+
+def test_set_item_assignee_issue(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[list[str]] = []
+
+    def fake_gh(args: list[str], *, timeout_s: float = 60.0):
+        calls.append(args)
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_content",
+        lambda *a, **k: (
+            "issue",
+            "42",
+            {"title": "T", "repo": "org/repo"},
+            None,
+        ),
+    )
+    monkeypatch.setattr(project_cli, "run_gh", fake_gh)
+    ok, detail = project_cli.set_item_assignee(SAMPLE_SSOT, "PVTI_x", "@alice")
+    assert ok
+    assert detail == "alice"
+    assert calls[0][:3] == ["issue", "edit", "42"]
+    assert "--add-assignee" in calls[0]
+    assert "alice" in calls[0]
 
 
 def test_cmd_export_stdout(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

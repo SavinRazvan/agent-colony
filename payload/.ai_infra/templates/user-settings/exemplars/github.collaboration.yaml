@@ -79,6 +79,9 @@ project_ssot:
     one_in_progress_per_assignee: true
     item_kind_default: draft              # draft | issue
     promote_to_issue_on_pr: true
+    # Board Notes: @github_user/agent (owner.github_user from this file — not project_ssot.owner)
+    attribution_format: "{github_user}/{agent}"
+    require_attribution_on_exit: true
     body_sections:
       - Acceptance
       - Rollback

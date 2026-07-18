@@ -141,6 +141,10 @@ def sync_board_after_merge(
 
     pr_url = _pr_url(root, pr, str(ssot.get("default_repo") or ""))
     note = f"Merged: {pr_url} @ {merge_sha}"
+    try:
+        note = project_cli.format_note_line(root, "merge.py", note)
+    except Exception:  # noqa: BLE001 — never block merge on attribution
+        pass
     items, list_err = project_cli.fetch_project_items(ssot, limit=100)
     if list_err:
         print(f"[WARN] board sync append-notes list failed: {list_err}", file=sys.stderr)
