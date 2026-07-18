@@ -25,17 +25,17 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-18";
 const SOURCES =
-  ".cursor/agents/researcher.md · research-corpus-execution/SKILL.md · research_cli.py · _research_results/";
+  ".cursor/agents/researcher.md · research-corpus-execution/SKILL.md · research_cli.py · RESEARCH_WORKFLOW.md";
 
 const GOALS = [
-  "Brief-driven multi-round research (GitHub or local path)",
-  "Packs under _research_results/sources/<slug>/ + AGENT_BRIEF for MAS",
+  "Adaptive Brief from chat, peer agent Notes/handoffs, or board research card",
+  "Multi-round packs under _research_results/sources/<slug>/ + AGENT_BRIEF for MAS",
   "Hard-stop: write only _research_results/ — no product git/PR",
 ];
 
 const BOARD_NODES = [
   { id: "status" },
-  { id: "brief" },
+  { id: "intake" },
   { id: "cli" },
   { id: "rounds" },
   { id: "done" },
@@ -43,8 +43,8 @@ const BOARD_NODES = [
 ];
 
 const BOARD_EDGES = [
-  { from: "status", to: "brief" },
-  { from: "brief", to: "cli" },
+  { from: "status", to: "intake" },
+  { from: "intake", to: "cli" },
   { from: "cli", to: "rounds" },
   { from: "rounds", to: "done" },
   { from: "done", to: "notes" },
@@ -52,20 +52,20 @@ const BOARD_EDGES = [
 
 const FALLBACK_NODES = [
   { id: "session" },
-  { id: "brief" },
+  { id: "intake" },
   { id: "rounds" },
   { id: "close" },
 ];
 
 const FALLBACK_EDGES = [
-  { from: "session", to: "brief" },
-  { from: "brief", to: "rounds" },
+  { from: "session", to: "intake" },
+  { from: "intake", to: "rounds" },
   { from: "rounds", to: "close" },
 ];
 
 const BOARD_LABELS: Record<string, string> = {
   status: "project status",
-  brief: "Research Brief",
+  intake: "adaptive Brief",
   cli: "research init/fetch",
   rounds: "rounds 1-6 + validate",
   done: "set-status done",
@@ -74,37 +74,39 @@ const BOARD_LABELS: Record<string, string> = {
 
 const FALLBACK_LABELS: Record<string, string> = {
   session: "session-pointer.md",
-  brief: "Research Brief",
+  intake: "adaptive Brief",
   rounds: "rounds 1-6 + validate",
   close: "local close",
 };
 
 const READ_FIRST = [
-  [".cursor/skills/research-corpus-execution/SKILL.md", "Research canon"],
+  [".cursor/skills/research-corpus-execution/SKILL.md", "Intake + rounds canon"],
   ["_research_results/RESEARCH_BOUNDARIES.md", "Hard-stop boundaries"],
   [".cursor/skills/project-board-ssot/SKILL.md", "When project_ssot.enabled"],
 ];
 
 const PATTERNS = [
   ["Hard stop", "Write only _research_results/"],
-  ["Brief required", "External mode refuses without BRIEF.md"],
-  ["CLI", "research init | fetch | validate"],
+  ["Adaptive intake", "Chat / peer Notes / board card → Brief (+ defaults)"],
+  ["Terse chat", "/researcher https://github.com/owner/repo OK"],
+  ["CLI sources", "HTTPS | github: | path: | bare path"],
   ["Board lifecycle", "create-from-template research → done + pack paths"],
   ["Consumers", "implementer / integrator read AGENT_BRIEF.md"],
-  ["Attribution", "@owner.github_user/researcher via --agent"],
 ];
 
 const ARTIFACTS = [
   ["_research_results/sources/<slug>/", "Pack + AGENT_BRIEF", "implementer / integrator"],
-  ["Board Status + Notes", "Research card done + pack paths", "Next agents"],
+  ["Board Status + Notes", "Research card done + pack paths", "Next / requesting agent"],
   [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
 ];
 
 const PEERS = [
   ["Use instead", "implementer", "Product code changes"],
+  ["Use instead", "integrator-mas-agent", "Kit surface integration"],
   ["Use instead", "pr-workflow", "Git commit/push/PR"],
   ["Use instead", "enterprise-auditor", "Architecture audits"],
   ["Use instead", "verifier", "Claims vs evidence"],
+  ["Consumes from", "any agent", "Notes / handoff / cited pack path"],
 ];
 
 function DagPanel({
@@ -188,13 +190,13 @@ export default function AgentResearcherCanvas() {
           <Pill tone="info" size="sm">
             kit agent
           </Pill>
-          <Pill tone="warning" size="sm">
-            optional / off by default
+          <Pill tone="neutral" size="sm">
+            independent-governed
           </Pill>
         </Row>
         <Text tone="secondary">
-          Optional local research corpus; hard-stop on product code without explicit
-          scope.
+          Brief-driven multi-round research (GitHub HTTPS / github: / local path).
+          Adaptive intake from chat or peer agents; hard-stop on product code.
         </Text>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only
@@ -203,7 +205,7 @@ export default function AgentResearcherCanvas() {
 
       <Grid columns={3} gap={12}>
         <Stat value="_research_results/" label="Only write target" />
-        <Stat value="hard stop" label="No product code" tone="warning" />
+        <Stat value="adaptive Brief" label="Chat / agents / card" tone="info" />
         <Stat value="EXIT_QUEUED" label="Outbox on rate-limit" tone="warning" />
       </Grid>
 
@@ -225,10 +227,15 @@ export default function AgentResearcherCanvas() {
             label={mode === "board" ? "board_only SSOT" : "local_trackers fallback"}
           />
         </Row>
+        <Callout tone="info" title="Adaptive intake">
+          Derive Brief from user chat (including /researcher https://github.com/…),
+          peer agent Notes/handoffs, or board research card. Defaults fill missing
+          question/lenses/slug. Refuse only when no source and not mode:self.
+        </Callout>
         <Callout tone="warning" title="Hard stop">
           Write only _research_results/. No src/tests/scripts. No git commit/push/PR.
-          Use implementer, pr-workflow, enterprise-auditor, or verifier instead for
-          those tasks.
+          Use implementer, integrator, pr-workflow, enterprise-auditor, or verifier
+          for those tasks.
         </Callout>
         <DagPanel mode={mode} tokens={tokens} />
       </Stack>
@@ -236,12 +243,18 @@ export default function AgentResearcherCanvas() {
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
           <Text>
-            1. Entry: project status (+ research card list); else session-pointer.
+            1. Entry: project status (+ research card); else session-pointer.
           </Text>
-          <Text>2. Read _research_results/RESEARCH_BOUNDARIES.md and research-corpus-execution skill.</Text>
-          <Text>3. Produce corpus under _research_results/ only.</Text>
           <Text>
-            4. If research card: set-status done + Notes with corpus paths.
+            2. Adaptive intake → normalize source (HTTPS | github: | path) → Brief.
+          </Text>
+          <Text>
+            3. research init → fetch → rounds 1–6 → validate under
+            _research_results/sources/&lt;slug&gt;/.
+          </Text>
+          <Text>
+            4. If research card: set-status done + Notes with AGENT_BRIEF / INDEX
+            paths; handoff to named consumer.
           </Text>
           <Text>5. Do not touch product code, tests, scripts, or git/PR workflows.</Text>
         </Stack>
@@ -263,7 +276,7 @@ export default function AgentResearcherCanvas() {
             <Table headers={["Path", "When", "Consumed by"]} rows={ARTIFACTS} />
             <Spacer size={8} />
             <Text tone="tertiary" size="small">
-              Research output is read-only input for humans and product agents —
+              Research packs are read-only input for humans and product agents —
               not shipped product code.
             </Text>
           </CardBody>
@@ -274,10 +287,13 @@ export default function AgentResearcherCanvas() {
         <CardHeader>Board interaction</CardHeader>
         <CardBody>
           <Stack gap={6}>
-            <Text>Entry: project status + research card list when board on.</Text>
             <Text>
-              Exit: corpus under _research_results/; research card set-status done +
-              Notes with corpus paths.
+              Create: create-from-template --template research (or claim Ready card).
+            </Text>
+            <Text>Entry: project status + research card when board on.</Text>
+            <Text>
+              Exit: pack under _research_results/sources/&lt;slug&gt;/; research card
+              done + Notes with AGENT_BRIEF paths.
             </Text>
             <Text>
               Rate-limit: EXIT_QUEUED (6) → outbox status / flush; do not hammer
@@ -292,9 +308,9 @@ export default function AgentResearcherCanvas() {
         <Table headers={["Direction", "Agent", "Evidence"]} rows={PEERS} />
       </Stack>
 
-      <Callout tone="neutral" title="MCP">
-        External research MCP only when listed for this agent in mcp.registry.yaml.
-        Prefer cursor_workflow project for board when research card exists.
+      <Callout tone="neutral" title="MCP + CLI">
+        Prefer python3 -m cursor_workflow research init|fetch|validate. External
+        research MCP only when listed for this agent in mcp.registry.yaml.
       </Callout>
 
       <Text tone="tertiary" size="small">

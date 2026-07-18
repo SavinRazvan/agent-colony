@@ -49,4 +49,4 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs.
 | test-runner | Module tests and coverage |
 | verifier | Evidence-based verification |
 | enterprise-auditor | Architecture audits |
-| researcher | Optional research corpus (off by default) |
+| researcher | Brief-driven packs; adaptive chat/agent intake; `research init\|fetch\|validate` |

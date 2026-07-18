@@ -53,7 +53,7 @@ Gate order: read `.ai_infra/scripts/pr/prepare.py` only — do not duplicate her
 | `test-runner` | Module tests, coverage; board Exit Status |
 | `verifier` | Evidence checks; board Done / In review |
 | `enterprise-auditor` | Architecture audits; audit card Status + Notes |
-| `researcher` | Brief-driven multi-round packs under `_research_results/`; research card Done + `AGENT_BRIEF` paths |
+| `researcher` | Adaptive Brief multi-round packs under `_research_results/`; chat/agent/card intake; research card Done + `AGENT_BRIEF` paths |
 | `integrator-mas-agent` | Add agents/skills/MCP; integration card Status |
 | `workflow-drift-guard` | Drift + DRIFT-009; **reads board**, closes drift card |
 | `project-board` | Board triage helper (ADR-006); not in default PR pipelines |
