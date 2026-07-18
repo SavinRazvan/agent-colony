@@ -93,22 +93,51 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+_GITHUB_HTTPS_RE = re.compile(
+    r"^https?://(?:www\.)?github\.com/"
+    r"(?P<owner>[^/\s]+)/(?P<repo>[^/\s#?]+?)"
+    r"(?:\.git)?(?:/(?:tree|blob)/(?P<ref>[^/\s#?]+)(?:/.*)?)?(?:[?#].*)?$",
+    re.IGNORECASE,
+)
+
+
+def _parse_github_locator(rest: str) -> tuple[str, str | None]:
+    """Parse owner/repo[@ref] → (owner/repo, ref)."""
+    text = rest.strip()
+    ref = None
+    if "@" in text:
+        text, ref = text.rsplit("@", 1)
+        ref = ref.strip() or None
+    parts = text.split("/")
+    if len(parts) < 2 or not parts[0] or not parts[1]:
+        raise ValueError("github source must be owner/repo[@ref]")
+    return f"{parts[0]}/{parts[1]}", ref
+
+
 def _parse_source(raw: str) -> tuple[str, str, str | None]:
-    """Return (kind, locator, ref) where kind is path|github."""
+    """Return (kind, locator, ref) where kind is path|github.
+
+    Accepts:
+    - path:/abs/or/rel
+    - github:owner/repo[@ref]
+    - https://github.com/owner/repo[.git][/tree/ref/...]
+    - bare local path
+    """
     text = (raw or "").strip()
     if not text:
         raise ValueError("empty --source")
     if text.startswith("path:"):
         return "path", text[5:].strip(), None
     if text.startswith("github:"):
-        rest = text[7:].strip()
-        ref = None
-        if "@" in rest:
-            rest, ref = rest.rsplit("@", 1)
-            ref = ref.strip() or None
-        if "/" not in rest or not rest.split("/")[0] or not rest.split("/")[1]:
-            raise ValueError("github source must be owner/repo[@ref]")
-        return "github", rest, ref
+        locator, ref = _parse_github_locator(text[7:])
+        return "github", locator, ref
+    m = _GITHUB_HTTPS_RE.match(text)
+    if m:
+        repo = m.group("repo")
+        if repo.endswith(".git"):
+            repo = repo[: -len(".git")]
+        locator = f"{m.group('owner')}/{repo}"
+        return "github", locator, m.group("ref")
     # Bare path convenience
     return "path", text, None
 
@@ -489,7 +518,10 @@ def register_research_subparser(sub: argparse._SubParsersAction) -> None:
     fetch_cmd.add_argument(
         "--source",
         required=True,
-        help="path:/abs/or/rel | github:owner/repo[@ref] | bare path",
+        help=(
+            "path:/abs/or/rel | github:owner/repo[@ref] | "
+            "https://github.com/owner/repo[/tree/ref] | bare path"
+        ),
     )
     fetch_cmd.add_argument("--force", action="store_true", help="Replace existing cache/")
     fetch_cmd.set_defaults(func=cmd_research_fetch)

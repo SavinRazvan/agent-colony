@@ -132,5 +132,17 @@ def test_parse_source() -> None:
     assert research_cli._parse_source("path:/tmp/x")[0] == "path"
     kind, loc, ref = research_cli._parse_source("github:owner/repo@main")
     assert kind == "github" and loc == "owner/repo" and ref == "main"
+    kind2, loc2, ref2 = research_cli._parse_source(
+        "https://github.com/SavinRazvan/grok-build"
+    )
+    assert kind2 == "github" and loc2 == "SavinRazvan/grok-build" and ref2 is None
+    kind3, loc3, _ref3 = research_cli._parse_source(
+        "https://github.com/SavinRazvan/grok-build.git"
+    )
+    assert kind3 == "github" and loc3 == "SavinRazvan/grok-build"
+    kind4, loc4, ref4 = research_cli._parse_source(
+        "https://github.com/SavinRazvan/grok-build/tree/main/crates"
+    )
+    assert kind4 == "github" and loc4 == "SavinRazvan/grok-build" and ref4 == "main"
     with pytest.raises(ValueError):
         research_cli._parse_source("")
