@@ -1,13 +1,13 @@
 ---
 name: workflow-activate
-description: Install MAS Workflow Kit infrastructure into the current workspace from the plugin payload (ADR-001 Option B).
+description: Install MAS Workflow Kit — Project SSOT infrastructure into the current workspace from the plugin payload (ADR-001 Option B).
 ---
 
 # Workflow activate
 
 ## When
 
-First use after enabling the **MAS Workflow Kit** plugin in a project workspace — or when any of the three planes is missing on disk.
+First use after enabling the **MAS Workflow Kit — Project SSOT** plugin (`mas-workflow-kit-project-ssot`) in a project workspace — or when any of the three planes is missing on disk.
 
 ## One command (agent or human)
 

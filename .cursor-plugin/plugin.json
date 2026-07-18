@@ -1,21 +1,23 @@
 {
-  "name": "mas-workflow-kit",
-  "displayName": "MAS Workflow Kit",
+  "name": "mas-workflow-kit-project-ssot",
+  "displayName": "MAS Workflow Kit — Project SSOT",
   "version": "0.4.0",
-  "description": "Universal multi-agent workflow infrastructure for Cursor — agents, skills, rules, PR scripts, .local/ anchoring, and optional MCP. Install infrastructure into any project via workflow-activate.",
+  "description": "Multi-agent Cursor workflow with GitHub Project as the only writable SSOT for backlog/status; local artifacts for PR gates and evidence. Install into any project via workflow-activate.",
   "author": {
     "name": "Savin Ionuț Răzvan",
     "email": "razvan.i.savin@gmail.com"
   },
   "homepage": "https://razvansavin.com/",
-  "repository": "https://github.com/SavinRazvan/mas-workflow-kit",
+  "repository": "https://github.com/SavinRazvan/mas-workflow-kit-project-ssot",
   "license": "Apache-2.0",
   "logo": "assets/logo.png",
   "keywords": [
-    "mas-workflow-kit",
+    "mas-workflow-kit-project-ssot",
+    "project-ssot",
     "multi-agent",
     "cursor-workflow",
     "pr-workflow",
+    "github-projects",
     "enterprise-audit",
     "mcp"
   ],
@@ -24,6 +26,7 @@
     "agents",
     "workflow",
     "governance",
+    "project-board",
     "maintainer",
     "automation"
   ]

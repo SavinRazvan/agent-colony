@@ -15,7 +15,7 @@ Notes:
 
 # Consumer quickstart
 
-Install the **MAS Workflow Kit** into your project in a few minutes. No special git setup required.
+Install **MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) into your project in a few minutes. No special git setup required.
 
 > **Full manual:** [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) — plugin vs activate, complete file tree, use-case matrix, PR and audit chapters.
 
@@ -23,7 +23,7 @@ Install the **MAS Workflow Kit** into your project in a few minutes. No special 
 
 ## First run (4 steps)
 
-**Need:** Cursor · Python 3.11+ · **your project folder open in Cursor** (not the kit repo).
+**Need:** Cursor · Python 3.11+ · **your project folder open in Cursor** (not the kit product repo `mas-workflow-kit-project-ssot`).
 
 | Step | Action |
 |------|--------|
@@ -44,9 +44,9 @@ Install the **MAS Workflow Kit** into your project in a few minutes. No special 
 /add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot
 ```
 
-Cursor shows an **Add Plugin** preview — click the **MAS Workflow Kit** card to install:
+Cursor shows an **Add Plugin** preview — click the **MAS Workflow Kit — Project SSOT** card to install:
 
-![Install MAS Workflow Kit from Agent chat — type /add-plugin with the GitHub URL, then click the plugin card](assets/mas-workflow-kit-install.png)
+![Install MAS Workflow Kit — Project SSOT from Agent chat — type /add-plugin with the GitHub URL, then click the plugin card](assets/mas-workflow-kit-install.png)
 
 Optional — pin `main`:
 
@@ -116,7 +116,7 @@ python3 -m cursor_workflow activate --directory .
 <summary><strong>Alternative: terminal activate (no plugin UI)</strong></summary>
 
 ```bash
-export KIT=~/Projects/mas-workflow-kit
+export KIT=~/Projects/mas-workflow-kit-project-ssot
 export TARGET=~/Projects/my-app
 mkdir -p "$TARGET"
 "$KIT/.venv/bin/python" "$KIT/payload/cursor_workflow" activate \
@@ -139,7 +139,7 @@ owner:
 ```
 
 ```bash
-cd ~/Projects/my-app   # your activated project — not mas-workflow-kit
+cd ~/Projects/my-app   # your activated project — not `mas-workflow-kit-project-ssot` (the kit product repo)
 python3 -m cursor_workflow contributors validate   # must PASS before first PR
 python3 -m cursor_workflow integrate validate      # optional; P0 must be 0
 python3 -m cursor_workflow health
@@ -191,7 +191,7 @@ Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → **`/connect
 
 ## Terminal commands cheat sheet
 
-Run from **your activated project root** (`~/Projects/my-app`), not the kit repo.
+Run from **your activated project root** (`~/Projects/my-app`), not `mas-workflow-kit-project-ssot`.
 
 ```bash
 cd ~/Projects/my-app
@@ -290,7 +290,7 @@ Procedure: [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) §7 · [agent-workflow-p
 
 | Do | Don't |
 |----|-------|
-| Open **your app** in Cursor | Activate while inside `mas-workflow-kit` |
+| Open **your app** in Cursor | Activate while inside `mas-workflow-kit-project-ssot` |
 | **`/workflow-activate`** in chat | Run `make gates` (kit-dev only) |
 | Real paths like `~/Projects/my-app` | Literal `/path/to/your-project` |
 
@@ -309,7 +309,7 @@ Gate details: [gate-matrix.md](gate-matrix.md) (consumer scaffold = 4 checks).
 
 ## Kit clone path (advanced)
 
-When not using the plugin UI — clone [mas-workflow-kit](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot), then:
+When not using the plugin UI — clone [mas-workflow-kit-project-ssot](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot), then:
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -q -r requirements-dev.txt
@@ -352,7 +352,7 @@ If you see:
 |----------|--------|
 | Is it your app's problem? | **No** — your install can be valid while this fails |
 | Is it a kit bug? | **Yes** — the checker assumed a maintainer-only file exists |
-| False positive? | **Yes** — `IMPLEMENTATION-STATUS.md` lives only in the **mas-workflow-kit** repo |
+| False positive? | **Yes** — `IMPLEMENTATION-STATUS.md` lives only in the **mas-workflow-kit-project-ssot** product repo |
 | Who needs to fix it? | **Kit maintainers** (skip the check when the file is absent) |
 | What should you do? | Re-run with `--profile consumer` after upgrading the kit; until then, treat DRIFT-005 as ignorable |
 
@@ -374,10 +374,10 @@ After the kit fix, expect:
 | Only `.cursor/settings.json` after plugin install | Normal — run **`/workflow-activate`** in your app folder for the full bundle |
 | `contributors validate` FAIL | Replace placeholders in `github.collaboration.yaml` |
 | YAML `ParserError` / traceback | Fix `human_coauthors` — keep `[]` or use a proper list; don't uncomment example lines as siblings of `[]` |
-| Validate passes from kit repo but fails in your app | Run commands from **your project** (`cd ~/Projects/my-app`), not `mas-workflow-kit` |
+| Validate passes from kit repo but fails in your app | Run commands from **your project** (`cd ~/Projects/my-app`), not `mas-workflow-kit-project-ssot` |
 | `pytest` not found | Re-run **`/workflow-activate`** (creates `.venv`) |
 | Permission denied on `/path` | You used a placeholder path — create a real folder |
-| Subagents/skills missing in **`/`** menu | Open **your activated project**, not the kit repo; re-run **`/workflow-activate`** if planes are incomplete |
+| Subagents/skills missing in **`/`** menu | Open **your activated project**, not `mas-workflow-kit-project-ssot`; re-run **`/workflow-activate`** if planes are incomplete |
 | Control Center shows **Failed to fetch** | From project root: `python3 -m http.server 8000` then open http://localhost:8000/.local/agents-control-center/dashboards/index.html — not `file://` |
 | Raw markdown (no tables/bold) in Control Center | Re-run **`/workflow-activate`** to refresh `local-markdown.js` |
 | Stale dashboard UI after kit update | `python3 -m cursor_workflow activate --directory .` |
