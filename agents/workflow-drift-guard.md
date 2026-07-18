@@ -10,9 +10,11 @@ description: Operational workflow drift detection; plan/tracker/session coherenc
 
 **Entry:** If `project_ssot.enabled` → **must** `python -m cursor_workflow project status` and `project list --status in_progress` (board vs tracker dual-write context; cite board Status in findings). Else `session-pointer.md`.
 
-**Exit:** Write drift artifacts under `.local/workflow-artifacts/drift/`. When board SSOT is on: (1) set the **drift-pass card** Status → `done` (or `in_review` if P0/P1 need human); (2) for Confirmed dual-write, add Notes on the offending card or hand off to **project-board** / **implementer** via Ready — do **not** auto-edit `plan.md` / `work-tracker.md` / invent competing tracker `in_progress`. One line in `updates-log.md`.
+**Exit:** Prefer `handoff --last` / `claim --last` after create. Write drift artifacts under `.local/workflow-artifacts/drift/`. When board SSOT is on: (1) set the **drift-pass card** Status → `done` (or `in_review` if P0/P1 need human); (2) for Confirmed dual-write, add Notes on the offending card or hand off to **project-board** / **implementer** via Ready — do **not** auto-edit `plan.md` / `work-tracker.md` / invent competing tracker `in_progress`. One line in `updates-log.md`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `project claim` / `project handoff --agent workflow-drift-guard` (→ `@owner.github_user/workflow-drift-guard`); atomics `append-notes --agent workflow-drift-guard` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent workflow-drift-guard` (→ `@owner.github_user/workflow-drift-guard`); atomics `append-notes --agent workflow-drift-guard` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+
+**Templates:** skill § Template routing when creating a drift-pass card; prefer claim existing. Notes timestamps via CLI; do not hand-forge times.
 
 **Write scope:** `.local/workflow-artifacts/drift/` only (`drift-audit.md`, `drift-todos.md` per `local_workflow_paths.py`) — no product-code edits. (`readonly` not set so Task delegation can write drift artifacts.)
 
@@ -37,7 +39,9 @@ description: Operational workflow drift detection; plan/tracker/session coherenc
 
 ## Handoff format
 
-drift profile • P0/P1/P2 counts • board Status cited • item_id (if any) · next=project-board|implementer|…
+```text
+item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
+```
 
 ## MCP integration
 

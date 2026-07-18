@@ -19,7 +19,7 @@ Notes:
 
 ## Goal
 
-Detect **operational workflow drift** — plan ↔ tracker ↔ session-pointer incoherence, **board vs tracker dual-write (DRIFT-009)**, **board Status vs open PRs / stale In progress (DRIFT-010)**, handoff doc parity, slice-closure signals — without replacing `enterprise-auditor` or `verifier`.
+Detect **operational workflow drift** — plan ↔ tracker ↔ session-pointer incoherence, **session Board vs export (DRIFT-004b)**, **board vs tracker dual-write (DRIFT-009)**, **board Status vs open PRs / stale In progress (DRIFT-010)**, handoff doc parity, slice-closure signals — without replacing `enterprise-auditor` or `verifier`.
 
 ## When
 
@@ -31,7 +31,7 @@ Detect **operational workflow drift** — plan ↔ tracker ↔ session-pointer i
 ## Steps
 
 1. **Board first (when enabled):** `python -m cursor_workflow project status` and `project list --status in_progress` — cite board Status in artifacts. Optionally refresh the read-only snapshot: `python -m cursor_workflow project export` (never writes Status).
-2. **Script:** `python -m cursor_workflow drift validate --directory .` (or `make drift-validate`). On **consumer app projects**, use `--profile consumer`. Include **DRIFT-009** / **DRIFT-010** when `project_ssot` board_only is enabled (ADR-007/008).
+2. **Script:** `python -m cursor_workflow drift validate --directory .` (or `make drift-validate`). On **consumer app projects**, use `--profile consumer`. Include **DRIFT-004b** / **DRIFT-009** / **DRIFT-010** when `project_ssot` board_only is enabled (ADR-007/008).
 3. Capture profile, check IDs, severities, and details from output.
 4. Write artifacts under `.local/workflow-artifacts/drift/` only.
 5. **Board Exit:** set drift-pass card → `done` (or `in_review` if P0/P1 need human). For Confirmed dual-write, Notes on offending card or Ready handoff to project-board/implementer — do **not** auto-edit `plan.md`, `work-tracker.md`, or `session-pointer.md`.

@@ -247,9 +247,10 @@ Cursor may also auto-delegate subagents when the task matches their `description
 Every session:
 
 1. When `project_ssot.enabled`: `python3 -m cursor_workflow project status` (board first); else `.local/index-and-planning/current/session-pointer.md`
-2. Board card Status/Notes (local `plan.md` / `work-tracker.md` = offline fallback under `board_only`)
-3. **`/implementer`** (or specialist agent from §6)
-4. Optional: [Control Center dashboards](#5-control-center-dashboards) — `http.server` + full URL in §5
+2. Board card Status/Notes — attribution `@user/agent · <ISO-8601-UTC> · …` (CLI stamps); local `history/continuity-index.md` rolls ≥3 days (local `plan.md` / `work-tracker.md` = offline fallback under `board_only`)
+3. Rate-limit: EXIT_QUEUED → `python3 -m cursor_workflow project outbox flush` after quota recovers (`project_ssot.outbox` in collaboration YAML)
+4. **`/implementer`** (or specialist agent from §6)
+5. Optional: [Control Center dashboards](#5-control-center-dashboards) — `http.server` + full URL in §5
 
 Token contract: [token-efficiency.md](token-efficiency.md) · Layout: [local-workspace-layout.md](local-workspace-layout.md).
 

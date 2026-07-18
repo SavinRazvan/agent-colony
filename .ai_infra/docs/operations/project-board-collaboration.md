@@ -37,7 +37,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Ready prioritization | **Owner** | Consume; create agreed work | — |
 | Views / workflows / Insights / README / status updates | **Owner only** | Never | Insights auto |
 | Assignee / My items | Yes (`set-assignee` / UI) | Claim = In progress; assignee = **human** only | My items view |
-| Card Notes (`append-notes --agent`) | Yes | Yes — `@user/agent · …`; `next=@user/agent` | — |
+| Card Notes (`append-notes --agent`) | Yes | Yes — `@user/agent · YYYY-MM-DDTHH:MM:SSZ · …`; `next=@user/agent` | — |
 | PR / audits / secrets | Local | Local | — |
 | Post-merge Status → Done | — | Via `merge.py` (Pattern A); Notes `@user/merge.py` | — |
 | Read-only board export | Consume | `project export` (never writes Status) | — |
@@ -65,7 +65,7 @@ Handoff: `item_id=<from create or --last> · @User/implementer · Status=a→b �
 
 **Safe flow:** `project guide` then `create-from-template` → `claim --last` → `handoff --last`. Never paste docs placeholder ids as `--id`.
 
-**Attribution:** Notes use `@owner.github_user/<agent>` from each collaborator’s `github.collaboration.yaml` so multi-user boards do not collide.
+**Attribution:** Notes use `@owner.github_user/<agent> · <ISO-8601-UTC> · …` from each collaborator’s `github.collaboration.yaml` (CLI stamps UTC; do not hand-forge timestamps). Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime.
 
 ## workflow-drift-guard specifically
 
@@ -73,6 +73,18 @@ Handoff: `item_id=<from create or --last> · @User/implementer · Status=a→b �
 2. Run `drift validate` (includes DRIFT-009 / DRIFT-010 when board_only; refresh `project export` for DRIFT-010).
 3. Write `.local/workflow-artifacts/drift/*` (evidence stays local).
 4. **Update board:** close the drift-pass card; if dual-write Confirmed, add Notes on the offending card or ask project-board to queue a Ready fix — do not write competing `in_progress` into `work-tracker.md`.
+
+## Rate limits & outbox
+
+GitHub GraphQL quota (~5000/hour) can block board writes. When `project_ssot.outbox.enabled`:
+
+1. Live write fails with rate-limit → CLI **enqueues** to `.local/generated-data/board-outbox.jsonl` and returns **EXIT_QUEUED (6)**.
+2. Agent continues local evidence (`change-index`, handoff line) — **do not** hammer `gh` / retry loops.
+3. After quota recovers: `python3 -m cursor_workflow project outbox status` then `outbox flush` (capped by `max_flush_per_run`; refuses if `remaining < min_graphql_remaining`).
+4. Explicit enqueue: `project queue --op append-notes|set-status|handoff|claim|set-assignee …`
+5. Outbox is a **local buffer**, never a second Status SSOT.
+
+Who flushes: any agent/human after reset; prefer implementer or project-board at slice close. Pending outbox is **not** a DRIFT failure.
 
 ## Exit codes (board Pattern A)
 
@@ -83,8 +95,9 @@ Handoff: `item_id=<from create or --last> · @User/implementer · Status=a→b �
 | 3 | `gh` / network |
 | 4 | Item not found |
 | 5 | Validation (sections, claim policy, attribution) |
+| 6 | Queued to outbox (soft-success; flush later) |
 
-Stderr: `project <cmd>: FAIL — CODE=n · reason`.
+Stderr: `project <cmd>: FAIL — CODE=n · reason` or `QUEUED — …`.
 
 ## Human-only
 

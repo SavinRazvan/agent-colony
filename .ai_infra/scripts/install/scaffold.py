@@ -359,6 +359,11 @@ def _scaffold_local(source: Path, target: Path, dry_run: bool, log: list[str]) -
     if updates_src.is_file():
         _copy_file_if_missing(updates_src, updates_dst, dry_run, log)
 
+    continuity_src = exemplars / "continuity-index.md"
+    continuity_dst = history / "continuity-index.md"
+    if continuity_src.is_file():
+        _copy_file_if_missing(continuity_src, continuity_dst, dry_run, log)
+
     arch_stub = target / ".local" / "index-and-planning" / "current" / "architecture.md"
     if not arch_stub.exists() and not dry_run:
         arch_stub.write_text(

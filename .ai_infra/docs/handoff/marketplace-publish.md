@@ -202,6 +202,8 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy review (2026-07-07):** Verified `plugin.json` `description`, the Description row above, and README consumer sections (`What you get`, agent/skill/rule counts) against `IMPLEMENTATION-STATUS.md` on `main` — 633 tests (post DRIFT-005 slice), DOC-006 PASS, coverage scope 3588 stmts / 100% on `--cov=.ai_infra --cov=cursor_workflow`. No stale test or coverage numbers in marketplace-facing copy; feature counts (8 agents, 11 skills, 5 PR skills, 7 rules) match shipped inventory.
 
+**Listing copy refresh (2026-07-18 DOC-ALIGN):** Re-verified README/AGENTS.md/repository-map against shipped tree — **692** tests, ~4396 stmts / ~94% coverage per `IMPLEMENTATION-STATUS.md`; agent/skill/rule counts unchanged (8 / 11 / 7). Historical 633-test line above is archival only.
+
 **Consumer smoke (2026-07-08):** Real app **Smart-Notes** — `/add-plugin` + chat **`/workflow-activate`**, `health`/`gates`/`integrate`/`mcp validate` PASS, kit smoke **1** of **120** pytest during gates. Record: `.local/workflow-artifacts/release/smoke-consumer-smart-notes-2026-07-08.md`.
 
 ## Publish

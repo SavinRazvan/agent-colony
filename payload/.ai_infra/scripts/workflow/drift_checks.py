@@ -1,7 +1,7 @@
 """
 File: drift_checks.py
 Path: .ai_infra/scripts/workflow/drift_checks.py
-Role: Individual DRIFT-001…010 check functions for workflow drift validation.
+Role: Individual DRIFT-001…010 (+004b) check functions for workflow drift validation.
 Used By:
  - .ai_infra/scripts/workflow/check_drift.py
 Depends On:
@@ -235,6 +235,158 @@ def check_drift004(paths: DriftPaths) -> CheckResult:
         severity=Severity.P1,
         passed=passed,
         detail="; ".join(detail_parts),
+    )
+
+
+_ACTIVE_POINTER_STATUSES = frozenset(
+    {"in_progress", "in_review", "ready", "todo", "backlog"}
+)
+_DONE_POINTER_STATUSES = frozenset({"done", "complete", "completed", "closed"})
+
+
+def _normalize_status_token(raw: str) -> str:
+    return re.sub(r"\s+", "_", (raw or "").strip().lower())
+
+
+def _parse_session_board_field(board_cell: str) -> tuple[str | None, str]:
+    """Return (item_id, status_claim) from session-pointer Board cell."""
+    cell = (board_cell or "").strip()
+    if not cell:
+        return None, ""
+    m = re.search(r"(PVTI_[A-Za-z0-9_-]+)", cell)
+    if not m:
+        return None, ""
+    item_id = m.group(1)
+    rest = (cell[: m.start()] + cell[m.end() :]).strip(" -–—|,;")
+    return item_id, rest
+
+
+def _load_ssot_policy(paths: DriftPaths) -> tuple[dict | None, str]:
+    """Load project_ssot dict or None + skip/fail reason."""
+    collab = paths.root / ".local" / "user_settings" / "github.collaboration.yaml"
+    if not collab.is_file():
+        return None, "no github.collaboration.yaml — skipped"
+    try:
+        import yaml
+    except ImportError:
+        return None, "PyYAML missing — skipped"
+    try:
+        data = yaml.safe_load(collab.read_text(encoding="utf-8")) or {}
+    except Exception as exc:  # noqa: BLE001
+        return None, f"cannot parse collab YAML: {exc}"
+    if not isinstance(data, dict):
+        return None, "collab YAML not a mapping — skipped"
+    ssot = data.get("project_ssot")
+    if not isinstance(ssot, dict) or not ssot.get("enabled"):
+        return None, "project_ssot disabled or absent — skipped"
+    return ssot, "ok"
+
+
+def check_drift004b(paths: DriftPaths) -> CheckResult:
+    """
+    Advisory: session-pointer Board id/Status vs export snapshot (board_only).
+    Catches stale 'In progress' pointers when the card is already Done.
+    """
+    ssot, ssot_detail = _load_ssot_policy(paths)
+    if ssot is None:
+        return CheckResult(
+            check_id="DRIFT-004b",
+            severity=Severity.P1,
+            passed=True,
+            detail=ssot_detail,
+        )
+    policy = str(ssot.get("sync_policy") or "")
+    if policy != "board_only":
+        return CheckResult(
+            check_id="DRIFT-004b",
+            severity=Severity.P1,
+            passed=True,
+            detail=f"sync_policy={policy!r} — board/session check skipped",
+        )
+
+    session = _read(paths.session_pointer)
+    board_cell = _extract_table_field(session, "Board")
+    item_id, status_claim = _parse_session_board_field(board_cell)
+    if not item_id:
+        return CheckResult(
+            check_id="DRIFT-004b",
+            severity=Severity.P1,
+            passed=True,
+            detail="no Board item id in session-pointer — skipped",
+        )
+
+    snapshot, snap_detail = _load_board_snapshot(paths)
+    if snapshot is None:
+        return CheckResult(
+            check_id="DRIFT-004b",
+            severity=Severity.P1,
+            passed=True,
+            detail=f"skipped — {snap_detail}",
+        )
+
+    items = snapshot.get("items") if isinstance(snapshot.get("items"), list) else []
+    match: dict | None = None
+    for item in items:
+        if isinstance(item, dict) and str(item.get("id") or "") == item_id:
+            match = item
+            break
+    if match is None:
+        return CheckResult(
+            check_id="DRIFT-004b",
+            severity=Severity.P1,
+            passed=False,
+            detail=f"session Board {item_id} missing from export snapshot",
+        )
+
+    snap_status = _normalize_status_token(
+        str(
+            match.get("status_normalized")
+            or match.get("status")
+            or ""
+        )
+    )
+    pointer_status = _normalize_status_token(status_claim)
+    if not pointer_status:
+        return CheckResult(
+            check_id="DRIFT-004b",
+            severity=Severity.P1,
+            passed=True,
+            detail=f"Board {item_id} present in snapshot (status={snap_status or 'unknown'})",
+        )
+
+    if (
+        pointer_status in _ACTIVE_POINTER_STATUSES
+        and snap_status in _DONE_POINTER_STATUSES
+    ):
+        return CheckResult(
+            check_id="DRIFT-004b",
+            severity=Severity.P1,
+            passed=False,
+            detail=(
+                f"session Board {item_id} claims {pointer_status} "
+                f"but snapshot is {snap_status}"
+            ),
+        )
+
+    if pointer_status == snap_status or (
+        pointer_status in _DONE_POINTER_STATUSES
+        and snap_status in _DONE_POINTER_STATUSES
+    ):
+        return CheckResult(
+            check_id="DRIFT-004b",
+            severity=Severity.P1,
+            passed=True,
+            detail=f"session Board {item_id} status aligns with snapshot ({snap_status})",
+        )
+
+    return CheckResult(
+        check_id="DRIFT-004b",
+        severity=Severity.P1,
+        passed=False,
+        detail=(
+            f"session Board {item_id} status={pointer_status} "
+            f"vs snapshot={snap_status}"
+        ),
     )
 
 
@@ -634,6 +786,7 @@ KIT_DEV_CHECKS = (
     check_drift002,
     check_drift003,
     check_drift004,
+    check_drift004b,
     check_drift005,
     check_drift006,
     check_drift007,

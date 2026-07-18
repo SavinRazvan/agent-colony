@@ -124,7 +124,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 
 ---
 
-## Agents (7) — all active
+## Agents (8) — all active
 
 | Agent | `.cursor/agents/` | Consumer | Invoke |
 |-------|:-----------------:|:--------:|--------|
@@ -134,6 +134,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `enterprise-auditor` | Yes | Yes | `/enterprise-auditor` |
 | `integrator-mas-agent` | Yes | Yes | `/integrator-mas-agent` |
 | `workflow-drift-guard` | Yes | Yes | `/workflow-drift-guard` |
+| `project-board` | Yes | Yes | `/project-board` |
 | `researcher` | Yes | Yes (optional) | `/researcher` |
 
 **Deprecated agents:** none.
@@ -142,7 +143,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 
 ## Skills
 
-### Canonical — `.cursor/skills/` (10) → consumer `.cursor/skills/`
+### Canonical — `.cursor/skills/` (11) → consumer `.cursor/skills/`
 
 | Skill | Paired agent |
 |-------|----------------|
@@ -153,6 +154,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `implementation-execution-loop` | `implementer` |
 | `test-module-coverage` | `test-runner` |
 | `mas-infrastructure-integration` | `integrator-mas-agent` |
+| `project-board-ssot` | `project-board` (board Entry/Exit; ADR-008) |
 | `workflow-activate` | Install / re-activate |
 | `connect-external-mcp` | MCP setup |
 | `research-corpus-execution` | `researcher` |
@@ -175,18 +177,19 @@ Merged view for Cursor plugin loading from GitHub. **Not** copied as a single tr
 
 ---
 
-## Rules (6) — consumer `.cursor/rules/`
+## Rules — consumer `.cursor/rules/` (6 kit) · kit-dev repo (7)
 
-| Rule | alwaysApply |
-|------|:-----------:|
-| `implementation-workflow-governance.mdc` | Yes |
-| `pr-workflow-enforcement.mdc` | Yes |
-| `commit-trailer-format.mdc` | Yes |
-| `file-docstring-header-relations.mdc` | Yes |
-| `local-artifact-protection.mdc` | Yes |
-| `advisory-audit-alignment-enforcement.mdc` | Yes |
+| Rule | alwaysApply | Kit-dev `.cursor/rules/` |
+|------|:-----------:|:------------------------:|
+| `implementation-workflow-governance.mdc` | Yes | Yes |
+| `pr-workflow-enforcement.mdc` | Yes | Yes |
+| `commit-trailer-format.mdc` | Yes | Yes |
+| `file-docstring-header-relations.mdc` | Yes | Yes |
+| `local-artifact-protection.mdc` | Yes | Yes |
+| `advisory-audit-alignment-enforcement.mdc` | Yes | Yes |
+| `project-ssot-precedence.mdc` | — | Yes (product repo + overlay at install) |
 
-Product overlays: `overlays/rules/*.mdc` → consumer `.cursor/rules/` at install (empty in core kit).
+Product overlays: `overlays/rules/*.mdc` → consumer `.cursor/rules/` at install (`project-ssot-precedence` ships in this product repo).
 
 ---
 
@@ -208,6 +211,7 @@ Product overlays: `overlays/rules/*.mdc` → consumer `.cursor/rules/` at instal
 | Subtree | Tier | Writer |
 |---------|------|--------|
 | `index-and-planning/current/` | 1 base + 2 runtime | scaffold + agents |
+| `index-and-planning/history/` | 2 | agents — `updates-log.md`; `continuity-index.md` (rolling ≥3-day UTC rows; board Notes = full lifetime) |
 | `workflow-artifacts/pr/` | 2 | review/prepare/merge scripts |
 | `workflow-artifacts/alignment/` | 2 | `enterprise-auditor` |
 | `workflow-artifacts/drift/` | 2 | `workflow-drift-guard` |

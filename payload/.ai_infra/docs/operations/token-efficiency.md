@@ -45,15 +45,16 @@ Notes:
 
 1. Board Status via `cursor_workflow project set-status` (+ Notes / handoff line)
 2. `change-index.md` — one row per batch  
-3. `history/updates-log.md` — **one line** (no gate dumps)
-4. Do **not** dual-write tracker `in_progress` under `board_only`
+3. `history/updates-log.md` — **one line** prefixed `YYYY-MM-DDTHH:MM:SSZ` (no gate dumps)
+4. `history/continuity-index.md` — optional row when board item + local artifacts touched (keep ≥3 days)
+5. Do **not** dual-write tracker `in_progress` under `board_only`
 
 **Offline fallback:**
 
 1. `change-index.md` — one row per batch  
 2. `session-pointer.md` — phase, next agent, blockers  
 3. `work-tracker.md` / `plan.md` — if status changed  
-4. `history/updates-log.md` — **one line** (no gate dumps)
+4. `history/updates-log.md` — **one line** prefixed `YYYY-MM-DDTHH:MM:SSZ` (no gate dumps)
 
 ## Never paste in chat
 
@@ -84,9 +85,12 @@ Do **not** run individual gates in chat when `prepare.py` exists unless `verifie
 | Create card | `python -m cursor_workflow project create-from-template --title "…" --template slice` |
 | Claim | `python -m cursor_workflow project claim --last --agent <name>` |
 | Handoff | `python -m cursor_workflow project handoff --last --agent <name> --next <agent> [--to in_review]` |
+| Outbox status | `python -m cursor_workflow project outbox status` |
+| Queue (no live write) | `python -m cursor_workflow project queue --op … --last --agent <name>` |
+| Flush outbox | `python -m cursor_workflow project outbox flush` |
 | Safe recipes | `python -m cursor_workflow project guide` |
 
-Prefer `--last` after `create-from-template`. Never paste docs placeholder ids. Never paste Project settings UI into the shell.
+Prefer `--last` after `create-from-template`. Never paste docs placeholder ids. Never paste Project settings UI into the shell. On EXIT_QUEUED (6), do not retry — flush after GraphQL quota recovers.
 
 ## Maintainer lane
 

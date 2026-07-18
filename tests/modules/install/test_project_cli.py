@@ -26,6 +26,8 @@ if str(_PKG_DIR) not in sys.path:
 
 import project_cli  # noqa: E402
 
+VALID_PVTI = "PVTI_lAHOBl46-84A9KZxcli01"
+
 
 def _write_collab(tmp: Path, ssot: dict) -> None:
     path = tmp / ".local" / "user_settings" / "github.collaboration.yaml"
@@ -40,7 +42,6 @@ def _write_collab(tmp: Path, ssot: dict) -> None:
     path.write_text(yaml.safe_dump(data), encoding="utf-8")
     # Minimal pr scripts so _import_user_settings can find the package when using real load —
     # tests monkeypatch load instead when needed.
-
 
 SAMPLE_SSOT = {
     "enabled": True,
@@ -121,14 +122,14 @@ def test_cmd_set_status_maps_and_calls_gh(monkeypatch: pytest.MonkeyPatch, tmp_p
     monkeypatch.setattr(project_cli, "run_gh", fake_gh)
     args = argparse.Namespace(
         directory=tmp_path,
-        id="PVTI_test",
+        id=VALID_PVTI,
         to="in_progress",
     )
     assert project_cli.cmd_set_status(args) == 0
     assert calls
     assert "--single-select-option-id" in calls[0]
     assert "47fc9ee4" in calls[0]
-    assert "PVTI_test" in calls[0]
+    assert VALID_PVTI in calls[0]
     # Status must not GraphQL-resolve to DI_
     assert not any(c[:2] == ["api", "graphql"] for c in calls)
     assert not any(any(str(a).startswith("DI_") for a in c) for c in calls)
@@ -191,7 +192,7 @@ def test_cmd_get(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     payload = {
         "items": [
             {
-                "id": "PVTI_x",
+                "id": VALID_PVTI,
                 "title": "Slice",
                 "status": "In progress",
                 "content": {"body": "## Notes\n\nhello"},
@@ -204,7 +205,7 @@ def test_cmd_get(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
 
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
     monkeypatch.setattr(project_cli, "run_gh", fake_gh)
-    args = argparse.Namespace(directory=tmp_path, id="PVTI_x", limit=50, json=True)
+    args = argparse.Namespace(directory=tmp_path, id=VALID_PVTI, limit=50, json=True)
     assert project_cli.cmd_get(args) == 0
 
 
@@ -212,7 +213,7 @@ def test_cmd_append_notes(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> No
     payload = {
         "items": [
             {
-                "id": "PVTI_x",
+                "id": VALID_PVTI,
                 "title": "Slice",
                 "status": "In review",
                 "content": {"body": "## Acceptance\n\nok"},
@@ -223,7 +224,7 @@ def test_cmd_append_notes(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> No
     gql = {
         "data": {
             "node": {
-                "id": "PVTI_x",
+                "id": VALID_PVTI,
                 "content": {
                     "__typename": "DraftIssue",
                     "id": "DI_draft_x",
@@ -247,7 +248,7 @@ def test_cmd_append_notes(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> No
     monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
     args = argparse.Namespace(
         directory=tmp_path,
-        id="PVTI_x",
+        id=VALID_PVTI,
         text="Merged: url @ sha",
         agent="implementer",
         limit=50,
@@ -479,11 +480,13 @@ def test_cmd_append_notes_idempotent_skip_with_di_resolve(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     """Idempotent skip must not call item-edit even when DI resolve would run."""
-    note = "@test/implementer · Merged: https://example/pull/1 @ abc"
+    fixed_ts = "2026-07-18T10:14:40Z"
+    monkeypatch.setattr(project_cli, "utc_note_timestamp", lambda: fixed_ts)
+    note = f"@test/implementer · {fixed_ts} · Merged: https://example/pull/1 @ abc"
     payload = {
         "items": [
             {
-                "id": "PVTI_x",
+                "id": VALID_PVTI,
                 "title": "Slice",
                 "status": "In review",
                 "content": {"body": f"## Notes\n\n- {note}"},
@@ -520,7 +523,7 @@ def test_cmd_append_notes_idempotent_skip_with_di_resolve(
     monkeypatch.setattr(project_cli, "run_gh", fake_gh)
     monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
     args = argparse.Namespace(
-        directory=tmp_path, id="PVTI_x", text=note, agent="implementer", limit=50
+        directory=tmp_path, id=VALID_PVTI, text=note, agent="implementer", limit=50
     )
     assert project_cli.cmd_append_notes(args) == 0
     assert not any(c[:2] == ["project", "item-edit"] for c in calls)
@@ -530,16 +533,48 @@ def test_cmd_append_notes_idempotent_skip_with_di_resolve(
 def test_format_agent_attribution_and_note_line(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
+    fixed_ts = "2026-07-18T10:14:40Z"
     monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@SavinRazvan")
+    monkeypatch.setattr(project_cli, "utc_note_timestamp", lambda: fixed_ts)
     assert project_cli.format_agent_attribution(tmp_path, "implementer") == (
         "@SavinRazvan/implementer"
     )
     line = project_cli.format_note_line(tmp_path, "implementer", "claimed")
-    assert line == "@SavinRazvan/implementer · claimed"
-    same = project_cli.format_note_line(
+    assert line == f"@SavinRazvan/implementer · {fixed_ts} · claimed"
+    stamped = project_cli.format_note_line(
+        tmp_path,
+        "implementer",
+        f"@SavinRazvan/implementer · {fixed_ts} · claimed",
+    )
+    assert stamped == f"@SavinRazvan/implementer · {fixed_ts} · claimed"
+    restamped = project_cli.format_note_line(
+        tmp_path,
+        "implementer",
+        f"@SavinRazvan/implementer · {fixed_ts} · claimed",
+    )
+    assert restamped == stamped
+
+
+def test_format_note_line_adds_timestamp_to_existing_attribution(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    fixed_ts = "2026-07-18T10:14:40Z"
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@SavinRazvan")
+    monkeypatch.setattr(project_cli, "utc_note_timestamp", lambda: fixed_ts)
+    line = project_cli.format_note_line(
         tmp_path, "implementer", "@SavinRazvan/implementer · claimed"
     )
-    assert same == "@SavinRazvan/implementer · claimed"
+    assert line == f"@SavinRazvan/implementer · {fixed_ts} · claimed"
+
+
+def test_format_note_line_empty_text_stamps_attribution_only(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    fixed_ts = "2026-07-18T10:14:40Z"
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@SavinRazvan")
+    monkeypatch.setattr(project_cli, "utc_note_timestamp", lambda: fixed_ts)
+    line = project_cli.format_note_line(tmp_path, "implementer", "")
+    assert line == f"@SavinRazvan/implementer · {fixed_ts}"
 
 
 def test_cmd_append_notes_requires_agent(
@@ -547,7 +582,7 @@ def test_cmd_append_notes_requires_agent(
 ) -> None:
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
     args = argparse.Namespace(
-        directory=tmp_path, id="PVTI_x", text="no agent", agent="", limit=50
+        directory=tmp_path, id=VALID_PVTI, text="no agent", agent="", limit=50
     )
     assert project_cli.cmd_append_notes(args) == 2
 
@@ -558,7 +593,7 @@ def test_set_item_assignee_draft_fails(monkeypatch: pytest.MonkeyPatch) -> None:
         "resolve_item_content",
         lambda *a, **k: ("draft", "DI_x", {"title": "T"}, None),
     )
-    ok, detail = project_cli.set_item_assignee(SAMPLE_SSOT, "PVTI_x", "SavinRazvan")
+    ok, detail = project_cli.set_item_assignee(SAMPLE_SSOT, VALID_PVTI, "SavinRazvan")
     assert not ok
     assert "DraftIssue" in detail
 
@@ -581,7 +616,7 @@ def test_set_item_assignee_issue(monkeypatch: pytest.MonkeyPatch) -> None:
         ),
     )
     monkeypatch.setattr(project_cli, "run_gh", fake_gh)
-    ok, detail = project_cli.set_item_assignee(SAMPLE_SSOT, "PVTI_x", "@alice")
+    ok, detail = project_cli.set_item_assignee(SAMPLE_SSOT, VALID_PVTI, "@alice")
     assert ok
     assert detail == "alice"
     assert calls[0][:3] == ["issue", "edit", "42"]

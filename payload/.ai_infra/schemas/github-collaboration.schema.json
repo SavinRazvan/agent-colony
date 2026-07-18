@@ -37,6 +37,33 @@
           "enum": ["board_only", "board_first", "offline_fallback"]
         },
         "fallback": { "type": "string", "enum": ["local_trackers", "none"] },
+        "outbox": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Local JSONL buffer for board writes when GraphQL is rate-limited (not a second SSOT)",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "path": {
+              "type": "string",
+              "description": "Repo-relative path to board-outbox.jsonl"
+            },
+            "min_graphql_remaining": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Refuse flush (and warn in doctor) below this GraphQL remaining"
+            },
+            "max_flush_per_run": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Max pending ops applied per outbox flush"
+            },
+            "retry_backoff_seconds": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Sleep between flush ops after soft failures"
+            }
+          }
+        },
         "fields": { "type": "object", "additionalProperties": true },
         "conventions": {
           "type": "object",
