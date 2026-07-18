@@ -17,3 +17,4 @@ alwaysApply: true
 - Canon: `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`, `.ai_infra/docs/operations/project-board-collaboration.md`, `HANDOFF.md`.
 - This product lives only in `mas-workflow-kit-project-ssot`. Do not mutate upstream `mas-workflow-kit`. Board = only writable SSOT; local = evidence/fallback.
 - Multi-collaborator Notes: `@owner.github_user/<agent>` (user → their agents) via `append-notes --agent`.
+- Prefer board Pattern A recipes (`claim` / `handoff` / `create-from-template`) over multi-step atomics; never paste Project settings UI into a shell.

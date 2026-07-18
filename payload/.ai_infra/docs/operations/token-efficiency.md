@@ -64,6 +64,8 @@ Notes:
 
 ## One command rule (Pattern A)
 
+### PR lane
+
 | Action | Command |
 |--------|---------|
 | Full prepare | `python .ai_infra/scripts/pr/prepare.py --pr … --actor … --agents …` |
@@ -73,6 +75,18 @@ Notes:
 | Test artifacts guard | (inside prepare) `check_testing_artifacts.py` |
 
 Do **not** run individual gates in chat when `prepare.py` exists unless `verifier` needs a targeted disproof.
+
+### Board lane (when `project_ssot.enabled`)
+
+| Action | Command |
+|--------|---------|
+| Health | `python -m cursor_workflow project doctor` |
+| Create card | `python -m cursor_workflow project create-from-template --title "…" --template slice` |
+| Claim | `python -m cursor_workflow project claim --id PVTI_… --agent <name>` |
+| Handoff | `python -m cursor_workflow project handoff --id PVTI_… --agent <name> --next <agent> [--to in_review]` |
+| Validate card | `python -m cursor_workflow project validate-item --id PVTI_…` |
+
+Prefer recipes over multi-step `set-status` + `append-notes`. Never paste Project settings UI into the shell.
 
 ## Maintainer lane
 

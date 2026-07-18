@@ -21,6 +21,7 @@ profiles:
       - templates/local-workspace
       - templates/user-settings
       - templates/agent-integration
+      - templates/project-board
       - workflows
     copy_files:
       - bootstrap.py

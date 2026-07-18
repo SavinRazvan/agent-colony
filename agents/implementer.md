@@ -16,13 +16,13 @@ description: Disciplined implementation slices with trackers and Pattern A gates
 
 **Exit (board-first when enabled):**
 
-1. `python3 -m cursor_workflow project set-status --id PVTI_… --to in_review` (PR open / handoff) or `--to done` (slice closed).
-2. `python3 -m cursor_workflow project append-notes --id PVTI_… --agent implementer --text "… · next=@User/verifier"` (required attribution).
+1. Prefer recipe: `python3 -m cursor_workflow project handoff --id PVTI_… --agent implementer --next verifier --to in_review` (or `--to done`).
+2. Claim with `project claim --id PVTI_… --agent implementer` (not multi-step atomics).
 3. Append `change-index.md`; one line in `history/updates-log.md`.
 4. When `sync_policy: board_only`, do **not** dual-write competing `in_progress` into `work-tracker.md` as SSOT.
 5. Print handoff line. Say *prepare gates green* — do not paste full `GATES`.
 
-**Board rights:** Status + Notes on the card you touch. Exit Notes **must** use `append-notes --agent implementer` (prefixes `@owner.github_user/implementer`). Handoff `next=@user/agent`. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `claim` / `handoff` recipes (`--agent implementer` → `@owner.github_user/implementer`). Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation.
 
 **Tier note:** Tier 1 local trackers are **offline fallback**. Tier 2 `.local/workflow-artifacts/` stay local (PR/audit). See ADR-008 and `overlays/rules/project-ssot-precedence.mdc`.
 
