@@ -28,7 +28,7 @@ Also customize `.ai_infra/scripts/pr/prepare.py` `GATES` once — document extra
 
 ## Anti-patterns
 
-- Do not put product rules in universal `.cursor/rules/` in the **mas-workflow-kit** repo
+- Do not put product rules in universal `.cursor/rules/` in the **mas-workflow-kit-project-ssot** product repo
 - Do not duplicate `GATES` in overlay markdown — point to `prepare.py`
 - Do not treat overlays as agent runtime config (Pattern A: hardcoded scripts)
 

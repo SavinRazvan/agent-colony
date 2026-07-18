@@ -66,7 +66,7 @@ If you must debug scaffold behavior, install from **`payload/`** (not repo root)
 
 ```bash
 TARGET=/tmp/workflow-kit-dry-run
-SOURCE=/path/to/mas-workflow-kit/payload
+SOURCE=/path/to/mas-workflow-kit-project-ssot/payload
 python3 -m cursor_workflow install --target "$TARGET" --source "$SOURCE" --dry-run
 ```
 

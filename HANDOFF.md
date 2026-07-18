@@ -230,7 +230,8 @@ Auth refreshed with `project` scope. Field/option ids for Status / Priority / Si
 ```bash
 python3 -m cursor_workflow project status
 python3 -m cursor_workflow project list
-python3 -m cursor_workflow project set-status --id PVTI_… --to in_progress
+python3 -m cursor_workflow project claim --last --agent implementer
+# atomics (power use): project set-status --last --to in_progress
 ```
 
 ### 4.4 Kit mirror into this repo (2026-07-17)

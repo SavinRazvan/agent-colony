@@ -16,7 +16,7 @@ Notes:
 <!-- Publish target: this product repo (mas-workflow-kit-project-ssot). STANDALONE 2026-07-18 — not upstream mas-workflow-kit. -->
 
 
-**Product:** MAS Workflow Kit · **Plugin id:** `mas-workflow-kit`
+**Product:** MAS Workflow Kit — Project SSOT · **Plugin id:** `mas-workflow-kit-project-ssot` (lineage plugin id `mas-workflow-kit` is upstream-only)
 
 ## Pre-publish (kit repo)
 
@@ -190,7 +190,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 | Field | Value |
 |-------|--------|
 | Organization name | Savin Ionuț Răzvan |
-| Organization handle | `savin-razvan` (or `mas-workflow-kit`) |
+| Organization handle | `savin-razvan` (or `mas-workflow-kit-project-ssot`) |
 | Contact email | razvan.i.savin@gmail.com |
 | Logotype URL | `https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit-project-ssot/main/assets/logo.png` |
 | Description | MAS Workflow Kit installs multi-agent workflow infrastructure into any Cursor project: agents, skills, rules, PR lifecycle scripts, `.local/` trackers, and optional MCP. Run **`/workflow-activate`** once to scaffold three planes. Pattern A: one script per maintainer action. For teams using agents, audits, and PR-first governance. |
@@ -200,7 +200,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Manifest:** `.cursor-plugin/plugin.json` — `author`, `homepage`, `repository`, `logo` aligned with the table above.
 
-**Listing copy review (2026-07-07):** Verified `plugin.json` `description`, the Description row above, and README consumer sections (`What you get`, agent/skill/rule counts) against `IMPLEMENTATION-STATUS.md` on `main` — 633 tests (post DRIFT-005 slice), DOC-006 PASS, coverage scope 3588 stmts / 100% on `--cov=.ai_infra --cov=cursor_workflow`. No stale test or coverage numbers in marketplace-facing copy; feature counts (7 agents, 10 skills, 5 PR skills, 6 rules) match shipped inventory.
+**Listing copy review (2026-07-07):** Verified `plugin.json` `description`, the Description row above, and README consumer sections (`What you get`, agent/skill/rule counts) against `IMPLEMENTATION-STATUS.md` on `main` — 633 tests (post DRIFT-005 slice), DOC-006 PASS, coverage scope 3588 stmts / 100% on `--cov=.ai_infra --cov=cursor_workflow`. No stale test or coverage numbers in marketplace-facing copy; feature counts (8 agents, 11 skills, 5 PR skills, 7 rules) match shipped inventory.
 
 **Consumer smoke (2026-07-08):** Real app **Smart-Notes** — `/add-plugin` + chat **`/workflow-activate`**, `health`/`gates`/`integrate`/`mcp validate` PASS, kit smoke **1** of **120** pytest during gates. Record: `.local/workflow-artifacts/release/smoke-consumer-smart-notes-2026-07-08.md`.
 
