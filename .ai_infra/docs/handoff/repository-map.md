@@ -69,9 +69,9 @@ Deep dive: [PLUGIN-ARCHITECTURE.md](PLUGIN-ARCHITECTURE.md).
 
 | Path | Role | Edit where |
 |------|------|------------|
-| `.cursor/agents/*.md` | 7 agent cards | **Here** |
-| `.cursor/rules/*.mdc` | 6 universal rules | **Here** |
-| `.cursor/skills/*/` | 10 canonical protocols | **Here** |
+| `.cursor/agents/*.md` | 8 agent cards | **Here** |
+| `.cursor/rules/*.mdc` | 7 kit-dev rules | **Here** |
+| `.cursor/skills/*/` | 11 canonical protocols | **Here** |
 | `.agents/skills/*/` | Maintainer slash skills | **Here** |
 | `agents/`, `rules/`, `skills/` (repo root) | Marketplace discovery | `make sync-plugin` from above |
 | `payload/` | Consumer install bundle | `make sync-plugin` from above + manifest |
