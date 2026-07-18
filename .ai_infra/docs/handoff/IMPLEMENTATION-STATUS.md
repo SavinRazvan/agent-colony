@@ -16,7 +16,7 @@ Notes:
 # Implementation status (MAS Workflow Kit — Project SSOT)
 
 **Last updated:** 2026-07-18 (ATTR-USER-AGENT attribution)  
-**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 688
+**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 692
 
 ## Shipped (confirmed in repo)
 
@@ -44,7 +44,7 @@ Notes:
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Kit version on install | `kit_version` 0.4.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 688 | `tests/modules/` |
+| Tests | 692 | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

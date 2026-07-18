@@ -61,7 +61,9 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 Ready → In progress → In review → Done
 ```
 
-Handoff: `item_id=PVTI_… · @User/implementer · Status=a→b · next=@User/verifier`
+Handoff: `item_id=<from create or --last> · @User/implementer · Status=a→b · next=@User/verifier`
+
+**Safe flow:** `project guide` then `create-from-template` → `claim --last` → `handoff --last`. Never paste docs placeholder ids as `--id`.
 
 **Attribution:** Notes use `@owner.github_user/<agent>` from each collaborator’s `github.collaboration.yaml` so multi-user boards do not collide.
 

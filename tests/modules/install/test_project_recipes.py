@@ -314,3 +314,70 @@ def test_append_notes_requires_agent_code(monkeypatch: pytest.MonkeyPatch) -> No
         directory=REPO_ROOT, id="PVTI_x", text="hi", agent="", limit=100
     )
     assert project_cli.cmd_append_notes(args) == project_cli.EXIT_USAGE
+
+def test_placeholder_item_id_rejected() -> None:
+    assert project_cli.is_placeholder_item_id("PVTI_…")
+    assert project_cli.is_placeholder_item_id("PVTI_...")
+    assert not project_cli.is_placeholder_item_id("PVTI_lAHOBl46-84A9KZxzgzRDnc")
+
+
+def test_claim_rejects_placeholder_id(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
+    args = argparse.Namespace(
+        directory=tmp_path,
+        id="PVTI_…",
+        last=False,
+        agent="implementer",
+        text="claimed",
+        limit=100,
+    )
+    assert project_cli.cmd_claim(args) == project_cli.EXIT_USAGE
+
+
+def test_claim_uses_last(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    ssot = _ssot()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    project_cli.save_last_item_id(tmp_path, "PVTI_lastitem01", title="T", action="create")
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: (
+            [
+                {
+                    "id": "PVTI_lastitem01",
+                    "title": "T",
+                    "status": "Ready",
+                    "content": {"body": "## Acceptance\n\nx\n\n## Rollback\n\ny\n\n## Notes\n\n"},
+                }
+            ],
+            None,
+        ),
+    )
+    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "oid"))
+    monkeypatch.setattr(
+        project_cli,
+        "set_item_assignee",
+        lambda *a, **k: (False, "DraftIssue has no GitHub Assignees"),
+    )
+    monkeypatch.setattr(project_cli, "edit_item_body", lambda *a, **k: (True, "ok"))
+    args = argparse.Namespace(
+        directory=tmp_path, id="", last=True, agent="implementer", text="claimed", limit=100
+    )
+    assert project_cli.cmd_claim(args) == 0
+    assert project_cli.load_last_item_id(tmp_path) == "PVTI_lastitem01"
+
+
+def test_cmd_guide_prints_last(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    project_cli.save_last_item_id(tmp_path, "PVTI_guidetest01")
+    args = argparse.Namespace(directory=tmp_path, agent="implementer", next="verifier")
+    assert project_cli.cmd_guide(args) == 0
+    out = capsys.readouterr().out
+    assert "--last" in out
+    assert "PVTI_…" not in out
+    assert "PVTI_guidetest01" in out
+
