@@ -1,0 +1,295 @@
+"""
+File: project_parser.py
+Path: .ai_infra/install/cursor_workflow/project_parser.py
+Role: Argparse registration for `cursor_workflow project` subcommands.
+Used By:
+ - .ai_infra/install/cursor_workflow/project_cli.py (re-export)
+ - .ai_infra/install/cursor_workflow/cli.py (via project_cli.register_project_subparser)
+Depends On:
+ - .ai_infra/install/cursor_workflow/project_cli.py (cmd_* handlers; late import)
+ - .ai_infra/install/cursor_workflow/project_atomics.py (_TEMPLATE_NAMES, _add_id_or_last)
+Notes:
+ - Late-imports cmd_* from project_cli to avoid import cycles and preserve facade.
+"""
+
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+
+def register_project_subparser(sub: argparse._SubParsersAction) -> None:
+    """Wire `project` subcommands; handlers live on project_cli for monkeypatch stability."""
+    import project_cli as pc
+    from project_atomics import _TEMPLATE_NAMES, _add_id_or_last
+
+    project = sub.add_parser(
+        "project",
+        help="GitHub Project SSOT (project_ssot in github.collaboration.yaml)",
+    )
+    project_sub = project.add_subparsers(dest="project_command", required=True)
+
+    status_cmd = project_sub.add_parser("status", help="Show project_ssot config from user_settings")
+    status_cmd.add_argument("--directory", type=Path, default=".")
+    status_cmd.add_argument("--json", action="store_true")
+    status_cmd.set_defaults(func=pc.cmd_status)
+
+    list_cmd = project_sub.add_parser("list", help="List project items (optional status filter)")
+    list_cmd.add_argument("--directory", type=Path, default=".")
+    list_cmd.add_argument(
+        "--status",
+        default="",
+        help="Filter: backlog|ready|in_progress|in_review|done",
+    )
+    list_cmd.add_argument("--limit", type=int, default=100)
+    list_cmd.add_argument("--json", action="store_true")
+    list_cmd.set_defaults(func=pc.cmd_list)
+
+    create_cmd = project_sub.add_parser(
+        "create", help="Create a DraftIssue on the project (--template = create-from-template)"
+    )
+    create_cmd.add_argument("--directory", type=Path, default=".")
+    create_cmd.add_argument("--title", required=True)
+    create_cmd.add_argument("--body", default="")
+    create_cmd.add_argument(
+        "--template",
+        default="",
+        help="slice|bug — use card body template (same as create-from-template)",
+    )
+    create_cmd.add_argument("--acceptance", default="")
+    create_cmd.add_argument("--rollback", default="")
+    create_cmd.add_argument("--notes", default="")
+    create_cmd.add_argument(
+        "--status",
+        default="",
+        help="Optional status after create (e.g. ready) when using --template",
+    )
+    create_cmd.set_defaults(func=pc.cmd_create)
+
+    cft = project_sub.add_parser(
+        "create-from-template",
+        help="Create DraftIssue from card-body template (Pattern A)",
+    )
+    cft.add_argument("--directory", type=Path, default=".")
+    cft.add_argument("--title", required=True)
+    cft.add_argument("--template", default="slice", choices=_TEMPLATE_NAMES)
+    cft.add_argument("--acceptance", default="")
+    cft.add_argument("--rollback", default="")
+    cft.add_argument("--notes", default="")
+    cft.add_argument("--status", default="", help="Optional: ready|backlog|…")
+    cft.set_defaults(func=pc.cmd_create_from_template)
+
+    set_status = project_sub.add_parser("set-status", help="Set item Status from YAML option ids")
+    set_status.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(set_status)
+    set_status.add_argument(
+        "--to",
+        required=True,
+        help="Logical status: backlog|ready|in_progress|in_review|done",
+    )
+    set_status.add_argument(
+        "--agent",
+        default="project-cli",
+        help="Agent id for outbox attribution if rate-limited",
+    )
+    set_status.set_defaults(func=pc.cmd_set_status)
+
+    set_field = project_sub.add_parser(
+        "set-field",
+        help="Set Priority, Size, or Estimate from YAML field ids",
+    )
+    set_field.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(set_field)
+    set_field.add_argument(
+        "--field", required=True, choices=("priority", "size", "estimate")
+    )
+    set_field.add_argument(
+        "--to",
+        required=True,
+        help="e.g. p1, s, or number for estimate",
+    )
+    set_field.add_argument(
+        "--agent",
+        default="project-cli",
+        help="Agent id for outbox attribution if rate-limited",
+    )
+    set_field.set_defaults(func=pc.cmd_set_field)
+
+    get_cmd = project_sub.add_parser("get", help="Get one project item by id")
+    get_cmd.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(get_cmd)
+    get_cmd.add_argument("--limit", type=int, default=100)
+    get_cmd.add_argument("--json", action="store_true")
+    get_cmd.set_defaults(func=pc.cmd_get)
+
+    notes_cmd = project_sub.add_parser(
+        "append-notes",
+        help="Append a line under ## Notes (prefix @user/agent when --agent set)",
+    )
+    notes_cmd.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(notes_cmd)
+    notes_cmd.add_argument("--text", required=True)
+    notes_cmd.add_argument(
+        "--agent",
+        default="",
+        help="Agent id for attribution (required when require_attribution_on_exit)",
+    )
+    notes_cmd.add_argument("--limit", type=int, default=100)
+    notes_cmd.set_defaults(func=pc.cmd_append_notes)
+
+    claim_cmd = project_sub.add_parser(
+        "claim",
+        help="Pattern A: In progress + Notes (+ assignee when Issue-backed)",
+    )
+    claim_cmd.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(claim_cmd)
+    claim_cmd.add_argument("--agent", required=True, help="Agent id for @user/agent Notes")
+    claim_cmd.add_argument("--text", default="claimed", help="Notes text after attribution")
+    claim_cmd.add_argument("--limit", type=int, default=100)
+    claim_cmd.set_defaults(func=pc.cmd_claim)
+
+    mention_cmd = project_sub.add_parser(
+        "mention-pr",
+        help="Notes with PR URL + find-by-pr (auto-promote Draft when promote_to_issue_on_pr)",
+    )
+    mention_cmd.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(mention_cmd)
+    mention_cmd.add_argument("--pr", required=True, help="PR number or URL")
+    mention_cmd.add_argument("--agent", required=True)
+    mention_cmd.add_argument("--limit", type=int, default=100)
+    mention_cmd.set_defaults(func=pc.cmd_mention_pr)
+
+    promote_cmd = project_sub.add_parser(
+        "promote-to-issue",
+        help="Convert DraftIssue → Issue (same PVTI_); assignee + Notes",
+    )
+    promote_cmd.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(promote_cmd)
+    promote_cmd.add_argument("--agent", required=True)
+    promote_cmd.add_argument(
+        "--repo",
+        default="",
+        help="owner/repo (defaults to project_ssot.default_repo)",
+    )
+    promote_cmd.add_argument("--limit", type=int, default=100)
+    promote_cmd.set_defaults(func=pc.cmd_promote_to_issue)
+
+    handoff_cmd = project_sub.add_parser(
+        "handoff",
+        help="Pattern A: Notes next=@user/agent + optional set-status",
+    )
+    handoff_cmd.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(handoff_cmd)
+    handoff_cmd.add_argument("--agent", required=True)
+    handoff_cmd.add_argument("--next", required=True, help="Next agent name (no @user/ needed)")
+    handoff_cmd.add_argument("--to", default="", help="Optional status: in_review|done|…")
+    handoff_cmd.add_argument("--text", default="", help="Optional extra Notes text")
+    handoff_cmd.add_argument("--limit", type=int, default=100)
+    handoff_cmd.set_defaults(func=pc.cmd_handoff)
+
+    val_cmd = project_sub.add_parser(
+        "validate-item",
+        help="Check body sections / attribution / status (exit 5 on fail)",
+    )
+    val_cmd.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(val_cmd)
+    val_cmd.add_argument("--limit", type=int, default=100)
+    val_cmd.set_defaults(func=pc.cmd_validate_item)
+
+    last_cmd = project_sub.add_parser("last", help="Print last saved item_id (after create/claim)")
+    last_cmd.add_argument("--directory", type=Path, default=".")
+    last_cmd.set_defaults(func=pc.cmd_last)
+
+    guide_cmd = project_sub.add_parser(
+        "guide",
+        help="Print safe recipes using --last (no placeholder ids)",
+    )
+    guide_cmd.add_argument("--directory", type=Path, default=".")
+    guide_cmd.add_argument("--agent", default="implementer")
+    guide_cmd.add_argument("--next", default="verifier")
+    guide_cmd.set_defaults(func=pc.cmd_guide)
+
+    doc_cmd = project_sub.add_parser(
+        "doctor",
+        help="Validate project_ssot config, templates, and gh project access",
+    )
+    doc_cmd.add_argument("--directory", type=Path, default=".")
+    doc_cmd.set_defaults(func=pc.cmd_doctor)
+
+    assignee_cmd = project_sub.add_parser(
+        "set-assignee",
+        help="Assign GitHub human user (Issue-backed); default owner.github_user",
+    )
+    assignee_cmd.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(assignee_cmd)
+    assignee_cmd.add_argument(
+        "--login",
+        default="",
+        help="GitHub login (default: owner.github_user from collab YAML)",
+    )
+    assignee_cmd.set_defaults(func=pc.cmd_set_assignee)
+
+    find_cmd = project_sub.add_parser(
+        "find-by-pr", help="Resolve project item id from PR (Board-Item or body scan)"
+    )
+    find_cmd.add_argument("--directory", type=Path, default=".")
+    find_cmd.add_argument("--pr", required=True, help="PR number or URL")
+    find_cmd.add_argument("--repo", default="", help="owner/repo (defaults to project_ssot.default_repo)")
+    find_cmd.add_argument("--limit", type=int, default=100)
+    find_cmd.add_argument("--json", action="store_true")
+    find_cmd.set_defaults(func=pc.cmd_find_by_pr)
+
+    export_cmd = project_sub.add_parser(
+        "export", help="Read-only board snapshot (never mutates Status)"
+    )
+    export_cmd.add_argument("--directory", type=Path, default=".")
+    export_cmd.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="Output path (default: .local/generated-data/project-board-snapshot.json)",
+    )
+    export_cmd.add_argument("--limit", type=int, default=100)
+    export_cmd.add_argument("--json", action="store_true", help="Also print JSON to stdout")
+    export_cmd.add_argument("--stdout", action="store_true", help="Print JSON only (no file write)")
+    export_cmd.set_defaults(func=pc.cmd_export)
+
+    queue_cmd = project_sub.add_parser(
+        "queue",
+        help="Enqueue a board op to local outbox (no live write; EXIT_QUEUED=6)",
+    )
+    queue_cmd.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(queue_cmd)
+    queue_cmd.add_argument(
+        "--op",
+        required=True,
+        choices=("append-notes", "set-status", "handoff", "claim", "set-assignee"),
+    )
+    queue_cmd.add_argument("--agent", required=True)
+    queue_cmd.add_argument("--text", default="", help="Notes text / handoff note / claim text")
+    queue_cmd.add_argument("--to", default="", help="Status for set-status/handoff/claim")
+    queue_cmd.add_argument("--next", default="", help="Next agent for handoff")
+    queue_cmd.add_argument("--login", default="", help="Assignee login for set-assignee")
+    queue_cmd.set_defaults(func=pc.cmd_queue)
+
+    outbox_cmd = project_sub.add_parser(
+        "outbox",
+        help="Inspect or flush rate-limit board outbox",
+    )
+    outbox_sub = outbox_cmd.add_subparsers(dest="outbox_command", required=True)
+    ob_status = outbox_sub.add_parser("status", help="Counts + GraphQL remaining")
+    ob_status.add_argument("--directory", type=Path, default=".")
+    ob_status.set_defaults(func=pc.cmd_outbox_status)
+    ob_flush = outbox_sub.add_parser(
+        "flush",
+        help="Apply pending outbox ops (refuses if GraphQL remaining too low)",
+    )
+    ob_flush.add_argument("--directory", type=Path, default=".")
+    ob_flush.add_argument(
+        "--max",
+        type=int,
+        default=None,
+        help="Override max_flush_per_run from settings",
+    )
+    ob_flush.add_argument("--limit", type=int, default=100)
+    ob_flush.set_defaults(func=pc.cmd_outbox_flush)

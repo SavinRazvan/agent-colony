@@ -49,4 +49,11 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs.
 | test-runner | Module tests and coverage |
 | verifier | Evidence-based verification |
 | enterprise-auditor | Architecture audits |
-| researcher | Brief-driven packs; adaptive chat/agent intake; `research init\|fetch\|validate` |
+| researcher | Brief-driven research packs; adaptive intake from chat/agents/board; CLI `research init\|fetch\|validate` |
+
+## Research (optional)
+
+| Term | Meaning |
+|------|---------|
+| Brief | Intake contract for researcher (`BRIEF.md` / chat / board card) — source, question, lenses, consumers |
+| Research pack | Indexed corpus under `_research_results/sources/<slug>/` (`INDEX.json`, `AGENT_BRIEF.md`, …) |
