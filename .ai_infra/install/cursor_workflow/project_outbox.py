@@ -31,7 +31,7 @@ EXIT_VALIDATION = 5
 EXIT_QUEUED = 6
 
 _OUTBOX_OPS = frozenset(
-    {"append-notes", "set-status", "handoff", "claim", "set-assignee"}
+    {"append-notes", "set-status", "handoff", "claim", "set-assignee", "set-field"}
 )
 _DEFAULT_PATH = ".local/generated-data/board-outbox.jsonl"
 _RATE_LIMIT_RE = re.compile(
@@ -345,6 +345,13 @@ def apply_outbox_entry(
         ok, detail = set_item_status(ssot, item_id, to)
         if not ok:
             return False, detail
+        start = str(payload.get("start_date") or "").strip()
+        if start:
+            from project_cli import set_item_date  # noqa: PLC0415
+
+            d_ok, d_detail = set_item_date(ssot, item_id, "start_date", start)
+            if not d_ok:
+                return False, f"status set but start_date failed: {d_detail}"
         note = str(payload.get("text") or "claimed (outbox flush)")
         n_ok, n_detail, _ = append_notes_helper(
             root, ssot, item_id, agent=agent, text=note, limit=limit
@@ -352,6 +359,50 @@ def apply_outbox_entry(
         if not n_ok:
             return False, f"status set but Notes failed: {n_detail}"
         return True, "claimed"
+
+    if op == "set-field":
+        from project_cli import (  # noqa: PLC0415
+            resolve_field_option_id,
+            run_gh,
+            set_item_number,
+        )
+
+        field = str(payload.get("field") or "").strip().lower()
+        to_val = payload.get("to")
+        if field == "estimate":
+            try:
+                num = float(to_val)
+            except (TypeError, ValueError):
+                return False, "estimate payload.to must be a number"
+            return set_item_number(ssot, item_id, "estimate", num)
+        if field in ("priority", "size"):
+            try:
+                field_id, option_id = resolve_field_option_id(
+                    ssot, field, str(to_val or "")
+                )
+            except KeyError as exc:
+                return False, str(exc)
+            project_id = str(ssot["project_id"])
+            proc = run_gh(
+                [
+                    "project",
+                    "item-edit",
+                    "--project-id",
+                    project_id,
+                    "--id",
+                    item_id,
+                    "--field-id",
+                    field_id,
+                    "--single-select-option-id",
+                    option_id,
+                ]
+            )
+            if proc.returncode != 0:
+                return False, (
+                    proc.stderr or proc.stdout or "gh project item-edit failed"
+                ).strip()
+            return True, f"{field}={to_val}"
+        return False, f"unsupported set-field {field!r}"
 
     if op == "handoff":
         next_agent = str(payload.get("next") or "").strip().lstrip("@")

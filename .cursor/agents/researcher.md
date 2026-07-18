@@ -12,7 +12,7 @@ description: Optional local research corpus; hard-stop on product code without e
 
 **Exit:** Prefer `handoff --last` / `claim --last` after create. Research corpus indexes under `_research_results/`. When a **research board card** exists: **must** `set-status --to done` and put corpus paths in Notes for continuation. Do not mutate unrelated cards or `session-pointer` as SSOT. No dual-write under `board_only`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent researcher` (→ `@owner.github_user/researcher`); atomics `append-notes --agent researcher` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+**Board rights:** Status + Notes on the card you touch. Tier-1: claim may set Start date (UTC); triage may set Estimate; use `mention-pr` for PR Notes — do not set Iteration/End date/Reviewers by default. Prefer `claim --last` / `handoff --last --agent researcher` (→ `@owner.github_user/researcher`); atomics `append-notes --agent researcher` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
 
 **Templates:** skill § Template routing when a research card is needed; Notes timestamps via CLI; do not hand-forge times.
 

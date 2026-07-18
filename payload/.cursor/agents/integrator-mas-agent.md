@@ -18,7 +18,7 @@ You **extend the multi-agent system** without breaking planes, gates, or procedu
 
 **Exit:** Prefer `handoff --last` / `claim --last` after create. **Must** set integration card Status → `done` (or `in_review` if verify failed); Notes with validate outcomes; print handoff line. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent integrator-mas-agent` (→ `@owner.github_user/integrator-mas-agent`); atomics `append-notes --agent integrator-mas-agent` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+**Board rights:** Status + Notes on the card you touch. Tier-1: claim may set Start date (UTC); triage may set Estimate; use `mention-pr` for PR Notes — do not set Iteration/End date/Reviewers by default. Prefer `claim --last` / `handoff --last --agent integrator-mas-agent` (→ `@owner.github_user/integrator-mas-agent`); atomics `append-notes --agent integrator-mas-agent` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
 
 **Templates:** feature → `--template slice`; defect → `--template bug`; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
 

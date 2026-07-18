@@ -16,7 +16,7 @@ Notes:
 # Implementation status (MAS Workflow Kit — Project SSOT)
 
 **Last updated:** 2026-07-18 (COV-100 — scoped coverage)  
-**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 901
+**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 916
 
 ## Shipped (confirmed in repo)
 

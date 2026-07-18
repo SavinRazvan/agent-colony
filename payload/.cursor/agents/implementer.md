@@ -22,7 +22,7 @@ description: Disciplined implementation slices with trackers and Pattern A gates
 4. When `sync_policy: board_only`, do **not** dual-write competing `in_progress` into `work-tracker.md` as SSOT.
 5. Print handoff line. Say *prepare gates green* — do not paste full `GATES`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last` (`--agent implementer` → `@owner.github_user/implementer`). Run `project guide` for copy-safe commands. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+**Board rights:** Status + Notes on the card you touch. Tier-1: claim may set Start date (UTC); triage may set Estimate; use `mention-pr` for PR Notes — do not set Iteration/End date/Reviewers by default. Prefer `claim --last` / `handoff --last` (`--agent implementer` → `@owner.github_user/implementer`). Run `project guide` for copy-safe commands. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
 
 **Templates:** feature/`chore/` → `--template slice`; defect/`fix/` → `--template bug`; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
 

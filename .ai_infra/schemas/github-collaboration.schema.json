@@ -64,7 +64,38 @@
             }
           }
         },
-        "fields": { "type": "object", "additionalProperties": true },
+        "fields": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Project V2 field ids; status/priority/size use options; start_date/end_date/estimate use field_id only",
+          "properties": {
+            "status": { "type": "object", "additionalProperties": true },
+            "priority": { "type": "object", "additionalProperties": true },
+            "size": { "type": "object", "additionalProperties": true },
+            "start_date": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "field_id": { "type": "string", "minLength": 1 }
+              }
+            },
+            "end_date": {
+              "type": "object",
+              "additionalProperties": true,
+              "description": "Reserved; no CLI write in Tier-1",
+              "properties": {
+                "field_id": { "type": "string", "minLength": 1 }
+              }
+            },
+            "estimate": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "field_id": { "type": "string", "minLength": 1 }
+              }
+            }
+          }
+        },
         "conventions": {
           "type": "object",
           "additionalProperties": true,
@@ -74,6 +105,10 @@
             "review_status": { "type": "string" },
             "done_status": { "type": "string" },
             "claim": { "type": "string" },
+            "set_start_date_on_claim": {
+              "type": "boolean",
+              "description": "When true and fields.start_date.field_id set, claim writes UTC YYYY-MM-DD"
+            },
             "one_in_progress_per_assignee": { "type": "boolean" },
             "item_kind_default": { "type": "string" },
             "promote_to_issue_on_pr": { "type": "boolean" },

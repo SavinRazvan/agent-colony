@@ -73,6 +73,15 @@ Multi-collaborator: each human’s `owner.github_user` namespaces their agents (
 | My items | Assign in UI or `project set-assignee` (human login) | Claim = Status In progress + Notes `@user/agent`; assignee = human only | View filter |
 | PR gates, audits, secrets | Local | Local (`local_only`) | — |
 
+### Tier-1 board fields (agents)
+
+| Field / action | When | CLI | Notes |
+|----------------|------|-----|-------|
+| **Start date** | Claim | `project claim --last --agent <agent>` | UTC today when `conventions.set_start_date_on_claim: true` and `fields.start_date.field_id` is set; WARN only on failure — claim still succeeds |
+| **Estimate** | Triage / own card | `project set-field --field estimate --to N` | Number field; N ≥ 0 |
+| **Linked PR** | PR open | `project mention-pr --pr N --last --agent <agent>` | Appends Notes with canonical PR URL; GitHub **Linked pull requests** column is derived (Issue↔PR; DraftIssue warns) |
+| **Out of scope (agents default)** | — | — | Iteration, Labels, Reviewers, End date — human / UI only |
+
 ### Rules
 
 1. One primary **In progress** per **human assignee** — do not steal others'.
@@ -138,7 +147,7 @@ Index: `.ai_infra/templates/project-board/README.md`. After create, always `clai
 4. **Claim:** `project claim --last --agent <this-agent>`
 5. **Handoff:** `project handoff --last --agent <this-agent> --next <agent> [--to in_review|done]`
 6. **Validate:** `project validate-item --last`
-7. **Atomics (power use):** `set-status` · `set-field` · `append-notes --agent` · `get --last` · `export`
+7. **Atomics (power use):** `set-status` · `set-field` (priority · size · estimate) · `mention-pr` · `append-notes --agent` · `get --last` · `export`
 8. **Verify:** `project list` + handoff line; `project last` prints saved id
 
 Exit codes: `0` ok · `2` usage/config (includes placeholder `--id`) · `3` gh · `4` not found · `5` validation · `6` queued (outbox; soft-success — flush later).
