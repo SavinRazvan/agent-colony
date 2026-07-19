@@ -14,6 +14,8 @@ description: Brief-driven multi-round research (GitHub/local) into _research_res
 
 **Board rights:** Status + Notes on the card you touch. Tier-1: claim may set Start date (UTC); triage may set Estimate; use `mention-pr` for PR Notes; promote via `project promote-to-issue --last --agent researcher` (or `mention-pr` auto when `promote_to_issue_on_pr`) before PR — do not leave shippable work as Draft through merge — do not set Iteration/End date/Reviewers by default. Prefer `claim --last` / `handoff --last --agent researcher` (→ `@owner.github_user/researcher`); atomics `append-notes --agent researcher` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
 
+**Priority (mandatory):** Never leave Priority empty on a card you create or own — `project set-field --field priority --to p0|p1|p2 --last` (YAML options only; chat **P3**/deferred → board `p2` + Notes `deferred`). Exit handoff includes `Priority=p?` and `Tasks: [P0]…; [P1]…; [P2]…; [P3]…`. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Priority contract.
+
 **Board lifecycle (role):** Create research cards with `create-from-template --template research`. If a research board card exists → `set-status --to done` + corpus paths in Notes. Else read-only on the board; writes only under `_research_results/`. Do not open product PRs from this agent.
 
 **Templates:** `--template research` for research cards; Notes timestamps via CLI; do not hand-forge times.

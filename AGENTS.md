@@ -43,7 +43,7 @@ Abbreviations: [`.ai_infra/docs/operations/abbreviations-notepad.md`](.ai_infra/
 1. If `project_ssot.enabled` → `python -m cursor_workflow project status` → board list/claim (`.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract). Read card Notes for prior handoffs.
 2. Else → `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
 
-**After every agent part:** update board Status (`in_review` / `done` / Notes + next agent) so continuation is indexed on the Project — not chat-only. Notes attribution: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC). Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime. Ops: `.ai_infra/docs/operations/project-board-collaboration.md`.
+**After every agent part:** update board Status (`in_review` / `done` / Notes + next agent) so continuation is indexed on the Project — not chat-only. **Priority is mandatory** on cards you create/own (`project set-field --field priority --to p0|p1|p2`; chat P3 → `p2` + Notes `deferred`) and in Exit task lists (`[P0]`…`[P3]`). Notes attribution: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC). Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime. Ops: `.ai_infra/docs/operations/project-board-collaboration.md`. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Priority contract.
 
 ### Board SSOT (Pattern A + Tier-1)
 

@@ -48,12 +48,36 @@ Work is **indexed on the Project**, not in chat alone.
 Handoff line (chat + card Notes):
 
 ```text
-item_id=<from project last or create> · @User/implementer · Status=before→after · next=@User/verifier
+item_id=<from project last or create> · @User/implementer · Status=before→after · Priority=p1 · next=@User/verifier
+Tasks: [P1] …; [P2] …; [P3] …
 ```
 
 Prefer `--last` after create so agents never invent ids.
 
 Multi-collaborator: each human’s `owner.github_user` namespaces their agents (`@Alice/implementer` vs `@Bob/implementer`) on the same board.
+
+## Priority contract (all agents — mandatory)
+
+Every task and board card must carry an explicit priority. Do **not** leave Priority empty on a card you create or own.
+
+| Chat / plan label | Board `set-field --field priority --to` | When |
+|-------------------|----------------------------------------|------|
+| **P0** | `p0` | Blocks merge / release / SSOT integrity |
+| **P1** | `p1` | Must do next |
+| **P2** | `p2` | Planned hygiene / polish |
+| **P3** (deferred) | `p2` + Notes line `deferred` | Optional later — **no** `p3` option id in YAML |
+
+```bash
+python3 -m cursor_workflow project set-field --field priority --to p1 --last
+```
+
+Rules:
+
+1. After `create-from-template` / `claim`: set Priority **before** coding.
+2. Exit Notes and chat: list open work as `[P0]…; [P1]…; [P2]…; [P3]…` and include `Priority=p?` in the handoff line.
+3. `enterprise-auditor` / `workflow-drift-guard`: findings keep Severity **and** recommend board Priority when seeding Ready cards.
+4. `verifier`: when verifying closure, spot-check claimed Priority matches board `set-field`.
+
 ## When to use
 
 - Any session where `project_ssot.enabled: true`
@@ -83,6 +107,7 @@ Multi-collaborator: each human’s `owner.github_user` namespaces their agents (
 |----------------|------|-----|-------|
 | **Start date** | Claim | `project claim --last --agent <agent>` | UTC today when `conventions.set_start_date_on_claim: true` and `fields.start_date.field_id` is set; WARN only on failure — claim still succeeds |
 | **Estimate** | Triage / own card | `project set-field --field estimate --to N` | Number field; N ≥ 0 |
+| **Priority** | Create / claim / triage (own card) | `project set-field --field priority --to p0\|p1\|p2` | **Mandatory** — see § Priority contract; chat P3 → `p2` + Notes `deferred` |
 | **Promote Draft→Issue** | Before PR / explicit | `project promote-to-issue --last --agent <name> [--repo owner/repo]` | GraphQL `convertProjectV2DraftIssueItemToIssue`; **same PVTI_** preserved; Assignees + Linked PRs work after promote; Notes line `promoted to Issue #N`; fine-grained PAT caveat (`doctor` / `guide`); **claim does NOT auto-promote** |
 | **Linked PR** | PR open (Issue-backed) | `project mention-pr --pr N --last --agent <agent>` | Auto-promotes Draft when `conventions.promote_to_issue_on_pr` (default true) — **FAIL** if promote fails; **WARN-only** if convention false; Notes with canonical PR URL; GitHub **Linked pull requests** column derived (Issue↔PR) |
 | **Out of scope (agents default)** | — | — | Iteration, Labels, Reviewers, End date — human / UI only |
