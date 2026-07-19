@@ -12,7 +12,7 @@ alwaysApply: true
 - Read-only `project export` snapshots (if present) never write Status and never compete with board Status.
 - Overrides tracker `in_progress` expectations in `implementation-workflow-governance.mdc` when board SSOT is on — see ADR-008 (`board_only` wins; DRIFT-009).
 - Offline / disabled: `fallback: local_trackers` only — resume board sync when available.
-- Rate-limit: if board writes return EXIT_QUEUED (6), use `project_ssot.outbox` (`queue` / `outbox flush`) — do not hammer GraphQL and do not dual-write Status into trackers.
+- Rate-limit: if board writes return EXIT_QUEUED (6), use `project_ssot.outbox` (`queue` / `outbox flush`) — do not hammer GraphQL and do not dual-write Status into trackers. EXIT_QUEUED also covers cached precheck (low remaining) and queueable Forbidden/429 (not missing-scopes).
 - Prefer Pattern A recipes (`claim --last`, `handoff --last`, `guide`) over raw multi-step claim.
 - PR Pattern A (`prepare.py` `resolve_gates()`), post-merge board close (`merge.py`), PR/audit artifacts, secrets, and user_settings stay local (`project_ssot.local_only`).
 - Humans own Project views, workflows, Insights, README, status updates, Ready prioritization.

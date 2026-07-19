@@ -50,9 +50,13 @@ project_ssot:
   outbox:
     enabled: true
     path: .local/generated-data/board-outbox.jsonl
-    min_graphql_remaining: 200
+    min_graphql_remaining: 200          # refuse flush / precheck-queue when GraphQL remaining below this
     max_flush_per_run: 10
     retry_backoff_seconds: 30
+    precheck_writes: true               # cached REST rate_limit before Pattern A writes
+    quota_cache_ttl_seconds: 45         # avoid REST spam; protects GraphQL
+    quota_cache_path: .local/generated-data/graphql-quota-cache.json
+    dedupe_pending: true                # same op+item+payload → one pending outbox row
 
   # Project V2 single-select fields (replace ids from field-list)
   fields:

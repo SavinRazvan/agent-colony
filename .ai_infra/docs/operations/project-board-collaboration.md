@@ -113,11 +113,13 @@ All subcommands registered in `.ai_infra/install/cursor_workflow/project_parser.
 
 GitHub GraphQL quota (~5000/hour) can block board writes. When `project_ssot.outbox.enabled`:
 
-1. Live write fails with rate-limit → CLI **enqueues** to `.local/generated-data/board-outbox.jsonl` and returns **EXIT_QUEUED (6)**.
-2. Agent continues local evidence (`change-index`, handoff line) — **do not** hammer `gh` / retry loops.
-3. After quota recovers: `python3 -m cursor_workflow project outbox status` then `outbox flush` (capped by `max_flush_per_run`; refuses if `remaining < min_graphql_remaining`).
-4. Explicit enqueue: `project queue --op append-notes|set-status|handoff|claim|set-assignee|set-field …`
-5. Outbox is a **local buffer**, never a second Status SSOT.
+1. **Precheck (default):** before Pattern A writes, CLI reads cached REST `rate_limit` (TTL `quota_cache_ttl_seconds`, default 45s). If GraphQL `remaining < min_graphql_remaining`, enqueue + **EXIT_QUEUED (6)** without calling Projects GraphQL.
+2. Live write fails with throttle (rate-limit / secondary / 429 / bare Forbidden) → CLI **enqueues** to `.local/generated-data/board-outbox.jsonl` and returns **EXIT_QUEUED (6)**. Permanent scope-miss errors are **not** queued.
+3. **Dedupe:** identical pending `op`+`item_id`+payload fingerprint reuses one outbox row (`dedupe_pending`).
+4. Agent continues local evidence (`change-index`, handoff line) — **do not** hammer `gh` / retry loops (CODE=6 = soft-success).
+5. After quota recovers: `python3 -m cursor_workflow project outbox status` then `outbox flush` (capped by `max_flush_per_run`; refuses if `remaining < min_graphql_remaining`).
+6. Explicit enqueue: `project queue --op append-notes|set-status|handoff|claim|set-assignee|set-field …`
+7. Outbox is a **local buffer**, never a second Status SSOT. Prefer Pattern A CLI over raw `gh api graphql` (raw calls bypass the outbox).
 
 Who flushes: any agent/human after reset; prefer implementer or project-board at slice close. Pending outbox is **not** a DRIFT failure.
 

@@ -47,6 +47,17 @@ def run_claim(args: argparse.Namespace) -> int:
     start_cfg = fields_block.get('start_date') if isinstance(fields_block, dict) else None
     if conventions.get('set_start_date_on_claim', True) and isinstance(start_cfg, dict) and start_cfg.get('field_id'):
         claim_payload['start_date'] = pc.utc_today_iso()
+    pre = pc.guard_write_or_queue(
+        root,
+        ssot,
+        cmd='claim',
+        op='claim',
+        item_id=item_id,
+        agent=agent,
+        payload=claim_payload,
+    )
+    if pre is not None:
+        return pre
     items, err = pc.fetch_project_items(ssot, limit=args.limit)
     if err:
         queued = pc._try_queue_rate_limit(root, ssot, cmd='claim', err_detail=err, op='claim', item_id=item_id, agent=agent, payload=claim_payload)
@@ -89,8 +100,12 @@ def run_claim(args: argparse.Namespace) -> int:
         # already had a date
         pass
     note = getattr(args, 'text', None) or 'claimed'
-    n_ok, n_detail, n_code = pc.append_notes_helper(root, ssot, item_id, agent=agent, text=note, limit=args.limit)
+    n_ok, n_detail, n_code = pc.append_notes_helper(
+        root, ssot, item_id, agent=agent, text=note, limit=args.limit, skip_precheck=True
+    )
     if not n_ok:
+        if n_code == pc.EXIT_QUEUED:
+            return n_code
         if n_code == pc.EXIT_GH:
             queued = pc._try_queue_rate_limit(root, ssot, cmd='claim', err_detail=n_detail, op='append-notes', item_id=item_id, agent=agent, payload={'text': note})
             if queued is not None:
@@ -125,9 +140,23 @@ def run_handoff(args: argparse.Namespace) -> int:
         self_attr = pc.format_agent_attribution(root, agent)
     except ValueError as exc:
         return pc.fail('handoff', pc.EXIT_USAGE, str(exc))
+    extra = (getattr(args, 'text', None) or '').strip()
+    status_to = (getattr(args, 'to', None) or '').strip()
+    handoff_payload = {'next': next_agent, 'to': status_to, 'note': extra}
+    pre = pc.guard_write_or_queue(
+        root,
+        ssot,
+        cmd='handoff',
+        op='handoff',
+        item_id=item_id,
+        agent=agent,
+        payload=handoff_payload,
+    )
+    if pre is not None:
+        return pre
     items, err = pc.fetch_project_items(ssot, limit=args.limit)
     if err:
-        queued = pc._try_queue_rate_limit(root, ssot, cmd='handoff', err_detail=err, op='handoff', item_id=item_id, agent=agent, payload={'next': next_agent, 'to': (getattr(args, 'to', None) or '').strip(), 'note': (getattr(args, 'text', None) or '').strip()})
+        queued = pc._try_queue_rate_limit(root, ssot, cmd='handoff', err_detail=err, op='handoff', item_id=item_id, agent=agent, payload=handoff_payload)
         if queued is not None:
             return queued
         return pc.fail('handoff', pc.EXIT_GH, err)
@@ -135,17 +164,15 @@ def run_handoff(args: argparse.Namespace) -> int:
     if item is None:
         return pc.fail('handoff', pc.EXIT_NOT_FOUND, f'item not found: {item_id}')
     before = pc._normalize_status(str(item.get('status') or ''))
-    extra = (getattr(args, 'text', None) or '').strip()
     note_core = f'next={next_attr}'
     if extra:
         note_core = f'{extra} · {note_core}'
-    status_to = (getattr(args, 'to', None) or '').strip()
     if status_to:
         ok, detail = pc.set_item_status(ssot, item_id, status_to)
         if not ok:
             if 'unknown' in detail.lower():
                 return pc.fail('handoff', pc.EXIT_USAGE, detail)
-            queued = pc._try_queue_rate_limit(root, ssot, cmd='handoff', err_detail=detail, op='handoff', item_id=item_id, agent=agent, payload={'next': next_agent, 'to': status_to, 'note': extra})
+            queued = pc._try_queue_rate_limit(root, ssot, cmd='handoff', err_detail=detail, op='handoff', item_id=item_id, agent=agent, payload=handoff_payload)
             if queued is not None:
                 return queued
             return pc.fail('handoff', pc.EXIT_GH, detail)
@@ -157,8 +184,12 @@ def run_handoff(args: argparse.Namespace) -> int:
                 print(f'handoff: start_date={d_detail}')
             elif 'field_id missing' in d_detail:
                 print(f'handoff: WARN — start_date skipped: {d_detail}', file=sys.stderr)
-    n_ok, n_detail, n_code = pc.append_notes_helper(root, ssot, item_id, agent=agent, text=note_core, limit=args.limit)
+    n_ok, n_detail, n_code = pc.append_notes_helper(
+        root, ssot, item_id, agent=agent, text=note_core, limit=args.limit, skip_precheck=True
+    )
     if not n_ok:
+        if n_code == pc.EXIT_QUEUED:
+            return n_code
         if n_code == pc.EXIT_GH:
             queued = pc._try_queue_rate_limit(root, ssot, cmd='handoff', err_detail=n_detail, op='handoff', item_id=item_id, agent=agent, payload={'next': next_agent, 'to': status_to, 'note': extra})
             if queued is not None:
@@ -205,6 +236,17 @@ def run_mention_pr(args: argparse.Namespace) -> int:
     pr_num = pdata.get('number')
     if not pr_url:
         return pc.fail('mention-pr', pc.EXIT_GH, 'pr view missing url')
+    pre = pc.guard_write_or_queue(
+        root,
+        ssot,
+        cmd='mention-pr',
+        op='append-notes',
+        item_id=item_id,
+        agent=agent,
+        payload={'text': f'PR {pr_num}: {pr_url}'},
+    )
+    if pre is not None:
+        return pre
     kind, _cid, _meta, kerr = pc.resolve_item_content(ssot, item_id)
     conventions = ssot.get('conventions') or {}
     promote_on = conventions.get('promote_to_issue_on_pr', True)
@@ -220,8 +262,12 @@ def run_mention_pr(args: argparse.Namespace) -> int:
         else:
             print(f'mention-pr: WARN — card looks DraftIssue; GitHub Linked pull requests fills for Issue-backed items. Run: project promote-to-issue --last (promote_to_issue_on_pr={promote_on}).', file=sys.stderr)
     note = f'PR {pr_num}: {pr_url}'
-    ok, detail, err_code = pc.append_notes_helper(root, ssot, item_id, agent=agent, text=note, limit=args.limit)
+    ok, detail, err_code = pc.append_notes_helper(
+        root, ssot, item_id, agent=agent, text=note, limit=args.limit, skip_precheck=True
+    )
     if not ok:
+        if err_code == pc.EXIT_QUEUED:
+            return err_code
         if err_code == pc.EXIT_GH:
             queued = pc._try_queue_rate_limit(root, ssot, cmd='mention-pr', err_detail=detail, op='append-notes', item_id=item_id, agent=agent, payload={'text': note})
             if queued is not None:
@@ -251,6 +297,17 @@ def run_promote_to_issue(args: argparse.Namespace) -> int:
     if not agent:
         return pc.fail('promote-to-issue', pc.EXIT_USAGE, '--agent required')
     repo = (getattr(args, 'repo', None) or '').strip() or str(ssot.get('default_repo') or '').strip()
+    pre = pc.guard_write_or_queue(
+        root,
+        ssot,
+        cmd='promote-to-issue',
+        op='promote-to-issue',
+        item_id=item_id,
+        agent=agent,
+        payload={'repo': repo},
+    )
+    if pre is not None:
+        return pre
     ok, detail, meta = pc.promote_draft_item_to_issue(ssot, item_id, repo=repo)
     if not ok:
         queued = pc._try_queue_rate_limit(root, ssot, cmd='promote-to-issue', err_detail=detail, op='promote-to-issue', item_id=item_id, agent=agent, payload={'repo': repo})
@@ -275,8 +332,12 @@ def run_promote_to_issue(args: argparse.Namespace) -> int:
         else:
             print(f'promote-to-issue: assignee=@{a_detail.lstrip('@')}')
     note = f'promoted to Issue #{issue_n}: {url}' if url else f'promoted to Issue #{issue_n}'
-    n_ok, n_detail, n_code = pc.append_notes_helper(root, ssot, out_id, agent=agent, text=note, limit=args.limit)
+    n_ok, n_detail, n_code = pc.append_notes_helper(
+        root, ssot, out_id, agent=agent, text=note, limit=args.limit, skip_precheck=True
+    )
     if not n_ok:
+        if n_code == pc.EXIT_QUEUED:
+            return n_code
         if n_code == pc.EXIT_GH:
             queued = pc._try_queue_rate_limit(root, ssot, cmd='promote-to-issue', err_detail=n_detail, op='append-notes', item_id=out_id, agent=agent, payload={'text': note})
             if queued is not None:
