@@ -55,6 +55,7 @@ Before final `/prepare-pr`:
 2. Follow `.cursor/skills/test-module-coverage/SKILL.md` (local) / test-runner agent profile.
 3. Update `.local/index-and-planning/current/test-plan.md` and `test-index.md`.
 4. Run `python .ai_infra/scripts/pr/check_testing_artifacts.py`.
+5. **Post scoped coverage 100%:** full doc reality sync per `.cursor/skills/test-module-coverage/SKILL.md` step 6 — `IMPLEMENTATION-STATUS.md`, `make coverage-index`, `make doc-validate`, README/HANDOFF/repository-map claims, `make sync-plugin` when payload copies change.
 
 ## D) Doc / plan sync (when scope shifts)
 
