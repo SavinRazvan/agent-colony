@@ -23,7 +23,7 @@ Also customize `.ai_infra/scripts/pr/prepare.py` `GATES` once — document extra
 
 ## This directory in the kit repo
 
-- `overlays/rules/` — **empty** in core (placeholder for your project's overlay source)
+- `overlays/rules/` — ships **`project-ssot-precedence.mdc`** in **mas-workflow-kit-project-ssot** (product-only; copy at consumer install). Add more `*.mdc` for your app domain.
 - [`project-rules/`](../project-rules/) — same overlay concept (alias README for installs that prefer that name)
 
 ## Anti-patterns
