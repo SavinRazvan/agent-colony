@@ -82,7 +82,7 @@ Do **not** run individual gates in chat when `prepare.py` exists unless `verifie
 | Action | Command |
 |--------|---------|
 | Health | `python -m cursor_workflow project doctor` |
-| Create card | `python -m cursor_workflow project create-from-template --title "…" --template slice` |
+| Create card | `python -m cursor_workflow project create-from-template --title "…" --template slice --priority p1 --size s --estimate 1` |
 | Claim | `python -m cursor_workflow project claim --last --agent <name>` |
 | Handoff | `python -m cursor_workflow project handoff --last --agent <name> --next <agent> [--to in_review]` |
 | Outbox status | `python -m cursor_workflow project outbox status` |

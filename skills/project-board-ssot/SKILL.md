@@ -160,7 +160,7 @@ Rules:
 
 | Field / action | When | CLI | Notes |
 |----------------|------|-----|-------|
-| **Start date** | Claim | `project claim --last --agent <agent>` | **Mandatory** — UTC today when `conventions.set_start_date_on_claim: true`; see § Tier-1 card fields contract |
+| **Start date** | First In progress | `claim` / `set-status --to in_progress` / `handoff --to in_progress` | **Mandatory** when empty — UTC today if `conventions.set_start_date_on_claim: true`; see § Tier-1 card fields contract |
 | **Estimate** | Create / claim / own | `project set-field --field estimate --to N` | **Mandatory** — default `1` if unknown |
 | **Size** | Create / claim / own | `project set-field --field size --to xs\|s\|m\|l\|xl` | **Mandatory** — default `s` if unknown |
 | **Priority** | Create / claim / own | `project set-field --field priority --to p0\|p1\|p2` | **Mandatory** — chat P3 → `p2` + Notes `deferred` |
@@ -240,7 +240,7 @@ Index: `.ai_infra/templates/project-board/README.md`. After create, always `clai
 
 1. **Doctor / guide:** `project doctor` · `project guide --agent implementer`
 2. **Status / list:** `project status` · `project list [--status ready|in_progress|in_review]`
-3. **Create:** `project create-from-template --title "[SLICE] short-name" --template slice --status ready`
+3. **Create:** `project create-from-template --title "[SLICE] short-name" --template slice --status ready --priority p1 --size s --estimate 1 --agent <agent>`
 4. **Claim:** `project claim --last --agent <this-agent>`
 5. **Handoff:** `project handoff --last --agent <this-agent> --next <agent> [--to in_review|done]`
 6. **Validate:** `project validate-item --last`

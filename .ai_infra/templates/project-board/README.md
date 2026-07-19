@@ -16,9 +16,9 @@ Notes:
 
 | File | Who | How |
 |------|-----|-----|
-| `card-body-slice.md` | Agents | `python3 -m cursor_workflow project create-from-template --template slice --title "…"` |
-| `card-body-bug.md` | Agents | `create-from-template --template bug` |
-| `card-body-research.md` | researcher / project-board | `create-from-template --template research` |
+| `card-body-slice.md` | Agents | `create-from-template --template slice --title "…" --priority p1` (size/estimate default s/1) |
+| `card-body-bug.md` | Agents | `create-from-template --template bug --priority p1` |
+| `card-body-research.md` | researcher / project-board | `create-from-template --template research --priority p2` |
 | `outbox-entry.schema.json` | Agents / CLI | Validate lines in `.local/generated-data/board-outbox.jsonl` |
 | `outbox-entry.example.json` | Docs | Exemplar outbox line (never paste fake `item_id` as `--id`) |
 | `project-readme.md` | **Humans** | Copy into Project settings → README (GitHub UI). Do **not** paste into a terminal. |
@@ -29,9 +29,9 @@ Card bodies always include `## Acceptance`, `## Rollback`, and `## Notes` so `va
 
 | Need | Template / action |
 |------|-------------------|
-| slice / feature work | `create-from-template --template slice` |
-| bug fix | `create-from-template --template bug` |
-| external / corpus research | `create-from-template --template research` |
+| slice / feature work | `create-from-template --template slice --priority p1` |
+| bug fix | `create-from-template --template bug --priority p1` |
+| external / corpus research | `create-from-template --template research --priority p2` |
 | Project README | **Humans only** — paste `project-readme.md` in Project settings UI |
 
 **Do not** paste Project settings labels (`Project name`, `Short description`, `README`, …) into bash — use `cursor_workflow project` recipes instead.

@@ -8,7 +8,7 @@ description: Evidence-only enterprise architecture audit; writes workflow artifa
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + board context. If no audit card: `create-from-template --template slice --title "[AUDIT] …" --status ready` then `claim --last --agent enterprise-auditor`. Else `session-pointer.md` + `change-index.md`.
+**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + board context. If no audit card: `create-from-template --template slice --title "[AUDIT] …" --status ready --priority p1 --size s --estimate 1 --agent enterprise-auditor` then `claim --last --agent enterprise-auditor`. Else `session-pointer.md` + `change-index.md`.
 
 **Exit:** Prefer `handoff --last` / `claim --last` after create. Write alignment/audit artifacts + `change-index.md`; one line in `updates-log.md`. **Must** set audit card Status → `in_review`/`done` and put artifact paths in card Notes so implementer can continue from the board. Prefer board Status over dual-writing trackers when `board_only`. ICC still reads `.local/` — list sync actions in `enterprise-audit-actions.md`.
 
@@ -16,7 +16,7 @@ description: Evidence-only enterprise architecture audit; writes workflow artifa
 
 **Tier-1 fields (mandatory):** On create/claim/own fill Status, Priority, Size, Estimate, Start date (via `claim` / first In progress), Assignee (human — create as Issue via `item_kind_default: issue`; promote only if stuck on Draft), and Linked PR via `mention-pr` when a PR exists. `set-field --field priority --to p0|p1|p2`; `size`/`estimate` per skill Size↔Estimate table (default `s`/`1` + Notes if guessed). Chat **P3**/deferred → board `p2` + Notes `deferred`. Exit: `Priority=p? · Size=? · Estimate=?` and `Tasks: [P0]…; [P1]…; [P2]…; [P3]…`. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Tier-1 card fields contract. When proposing Ready cards, recommend Priority/Size/Estimate alongside Severity.
 
-**Board lifecycle (role):** If no audit card: `create-from-template --template slice --title "[AUDIT] …"` → `claim --last`. Exit: Status → `in_review`/`done`; put artifact paths under `.local/workflow-artifacts/…` in Notes. No product-code auto-fix.
+**Board lifecycle (role):** If no audit card: `create-from-template --template slice --title "[AUDIT] …" --priority p1 --size s --estimate 1 --agent enterprise-auditor` → `claim --last`. Exit: Status → `in_review`/`done`; put artifact paths under `.local/workflow-artifacts/…` in Notes. No product-code auto-fix.
 
 **Templates:** audit cards → `--template slice` with `[AUDIT]` title; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
 
