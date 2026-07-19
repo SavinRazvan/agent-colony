@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-19";
 const SOURCES =
-  ".cursor/agents/researcher.md · research-corpus-execution/SKILL.md · research_cli.py · RESEARCH_WORKFLOW.md";
+  ".cursor/agents/researcher.md · research-corpus-execution/SKILL.md · research_cli.py · .agents/skills/RESEARCH_WORKFLOW.md";
 
 const GOALS = [
   "Adaptive Brief from chat, peer agent Notes/handoffs, or board research card",

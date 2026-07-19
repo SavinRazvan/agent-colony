@@ -37,7 +37,7 @@ Notes:
 | Board CLI subcommands | **22** leaf commands — full table in ops doc | [project-board-collaboration.md](../operations/project-board-collaboration.md) § Project CLI subcommands |
 | EA-001 residual thin CLI | `project_cli.py` facade (~660 LOC) + parser/handlers split; board CLI modules under `.ai_infra/install/cursor_workflow/`: `project_cli.py`, `project_parser.py`, `project_handlers.py`, `project_atomics.py`, `gh_project_adapter.py`, `project_recipes.py`, `project_outbox.py` | PR #36 |
 | Doc facts validate | DOC-001…008 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
-| Kit canvases | **12** files under `canvases/`; DOC-008 counts **11** `agent-*.canvas.tsx` (excludes concept hub `board-ssot-vs-kit.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
+| Kit canvases | **13** files under `canvases/`; DOC-008 counts **11** roster/agent canvases (excludes concept hubs `board-ssot-vs-kit.canvas.tsx`, `agents-artifacts-board.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
 | MCP tools + resources | 20 tools + 6 resources | `.ai_infra/mcp_servers/workflow_mcp/` |
