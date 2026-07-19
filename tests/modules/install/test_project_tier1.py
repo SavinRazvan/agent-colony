@@ -260,7 +260,7 @@ def test_cmd_mention_pr_appends_notes(
         lambda *a, **k: ("issue", "I_x", {"title": "T"}, None),
     )
 
-    def fake_notes(root, ssot, item_id, *, agent, text, limit=100):
+    def fake_notes(root, ssot, item_id, *, agent, text, limit=100, skip_precheck=False):
         notes.append(text)
         return True, "updated", project_cli.EXIT_OK
 
