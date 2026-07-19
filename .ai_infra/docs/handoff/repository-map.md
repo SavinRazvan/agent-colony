@@ -54,7 +54,7 @@ mas-workflow-kit-project-ssot/
 ├── .local/                     Kit-dev runtime (gitignored); CI seed fixture — not consumer exemplars
 ├── tests/                      Kit-dev only — full pytest suite (1062; see IMPLEMENTATION-STATUS)
 ├── Makefile, pyproject.toml    Kit-dev only
-├── overlays/                   Optional product rules source (empty in core kit)
+├── overlays/                   Optional product rules source (`overlays/rules/project-ssot-precedence.mdc` in this product repo; consumer kit ships 6 rules via payload)
 ├── project-rules/              Deprecated alias → use overlays/rules/
 └── AGENTS.md                   Kit-dev router (consumers get AGENTS.stub.md)
 ```

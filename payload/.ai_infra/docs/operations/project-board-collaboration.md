@@ -71,6 +71,35 @@ Handoff: `item_id=<from create or --last> · @User/implementer · Status=a→b �
 
 **Attribution:** Notes use `@owner.github_user/<agent> · <ISO-8601-UTC> · …` from each collaborator’s `github.collaboration.yaml` (CLI stamps UTC; do not hand-forge timestamps). Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime.
 
+## Project CLI subcommands (Pattern A)
+
+All subcommands registered in `.ai_infra/install/cursor_workflow/project_parser.py`. Prefer recipes (`claim`, `handoff`, `guide`) over atomics.
+
+| Subcommand | Purpose | Typical agent |
+|------------|---------|---------------|
+| `status` | Show `project_ssot` config from user_settings | Any (Entry) |
+| `list` | List project items (optional `--status` filter) | Any (Entry) |
+| `create` | Create a DraftIssue (`--template` = create-from-template) | project-board, implementer, integrator |
+| `create-from-template` | Create DraftIssue from slice/bug body template | project-board, implementer |
+| `set-status` | Set item Status from YAML option ids | Power use (prefer `handoff --to`) |
+| `set-field` | Set Priority, Size, or Estimate | project-board (triage), owning agent |
+| `get` | Get one project item by id | Any |
+| `append-notes` | Append attributed line under ## Notes | Any (Exit atomic) |
+| `claim` | Pattern A: In progress + Notes (+ Start date when configured) | implementer, integrator, researcher |
+| `mention-pr` | Notes with PR URL; auto-promote Draft when configured | implementer |
+| `promote-to-issue` | Convert DraftIssue → Issue (same `PVTI_`) | implementer (before shippable PR) |
+| `handoff` | Pattern A: Notes `next=@user/agent` + optional set-status | Any (Exit) |
+| `validate-item` | Check body sections / attribution / status (exit 5 on fail) | verifier, project-board |
+| `last` | Print last saved item_id (after create/claim) | Any (with `--last` recipes) |
+| `guide` | Print safe recipes using `--last` (no placeholder ids) | Any (Entry) |
+| `doctor` | Validate project_ssot config, templates, and gh project access | Maintainer / human |
+| `set-assignee` | Assign GitHub human user (Issue-backed items) | project-board, implementer |
+| `find-by-pr` | Resolve project item id from PR number or URL | verifier, merge.py |
+| `export` | Read-only board snapshot (never mutates Status) | workflow-drift-guard, ICC |
+| `queue` | Enqueue a board op to local outbox (EXIT_QUEUED=6) | Any (rate-limit fallback) |
+| `outbox status` | Outbox counts + GraphQL remaining | Any |
+| `outbox flush` | Apply pending outbox ops when quota allows | implementer, project-board |
+
 ## workflow-drift-guard specifically
 
 1. **Read board first** (`project status`, `list --status in_progress`) so dual-write checks compare board Status vs trackers.
