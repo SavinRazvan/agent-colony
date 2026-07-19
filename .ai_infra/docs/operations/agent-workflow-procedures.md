@@ -8,7 +8,7 @@ Depends On:
  - .cursor/agents/enterprise-auditor.md
  - .ai_infra/scripts/pr/prepare.py
 Notes:
- - Do not copy gate command lists; reference prepare.py GATES.
+ - Do not copy gate command lists; reference prepare.py `resolve_gates()` (`GATES` = alias).
 -->
 
 # Agent workflow procedures (canonical)
@@ -61,7 +61,7 @@ When trailer policy changes, sync: **`AGENTS.md`**, **`README.md`**, **`.cursor/
 
 ## 4) Anti-duplication rule
 
-When **`GATES`** in `prepare.py` change, update in the **same slice**:
+When **`resolve_gates()`** / **`GATES`** in `prepare.py` change, update in the **same slice**:
 
 | Surface | Location |
 |--------|-----------|

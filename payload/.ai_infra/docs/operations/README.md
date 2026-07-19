@@ -16,7 +16,7 @@ Depends On:
 
 - [`workflow-complete.md`](workflow-complete.md) — end-to-end PR checklist
 - [`agent-workflow-procedures.md`](agent-workflow-procedures.md) — gate dedup + commit vs PR artifact provenance
-- [`gate-matrix.md`](gate-matrix.md) — prepare GATES vs kit-dev gates vs verify
+- [`gate-matrix.md`](gate-matrix.md) — prepare `resolve_gates()` vs kit-dev gates vs verify
 - [`local-workspace-layout.md`](local-workspace-layout.md) — `.local/` contract
 - [`.ai_infra/scripts/pr/README.md`](../../scripts/pr/README.md) — PR scripts and artifact paths
 

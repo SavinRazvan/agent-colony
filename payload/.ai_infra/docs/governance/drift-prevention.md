@@ -18,13 +18,13 @@ Notes:
 
 ## Default merge gates (canonical)
 
-Order and commands: **`.ai_infra/scripts/pr/prepare.py`** (`GATES`) only — **do not list** commands here; run `prepare.py` or read that file.
+Order and commands: **`.ai_infra/scripts/pr/prepare.py`** (`resolve_gates()`; `GATES` = 2-gate alias) only — **do not list** commands here; run `prepare.py` or read that file.
 
 Additionally when changing governance, workflows, `.cursor/`, `.agents/`, or tracked policy docs: **`python .ai_infra/scripts/architecture/check_governance_consistency.py`**.
 
 ## After changing workflow gates or artifact paths
 
-1. Update **`.ai_infra/scripts/pr/prepare.py`** (`GATES`) if commands change.
+1. Update **`.ai_infra/scripts/pr/prepare.py`** (`resolve_gates()` / `GATES` alias) if commands change.
 2. Update **`.cursor/rules/pr-workflow-enforcement.mdc`** (short pointers only — no long gate lists in chat).
 3. Update **`.ai_infra/docs/operations/workflow-complete.md`** and **`agent-workflow-procedures.md`** if checklist text references paths or commands.
 4. Update **`README.md`** / **`AGENTS.md`** if onboarding paths change.

@@ -102,7 +102,7 @@ my-app/
 └── .local/                         Scaffolded trackers + artifact buckets (gitignored)
 ```
 
-**Not installed:** kit `tests/modules/` (1072; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `scripts/ci/`, `scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
+**Not installed:** kit `tests/modules/` (1072; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
 
 Consumer tree detail: [PLUGIN-ARCHITECTURE.md § Installed consumer project](PLUGIN-ARCHITECTURE.md).
 
@@ -233,7 +233,7 @@ Contract: [local-workspace-layout.md](../operations/local-workspace-layout.md) �
 | `tests/modules/` | Full kit test suite |
 | `.ai_infra/docs/handoff/` | Maintainer status, plugin arch, this map |
 | `.ai_infra/docs/maintainer/` | Megadocs |
-| `.ai_infra/scripts/ci/`, `scripts/release/` | CI and plugin sync |
+| `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/` | CI and plugin sync |
 | `.ai_infra/templates/local-workspace/ci/kit-dev/` | CI tracker fixtures |
 | `Makefile`, `pyproject.toml`, `.github/` | Kit repo hygiene |
 | Repo-root `agents/`, `rules/`, `skills/` | Marketplace surface |

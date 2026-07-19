@@ -6,7 +6,7 @@ Versioned workflow kit assets live here. **`.cursor/` and `.agents/` stay at rep
 
 | Path | Role |
 |------|------|
-| `.ai_infra/scripts/pr/` | PR spine — **`prepare.py` owns `GATES`** |
+| `.ai_infra/scripts/pr/` | PR spine — **`prepare.py` owns `resolve_gates()`** (`GATES` = alias) |
 | `.ai_infra/scripts/architecture/` | Governance + debrand scanners |
 | `.ai_infra/scripts/install/` | `scaffold.py` — consumer install |
 | `.ai_infra/scripts/release/` | `sync_plugin_bundle.py` — marketplace payload |

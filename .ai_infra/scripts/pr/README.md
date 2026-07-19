@@ -5,20 +5,20 @@ Role: Hub for maintainer PR scripts and how they relate to git commit trailers v
 Used By:
  - Maintainers, `.agents/skills/pr-workflow/SKILL.md`
 Depends On:
- - scripts/pr/local_workflow_paths.py
- - scripts/pr/prepare.py
+ - .ai_infra/scripts/pr/local_workflow_paths.py
+ - .ai_infra/scripts/pr/prepare.py
  - .cursor/rules/commit-trailer-format.mdc
  - .cursor/rules/pr-workflow-enforcement.mdc
 Notes:
- - Gate order is canonical in prepare.py `GATES`.
+ - Gate order is canonical in prepare.py `resolve_gates()` (`GATES` = 2-gate back-compat alias).
 -->
 
-# PR workflow scripts (`scripts/pr/`)
+# PR workflow scripts (`.ai_infra/scripts/pr/`)
 
 | Script | Role |
 |--------|------|
 | `review.py` | Stamp `review.md` under `.local/workflow-artifacts/pr/` |
-| `prepare.py` | Run merge gates (`GATES`) and stamp `prep.md` |
+| `prepare.py` | Run merge gates via `resolve_gates()` (`GATES` = 2-gate alias) and stamp `prep.md` |
 | `merge.py` | Preconditions + stamp `merge.md` |
 | `finalize.py` | Post-merge branch cleanup |
 | `verify_publish.py` | Branch / upstream sanity before merge workflow |

@@ -70,7 +70,7 @@ Full checklist: `.ai_infra/templates/agent-integration/INTEGRATION-CHECKLIST.md`
 | User settings / pipelines | `python -m cursor_workflow contributors validate` |
 | Manifest / scaffold | `make install-dry-run` |
 | Plugin bundle | `make sync-plugin` && `make check-plugin` |
-| PR-ready slice | `make gates` or `prepare.py` GATES |
+| PR-ready slice | `make gates` or `prepare.py` (`resolve_gates()`) |
 
 ## Escalation
 
