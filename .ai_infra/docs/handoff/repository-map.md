@@ -54,7 +54,7 @@ mas-workflow-kit-project-ssot/
 ├── .local/                     Kit-dev runtime (gitignored); CI seed fixture — not consumer exemplars
 ├── tests/                      Kit-dev only — full pytest suite (1062; see IMPLEMENTATION-STATUS)
 ├── Makefile, pyproject.toml    Kit-dev only
-├── overlays/                   Optional product rules source (`overlays/rules/project-ssot-precedence.mdc` in this product repo; consumer kit ships 6 rules via payload)
+├── overlays/                   Optional product rules source (`overlays/rules/project-ssot-precedence.mdc`); this product payload ships **7** rules (6 kit + SSOT precedence)
 ├── project-rules/              Deprecated alias → use overlays/rules/
 └── AGENTS.md                   Kit-dev router (consumers get AGENTS.stub.md)
 ```
@@ -88,7 +88,7 @@ my-app/
 ├── AGENTS.md                       Stub router (from template)
 ├── .cursor/
 │   ├── agents/                     8 agents (from payload; incl. project-board)
-│   ├── rules/                      6 rules
+│   ├── rules/                      7 rules (6 kit + project-ssot-precedence)
 │   └── skills/                     11 canonical skills only (no repo-root skills/ merge)
 ├── .agents/skills/                 5 maintainer slash folders (+ audit-alignment stub)
 ├── .ai_infra/                      Slim bundle (manifest copy_ai_infra only)
@@ -177,7 +177,7 @@ Merged view for Cursor plugin loading from GitHub. **Not** copied as a single tr
 
 ---
 
-## Rules — consumer `.cursor/rules/` (6 kit) · kit-dev repo (7)
+## Rules — consumer `.cursor/rules/` (7 in this product payload) · kit-dev repo (7)
 
 | Rule | alwaysApply | Kit-dev `.cursor/rules/` |
 |------|:-----------:|:------------------------:|
@@ -187,9 +187,9 @@ Merged view for Cursor plugin loading from GitHub. **Not** copied as a single tr
 | `file-docstring-header-relations.mdc` | Yes | Yes |
 | `local-artifact-protection.mdc` | Yes | Yes |
 | `advisory-audit-alignment-enforcement.mdc` | Yes | Yes |
-| `project-ssot-precedence.mdc` | — | Yes (product repo + overlay at install) |
+| `project-ssot-precedence.mdc` | Yes | Yes (product SSOT; in payload for this kit) |
 
-Product overlays: `overlays/rules/*.mdc` → consumer `.cursor/rules/` at install (`project-ssot-precedence` ships in this product repo).
+Product overlays: `overlays/rules/*.mdc` remains the source for domain overlays; **this product** also ships `project-ssot-precedence` in `payload/.cursor/rules/` (7 total).
 
 ---
 

@@ -14,6 +14,8 @@ description: Independent-governed helper — list/create/move GitHub Project SSO
 
 **Board rights:** Status + Notes on the card you touch. Tier-1: claim may set Start date (UTC); triage may set Estimate; use `mention-pr` for PR Notes; promote via `project promote-to-issue --last --agent project-board` (or `mention-pr` auto when `promote_to_issue_on_pr`) before PR — do not leave shippable work as Draft through merge — do not set Iteration/End date/Reviewers by default. Prefer `project claim` / `project handoff --agent project-board` (→ `@owner.github_user/project-board`); atomics `append-notes --agent project-board` OK. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
 
+**Priority (mandatory):** Never leave Priority empty on a card you create or own — `project set-field --field priority --to p0|p1|p2 --last` (YAML options only; chat **P3**/deferred → board `p2` + Notes `deferred`). Exit handoff includes `Priority=p?` and `Tasks: [P0]…; [P1]…; [P2]…; [P3]…`. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Priority contract.
+
 **Board lifecycle (role):** Triage Ready (human owns Ready *ordering*). On new/moved cards set Priority/Size/Estimate via `set-field`. Pattern A: `create-from-template` → `claim --last` → hand off to **implementer** with real `item_id`.
 
 **Templates:** feature/`chore/` → `--template slice`; defect/`fix/` → `--template bug`; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.

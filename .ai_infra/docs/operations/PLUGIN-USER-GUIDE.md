@@ -196,6 +196,16 @@ Full list: [consumer-quickstart.md](consumer-quickstart.md) § Terminal commands
 > **Deprecated (2026-07-19).** Prefer the **GitHub Project board** (`python3 -m cursor_workflow project status`)
 > and **Ctrl+Shift+P → Open Canvas**. HTML under `.local/agents-control-center/` is offline fallback only (ADR-008).
 
+### Kit canvases (Open Canvas)
+
+Versioned under repo `canvases/*.canvas.tsx` (git SSOT). **Rendering** uses Cursor’s managed path:
+
+```text
+~/.cursor/projects/<workspace-id>/canvases/*.canvas.tsx
+```
+
+Clicking a file in the repo explorer opens **source**, not the visualization. To view diagrams: **Ctrl+Shift+P → Open Canvas** (pick e.g. `agents-artifacts-board` or an `agent-*` canvas). See hub canvas `canvases/agents-artifacts-board.canvas.tsx` for the same note.
+
 Legacy browser UI still ships on activate. **Do not open HTML via `file://`**. From project root:
 
 ```bash

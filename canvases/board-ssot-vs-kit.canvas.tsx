@@ -118,7 +118,7 @@ const ABC_SLICES = [
       "project export → read-only snapshot",
       ".local/generated-data/project-board-snapshot.json",
       "Never writes Status — DRIFT-010 stale PR / board drift",
-      "ICC Project Board tab (EA-010) reads export only",
+      "Deprecated HTML ICC Project Board tab (EA-010) — offline export only; prefer live board + Open Canvas",
     ],
   },
 ];
@@ -600,7 +600,7 @@ export default function BoardSsotVsKitCanvas() {
               ["Audit / PR artifacts under .local/", "Evidence bundles stay in-repo"],
               ["Export snapshot under generated-data/", "Read-only cache — not SSOT"],
               ["Offline fallback trackers", "Only when project_ssot disabled or no gh"],
-              ["ICC board panel", "EA-010 shipped — reads export only"],
+              ["Deprecated HTML ICC board panel", "EA-010 — offline export only; prefer live board + Open Canvas"],
             ]}
           />
         </Stack>
@@ -633,7 +633,7 @@ export default function BoardSsotVsKitCanvas() {
               <Text size="small">BOARD-TIER1: claim Start date + Estimate set-field + mention-pr</Text>
               <Text size="small">EA-001: project_cli split (atomics/adapter/recipes/outbox)</Text>
               <Text size="small">EA-004: pyright blocking in kit-quality CI</Text>
-              <Text size="small">EA-010: ICC Project Board tab (read-only export snapshot)</Text>
+              <Text size="small">EA-010: deprecated HTML ICC tab (offline export; prefer board + Open Canvas)</Text>
             </Stack>
           </CardBody>
         </Card>
