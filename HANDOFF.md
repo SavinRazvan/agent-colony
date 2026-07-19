@@ -107,7 +107,7 @@ Do **not** publish marketplace releases from this repo against upstream `mas-wor
 
 Scheduled only when claimed from the Project (Backlog → Ready).
 
-- **In progress / Ready:** marketplace publish (**EA-019**) — live Cursor Marketplace listing; prep checklist in [marketplace-publish.md](.ai_infra/docs/handoff/marketplace-publish.md).
+- **Deferred (Backlog):** marketplace publish (**EA-019**) — **prep done** (PR #72 + dry-run `marketplace-dry-run-2026-07-19`); **live public Marketplace postponed** (maintainer 2026-07-19). Consumers use `/add-plugin` until listed. Checklist: [marketplace-publish.md](.ai_infra/docs/handoff/marketplace-publish.md).
 - **Closed hygiene (2026-07-19):** EA-020 `gh_project_adapter` thinning (EA-001 + coverage enough); EA-024 ICC module-map tab (ICC deprecated; map at `.local/module-map.md`).
 - **Prose-only (no board card):** always-on GitHub Actions bots; MCP-before-`gh` for board writes.
 
@@ -119,4 +119,4 @@ Mirrored from `mas-workflow-kit` on 2026-07-17 (`1cb6dd7`). Board SSOT, Pattern 
 
 ---
 
-**Last updated:** 2026-07-19 · **Next:** complete EA-019 Marketplace publish (or `project status` → claim Ready)
+**Last updated:** 2026-07-19 · **Next:** `project status` → claim Ready (or schedule deferred Backlog, e.g. EA-019 live Marketplace when ready)
