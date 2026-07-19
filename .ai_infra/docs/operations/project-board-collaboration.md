@@ -81,8 +81,8 @@ All subcommands registered in `.ai_infra/install/cursor_workflow/project_parser.
 |------------|---------|---------------|
 | `status` | Show `project_ssot` config from user_settings | Any (Entry) |
 | `list` | List project items (optional `--status` filter) | Any (Entry) |
-| `create` | Create a DraftIssue (`--template` = create-from-template) | project-board, implementer, integrator |
-| `create-from-template` | Create DraftIssue from slice/bug body template | project-board, implementer |
+| `create` | Create Issue (or Draft if `item_kind_default: draft`) | project-board, implementer, integrator |
+| `create-from-template` | Create Issue from slice/bug body template (default `item_kind_default: issue`) | project-board, implementer |
 | `set-status` | Set item Status from YAML option ids | Power use (prefer `handoff --to`) |
 | `set-field` | Set Priority, Size, or Estimate | **Mandatory** on create/claim/own (`priority` + `size` + `estimate`); see skill § Tier-1 card fields contract |
 | `get` | Get one project item by id | Any |

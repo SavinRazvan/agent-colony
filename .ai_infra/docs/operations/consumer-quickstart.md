@@ -17,6 +17,8 @@ Notes:
 
 Install **MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) into your project in a few minutes. No special git setup required.
 
+**Product promise:** Install the plugin → open **your app repo** → **`/workflow-activate`** installs the **full kit** (agents, skills, rules, CLI, `.local/` scaffold). You only customize `.local/user_settings/github.collaboration.yaml` (your name, **your** GitHub Project field ids, `default_repo`). Same agent/board workflow as kit-dev after doctor/status pass. Board must be kit-shaped — wiring steps: [PLUGIN-USER-GUIDE § Product promise](PLUGIN-USER-GUIDE.md#product-promise).
+
 > **Full manual:** [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) — plugin vs activate, complete file tree, use-case matrix, PR and audit chapters.
 
 ---

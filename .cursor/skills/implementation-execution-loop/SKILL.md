@@ -26,7 +26,7 @@ New or continued `feature/` | `fix/` | `chore/` work; recovery from blocked slic
 3. Implement: contracts → code → tests. **New Python/sources:** module header per `.cursor/rules/file-docstring-header-relations.mdc`.
 4. **Gates:** run commands in `.ai_infra/scripts/pr/prepare.py` `GATES` (plus `check_governance_consistency.py` when governance changes). Prefer scoped `pytest` with a short reason.
 5. **Commits:** trailers per `.cursor/rules/commit-trailer-format.mdc` (`Author`, `GitHub-User`; `Assisted-by:` when applicable; no `Made-with:`).
-6. **Close (board-indexed):** when a PR exists → `mention-pr --pr N` (promotes Draft); ensure Assignee via `set-assignee` after promote if still empty; `set-status --to in_review|done`; print `item_id=… · Status=… · Priority=p? · Size=? · Estimate=? · next=…` and `Tasks: [P…]…`. Do **not** dual-write `work-tracker.md` under `board_only`. Fallback: close tracker + `updates-log.md`. Run **`make drift-validate`**; invoke **`workflow-drift-guard`** when P0/P1 findings need artifacts (drift-guard also reads/updates the board).
+6. **Close (board-indexed):** when a PR exists → `mention-pr --pr N`; ensure Assignee via claim/`set-assignee --login` (Issue-at-create); `set-status --to in_review|done`; print `item_id=… · Status=… · Priority=p? · Size=? · Estimate=? · next=…` and `Tasks: [P…]…`. Do **not** dual-write `work-tracker.md` under `board_only`. Fallback: close tracker + `updates-log.md`. Run **`make drift-validate`**; invoke **`workflow-drift-guard`** when P0/P1 findings need artifacts (drift-guard also reads/updates the board).
 
 ## Output
 

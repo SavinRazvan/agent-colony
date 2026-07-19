@@ -78,7 +78,7 @@ When you **create** or **own** a Project card, fill the Tier-1 fields below. Do 
 | **Size** | Create / claim / own | `set-field --field size --to xs\|s\|m\|l\|xl` | Before coding; default `s` if unknown (note guess in Notes) |
 | **Estimate** | Create / claim / own | `set-field --field estimate --to N` | Integer ≥ 0; default `1` if unknown (note guess in Notes) |
 | **Start date** | Claim | `claim --last --agent <agent>` | Requires `conventions.set_start_date_on_claim: true`; if WARN, retry or set via UI — do not ignore silently |
-| **Assignee** | Claim / triage (human login) | `claim` (when `conventions.claim: set_assignee`) or `set-assignee --user @owner` | **GitHub Assignees need an Issue** — DraftIssue cannot hold assignees. If claim WARNs: `promote-to-issue --last` then `set-assignee`, **or** keep Notes `@owner.github_user/<agent>` until promote. Never leave shippable work Draft through merge. |
+| **Assignee** | Claim / triage (human login) | `claim` (when `conventions.claim: set_assignee`) or `set-assignee --login …` | **Create as Issue** (`item_kind_default: issue`) so Assignees work on claim. Draft is scratch-only — if you must use Draft, promote before assignee/PR. |
 | **Linked PR** | When a PR exists | `mention-pr --pr N --last --agent <agent>` | Before review handoff / merge; auto-promotes Draft when `promote_to_issue_on_pr` |
 
 ```bash
@@ -133,19 +133,19 @@ Rules:
 | **Estimate** | Create / claim / own | `project set-field --field estimate --to N` | **Mandatory** — default `1` if unknown |
 | **Size** | Create / claim / own | `project set-field --field size --to xs\|s\|m\|l\|xl` | **Mandatory** — default `s` if unknown |
 | **Priority** | Create / claim / own | `project set-field --field priority --to p0\|p1\|p2` | **Mandatory** — chat P3 → `p2` + Notes `deferred` |
-| **Assignee** | Claim / after promote | `claim` / `set-assignee` | **Mandatory when Issue-backed**; Draft → promote first or Notes `@user/agent` until promote |
+| **Assignee** | Claim / after create | `claim` / `set-assignee --login` | **Mandatory** — requires Issue-at-create (`item_kind_default: issue`); Draft cannot hold Assignees |
 | **Linked PR** | PR open | `project mention-pr --pr N --last` | **Mandatory when a PR exists** for the card |
-| **Promote Draft→Issue** | Before PR / assignee | `project promote-to-issue --last --agent <name>` | Enables Assignees + Linked PRs; **claim does NOT auto-promote** |
+| **Promote Draft→Issue** | Only if card is still Draft | `project promote-to-issue --last --agent <name>` | Prefer never needing this — create as Issue |
 | **Out of scope (agents default)** | — | — | Iteration, Labels, Reviewers, End date — human / UI only |
 
 ### Issue lifecycle (Draft vs Issue)
 
 | Path | CLI / config | Notes |
 |------|--------------|-------|
-| Default create | `create-from-template` + `item_kind_default: draft` | DraftIssue on the Project |
-| Issue at create | `create-from-template` + `item_kind_default: issue` | `gh issue create` + `gh project item-add` |
-| Explicit promote | `promote-to-issue --last --agent <name>` | Same `PVTI_`; claim does **not** auto-promote |
-| Auto on PR | `mention-pr` | When `promote_to_issue_on_pr: true` (default) |
+| Default create | `create-from-template` + `item_kind_default: issue` | **Issue** on the Project + linked repo (`default_repo`) — Assignees + Linked PRs work from claim |
+| Scratch only | `item_kind_default: draft` (override) | DraftIssue — no Assignees until `promote-to-issue`; do **not** use for shippable work |
+| Explicit promote | `promote-to-issue --last --agent <name>` | Same `PVTI_`; needed only if card was created as Draft |
+| Auto on PR | `mention-pr` | When `promote_to_issue_on_pr: true` (still useful if a Draft slipped through) |
 
 ### Rules
 

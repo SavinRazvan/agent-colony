@@ -20,7 +20,9 @@ owner:
 
 # ── Project SSOT (GitHub Project board) ──────────────────────────────────────
 # Agents: when enabled, read this before local plan.md / work-tracker.md.
-# Discover ids: gh project view <N> --owner <login> · gh project field-list <N> --owner <login>
+# Your board must be kit-shaped (Status backlog|ready|in_progress|in_review|done;
+# Priority p0–p2; Size xs–xl; Estimate number; Start date). Custom layouts are not auto-supported.
+# Discover ids (no bootstrap CLI): gh project view <N> --owner <login> · gh project field-list <N> --owner <login>
 project_ssot:
   enabled: false                          # set true after filling board identity + field ids
 
@@ -31,7 +33,7 @@ project_ssot:
   url: https://github.com/users/your-github-login/projects/1
   project_id: PVT_kwPLACEHOLDER           # from gh project view --format json
 
-  # Default code repo when a card has no Repository field
+  # Default code repo for Issue-at-create (item_kind_default: issue) and Linked PRs
   default_repo: your-org/your-repo
 
   # How agents call the Projects API
@@ -93,7 +95,7 @@ project_ssot:
     claim: set_assignee                   # set_assignee | title_prefix | none
     set_start_date_on_claim: true         # no-op if start_date.field_id missing
     one_in_progress_per_assignee: true
-    item_kind_default: draft              # draft | issue
+    item_kind_default: issue              # issue (default — Assignees + Linked PRs) | draft (scratch only)
     promote_to_issue_on_pr: true
     # Board Notes: @github_user/agent (owner.github_user from this file — not project_ssot.owner)
     attribution_format: "{github_user}/{agent}"

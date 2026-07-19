@@ -333,7 +333,7 @@ def run_doctor(args: argparse.Namespace) -> int:
             print(f'doctor: WARN — fields.{key}.field_id missing (Tier-1 claim/estimate)', file=sys.stderr)
     conventions = ssot.get('conventions') if isinstance(ssot.get('conventions'), dict) else {}
     print(f'set_start_date_on_claim: {conventions.get('set_start_date_on_claim', True)}')
-    print(f'item_kind_default: {conventions.get('item_kind_default', 'draft')}')
+    print(f'item_kind_default: {conventions.get('item_kind_default', 'issue')}')
     print(f'promote_to_issue_on_pr: {conventions.get('promote_to_issue_on_pr', True)}')
     default_repo = str(ssot.get('default_repo') or '').strip()
     if default_repo:
