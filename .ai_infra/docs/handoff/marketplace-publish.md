@@ -220,14 +220,19 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 ### Live marketplace (EA-v4-002 / EA-019 — manual when channel ready)
 
-Local pre-publish evidence: run `make gates` + `make smoke-consumer` / `make install-dry-run` on the release tag, then record PASS under `.local/workflow-artifacts/enterprise-architecture-audit/marketplace-dry-run-<date>.md` (prior 2026-06-29 dry-run log is not present in this workspace — recreate rather than cite a missing path).
+Local pre-publish evidence: run `make gates` + `make smoke-consumer` / `make install-dry-run` on the release tag, then record PASS under `.local/workflow-artifacts/enterprise-architecture-audit/marketplace-dry-run-<date>.md`.
+
+**Prep re-verified 2026-07-19 (EA-019):** dry-run PASS — `.local/workflow-artifacts/enterprise-architecture-audit/marketplace-dry-run-2026-07-19.md` (+ `.log`). Listing copy refresh on `main` via PR #72 (1072 tests / kit `0.4.0`).
+
+**Maintainer decision 2026-07-19:** **no public Marketplace submit for now.** Consumers stay on GitHub `/add-plugin`. Live upload remains deferred until explicitly re-scheduled on the board (EA-019 Backlog).
 
 **Not yet exercised:** upload/publish to the live Cursor Marketplace channel. When credentials and channel are available:
 
-1. Complete **Pre-publish** steps above on a release tag
+1. Complete **Pre-publish** steps above on a release tag (or reuse a fresh dry-run)
 2. Follow Cursor Marketplace maintainer docs for your account tier
 3. Record publish URL + version in `.local/workflow-artifacts/enterprise-architecture-audit/` (no secrets in git)
 4. Re-run `enterprise-auditor` focused pass on deployability category
+5. Flip PLUGIN-USER-GUIDE “recommended until Marketplace” once the listing is live
 
 Until live publish, **deployability score remains capped** at local dry-run evidence (see enterprise audit v5 §7 EA-v4-002).
 
