@@ -84,7 +84,7 @@ All subcommands registered in `.ai_infra/install/cursor_workflow/project_parser.
 | `create` | Create a DraftIssue (`--template` = create-from-template) | project-board, implementer, integrator |
 | `create-from-template` | Create DraftIssue from slice/bug body template | project-board, implementer |
 | `set-status` | Set item Status from YAML option ids | Power use (prefer `handoff --to`) |
-| `set-field` | Set Priority, Size, or Estimate | project-board (triage), owning agent — **Priority mandatory** on create/claim (`--to p0\|p1\|p2`; chat P3 → `p2` + Notes `deferred`; see skill § Priority contract) |
+| `set-field` | Set Priority, Size, or Estimate | **Mandatory** on create/claim/own (`priority` + `size` + `estimate`); see skill § Tier-1 card fields contract |
 | `get` | Get one project item by id | Any |
 | `append-notes` | Append attributed line under ## Notes | Any (Exit atomic) |
 | `claim` | Pattern A: In progress + Notes (+ Start date when configured) | implementer, integrator, researcher |
