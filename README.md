@@ -9,7 +9,7 @@
 | | |
 |--|--|
 | **Product repo** | [mas-workflow-kit-project-ssot](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot) |
-| **Version** | `0.4.0` · **Tests** · 1085 · **Agents** · 8 · **Rules** · **7 universal** |
+| **Version** | `0.4.0` · **Tests** · 1121 · **Agents** · 8 · **Rules** · **7 universal** |
 | **Board (kit-dev)** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
 | **Standing** | **STANDALONE** — permanent product; lineage only from [mas-workflow-kit](https://github.com/SavinRazvan/mas-workflow-kit) (`v0.4.0` / `8a779fa`) |
 

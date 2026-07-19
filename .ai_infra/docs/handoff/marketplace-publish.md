@@ -208,7 +208,9 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-07-19 DOC-CANVAS-ALIGN, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` — **1062** tests collected (1060 passed + 2 skipped), **6208** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts (8 / 11 / 7). Superseded by EA-019 refresh below.
 
-**Listing copy refresh (2026-07-19 EA-019 / PR #70):** Re-verified against `IMPLEMENTATION-STATUS.md` on `main` post Tier-1 Size/Estimate + Start date — **1072** tests collected (1070 passed + 2 skipped), **6208** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts unchanged (**8** / **11** / **7**); kit version **0.4.0**. Prior 1062 line superseded. Ship Marketplace against `0.4.0` (no version bump in this slice).
+**Listing copy refresh (2026-07-19 EA-019 / PR #70, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` on `main` post Tier-1 Size/Estimate + Start date — **1072** tests collected (1070 passed + 2 skipped), **6208** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts unchanged (**8** / **11** / **7**); kit version **0.4.0**. Superseded by COV-100 doc-align refresh below.
+
+**Listing copy refresh (2026-07-19 COV-100 doc-align):** Re-verified against `IMPLEMENTATION-STATUS.md` on `main` post G1–G5 github-api-safety + `test_project_cov100_gaps.py` — **1121** tests collected (1119 passed + 2 skipped), **6503** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts unchanged (**8** / **11** / **7**); kit version **0.4.0**. Prior EA-019 line superseded.
 
 **Consumer smoke (2026-07-08):** Real app **Smart-Notes** — `/add-plugin` + chat **`/workflow-activate`**, `health`/`gates`/`integrate`/`mcp validate` PASS, kit smoke **1** of **120** pytest during gates. Local evidence file was not retained in this workspace; recreate with `make smoke-consumer` and write under `.local/workflow-artifacts/release/smoke-consumer-<app>-<date>.md` on the next consumer run.
 
@@ -222,7 +224,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 Local pre-publish evidence: run `make gates` + `make smoke-consumer` / `make install-dry-run` on the release tag, then record PASS under `.local/workflow-artifacts/enterprise-architecture-audit/marketplace-dry-run-<date>.md`.
 
-**Prep re-verified 2026-07-19 (EA-019):** dry-run PASS — `.local/workflow-artifacts/enterprise-architecture-audit/marketplace-dry-run-2026-07-19.md` (+ `.log`). Listing copy refresh on `main` via PR #72 (1072 tests / kit `0.4.0`).
+**Prep re-verified 2026-07-19 (EA-019, archival):** dry-run PASS — `.local/workflow-artifacts/enterprise-architecture-audit/marketplace-dry-run-2026-07-19.md` (+ `.log`). Listing copy refresh on `main` via PR #72 (1072 tests / kit `0.4.0`). Superseded by COV-100 doc-align counts (1121 / 6503 stmts).
 
 **Maintainer decision 2026-07-19:** **no public Marketplace submit for now.** Consumers stay on GitHub `/add-plugin`. Live upload remains deferred until explicitly re-scheduled on the board (EA-019 Backlog).
 
