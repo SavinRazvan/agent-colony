@@ -129,7 +129,7 @@ Discover ids manually: `gh project view <N> --owner <login>` (for `project_id`) 
 | 3. GitHub auth | Ensure `gh` can reach Projects: `gh auth refresh -h github.com -s read:project,project` (keep existing **`repo`** scopes). |
 | 4. Doctor + status | `python3 -m cursor_workflow project doctor` (config + templates + `gh` access) then `python3 -m cursor_workflow project status` (shows enabled board). |
 | 5. First card | `python3 -m cursor_workflow project create-from-template --template slice --title "…" --priority p1 --size s --estimate 1 --agent implementer` → `claim --last --agent implementer` (sets Start date). Prefer `project guide`. |
-| 6. Rate-limit buffer | If a write returns **EXIT_QUEUED (6)**, do not retry-loop — continue local evidence; after GraphQL quota recovers run `python3 -m cursor_workflow project outbox status` then `project outbox flush`. Outbox is a local buffer, not a second Status SSOT. |
+| 6. Rate-limit buffer | Writes may **precheck** GraphQL quota (cached REST) or queue on throttle / Forbidden / 429. If a write returns **EXIT_QUEUED (6)**, do **not** retry-loop — continue local evidence; after quota recovers run `python3 -m cursor_workflow project outbox status` then `project outbox flush`. Configure `project_ssot.outbox` (`precheck_writes`, `dedupe_pending`, …) in collaboration YAML. Outbox is a local buffer, not a second Status SSOT. |
 
 Daily Entry after onboarding: `project status` (board first) — see [project-board-collaboration.md](project-board-collaboration.md).
 
@@ -295,7 +295,7 @@ Every session:
 
 1. When `project_ssot.enabled`: `python3 -m cursor_workflow project status` (board first); else `.local/index-and-planning/current/session-pointer.md`
 2. Board card Status/Notes — attribution `@user/agent · <ISO-8601-UTC> · …` (CLI stamps); local `history/continuity-index.md` rolls ≥3 days (local `plan.md` / `work-tracker.md` = offline fallback under `board_only`)
-3. Rate-limit: EXIT_QUEUED → `python3 -m cursor_workflow project outbox flush` after quota recovers (`project_ssot.outbox` in collaboration YAML)
+3. Rate-limit / precheck: EXIT_QUEUED (6) → do not retry-loop; `python3 -m cursor_workflow project outbox flush` after quota recovers (`project_ssot.outbox` in collaboration YAML — includes `precheck_writes` / `dedupe_pending`)
 4. **`/implementer`** (or specialist agent from §6)
 5. Optional: [Control Center dashboards (deprecated)](#5-control-center-dashboards-deprecated) — `http.server` + full URL in §5
 

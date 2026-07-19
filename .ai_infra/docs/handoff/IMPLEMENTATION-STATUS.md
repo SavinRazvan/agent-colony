@@ -34,7 +34,7 @@ Notes:
 | Timestamped board Notes (CONT-TS) | `@user/agent · <ISO-8601-UTC> · …` via CLI (`claim`/`handoff`/`append-notes`) | `project_recipes.py` / `project_cli.py` + skill § Notes |
 | Tier-1 Size/Estimate + Start date | Size↔Estimate **points** table in skill; Start date on claim / `set-status` / `handoff` → `in_progress`; `create-from-template --priority` required | `project-board-ssot` skill · `project_atomics.ensure_start_date_if_starting` · PR #70 |
 | Local continuity-index | Rolling ≥3-day UTC rows; board Notes = full card lifetime | `history/continuity-index.md` (+ exemplar) |
-| Board outbox (rate-limit) | `project queue` / `outbox status|flush`; EXIT_QUEUED=6; **58 mocked unit tests** | `project_outbox.py` + `project_atomics.py` / `project_cli.py` + `tests/modules/install/test_project_outbox.py` |
+| Board outbox (rate-limit) | `project queue` / `outbox status|flush`; EXIT_QUEUED=6; precheck + Forbidden/429 queue + dedupe; **88 mocked unit tests** | `project_outbox.py` + `project_atomics.py` / `project_cli.py` + `tests/modules/install/test_project_outbox.py` |
 | Board CLI subcommands | **22** leaf commands — full table in ops doc | [project-board-collaboration.md](../operations/project-board-collaboration.md) § Project CLI subcommands |
 | EA-001 residual thin CLI | `project_cli.py` facade (~660 LOC) + parser/handlers split; board CLI modules under `.ai_infra/install/cursor_workflow/`: `project_cli.py`, `project_parser.py`, `project_handlers.py`, `project_atomics.py`, `gh_project_adapter.py`, `project_recipes.py`, `project_outbox.py` | PR #36 |
 | Doc facts validate | DOC-001…008 | `.ai_infra/scripts/architecture/check_doc_facts.py` |

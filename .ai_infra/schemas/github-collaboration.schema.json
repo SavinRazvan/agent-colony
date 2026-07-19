@@ -40,7 +40,7 @@
         "outbox": {
           "type": "object",
           "additionalProperties": true,
-          "description": "Local JSONL buffer for board writes when GraphQL is rate-limited (not a second SSOT)",
+          "description": "Local JSONL buffer for board writes when GraphQL is rate-limited or precheck fails (not a second SSOT). EXIT_QUEUED=6 = soft-success; do not retry-loop.",
           "properties": {
             "enabled": { "type": "boolean" },
             "path": {
@@ -50,7 +50,7 @@
             "min_graphql_remaining": {
               "type": "integer",
               "minimum": 0,
-              "description": "Refuse flush (and warn in doctor) below this GraphQL remaining"
+              "description": "Refuse flush / precheck-queue when GraphQL remaining is below this"
             },
             "max_flush_per_run": {
               "type": "integer",
@@ -61,6 +61,23 @@
               "type": "integer",
               "minimum": 0,
               "description": "Sleep between flush ops after soft failures"
+            },
+            "precheck_writes": {
+              "type": "boolean",
+              "description": "Cached REST rate_limit probe before Pattern A writes (default true)"
+            },
+            "quota_cache_ttl_seconds": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "TTL for GraphQL remaining cache; avoids REST spam"
+            },
+            "quota_cache_path": {
+              "type": "string",
+              "description": "Repo-relative path to graphql-quota-cache.json"
+            },
+            "dedupe_pending": {
+              "type": "boolean",
+              "description": "Reuse one pending outbox row for identical op+item+payload"
             }
           }
         },
