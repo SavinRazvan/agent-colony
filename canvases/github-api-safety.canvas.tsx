@@ -18,20 +18,67 @@ import {
 
 /**
  * Inventory of GitHub API hammering / safety protections in MAS Workflow Kit.
- * Source: project_outbox.py, project_atomics, agent Board-rights blocks, ADR-008.
- * Verified: 2026-07-19
+ * Source: project_outbox.py, project_cli/handlers, agent Board-rights, ADR-008.
+ * Verified: 2026-07-19 — post PR #83 (G1–G5) + #85 (soft-align docs/schema)
  */
+
+const FIXED = [
+  {
+    id: "G1",
+    what: "Cached REST rate_limit precheck (TTL 45s) before Pattern A writes — EXIT_QUEUED without GraphQL",
+  },
+  {
+    id: "G2",
+    what: "Queue Forbidden / 429 / secondary throttle; never queue missing-scopes",
+  },
+  {
+    id: "G3",
+    what: "Stronger CODE=6 messaging in skill + rule (do not retry-loop)",
+  },
+  {
+    id: "G4",
+    what: "Ops docs + exemplar + schema document precheck / dedupe / throttle",
+  },
+  {
+    id: "G5",
+    what: "Pending outbox dedupe by op + item_id + payload fingerprint",
+  },
+] as const;
 
 const HARD = [
   {
+    layer: "Write precheck (G1)",
+    what: "guard_write_or_queue: cached GraphQL remaining; enqueue if < min",
+    where: "project_cli + project_handlers (claim/handoff/set-*/mention-pr/…)",
+    enforces: "Code",
+  },
+  {
+    layer: "Quota cache",
+    what: "REST rate_limit cached (TTL); note_successful_write refreshes",
+    where: "project_outbox read/write_quota_cache",
+    enforces: "Code",
+  },
+  {
+    layer: "Throttle detector (G2)",
+    what: "rate-limit / 429 / Forbidden — exclude missing required scopes",
+    where: "is_queueable_gh_throttle",
+    enforces: "Code",
+  },
+  {
     layer: "Outbox enqueue",
-    what: "On rate-limit stderr → JSONL queue; EXIT_QUEUED (6)",
-    where: "project_outbox.maybe_enqueue_on_gh_fail",
+    what: "On throttle stderr → JSONL; EXIT_QUEUED (6); CODE=6 do-not-retry text",
+    where: "maybe_enqueue_on_gh_fail / queued_message",
+    enforces: "Code",
+  },
+  {
+    layer: "Pending dedupe (G5)",
+    what: "Same op+item+payload → one pending row when dedupe_pending",
+    where: "enqueue_op / find_duplicate_pending",
     enforces: "Code",
   },
   {
     layer: "Flush quota gate",
-    what: "Refuse flush if GraphQL remaining < min (default 200)",
+    what: "Refuse flush if remaining < min_graphql_remaining (default 200)",
     where: "flush_outbox + outbox status",
     enforces: "Code",
   },
@@ -43,14 +90,8 @@ const HARD = [
   },
   {
     layer: "Flush backoff",
-    what: "sleep(retry_backoff_seconds) after non-RL failure (default 30s)",
+    what: "sleep(retry_backoff_seconds) after soft apply failure (default 30s)",
     where: "flush_outbox",
-    enforces: "Code",
-  },
-  {
-    layer: "RL detector",
-    what: "Regex: rate limit / secondary rate limit",
-    where: "is_rate_limit_error",
     enforces: "Code",
   },
   {
@@ -76,18 +117,23 @@ const HARD = [
 const SOFT = [
   {
     layer: "Agent Board rights",
-    what: "EXIT_QUEUED → do not hammer; outbox status/flush",
+    what: "EXIT_QUEUED / precheck / Forbidden → do not hammer; outbox flush later",
     where: "All 8 agent cards",
   },
   {
-    layer: "Skill checklist",
-    what: "Exit: no retry loop; confirm outbox status",
+    layer: "Skill checklist (G3)",
+    what: "Exit: CODE=6 = soft-success; no retry loop; outbox status",
     where: "project-board-ssot/SKILL.md",
   },
   {
-    layer: "Always-apply rule",
-    what: "EXIT_QUEUED → outbox; no GraphQL hammer; no dual-write",
+    layer: "Always-apply rule (G3)",
+    what: "EXIT_QUEUED covers precheck + Forbidden/429; no dual-write",
     where: "project-ssot-precedence.mdc",
+  },
+  {
+    layer: "Ops + exemplar (G4)",
+    what: "Precheck / dedupe / throttle documented for consumers",
+    where: "project-board-collaboration · PLUGIN-USER-GUIDE · collab YAML",
   },
   {
     layer: "Researcher anti-loop",
@@ -103,37 +149,23 @@ const SOFT = [
 
 const GAPS = [
   {
-    gap: "Raw gh / GraphQL outside CLI",
-    risk: "Bypasses outbox entirely",
-    note: "Policy-only — Pattern A CLI required; cannot sandbox Cursor shell",
+    gap: "Raw gh / GraphQL outside Pattern A CLI",
+    risk: "Bypasses outbox + precheck entirely",
+    note: "Policy-only — require cursor_workflow project …; cannot sandbox Cursor shell",
   },
   {
     gap: "EXIT_QUEUED obedience is soft",
     risk: "Agent can ignore code 6 and re-run claim",
-    note: "Stronger CODE=6 messaging; LLM compliance still soft",
-  },
-] as const;
-
-const FIXED = [
-  {
-    id: "G1",
-    what: "Cached REST rate_limit precheck (TTL 45s) before Pattern A writes",
-  },
-  {
-    id: "G2",
-    what: "Queue Forbidden/429 throttle; exclude missing-scopes",
-  },
-  {
-    id: "G5",
-    what: "Pending outbox dedupe by op+item+payload",
+    note: "Messaging hardened (G3); LLM compliance still soft",
   },
 ] as const;
 
 const CONFIG = [
   ["outbox.enabled", "true", "Master switch"],
-  ["min_graphql_remaining", "200", "Flush / precheck gate"],
-  ["precheck_writes", "true", "Cached REST before writes"],
+  ["min_graphql_remaining", "200", "Flush + precheck gate"],
+  ["precheck_writes", "true", "Cached REST before Pattern A writes"],
   ["quota_cache_ttl_seconds", "45", "REST cache TTL"],
+  ["quota_cache_path", ".local/…/graphql-quota-cache.json", "Cache file"],
   ["dedupe_pending", "true", "One pending row per fingerprint"],
   ["max_flush_per_run", "10", "Ops per flush"],
   ["retry_backoff_seconds", "30", "Sleep after failed apply"],
@@ -145,28 +177,29 @@ export default function GithubApiSafetyCanvas() {
       <Stack gap={6}>
         <Row gap={8} align="center">
           <H1>GitHub API safety</H1>
-          <Pill tone="neutral">2026-07-19</Pill>
+          <Pill tone="neutral">PR #83 · #85</Pill>
+          <Pill tone="success">G1–G5 done</Pill>
         </Row>
         <Text tone="secondary">
-          How MAS Workflow Kit limits API hammering and unsafe Project writes —
-          hard (code), soft (policy), and real gaps.
+          How MAS Workflow Kit limits API hammering on Project writes — hard
+          (code), soft (policy), and accepted residual gaps. Post G1–G5.
         </Text>
       </Stack>
 
       <Grid columns={3} gap={12}>
-        <Stat value="3" label="Gaps fixed (G1/G2/G5)" />
+        <Stat value="5" label="Gaps fixed (G1–G5)" />
         <Stat value="2" label="Residual soft gaps" />
         <Stat value="CODE=6" label="Do not retry" />
       </Grid>
 
       <Callout tone="info">
-        Verdict: cached precheck + Forbidden/429 queue + pending dedupe for
-        Pattern A writes. Safe if agents use{" "}
-        <Text weight="semibold">cursor_workflow project …</Text> and stop on
-        EXIT_QUEUED (6).
+        Verdict: Pattern A writes use cached precheck + Forbidden/429 queue +
+        pending dedupe. Safe when agents use{" "}
+        <Text weight="semibold">python3 -m cursor_workflow project …</Text> and
+        treat EXIT_QUEUED (6) as soft-success (no retry loop).
       </Callout>
 
-      <H2>Fixed in this slice</H2>
+      <H2>Fixed (G1–G5)</H2>
       <Table
         headers={["ID", "Fix"]}
         rows={FIXED.map((r) => [r.id, r.what])}
@@ -180,14 +213,15 @@ export default function GithubApiSafetyCanvas() {
 
       <H2>Config defaults</H2>
       <Text tone="secondary" size="small">
-        github.collaboration.yaml → project_ssot.outbox
+        github.collaboration.yaml → project_ssot.outbox (schema documents all
+        keys)
       </Text>
       <Table
         headers={["Key", "Default", "Role"]}
         rows={CONFIG.map(([k, d, role]) => [k, d, role])}
       />
 
-      <H2>Soft protections (agents / rules)</H2>
+      <H2>Soft protections (agents / rules / docs)</H2>
       <Table
         headers={["Layer", "Instruction", "Where"]}
         rows={SOFT.map((r) => [r.layer, r.what, r.where])}
@@ -199,8 +233,8 @@ export default function GithubApiSafetyCanvas() {
           <CardHeader>EXIT_QUEUED = 6</CardHeader>
           <CardBody>
             <Text>
-              Soft-success: op landed in outbox. Agent must continue local work
-              — not retry gh in a loop.
+              Soft-success: op is in outbox (or precheck refused the live call).
+              Continue local evidence — do not retry gh in a loop.
             </Text>
           </CardBody>
         </Card>
@@ -208,23 +242,36 @@ export default function GithubApiSafetyCanvas() {
           <CardHeader>Flush refuse</CardHeader>
           <CardBody>
             <Text>
-              remaining &lt; min_graphql_remaining → EXIT_GH, wait for reset.
-              Mid-batch re-checks quota.
+              remaining &lt; min_graphql_remaining → do not flush; wait for
+              reset. Mid-batch re-checks quota.
             </Text>
           </CardBody>
         </Card>
       </Grid>
 
-      <H2>Flow</H2>
+      <H2>Flow (Pattern A write)</H2>
       <Card>
         <CardBody>
           <Stack gap={4}>
-            <Text size="small">1. Write fails with rate-limit stderr</Text>
-            <Text size="small">2. maybe_enqueue_on_gh_fail → board-outbox.jsonl</Text>
-            <Text size="small">3. EXIT_QUEUED (6) — soft success</Text>
-            <Text size="small">4. Agent continues local evidence (no retry loop)</Text>
             <Text size="small">
-              5. Later: outbox status → outbox flush (cap 10 · remaining≥200 ·
+              1. guard_write_or_queue — if cached remaining &lt; min → enqueue +
+              EXIT_QUEUED (no GraphQL)
+            </Text>
+            <Text size="small">
+              2. Else perform write (claim / handoff / set-status / …)
+            </Text>
+            <Text size="small">
+              3. On throttle stderr (rate-limit / 429 / Forbidden) → enqueue +
+              EXIT_QUEUED (dedupe pending)
+            </Text>
+            <Text size="small">
+              4. On success → note_successful_write (refresh quota cache)
+            </Text>
+            <Text size="small">
+              5. Agent continues local work — never retry-loop on CODE=6
+            </Text>
+            <Text size="small">
+              6. Later: outbox status → outbox flush (cap 10 · remaining≥200 ·
               backoff 30s)
             </Text>
           </Stack>
@@ -240,16 +287,18 @@ export default function GithubApiSafetyCanvas() {
       />
 
       <Callout tone="warning">
-        Forbidden/403 and raw <Text weight="semibold">gh api graphql</Text>{" "}
-        bypass the outbox. Parallel agents can still pile pending ops on one
-        card (hygiene, not a hard lock).
+        Raw <Text weight="semibold">gh api graphql</Text> (and any non–Pattern A
+        path) still bypasses the outbox. Missing-scopes auth errors are{" "}
+        <Text weight="semibold">not</Text> queued (fail loud). Parallel agents
+        can still stack distinct pending ops on one card (dedupe only identical
+        fingerprints).
       </Callout>
 
       <Spacer height={8} />
       <Text tone="secondary" size="small">
         Canon: ADR-008 · project_outbox.py · project-board-ssot skill ·
         project-ssot-precedence.mdc · project-board-collaboration.md § Rate
-        limits
+        limits · github-collaboration.schema.json
       </Text>
     </Stack>
   );
