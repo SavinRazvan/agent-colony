@@ -93,6 +93,7 @@ def append_notes_helper(
     agent: str,
     text: str,
     limit: int = 100,
+    skip_precheck: bool = False,
 ) -> tuple[bool, str, int]:
     """
     Append attributed Notes. Returns (ok, detail, exit_code_on_fail).
@@ -106,6 +107,18 @@ def append_notes_helper(
             note_text = _cli().format_note_line(root, str(agent), text)
         except ValueError as exc:
             return False, str(exc), EXIT_USAGE
+    if not skip_precheck:
+        queued = guard_write_or_queue(
+            root,
+            ssot,
+            cmd="append-notes",
+            op="append-notes",
+            item_id=item_id,
+            agent=str(agent).strip() or "project-cli",
+            payload={"text": text},
+        )
+        if queued is not None:
+            return False, "queued to outbox (low GraphQL quota precheck)", queued
     items, err = _cli().fetch_project_items(ssot, limit=limit)
     if err:
         return False, err, EXIT_GH
@@ -119,6 +132,7 @@ def append_notes_helper(
     ok, detail = _cli().edit_item_body(ssot, item_id, new_body)
     if not ok:
         return False, detail, EXIT_GH
+    note_successful_write(root, ssot)
     return True, "updated", EXIT_OK
 def _try_queue_rate_limit(
     root: Path,
@@ -144,6 +158,36 @@ def _try_queue_rate_limit(
         agent=agent,
         payload=payload,
     )
+
+
+def guard_write_or_queue(
+    root: Path,
+    ssot: dict[str, Any],
+    *,
+    cmd: str,
+    op: str,
+    item_id: str,
+    agent: str,
+    payload: dict[str, Any],
+) -> int | None:
+    """Precheck GraphQL quota; EXIT_QUEUED when remaining below min."""
+    import project_outbox as _outbox  # noqa: PLC0415
+
+    return _outbox.guard_write_or_queue(
+        root,
+        ssot,
+        cmd=cmd,
+        op=op,
+        item_id=item_id,
+        agent=agent,
+        payload=payload,
+    )
+
+
+def note_successful_write(root: Path, ssot: dict[str, Any]) -> None:
+    import project_outbox as _outbox  # noqa: PLC0415
+
+    _outbox.note_successful_write(root, ssot)
 def find_items_mentioning_pr(
     items: list[dict[str, Any]],
     *,

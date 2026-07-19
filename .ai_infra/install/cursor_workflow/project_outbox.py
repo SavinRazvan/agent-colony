@@ -9,6 +9,7 @@ Depends On:
 Notes:
  - Outbox is a local buffer, never a second Status SSOT (ADR-008).
  - Flush is pull-based; refuses when GraphQL remaining < min_graphql_remaining.
+ - Cached REST rate_limit precheck (TTL) before Pattern A writes; pending-op dedupe.
 """
 
 from __future__ import annotations
@@ -42,10 +43,26 @@ _OUTBOX_OPS = frozenset(
     }
 )
 _DEFAULT_PATH = ".local/generated-data/board-outbox.jsonl"
+_DEFAULT_QUOTA_CACHE = ".local/generated-data/graphql-quota-cache.json"
 _RATE_LIMIT_RE = re.compile(
-    r"rate\s*limit|API rate limit exceeded|secondary rate limit",
+    r"rate\s*limit|API rate limit exceeded|secondary rate limit|"
+    r"\b429\b|retry\s*later|wait a few minutes|too many requests",
     re.IGNORECASE,
 )
+_FORBIDDEN_RE = re.compile(r"\b403\b|\bForbidden\b", re.IGNORECASE)
+_SCOPE_MISS_RE = re.compile(
+    r"missing required scopes|required scopes|authentication token is missing",
+    re.IGNORECASE,
+)
+_DEDUPE_PAYLOAD_KEYS: dict[str, tuple[str, ...]] = {
+    "append-notes": ("text",),
+    "set-status": ("to",),
+    "claim": ("to", "text", "start_date"),
+    "handoff": ("next", "to", "note", "text"),
+    "set-assignee": ("login",),
+    "set-field": ("field", "to", "name", "value"),
+    "promote-to-issue": ("repo",),
+}
 
 
 def load_outbox_config(ssot: dict[str, Any]) -> dict[str, Any]:
@@ -57,6 +74,11 @@ def load_outbox_config(ssot: dict[str, Any]) -> dict[str, Any]:
         "min_graphql_remaining": int(raw.get("min_graphql_remaining") or 200),
         "max_flush_per_run": int(raw.get("max_flush_per_run") or 10),
         "retry_backoff_seconds": int(raw.get("retry_backoff_seconds") or 30),
+        "precheck_writes": bool(raw.get("precheck_writes", True)),
+        "quota_cache_ttl_seconds": int(raw.get("quota_cache_ttl_seconds") or 45),
+        "quota_cache_path": str(raw.get("quota_cache_path") or _DEFAULT_QUOTA_CACHE).strip()
+        or _DEFAULT_QUOTA_CACHE,
+        "dedupe_pending": bool(raw.get("dedupe_pending", True)),
     }
 
 
@@ -65,9 +87,29 @@ def outbox_path(root: Path, cfg: dict[str, Any]) -> Path:
     return (root / rel).resolve() if not rel.is_absolute() else rel
 
 
-def is_rate_limit_error(text: str) -> bool:
-    return bool(_RATE_LIMIT_RE.search(text or ""))
+def quota_cache_path(root: Path, cfg: dict[str, Any]) -> Path:
+    rel = Path(str(cfg.get("quota_cache_path") or _DEFAULT_QUOTA_CACHE))
+    return (root / rel).resolve() if not rel.is_absolute() else rel
 
+
+def is_queueable_gh_throttle(text: str) -> bool:
+    """
+    True when stderr suggests transient GitHub throttle (queue to outbox).
+    Excludes permanent auth/scope failures.
+    """
+    blob = text or ""
+    if _SCOPE_MISS_RE.search(blob):
+        return False
+    if _RATE_LIMIT_RE.search(blob):
+        return True
+    if _FORBIDDEN_RE.search(blob):
+        return True
+    return False
+
+
+def is_rate_limit_error(text: str) -> bool:
+    """Alias for is_queueable_gh_throttle (back-compat)."""
+    return is_queueable_gh_throttle(text)
 
 def graphql_rate_limit() -> dict[str, Any]:
     """
@@ -130,6 +172,117 @@ def format_reset_iso(reset_epoch: Any) -> str:
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _utc_now_epoch() -> float:
+    return datetime.now(timezone.utc).timestamp()
+
+
+def read_quota_cache(path: Path) -> dict[str, Any] | None:
+    if not path.is_file():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def write_quota_cache(path: Path, data: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def refresh_graphql_quota(root: Path, ssot: dict[str, Any]) -> dict[str, Any]:
+    """Fetch GraphQL remaining via REST and write TTL cache."""
+    cfg = load_outbox_config(ssot)
+    rl = graphql_rate_limit()
+    payload = {
+        "remaining": rl.get("remaining"),
+        "limit": rl.get("limit"),
+        "reset_epoch": rl.get("reset_epoch"),
+        "error": rl.get("error"),
+        "fetched_at": _utc_now_epoch(),
+        "fetched_at_iso": _utc_now(),
+    }
+    write_quota_cache(quota_cache_path(root, cfg), payload)
+    return payload
+
+
+def get_cached_graphql_remaining(
+    root: Path,
+    ssot: dict[str, Any],
+    *,
+    force_refresh: bool = False,
+) -> dict[str, Any]:
+    """
+    Return quota dict with remaining/limit/reset_epoch/error/from_cache.
+    Uses TTL cache; refreshes via REST when stale or force_refresh.
+    """
+    cfg = load_outbox_config(ssot)
+    path = quota_cache_path(root, cfg)
+    ttl = int(cfg["quota_cache_ttl_seconds"])
+    if not force_refresh:
+        cached = read_quota_cache(path)
+        if cached is not None:
+            try:
+                fetched = float(cached.get("fetched_at") or 0)
+            except (TypeError, ValueError):
+                fetched = 0.0
+            if fetched and (_utc_now_epoch() - fetched) <= ttl and cached.get("error") is None:
+                out = dict(cached)
+                out["from_cache"] = True
+                return out
+    fresh = refresh_graphql_quota(root, ssot)
+    fresh["from_cache"] = False
+    return fresh
+
+
+def remaining_below_min(root: Path, ssot: dict[str, Any], *, force_refresh: bool = False) -> tuple[bool, dict[str, Any]]:
+    """Return (below_min, quota_info). On read error, treat as not below (fail open to live write)."""
+    cfg = load_outbox_config(ssot)
+    info = get_cached_graphql_remaining(root, ssot, force_refresh=force_refresh)
+    if info.get("error"):
+        return False, info
+    try:
+        rem = int(info["remaining"]) if info.get("remaining") is not None else -1
+    except (TypeError, ValueError):
+        return False, info
+    min_rem = int(cfg["min_graphql_remaining"])
+    return rem >= 0 and rem < min_rem, info
+
+
+def _payload_fingerprint(op: str, payload: dict[str, Any]) -> tuple[Any, ...]:
+    keys = _DEDUPE_PAYLOAD_KEYS.get(op, tuple(sorted(payload.keys())))
+    parts: list[Any] = []
+    for key in keys:
+        val = payload.get(key)
+        if isinstance(val, str):
+            parts.append(val.strip())
+        else:
+            parts.append(val)
+    return tuple(parts)
+
+
+def find_duplicate_pending(
+    entries: list[dict[str, Any]],
+    *,
+    op: str,
+    item_id: str,
+    payload: dict[str, Any],
+) -> dict[str, Any] | None:
+    want = _payload_fingerprint(op, payload)
+    for entry in entries:
+        if str(entry.get("status") or "") != "pending":
+            continue
+        if str(entry.get("op") or "") != op:
+            continue
+        if str(entry.get("item_id") or "") != item_id:
+            continue
+        existing_payload = entry.get("payload") if isinstance(entry.get("payload"), dict) else {}
+        if _payload_fingerprint(op, existing_payload) == want:
+            return entry
+    return None
 
 
 def validate_outbox_entry(entry: dict[str, Any]) -> list[str]:
@@ -248,15 +401,22 @@ def enqueue_op(
         return None, "; ".join(errs)
     path = outbox_path(root, cfg)
     entries = read_outbox_entries(path)
+    if cfg.get("dedupe_pending", True):
+        dup = find_duplicate_pending(
+            entries, op=op_key, item_id=item_id.strip(), payload=dict(payload or {})
+        )
+        if dup is not None:
+            return dup, ""
     entries.append(entry)
     write_outbox_entries(path, entries)
     return entry, ""
 
 
-def queued_message(cmd: str, entry: dict[str, Any]) -> str:
+def queued_message(cmd: str, entry: dict[str, Any], *, reason: str = "throttle") -> str:
     return (
-        f"project {cmd}: QUEUED — id={entry.get('id')} op={entry.get('op')} "
-        f"item={entry.get('item_id')} · run: python3 -m cursor_workflow project outbox flush"
+        f"project {cmd}: QUEUED — CODE=6 · reason={reason} · id={entry.get('id')} "
+        f"op={entry.get('op')} item={entry.get('item_id')} · "
+        f"do not retry; later: python3 -m cursor_workflow project outbox flush"
     )
 
 
@@ -272,13 +432,13 @@ def maybe_enqueue_on_gh_fail(
     payload: dict[str, Any],
 ) -> int | None:
     """
-    If outbox enabled and error looks like rate-limit, enqueue and return EXIT_QUEUED.
+    If outbox enabled and error is queueable throttle, enqueue and return EXIT_QUEUED.
     Otherwise return None (caller should fail as before).
     """
     cfg = load_outbox_config(ssot)
     if not cfg["enabled"]:
         return None
-    if not is_rate_limit_error(err_detail):
+    if not is_queueable_gh_throttle(err_detail):
         return None
     entry, err = enqueue_op(
         root,
@@ -290,12 +450,89 @@ def maybe_enqueue_on_gh_fail(
     )
     if entry is None:
         print(
-            f"project {cmd}: FAIL — CODE={EXIT_GH} · rate-limit and enqueue failed: {err}",
+            f"project {cmd}: FAIL — CODE={EXIT_GH} · throttle and enqueue failed: {err}",
             file=sys.stderr,
         )
         return EXIT_GH
-    print(queued_message(cmd, entry), file=sys.stderr)
+    print(queued_message(cmd, entry, reason="throttle"), file=sys.stderr)
     return EXIT_QUEUED
+
+
+def maybe_enqueue_on_low_quota(
+    root: Path,
+    ssot: dict[str, Any],
+    *,
+    cmd: str,
+    op: str,
+    item_id: str,
+    agent: str,
+    payload: dict[str, Any],
+) -> int | None:
+    """
+    If precheck enabled and cached GraphQL remaining < min, enqueue and EXIT_QUEUED.
+    Returns None when write may proceed (or precheck disabled / quota unreadable).
+    """
+    cfg = load_outbox_config(ssot)
+    if not cfg["enabled"] or not cfg.get("precheck_writes", True):
+        return None
+    below, info = remaining_below_min(root, ssot)
+    if not below:
+        return None
+    entry, err = enqueue_op(
+        root,
+        ssot,
+        op=op,
+        item_id=item_id,
+        agent=agent,
+        payload=payload,
+    )
+    if entry is None:
+        print(
+            f"project {cmd}: FAIL — CODE={EXIT_GH} · low-quota enqueue failed: {err}",
+            file=sys.stderr,
+        )
+        return EXIT_GH
+    rem = info.get("remaining")
+    min_rem = cfg["min_graphql_remaining"]
+    print(
+        queued_message(cmd, entry, reason=f"precheck remaining={rem}<{min_rem}"),
+        file=sys.stderr,
+    )
+    return EXIT_QUEUED
+
+
+def guard_write_or_queue(
+    root: Path,
+    ssot: dict[str, Any],
+    *,
+    cmd: str,
+    op: str,
+    item_id: str,
+    agent: str,
+    payload: dict[str, Any],
+) -> int | None:
+    """
+    Call before Pattern A GraphQL writes.
+    Returns EXIT_QUEUED to skip the live write; None to proceed.
+    """
+    return maybe_enqueue_on_low_quota(
+        root,
+        ssot,
+        cmd=cmd,
+        op=op,
+        item_id=item_id,
+        agent=agent,
+        payload=payload,
+    )
+
+
+def note_successful_write(root: Path, ssot: dict[str, Any]) -> None:
+    """Refresh quota cache after a successful live write (respects TTL)."""
+    cfg = load_outbox_config(ssot)
+    if not cfg["enabled"]:
+        return
+    # Soft refresh only when cache missing/stale — avoids REST spam
+    get_cached_graphql_remaining(root, ssot, force_refresh=False)
 
 
 def count_outbox(path: Path) -> dict[str, int]:
@@ -346,6 +583,7 @@ def apply_outbox_entry(
             agent=agent,
             text=str(payload.get("text") or ""),
             limit=limit,
+            skip_precheck=True,
         )
         return ok, detail
 
@@ -487,7 +725,8 @@ def flush_outbox(
     if not cfg["enabled"]:
         return EXIT_USAGE, "outbox.enabled is false"
     path = outbox_path(root, cfg)
-    rl = graphql_rate_limit()
+    # Prefer TTL cache; force refresh at flush start for accurate gate
+    rl = get_cached_graphql_remaining(root, ssot, force_refresh=True)
     remaining = rl.get("remaining")
     min_rem = int(cfg["min_graphql_remaining"])
     if rl.get("error"):
@@ -516,8 +755,8 @@ def flush_outbox(
     for idx in pending_idxs:
         if applied >= cap:
             break
-        # Re-check remaining mid-batch
-        rl2 = graphql_rate_limit()
+        # Mid-batch: re-read REST quota (flush is rare + capped; prefer accuracy)
+        rl2 = get_cached_graphql_remaining(root, ssot, force_refresh=True)
         try:
             rem2 = int(rl2.get("remaining")) if rl2.get("remaining") is not None else rem_i
         except (TypeError, ValueError):
@@ -533,15 +772,23 @@ def flush_outbox(
             entry["status"] = "done"
             entry["last_error"] = None
             done_n += 1
+            # Drop local remaining by 1 without REST when cache present
+            cached = read_quota_cache(quota_cache_path(root, cfg))
+            if cached and cached.get("remaining") is not None:
+                try:
+                    cached["remaining"] = max(0, int(cached["remaining"]) - 1)
+                    write_quota_cache(quota_cache_path(root, cfg), cached)
+                except (TypeError, ValueError):
+                    pass
         else:
             entry["last_error"] = detail
-            if is_rate_limit_error(detail):
+            if is_queueable_gh_throttle(detail):
                 entry["status"] = "pending"
                 stopped_early = True
                 write_outbox_entries(path, entries)
                 return (
                     EXIT_GH,
-                    f"flush stopped on rate-limit after done={done_n}; detail={detail}",
+                    f"flush stopped on rate-limit/throttle after done={done_n}; detail={detail}",
                 )
             entry["status"] = "failed"
             fail_n += 1

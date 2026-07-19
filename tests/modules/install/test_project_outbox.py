@@ -119,6 +119,10 @@ def test_load_outbox_config_defaults() -> None:
     assert cfg["min_graphql_remaining"] == 200
     assert cfg["max_flush_per_run"] == 10
     assert cfg["retry_backoff_seconds"] == 30
+    assert cfg["precheck_writes"] is True
+    assert cfg["quota_cache_ttl_seconds"] == 45
+    assert cfg["dedupe_pending"] is True
+    assert "graphql-quota-cache.json" in cfg["quota_cache_path"]
 
 
 def test_load_outbox_config_custom_and_disabled() -> None:
@@ -154,13 +158,20 @@ def test_load_outbox_config_missing_outbox_key() -> None:
         ("API rate limit exceeded", True),
         ("secondary rate limit hit", True),
         ("Rate Limit: too many requests", True),
+        ("HTTP 429", True),
+        ("Please retry later", True),
+        ("Post https://api.github.com/graphql: Forbidden", True),
+        ("error: 403 Forbidden", True),
         ("network timeout", False),
         ("", False),
         ("item not found", False),
+        ("authentication token is missing required scopes [project]", False),
+        ("error: your authentication token is missing required scopes", False),
     ],
 )
 def test_is_rate_limit_error(text: str, expected: bool) -> None:
     assert project_outbox.is_rate_limit_error(text) is expected
+    assert project_outbox.is_queueable_gh_throttle(text) is expected
 
 
 # --- graphql_rate_limit ---
@@ -502,6 +513,8 @@ def test_maybe_enqueue_rate_limit_returns_queued(
     assert code == project_outbox.EXIT_QUEUED
     err = capsys.readouterr().err
     assert "QUEUED" in err
+    assert "CODE=6" in err
+    assert "do not retry" in err
 
 
 def test_maybe_enqueue_non_rate_limit_returns_none() -> None:
@@ -1408,3 +1421,155 @@ def test_apply_outbox_set_field_priority_gh_fail(
     )
     assert not ok
     assert "edit failed" in detail
+
+
+# --- G1 cached precheck / G5 dedupe ---
+
+
+def test_enqueue_dedupe_pending(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    e1, err1 = project_outbox.enqueue_op(
+        tmp_path,
+        ssot,
+        op="claim",
+        item_id=VALID_ITEM_ID,
+        agent="implementer",
+        payload={"to": "in_progress", "text": "claimed"},
+    )
+    e2, err2 = project_outbox.enqueue_op(
+        tmp_path,
+        ssot,
+        op="claim",
+        item_id=VALID_ITEM_ID,
+        agent="implementer",
+        payload={"to": "in_progress", "text": "claimed"},
+    )
+    assert err1 == "" and err2 == ""
+    assert e1 is not None and e2 is not None
+    assert e1["id"] == e2["id"]
+    path = _outbox_file(tmp_path, ssot)
+    assert project_outbox.count_outbox(path)["pending"] == 1
+
+
+def test_enqueue_no_dedupe_different_text(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    project_outbox.enqueue_op(
+        tmp_path,
+        ssot,
+        op="append-notes",
+        item_id=VALID_ITEM_ID,
+        agent="implementer",
+        payload={"text": "one"},
+    )
+    project_outbox.enqueue_op(
+        tmp_path,
+        ssot,
+        op="append-notes",
+        item_id=VALID_ITEM_ID,
+        agent="implementer",
+        payload={"text": "two"},
+    )
+    path = _outbox_file(tmp_path, ssot)
+    assert project_outbox.count_outbox(path)["pending"] == 2
+
+
+def test_guard_write_or_queue_low_quota(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    ssot = _outbox_ssot(tmp_path, min_graphql_remaining=200)
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    _mock_graphql(monkeypatch, remaining=50)
+    code = project_outbox.guard_write_or_queue(
+        tmp_path,
+        ssot,
+        cmd="set-status",
+        op="set-status",
+        item_id=VALID_ITEM_ID,
+        agent="implementer",
+        payload={"to": "in_progress"},
+    )
+    assert code == project_outbox.EXIT_QUEUED
+    err = capsys.readouterr().err
+    assert "precheck" in err
+    assert "CODE=6" in err
+    path = _outbox_file(tmp_path, ssot)
+    assert project_outbox.count_outbox(path)["pending"] == 1
+
+
+def test_guard_write_or_queue_ok_when_remaining_high(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    _mock_graphql(monkeypatch, remaining=4000)
+    code = project_outbox.guard_write_or_queue(
+        tmp_path,
+        ssot,
+        cmd="set-status",
+        op="set-status",
+        item_id=VALID_ITEM_ID,
+        agent="implementer",
+        payload={"to": "done"},
+    )
+    assert code is None
+
+
+def test_quota_cache_ttl_hit(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    ssot = _outbox_ssot(tmp_path, quota_cache_ttl_seconds=60)
+    calls = {"n": 0}
+
+    def _rl() -> dict:
+        calls["n"] += 1
+        return {
+            "remaining": 3000,
+            "limit": 5000,
+            "reset_epoch": 1700000000,
+            "error": None,
+        }
+
+    monkeypatch.setattr(project_outbox, "graphql_rate_limit", _rl)
+    a = project_outbox.get_cached_graphql_remaining(tmp_path, ssot)
+    b = project_outbox.get_cached_graphql_remaining(tmp_path, ssot)
+    assert a["remaining"] == 3000
+    assert b["from_cache"] is True
+    assert calls["n"] == 1
+
+
+def test_maybe_enqueue_forbidden_queued(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    code = project_outbox.maybe_enqueue_on_gh_fail(
+        tmp_path,
+        ssot,
+        cmd="claim",
+        err_detail='Post "https://api.github.com/graphql": Forbidden',
+        op="claim",
+        item_id=VALID_ITEM_ID,
+        agent="implementer",
+        payload={"to": "in_progress"},
+    )
+    assert code == project_outbox.EXIT_QUEUED
+
+
+def test_maybe_enqueue_scope_miss_not_queued(tmp_path: Path) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    assert (
+        project_outbox.maybe_enqueue_on_gh_fail(
+            tmp_path,
+            ssot,
+            cmd="claim",
+            err_detail="authentication token is missing required scopes [project]",
+            op="claim",
+            item_id=VALID_ITEM_ID,
+            agent="implementer",
+            payload={"to": "in_progress"},
+        )
+        is None
+    )

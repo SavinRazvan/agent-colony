@@ -110,7 +110,9 @@ from project_recipes import (
     _try_queue_rate_limit,
     append_notes_helper,
     find_items_mentioning_pr,
+    guard_write_or_queue,
     in_progress_conflicts_for_user,
+    note_successful_write,
     resolve_item_id_for_pr,
 )
 
@@ -397,6 +399,17 @@ def cmd_set_status(args: argparse.Namespace) -> int:
             "field_id"
         ):
             queue_payload["start_date"] = utc_today_iso()
+    pre = guard_write_or_queue(
+        root,
+        ssot,
+        cmd="set-status",
+        op="set-status",
+        item_id=item_id,
+        agent=(getattr(args, "agent", None) or "project-cli"),
+        payload=queue_payload,
+    )
+    if pre is not None:
+        return pre
     proc = run_gh(
         [
             "project",
@@ -427,6 +440,7 @@ def cmd_set_status(args: argparse.Namespace) -> int:
             return queued
         return fail("set-status", EXIT_GH, detail)
     print(f"set-status: {item_id} → {args.to} ({option_id})")
+    note_successful_write(root, ssot)
     if _normalize_status(str(args.to)) == "in_progress":
         d_ok, d_detail, d_applied = ensure_start_date_if_starting(ssot, item_id)
         if not d_ok:
@@ -451,6 +465,7 @@ def cmd_set_field(args: argparse.Namespace) -> int:
             EXIT_USAGE,
             "--field must be priority, size, or estimate",
         )
+    agent = getattr(args, "agent", None) or "project-cli"
     if field == "estimate":
         try:
             num = float(str(args.to).strip())
@@ -458,6 +473,17 @@ def cmd_set_field(args: argparse.Namespace) -> int:
             return fail("set-field", EXIT_USAGE, "--to must be a number for estimate")
         if num < 0:
             return fail("set-field", EXIT_USAGE, "estimate must be >= 0")
+        pre = guard_write_or_queue(
+            root,
+            ssot,
+            cmd="set-field",
+            op="set-field",
+            item_id=item_id,
+            agent=agent,
+            payload={"field": "estimate", "to": num},
+        )
+        if pre is not None:
+            return pre
         ok, detail = set_item_number(ssot, item_id, "estimate", num)
         if not ok:
             queued = _try_queue_rate_limit(
@@ -467,18 +493,30 @@ def cmd_set_field(args: argparse.Namespace) -> int:
                 err_detail=detail,
                 op="set-field",
                 item_id=item_id,
-                agent=(getattr(args, "agent", None) or "project-cli"),
+                agent=agent,
                 payload={"field": "estimate", "to": num},
             )
             if queued is not None:
                 return queued
             return fail("set-field", EXIT_GH, detail)
         print(f"set-field: {item_id} estimate → {num}")
+        note_successful_write(root, ssot)
         return EXIT_OK
     try:
         field_id, option_id = resolve_field_option_id(ssot, field, args.to)
     except KeyError as exc:
         return fail("set-field", EXIT_USAGE, str(exc))
+    pre = guard_write_or_queue(
+        root,
+        ssot,
+        cmd="set-field",
+        op="set-field",
+        item_id=item_id,
+        agent=agent,
+        payload={"field": field, "to": args.to},
+    )
+    if pre is not None:
+        return pre
     project_id = str(ssot["project_id"])
     proc = run_gh(
         [
@@ -503,13 +541,14 @@ def cmd_set_field(args: argparse.Namespace) -> int:
             err_detail=detail,
             op="set-field",
             item_id=item_id,
-            agent=(getattr(args, "agent", None) or "project-cli"),
+            agent=agent,
             payload={"field": field, "to": args.to},
         )
         if queued is not None:
             return queued
         return fail("set-field", EXIT_GH, detail)
     print(f"set-field: {item_id} {field} → {args.to} ({option_id})")
+    note_successful_write(root, ssot)
     return EXIT_OK
 def cmd_get(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
@@ -567,6 +606,8 @@ def cmd_append_notes(args: argparse.Namespace) -> int:
         limit=args.limit,
     )
     if not ok:
+        if err_code == EXIT_QUEUED:
+            return EXIT_QUEUED
         if err_code == EXIT_GH:
             queued = _try_queue_rate_limit(
                 root,
@@ -606,6 +647,18 @@ def cmd_set_assignee(args: argparse.Namespace) -> int:
             EXIT_USAGE,
             "no login (pass --login or set owner.github_user)",
         )
+    agent = getattr(args, "agent", None) or "project-cli"
+    pre = guard_write_or_queue(
+        root,
+        ssot,
+        cmd="set-assignee",
+        op="set-assignee",
+        item_id=item_id,
+        agent=agent,
+        payload={"login": login},
+    )
+    if pre is not None:
+        return pre
     ok, detail = set_item_assignee(ssot, item_id, login)
     if not ok:
         # DraftIssue / unsupported → validation; gh failures look like network
@@ -625,6 +678,7 @@ def cmd_set_assignee(args: argparse.Namespace) -> int:
             return queued
         return fail("set-assignee", EXIT_GH, detail)
     print(f"set-assignee: {item_id} → @{detail.lstrip('@')}")
+    note_successful_write(root, ssot)
     return EXIT_OK
 def cmd_claim(args: argparse.Namespace) -> int:
     from project_handlers import run_claim

@@ -16,7 +16,7 @@ Notes:
 # Implementation status (MAS Workflow Kit — Project SSOT)
 
 **Last updated:** 2026-07-19 (COV-100 verify — 100% scoped kit coverage)  
-**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1072
+**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1085
 
 ## Shipped (confirmed in repo)
 
@@ -38,7 +38,7 @@ Notes:
 | Board CLI subcommands | **22** leaf commands — full table in ops doc | [project-board-collaboration.md](../operations/project-board-collaboration.md) § Project CLI subcommands |
 | EA-001 residual thin CLI | `project_cli.py` facade (~660 LOC) + parser/handlers split; board CLI modules under `.ai_infra/install/cursor_workflow/`: `project_cli.py`, `project_parser.py`, `project_handlers.py`, `project_atomics.py`, `gh_project_adapter.py`, `project_recipes.py`, `project_outbox.py` | PR #36 |
 | Doc facts validate | DOC-001…008 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
-| Kit canvases | **13** files under `canvases/`; DOC-008 counts **11** roster/agent canvases (excludes concept hubs `board-ssot-vs-kit.canvas.tsx`, `agents-artifacts-board.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
+| Kit canvases | **14** files under `canvases/`; DOC-008 counts **11** roster/agent canvases (excludes concept hubs `board-ssot-vs-kit.canvas.tsx`, `agents-artifacts-board.canvas.tsx`, `github-api-safety.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
 | MCP tools + resources | 20 tools + 6 resources | `.ai_infra/mcp_servers/workflow_mcp/` |
@@ -52,13 +52,13 @@ Notes:
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Researcher agent (corpus) | **Shipped / proven** — adaptive Brief; anti-loop ≤6; CLI `research init\|fetch\|validate`; live E2E flexiai-toolsmith (18 curated, validate PASS) + verifier Claim A+B VERIFIED 2026-07-19; corpus **opt-in** after first `research init` | `.cursor/agents/researcher.md` · `research-corpus-execution` · `canvases/agent-researcher.canvas.tsx` · Issue #74 |
 | Kit version on install | `kit_version` 0.4.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 1072 collected (1070 passed + 2 skipped on full run) | `tests/modules/` |
+| Tests | 1085 collected (1083 passed + 2 skipped on full run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 
 `pytest --cov=.ai_infra --cov=cursor_workflow` measures the **import surface** of the
 installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-19
-(COV-100 verify): **6208 statements, 100.00%** on a full suite pass (**1072
+(COV-100 verify): **6208 statements, 100.00%** on a full suite pass (**1085
 collected**; 1070 passed, 2 skipped). One import-order `sys.path` bootstrap in
 `merge.py` is `# pragma: no cover` (justified — import-order bootstrap only).
 Subprocess-only maintainer scanners (`check_governance_consistency.py`,

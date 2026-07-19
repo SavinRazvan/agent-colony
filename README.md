@@ -9,7 +9,7 @@
 | | |
 |--|--|
 | **Product repo** | [mas-workflow-kit-project-ssot](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot) |
-| **Version** | `0.4.0` · **Tests** · 1072 · **Agents** · 8 · **Rules** · **7 universal** |
+| **Version** | `0.4.0` · **Tests** · 1085 · **Agents** · 8 · **Rules** · **7 universal** |
 | **Board (kit-dev)** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
 | **Standing** | **STANDALONE** — permanent product; lineage only from [mas-workflow-kit](https://github.com/SavinRazvan/mas-workflow-kit) (`v0.4.0` / `8a779fa`) |
 
@@ -139,7 +139,7 @@ python3 -m cursor_workflow project list --status ready
 # create / claim — see: python3 -m cursor_workflow project guide
 ```
 
-Maintainer gates: `make gates` · `make drift-validate` · `make doc-validate` · shipped matrix: [IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md). Kit canvases: **13** files under `canvases/` (**11** agent/roster hubs + 2 concept hubs — see IMPLEMENTATION-STATUS § Kit canvases).
+Maintainer gates: `make gates` · `make drift-validate` · `make doc-validate` · shipped matrix: [IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md). Kit canvases: **14** files under `canvases/` (**11** agent/roster hubs + 3 concept hubs — see IMPLEMENTATION-STATUS § Kit canvases).
 
 ---
 
