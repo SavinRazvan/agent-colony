@@ -36,7 +36,7 @@ This folder defines **where kit docs live**, **who owns workflow truth** (script
 | [workflow-source-owners.md](workflow-source-owners.md) | Canonical owners: `prepare.py`, `local_workflow_paths.py`, rules, skills |
 | [drift-prevention.md](drift-prevention.md) | Checklists after gate, lifecycle, or trailer changes |
 | [module-boundaries.md](module-boundaries.md) | Plane boundaries and forbidden cross-plane leakage |
-| [rules-overlap-matrix.md](rules-overlap-matrix.md) | Cursor rules inventory (6 universal rules) |
+| [rules-overlap-matrix.md](rules-overlap-matrix.md) | Cursor rules inventory (7 shipped: 6 kit + project-ssot-precedence) |
 | [rollout-phases.md](rollout-phases.md) | REFACTOR phase history stub |
 
 ## Related (outside this folder)

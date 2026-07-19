@@ -62,7 +62,7 @@ Audits are **evidence-backed** or they fail the contract. Chat-only opinions wit
 - `test-plan.md`, `test-index.md` when assessing test architecture.
 - Project `docs/architecture/`, `AGENTS.md`, `README.md` for stated intent vs implementation.
 - Overlay rules (`overlays/rules/*.mdc`) when installed.
-- `.ai_infra/scripts/pr/prepare.py` (`GATES`) for quality-gate reality.
+- `.ai_infra/scripts/pr/prepare.py` (`resolve_gates()`; `GATES` = 2-gate alias) for quality-gate reality.
 
 **Write — create directory if needed:**
 

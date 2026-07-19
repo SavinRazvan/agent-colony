@@ -8,7 +8,7 @@ Depends On:
  - .cursor/agents/enterprise-auditor.md
  - .ai_infra/scripts/pr/prepare.py
 Notes:
- - Do not copy gate command lists; reference prepare.py GATES.
+ - Do not copy gate command lists; reference prepare.py `resolve_gates()` (`GATES` = alias).
 -->
 
 # Agent workflow procedures (canonical)
@@ -41,11 +41,11 @@ Notes:
 
 ## 3) Merge / prepare gate commands — single source of truth
 
-**Authoritative list:** `.ai_infra/scripts/pr/prepare.py` → **`GATES`**. Do not duplicate in rules, skills, or chat.
+**Authoritative list:** `.ai_infra/scripts/pr/prepare.py` → **`resolve_gates()`** (kit-dev auto-appends drift + doc facts when `IMPLEMENTATION-STATUS.md` exists). **`GATES`** is the universal 2-gate back-compat alias only — do not cite it as the SSOT. Do not duplicate gate commands in rules, skills, or chat.
 
 **Optional:** `python .ai_infra/scripts/architecture/check_governance_consistency.py` when changing governance, workflows, `.cursor/`, `.agents/`, or tracked policy docs.
 
-**Project overlays:** extra gates belong in overlay packs — wire into `prepare.py` `GATES` at install time.
+**Project overlays:** extra gates belong in overlay packs — wire into `prepare.py` `resolve_gates()` at install time.
 
 ---
 
@@ -61,7 +61,7 @@ When trailer policy changes, sync: **`AGENTS.md`**, **`README.md`**, **`.cursor/
 
 ## 4) Anti-duplication rule
 
-When **`GATES`** in `prepare.py` change, update in the **same slice**:
+When **`resolve_gates()`** / **`GATES`** in `prepare.py` change, update in the **same slice**:
 
 | Surface | Location |
 |--------|-----------|

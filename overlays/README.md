@@ -19,7 +19,7 @@ At scaffold time, copy overlay files into the target project:
 cp overlays/rules/*.mdc /path/to/project/.cursor/rules/
 ```
 
-Also customize `.ai_infra/scripts/pr/prepare.py` `GATES` once — document extra gates in your overlay README.
+Also customize `.ai_infra/scripts/pr/prepare.py` `resolve_gates()` once — document extra gates in your overlay README.
 
 ## This directory in the kit repo
 
@@ -29,7 +29,7 @@ Also customize `.ai_infra/scripts/pr/prepare.py` `GATES` once — document extra
 ## Anti-patterns
 
 - Do not put product rules in universal `.cursor/rules/` in the **mas-workflow-kit-project-ssot** product repo
-- Do not duplicate `GATES` in overlay markdown — point to `prepare.py`
+- Do not duplicate gate lists in overlay markdown — point to `prepare.py` `resolve_gates()` (`GATES` = alias)
 - Do not treat overlays as agent runtime config (Pattern A: hardcoded scripts)
 
 See [`.ai_infra/docs/operations/consumer-quickstart.md`](../.ai_infra/docs/operations/consumer-quickstart.md) and [`.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md`](../.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md).

@@ -4,4 +4,4 @@ Maintainer PR lane hub: [`.agents/skills/pr-workflow/SKILL.md`](../../.agents/sk
 
 Slash skills: `review-pr`, `prepare-pr`, `merge-pr` under `.agents/skills/`.
 
-Scripts (Pattern A): `.ai_infra/scripts/pr/prepare.py` owns `GATES`.
+Scripts (Pattern A): `.ai_infra/scripts/pr/prepare.py` owns `resolve_gates()` (`GATES` = 2-gate alias).

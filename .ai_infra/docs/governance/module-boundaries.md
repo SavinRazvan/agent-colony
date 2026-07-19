@@ -23,7 +23,7 @@ Notes:
 
 ## Rules
 
-1. **`.cursor/` and `.agents/`** — prose, skills, rules only. No embedded gate command lists; point to `prepare.py` `GATES`.
+1. **`.cursor/` and `.agents/`** — prose, skills, rules only. No embedded gate command lists; point to `prepare.py` `resolve_gates()` (`GATES` = alias).
 2. **`.ai_infra/scripts/`** — deterministic workflow spine. May read `.local/` only via paths in `local_workflow_paths.py`.
 3. **`.ai_infra/mcp_servers/workflow_mcp/`** — wraps scripts; does not reimplement gate logic.
 4. **Overlays** (`overlays/rules/`) — product-specific rules and optional gate snippets; copy into consumer `.cursor/rules/` at install.
@@ -32,5 +32,5 @@ Notes:
 ## Forbidden
 
 - Provider SDK imports in `.cursor/` agent files
-- Duplicating `GATES` command lists in agent surfaces
+- Duplicating `resolve_gates()` / `GATES` command lists in agent surfaces
 - Bare `scripts/pr/` paths in agent surfaces (use `.ai_infra/scripts/pr/`)

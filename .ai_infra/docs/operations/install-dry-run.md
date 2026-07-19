@@ -44,7 +44,7 @@ python .ai_infra/scripts/install/scaffold.py \
   --verify
 ```
 
-See [`scripts/install/README.md`](../../scripts/install/README.md).
+See [`.ai_infra/scripts/install/README.md`](../../scripts/install/README.md).
 
 **Marketplace / plugin smoke (Track A + B):** this product repo [`marketplace-publish.md`](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/blob/main/.ai_infra/docs/handoff/marketplace-publish.md) § Automated smoke, or `make smoke-consumer` from this repo.
 
@@ -113,7 +113,7 @@ cp -r "$SOURCE/tests" "$TARGET/"
 ## 4. Customize once
 
 - [ ] `project.config.yaml` — copy from `project.config.yaml.example` (optional metadata)
-- [ ] `.ai_infra/scripts/pr/prepare.py` — `GATES` (default 2 gates OK)
+- [ ] `.ai_infra/scripts/pr/prepare.py` — `resolve_gates()` (default 2 gates OK; `GATES` = back-compat alias)
 - [ ] `.ai_infra/scripts/pr/local_workflow_paths.py` — `DEFAULT_GITHUB_USER`
 - [ ] `AGENTS.md` — project first-reads
 - [ ] Optional: overlay rules via `cp overlays/rules/*.mdc .cursor/rules/`
@@ -124,7 +124,7 @@ cp -r "$SOURCE/tests" "$TARGET/"
 cd "$TARGET"
 .venv/bin/python .ai_infra/scripts/pr/check_testing_artifacts.py
 .venv/bin/python -m pytest -q
-.venv/bin/python scripts/architecture/check_governance_consistency.py
+.venv/bin/python .ai_infra/scripts/architecture/check_governance_consistency.py
 ```
 
 Expected: all PASS (governance may skip CI workflow if `.github/` absent).
@@ -142,21 +142,21 @@ In Cursor: enable MCP server; call `workflow_list_agents` and `workflow_gate_cou
 
 ## 7. Cursor agents
 
-- [ ] Seven agent files under `.cursor/agents/` (no mapper)
-- [ ] Six universal rules under `.cursor/rules/*.mdc`
+- [ ] Eight agent files under `.cursor/agents/` (no mapper)
+- [ ] Seven rules under `.cursor/rules/*.mdc` (6 kit + `project-ssot-precedence`)
 - [ ] Maintainer skills under `.agents/skills/`
 
 ## Success criteria
 
-| Check | Pass |
-|-------|------|
-| `prepare.py` has 2 default gates | |
-| No product overlay rules in core `.cursor/rules/` (6 universal only) | |
-| `.local/index-and-planning/current/session-pointer.md` exists | |
-| All six `workflow-artifacts/*/README.md` stubs (recommended_paths) | |
-| `AGENTS.md` present | |
-| `pytest -q` green | |
-| `workflow_mcp` imports and `workflow_gate_count` → `2` | |
+| Check | Consumer | Kit-dev |
+|-------|----------|---------|
+| `prepare.py` / `resolve_gates()` count | **2** universal | **4** (auto-appends drift + doc facts) |
+| `.cursor/rules/*.mdc` | **7** shipped (6 kit + `project-ssot-precedence`); extra overlays optional | same |
+| `.local/index-and-planning/current/session-pointer.md` exists | yes | yes |
+| All six `workflow-artifacts/*/README.md` stubs (recommended_paths) | yes | yes |
+| `AGENTS.md` present | yes | yes |
+| `pytest -q` green | yes | yes |
+| `workflow_mcp` / `workflow_gate_count` (`load_gates` → `resolve_gates()`) | **2** | **4** |
 
 ## Cleanup
 

@@ -33,8 +33,8 @@ Notes:
 | `docs/roadmap/` | Alignment audit schema |
 | `docs/architecture/` | Consumer architecture (`workflow-architecture.md`) |
 | `docs/decisions/` | ADR index and decision records |
-| `.ai_infra/scripts/pr/` | PR workflow scripts (`prepare.py` GATES) |
-| `scripts/architecture/` | Governance and layer checks |
+| `.ai_infra/scripts/pr/` | PR workflow scripts (`prepare.py` `resolve_gates()`; `GATES` = alias) |
+| `.ai_infra/scripts/architecture/` | Governance and layer checks |
 | `templates/local-workspace/` | Stubs copied into `.local/` at scaffold |
 | `templates/user-settings/` | Exemplars → `.local/user_settings/` |
 | `templates/agent-integration/` | Agent/skill templates for integrator |

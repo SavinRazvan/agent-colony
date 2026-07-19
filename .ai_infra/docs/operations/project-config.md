@@ -8,7 +8,7 @@ Used By:
 Depends On:
  - .ai_infra/scripts/pr/prepare.py
 Notes:
- - Pattern A: GATES stay hardcoded in prepare.py.
+ - Pattern A: merge gates via `resolve_gates()` in prepare.py (`GATES` = 2-gate alias).
 -->
 
 # Optional `project.config.yaml`
@@ -25,7 +25,7 @@ The **MAS Workflow Kit** ships **`.ai_infra/project.config.yaml.example`**. Afte
 
 ## What it is not
 
-- **Not** runtime gate configuration — `GATES` in `.ai_infra/scripts/pr/prepare.py` is the single source of truth.
+- **Not** runtime gate configuration — `resolve_gates()` in `.ai_infra/scripts/pr/prepare.py` is the single source of truth (`GATES` = 2-gate alias).
 - **Not** read by `prepare.py` or agent prompts by default.
 
 When you add gates to `prepare.py`, update the informational `gates.labels` block in `project.config.yaml` so humans stay aligned.
@@ -43,6 +43,6 @@ Copy to `project.config.yaml` and edit `git.author`, `git.github_user`, `mcp.reg
 
 ## Related
 
-- [`.ai_infra/scripts/install/README.md`](../../scripts/install/README.md)
+- [`.ai_infra/scripts/install/README.md`](../../scripts/install/README.md) — install scaffold reference
 - [`connect-external-mcp.md`](connect-external-mcp.md)
 - [`overlays/README.md`](../../../overlays/README.md)

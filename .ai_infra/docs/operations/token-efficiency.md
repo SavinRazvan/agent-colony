@@ -98,4 +98,4 @@ Use slash skills (`/review-pr`, `/prepare-pr`, `/merge-pr`) — `disable-model-i
 
 ## Gate source of truth
 
-**Only** `.ai_infra/scripts/pr/prepare.py` → `GATES`. All prose points there; see `agent-workflow-procedures.md` §3.
+**Only** `.ai_infra/scripts/pr/prepare.py` → `resolve_gates()` (`GATES` = 2-gate back-compat alias). All prose points there; see `agent-workflow-procedures.md` §3.

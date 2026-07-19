@@ -18,7 +18,7 @@ Notes:
 
 | Concern | Canonical owner | Consumers |
 |---------|-----------------|-----------|
-| Prepare gate **order** and commands | `.ai_infra/scripts/pr/prepare.py` (`GATES`) | Rules, skills, `workflow-complete.md`, `AGENTS.md` |
+| Prepare gate **order** and commands | `.ai_infra/scripts/pr/prepare.py` (`resolve_gates()`; `GATES` = 2-gate alias) | Rules, skills, `workflow-complete.md`, `AGENTS.md` |
 | PR artifact **paths** | `.ai_infra/scripts/pr/local_workflow_paths.py` | `review.py`, `prepare.py`, `merge.py`, rules |
 | PR publish verification | `.ai_infra/scripts/pr/verify_publish.py` | Pre-PR branch health |
 | Merge preconditions | `.ai_infra/scripts/pr/merge.py` | `merge-pr` skill |

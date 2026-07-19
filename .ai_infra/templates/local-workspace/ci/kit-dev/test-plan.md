@@ -7,7 +7,7 @@
 
 ## Coverage policy
 
-- Default gate: `pytest -q` (via `prepare.py` `GATES`)
+- Default gate: `pytest -q` (via `prepare.py` `resolve_gates()`; `GATES` = alias)
 - Kit CI: `kit-quality.yml` runs seed + full gate matrix (no `--cov-fail-under`)
 
 ## Active priorities

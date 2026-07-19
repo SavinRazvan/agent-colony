@@ -45,7 +45,7 @@ Notes:
 | Install scaffold + contract | `install-contract.json`; idempotent trackers/`AGENTS.md`/`pages.json` on re-activate | `.ai_infra/scripts/install/scaffold.py` |
 | Local artifact tiers | Tier 1 scaffold: all `workflow-artifacts/*` buckets + README stubs; SSOT `local_workflow_paths.py` | `.ai_infra/templates/local-workspace/`, `pages.json` |
 | Integrate validate | INT-001…014; INT-009/011 plugin parity **kit-dev only** | `.ai_infra/scripts/integration/validate.py` |
-| Install CLI | install, **activate**, gates, health, mcp, contributors, integrate, drift, doc, verify | `.ai_infra/install/cursor_workflow/cli.py` |
+| Install CLI | install, **activate**, gates, health, mcp, contributors, integrate, drift, doc, verify, **project**, **research** | `.ai_infra/install/cursor_workflow/cli.py` |
 | Editable install | `pyproject.toml` — `pip install -e ".[dev,mcp]"` | repo root |
 | Three-plane activate | Idempotent plugin consumer setup | `.ai_infra/install/cursor_workflow/activate_cli.py`, `plane_status.py` |
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |

@@ -121,11 +121,11 @@ my-app/
 
 **Not installed by default:** kit full `tests/`, `Makefile`, `docs/handoff/`, CI/release scripts, maintainer megadocs under `docs/maintainer/`.
 
-**Kit dev repo only (not in consumer** `.ai_infra/`**):** `scripts/ci/`, `scripts/release/`, `docs/handoff/`, root `Makefile`, full `tests/modules/`. Consumers use the slim bundle from `manifest.yaml` `copy_ai_infra` only.
+**Kit dev repo only (not in consumer** `.ai_infra/`**):** `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/`, `docs/handoff/`, root `Makefile`, full `tests/modules/`. Consumers use the slim bundle from `manifest.yaml` `copy_ai_infra` only.
 
 ### `ci/kit-dev` local workspace fixtures
 
-The path `.ai_infra/templates/local-workspace/ci/kit-dev/` holds **kit-repository-only** tracker exemplars (e.g. full `test-index.md` with all `tests/modules/` owners). CI runs `[seed_kit_workspace.py](../../scripts/ci/seed_kit_workspace.py)` before gates because `.local/` is gitignored. **Consumers** receive neutral exemplars under `templates/local-workspace/exemplars/` — not the `ci/kit-dev/` tree. Do not reference `ci/kit-dev` paths in consumer onboarding docs.
+The path `.ai_infra/templates/local-workspace/ci/kit-dev/` holds **kit-repository-only** tracker exemplars (e.g. full `test-index.md` with all `tests/modules/` owners). CI runs [`seed_kit_workspace.py`](../../scripts/ci/seed_kit_workspace.py) before gates because `.local/` is gitignored. **Consumers** receive neutral exemplars under `templates/local-workspace/exemplars/` — not the `ci/kit-dev/` tree. Do not reference `ci/kit-dev` paths in consumer onboarding docs.
 
 ---
 
@@ -159,7 +159,7 @@ Product rules: copy `overlays/rules/*.mdc` into `.cursor/rules/` after install (
 ## Pattern A (unchanged)
 
 - Agents run **one script command** per maintainer action.
-- `GATES` hardcoded in `.ai_infra/scripts/pr/prepare.py`.
+- Merge gate order: **`resolve_gates()`** in `.ai_infra/scripts/pr/prepare.py` (`GATES` = 2-gate back-compat alias).
 - Canonical invoke: `python .ai_infra/scripts/pr/prepare.py …`
 
 ---

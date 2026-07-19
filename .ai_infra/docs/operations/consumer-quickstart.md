@@ -10,7 +10,7 @@ Depends On:
  - .ai_infra/scripts/install/scaffold.py
  - .ai_infra/docs/operations/project-config.md
 Notes:
- - Pattern A: agents call scripts; GATES live in prepare.py only.
+ - Pattern A: agents call scripts; merge gates via `resolve_gates()` in prepare.py (`GATES` = alias).
 -->
 
 # Consumer quickstart
@@ -271,7 +271,7 @@ This overwrites kit-managed dashboard files with the latest templates from the p
 
 1. Feature branch (`feature/`, `fix/`, `chore/`)
 2. Implement + test → **`/review-pr`**
-3. **`/prepare-pr`** (runs `prepare.py` GATES)
+3. **`/prepare-pr`** (runs `prepare.py` → `resolve_gates()`)
 4. **`/merge-pr`** → sync `main`, delete branch
 
 Full checklist: [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) §6 · [workflow-complete.md](workflow-complete.md) §A.

@@ -4,7 +4,7 @@ Path: .ai_infra/templates/local-workspace/exemplars/test-index.md
 Role: Exemplar for install → .local/index-and-planning/current/test-index.md
 Used By:
  - test-runner agent
- - scripts/pr/check_testing_artifacts.py
+ - .ai_infra/scripts/pr/check_testing_artifacts.py
 Depends On:
  - tests/ tree (project-specific)
 Notes:

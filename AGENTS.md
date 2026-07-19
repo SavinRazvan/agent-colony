@@ -2,7 +2,7 @@
 
 ## Project intent
 
-**MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) — this repository **is** the product: installable multi-agent workflow infrastructure with a **GitHub Project** as the **only writable SSOT** for backlog, Status, and multi-agent continuation when `project_ssot.enabled` and `sync_policy: board_only`. **Local artifacts** (PR Pattern A, audits, gates, secrets) stay on disk as evidence — never a second Status writer under `board_only`. Agents call **one script command** per maintainer action; `GATES` live in `.ai_infra/scripts/pr/prepare.py`. **Consumer install:** plugin + `/workflow-activate` in the app repo installs the full kit; consumers wire only identity + board YAML — see [PLUGIN-USER-GUIDE § Product promise](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
+**MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) — this repository **is** the product: installable multi-agent workflow infrastructure with a **GitHub Project** as the **only writable SSOT** for backlog, Status, and multi-agent continuation when `project_ssot.enabled` and `sync_policy: board_only`. **Local artifacts** (PR Pattern A, audits, gates, secrets) stay on disk as evidence — never a second Status writer under `board_only`. Agents call **one script command** per maintainer action; merge gate order lives in `.ai_infra/scripts/pr/prepare.py` **`resolve_gates()`** (`GATES` = 2-gate back-compat alias). **Consumer install:** plugin + `/workflow-activate` in the app repo installs the full kit; consumers wire only identity + board YAML — see [PLUGIN-USER-GUIDE § Product promise](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
 
 **Continuation:** Entry reads the board (`python3 -m cursor_workflow project status`); Exit updates Status and Notes (see `.cursor/skills/project-board-ssot/SKILL.md` § Collaboration, ADR-008, `overlays/rules/project-ssot-precedence.mdc`). Ops: `.ai_infra/docs/operations/project-board-collaboration.md`. Offline fallback trackers only when board unavailable. Rate-limit: EXIT_QUEUED (6) → `project outbox` (local buffer, not a second SSOT). **STANDALONE:** permanently decoupled from upstream `mas-workflow-kit` (lineage only — do not merge doctrine back). Read [`HANDOFF.md`](HANDOFF.md) first.
 
@@ -88,6 +88,8 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 `python3 -m cursor_workflow contributors commit-trailers`.
 
 **AI-assisted work:** optional `Assisted-by:` when AI materially shaped the change. Do **not** add **`Made-with:`** (redundant). You stay accountable for the result.
+
+**Cursor IDE attribution (separate):** the kit policy above is **`Assisted-by:`** only. Cursor may optionally add **`Co-authored-by: Cursor <cursoragent@cursor.com>`** via IDE settings or exemplar YAML — that is IDE/opt-in provenance, not a kit commit requirement. Do not treat IDE trailers as substitutes for **`Author:`** / **`GitHub-User:`**.
 
 **PR workflow artifacts** use `Action-By` / `GitHub-User` / `Agent/s` — resolved from the same YAML when scripts run with `--pipeline` (see **`.agents/skills/pr-workflow/SKILL.md`**).
 

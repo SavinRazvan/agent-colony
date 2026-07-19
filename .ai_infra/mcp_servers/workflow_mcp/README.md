@@ -2,7 +2,7 @@
 
 **Canonical path:** `.ai_infra/mcp_servers/workflow_mcp/`
 
-Stdio MCP server that **wraps existing scripts** — it does not duplicate `GATES` from `.ai_infra/scripts/pr/prepare.py`.
+Stdio MCP server that **wraps existing scripts** — it does not duplicate `resolve_gates()` from `.ai_infra/scripts/pr/prepare.py`.
 
 ## Run locally
 
@@ -24,11 +24,11 @@ External servers: [connect-external-mcp.md](../../docs/operations/connect-extern
 | `workflow_run_prepare` | `.ai_infra/scripts/pr/prepare.py` |
 | `workflow_run_review` | `.ai_infra/scripts/pr/review.py` |
 | `workflow_run_merge_check` | `.ai_infra/scripts/pr/merge.py` |
-| `workflow_run_gate` | single gate from `GATES` |
+| `workflow_run_gate` | single gate from `resolve_gates()` (context-aware) |
 | `workflow_check_governance` | `check_governance_consistency.py` |
 | `workflow_list_agents` | `.cursor/agents/*.md` |
 | `workflow_get_tracker` | `.local/.../current/{name}.md` |
-| `workflow_gate_count` | `len(GATES)` |
+| `workflow_gate_count` | `len(load_gates())` → prefers `resolve_gates()` (2 consumer / 4 kit-dev) |
 | `workflow_get_project_config` | `project.config.yaml` or example |
 | `workflow_list_mcp_registry` | `.cursor/mcp.registry.yaml` |
 | `workflow_mcp_connection_guide` | connect-external-mcp.md |

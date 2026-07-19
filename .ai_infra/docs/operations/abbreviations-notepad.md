@@ -29,7 +29,7 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs.
 | MCP | Model Context Protocol — Cursor tool server integration |
 | PR | Pull request — maintainer merge workflow |
 | ADR | Architecture Decision Record — `.ai_infra/docs/decisions/` |
-| GATES | Hardcoded subprocess list in `prepare.py` |
+| GATES | 2-gate back-compat alias of `resolve_gates()` in `prepare.py` |
 | Pattern A | Script-first workflow; agents invoke one command per action |
 
 ## Planes

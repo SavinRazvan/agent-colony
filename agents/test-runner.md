@@ -22,8 +22,8 @@ description: Module-focused tests, regressions, coverage.
 
 - Map changes → `tests/modules/<module>/`; one clear responsibility per file.
 - Cover happy, failure, edge, and regression cases for touched behavior.
-- Run **smallest** pytest scope first; widen when needed. For risky `src/**` slices: `pytest --cov=src --cov-report=term-missing` as appropriate.
-- Before PR handoff path: **`python .ai_infra/scripts/pr/check_testing_artifacts.py`** (first entry in `.ai_infra/scripts/pr/prepare.py` `GATES`).
+- Run **smallest** pytest scope first; widen when needed. For risky kit-dev slices: `pytest --cov=.ai_infra --cov=cursor_workflow --cov-report=term-missing -q` (see `.cursor/skills/test-module-coverage/SKILL.md`).
+- Before PR handoff path: **`python .ai_infra/scripts/pr/check_testing_artifacts.py`** (first entry in `.ai_infra/scripts/pr/prepare.py` `resolve_gates()`).
 - Strategy detail: `.cursor/skills/test-module-coverage/SKILL.md`.
 
 Report: tests added/updated • scope run • gaps • `test-index.md` / `test-plan.md` updates if any.

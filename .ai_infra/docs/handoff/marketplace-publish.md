@@ -202,11 +202,11 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Manifest:** `.cursor-plugin/plugin.json` — `author`, `homepage`, `repository`, `logo` aligned with the table above.
 
-**Listing copy review (2026-07-07):** Verified `plugin.json` `description`, the Description row above, and README consumer sections (`What you get`, agent/skill/rule counts) against `IMPLEMENTATION-STATUS.md` on `main` — 633 tests (post DRIFT-005 slice), DOC-006 PASS, coverage scope 3588 stmts / 100% on `--cov=.ai_infra --cov=cursor_workflow`. No stale test or coverage numbers in marketplace-facing copy; feature counts (8 agents, 11 skills, 5 PR skills, 7 rules) match shipped inventory.
+**Listing copy review (2026-07-07, archival):** Verified `plugin.json` `description`, the Description row above, and README consumer sections against `IMPLEMENTATION-STATUS.md` on `main` at that date — counts superseded by refreshes below; feature counts (8 agents, 11 skills, 5 PR skills, 7 rules) unchanged.
 
-**Listing copy refresh (2026-07-18 WORKSPACE-CLEAN):** Re-verified README/AGENTS.md/repository-map/canvases against shipped tree — **931** tests collected (DOC-008 added), **5352** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow` per `IMPLEMENTATION-STATUS.md` at that date; agent/skill/rule counts unchanged (8 / 11 / 7). Historical 633/692 lines above are archival only.
+**Listing copy refresh (2026-07-18 WORKSPACE-CLEAN, archival):** Re-verified README/AGENTS.md/repository-map/canvases against shipped tree at that date — **931** tests collected (DOC-008 added), **5352** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow` per `IMPLEMENTATION-STATUS.md`; agent/skill/rule counts unchanged (8 / 11 / 7). Superseded by 2026-07-19 refreshes below.
 
-**Listing copy refresh (2026-07-19 DOC-CANVAS-ALIGN):** Re-verified against `IMPLEMENTATION-STATUS.md` — **1062** tests collected (1060 passed + 2 skipped), **6208** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts (8 / 11 / 7). Prior 931/5352 line superseded.
+**Listing copy refresh (2026-07-19 DOC-CANVAS-ALIGN, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` — **1062** tests collected (1060 passed + 2 skipped), **6208** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts (8 / 11 / 7). Superseded by EA-019 refresh below.
 
 **Listing copy refresh (2026-07-19 EA-019 / PR #70):** Re-verified against `IMPLEMENTATION-STATUS.md` on `main` post Tier-1 Size/Estimate + Start date — **1072** tests collected (1070 passed + 2 skipped), **6208** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts unchanged (**8** / **11** / **7**); kit version **0.4.0**. Prior 1062 line superseded. Ship Marketplace against `0.4.0` (no version bump in this slice).
 

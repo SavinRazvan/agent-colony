@@ -50,7 +50,7 @@ mas-workflow-kit-project-ssot/
 ├── assets/                     Marketplace logo (`logo.png`)
 ├── .github/                    CI workflows (kit-dev only)
 ├── cursor_workflow/            SSOT — thin CLI shim (also copied to consumer)
-├── schemas/                    Legacy gate.json stub (GATES live in prepare.py)
+├── schemas/                    Legacy gate.json stub (`resolve_gates()` in prepare.py; `GATES` = alias)
 ├── .local/                     Kit-dev runtime (gitignored); CI seed fixture — not consumer exemplars
 ├── tests/                      Kit-dev only — full pytest suite (1072; see IMPLEMENTATION-STATUS)
 ├── Makefile, pyproject.toml    Kit-dev only
@@ -73,7 +73,7 @@ Deep dive: [PLUGIN-ARCHITECTURE.md](PLUGIN-ARCHITECTURE.md).
 | `.cursor/rules/*.mdc` | 7 kit-dev rules | **Here** |
 | `.cursor/skills/*/` | 11 canonical protocols | **Here** |
 | `.agents/skills/*/` | Maintainer slash skills | **Here** |
-| `agents/`, `rules/`, `skills/` (repo root) | Marketplace discovery | `make sync-plugin` from above |
+| `agents/`, `rules/`, `skills/` (repo root) | Marketplace discovery (16 skill folders = 11 canonical + 5 maintainer PR slash skills) | `make sync-plugin` from `.cursor/` + `.agents/skills/` |
 | `payload/` | Consumer install bundle | `make sync-plugin` from above + manifest |
 | `skills/audit-alignment/` | Deprecated stub in merged `skills/` | `.agents/skills/audit-alignment/` |
 
@@ -102,7 +102,7 @@ my-app/
 └── .local/                         Scaffolded trackers + artifact buckets (gitignored)
 ```
 
-**Not installed:** kit `tests/modules/` (1072; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `scripts/ci/`, `scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
+**Not installed:** kit `tests/modules/` (1072; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
 
 Consumer tree detail: [PLUGIN-ARCHITECTURE.md § Installed consumer project](PLUGIN-ARCHITECTURE.md).
 
@@ -233,7 +233,7 @@ Contract: [local-workspace-layout.md](../operations/local-workspace-layout.md) �
 | `tests/modules/` | Full kit test suite |
 | `.ai_infra/docs/handoff/` | Maintainer status, plugin arch, this map |
 | `.ai_infra/docs/maintainer/` | Megadocs |
-| `.ai_infra/scripts/ci/`, `scripts/release/` | CI and plugin sync |
+| `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/` | CI and plugin sync |
 | `.ai_infra/templates/local-workspace/ci/kit-dev/` | CI tracker fixtures |
 | `Makefile`, `pyproject.toml`, `.github/` | Kit repo hygiene |
 | Repo-root `agents/`, `rules/`, `skills/` | Marketplace surface |

@@ -20,7 +20,7 @@ Notes:
 
 ## Coverage policy
 
-- Default gate: `pytest -q` (via `scripts/pr/prepare.py` `GATES`)
+- Default gate: `pytest -q` (via `.ai_infra/scripts/pr/prepare.py` `resolve_gates()`)
 - Module-level first: `pytest -q tests/modules/<module>` when applicable
 - Coverage runs when changes are medium/high-risk:
   - `pytest --cov=<package> --cov-report=term-missing -q`

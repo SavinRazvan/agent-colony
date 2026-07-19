@@ -50,7 +50,7 @@ You **extend the multi-agent system** without breaking planes, gates, or procedu
 | Mode | When | Must still follow |
 |------|------|-------------------|
 | **MAS-integrated** | Agent joins PR workflow, trackers, MCP registry, pipelines | All universal rules + Anchor blocks + script commands |
-| **Independent contract** | Standalone agent (e.g. one-off tool); no PR slice ownership | Universal `.cursor/rules/*`, commit/PR attribution if it touches git, no bypass of `prepare.py` GATES |
+| **Independent contract** | Standalone agent (e.g. one-off tool); no PR slice ownership | Universal `.cursor/rules/*`, commit/PR attribution if it touches git, no bypass of `prepare.py` `resolve_gates()` |
 
 Independent agents **never** skip governance scanners, file headers, or Pattern A for maintainer actions they perform.
 
@@ -65,7 +65,7 @@ Independent agents **never** skip governance scanners, file headers, or Pattern 
 
 ## Non-negotiables
 
-- **Pattern A:** one script command per maintainer action; `GATES` only in `prepare.py`.
+- **Pattern A:** one script command per maintainer action; merge gates only via `prepare.py` `resolve_gates()` (`GATES` = alias).
 - **No duplicated gate lists** in prose — point to `prepare.py` or `gate-matrix.md`.
 - **Facts only** — cite paths; label `Unknown` when not verified.
 - **No bullshit** — no fake certifications, no `Made-with:` trailers, no invented MCP tools.

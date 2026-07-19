@@ -54,7 +54,7 @@ When the slice touches tests or ownership: `test-plan.md`, `test-index.md`. Afte
 
 1. One primary claimed board card (`in_progress`) when SSOT enabled; else one `in_progress` in `work-tracker.md`. Scope on card body or `plan.md` (fallback).
 2. Contracts → implementation → tests. **New sources:** module header per `.cursor/rules/file-docstring-header-relations.mdc`.
-3. **Gates:** run `python .ai_infra/scripts/pr/prepare.py` (or its `GATES`). Add `python .ai_infra/scripts/architecture/check_governance_consistency.py` if governance/workflows/policy docs changed.
+3. **Gates:** run `python .ai_infra/scripts/pr/prepare.py` (executes `resolve_gates()`; `GATES` is the 2-gate back-compat alias). Add `python .ai_infra/scripts/architecture/check_governance_consistency.py` if governance/workflows/policy docs changed.
 4. **Commits:** trailers via `python -m cursor_workflow contributors commit-trailers` (`.cursor/rules/commit-trailer-format.mdc`). Optional `Assisted-by:`. No tool-generated human sign-off.
 5. **Close:** board Status via CLI; `change-index.md` + `updates-log.md`; fallback tracker close only if offline. Run **`make drift-validate`**; hand off to **`workflow-drift-guard`** when P0/P1 findings need artifacts.
 

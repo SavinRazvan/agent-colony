@@ -37,7 +37,7 @@ Full walkthrough: [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-G
 
 ## Project intent
 
-**MAS Workflow Kit** — multi-agent workflow installed via plugin. Agents call **one script command** per maintainer action; `GATES` live in `.ai_infra/scripts/pr/prepare.py`.
+**MAS Workflow Kit** — multi-agent workflow installed via plugin. Agents call **one script command** per maintainer action; merge gate order lives in `.ai_infra/scripts/pr/prepare.py` **`resolve_gates()`** (`GATES` = 2-gate back-compat alias).
 
 ## First reads
 
@@ -49,6 +49,8 @@ Full walkthrough: [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-G
 
 ## Rules (always applied in Cursor)
 
+**7 rules** — 6 universal kit rules plus `project-ssot-precedence.mdc` when Project SSOT is enabled (ADR-008).
+
 | Rule | Topic |
 |------|--------|
 | `.cursor/rules/implementation-workflow-governance.mdc` | Slice lifecycle, trackers, tests |
@@ -57,6 +59,7 @@ Full walkthrough: [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-G
 | `.cursor/rules/file-docstring-header-relations.mdc` | **File headers** on new sources |
 | `.cursor/rules/local-artifact-protection.mdc` | Protected paths (`.coverage`, `.env`) |
 | `.cursor/rules/advisory-audit-alignment-enforcement.mdc` | Architecture audits → alignment artifacts |
+| `.cursor/rules/project-ssot-precedence.mdc` | Board SSOT precedence when `project_ssot.enabled` (ADR-008) |
 
 ## Commits
 
@@ -64,4 +67,4 @@ Required trailers: `.cursor/rules/commit-trailer-format.mdc` — set identity in
 
 ## Quality gates
 
-`GATES` in `.ai_infra/scripts/pr/prepare.py` — say *prepare gates green* in chat; do not paste full gate lists.
+**Default merge gate order** is `resolve_gates()` in `.ai_infra/scripts/pr/prepare.py` — say *prepare gates green* in chat; do not paste full gate lists.

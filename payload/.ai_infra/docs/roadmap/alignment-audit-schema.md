@@ -66,7 +66,7 @@ Standardize advisory audit findings so outputs from skills, rules checks, and ma
 
 1. `.cursor/rules/*` and `AGENTS.md`
 2. `.agents/skills/pr-workflow/SKILL.md` and phase skills (`review-pr`, `prepare-pr`, `merge-pr`)
-3. `.ai_infra/scripts/pr/prepare.py` (`GATES`) and `.ai_infra/scripts/pr/local_workflow_paths.py`
+3. `.ai_infra/scripts/pr/prepare.py` (`resolve_gates()`; `GATES` = 2-gate alias) and `.ai_infra/scripts/pr/local_workflow_paths.py`
 4. `docs/governance/*`, `docs/operations/*`
 5. `docs/roadmap/*`
 6. Project overlay rules (`overlays/rules/*.mdc`)
@@ -80,8 +80,8 @@ Standardize advisory audit findings so outputs from skills, rules checks, and ma
   "category": "workflow_gate_drift",
   "source_path": "docs/operations/agent-workflow-procedures.md",
   "target_path": ".ai_infra/scripts/pr/prepare.py",
-  "evidence": "Prose lists four gates; prepare.py GATES has two.",
-  "recommendation": "Point prose to prepare.py only; remove duplicated gate list.",
+  "evidence": "Prose lists four gates; prepare.py resolve_gates() returns 2 universal (or 4 on kit-dev).",
+  "recommendation": "Point prose to prepare.py resolve_gates() only; remove duplicated gate list.",
   "status": "open",
   "owner": "platform-architecture",
   "due_slice": "feature/starter-phase-2"

@@ -19,7 +19,7 @@ alwaysApply: true
 - Place tests under `tests/modules/<module>/` matching source boundaries.
 - Cover happy, failure, and edge cases; add retry/timeout/replay where high-risk or state-changing.
 - Run targeted module tests first, then full suite before merge.
-- For medium/high-risk slices, run `pytest --cov=src --cov-report=term-missing -q`; record gaps in `work-tracker.md` and `updates-log.md`.
+- For medium/high-risk slices, run `pytest --cov=.ai_infra --cov=cursor_workflow --cov-report=term-missing -q`; record gaps in `work-tracker.md` and `updates-log.md`.
 - If modules/tests move or drop, update/remove tests in the same slice; note rationale in `updates-log.md`.
 
 ## Planning index updates
@@ -31,7 +31,7 @@ alwaysApply: true
 
 ## Merge gates
 
-- Full gate order: [`.cursor/rules/pr-workflow-enforcement.mdc`](pr-workflow-enforcement.mdc) and `.ai_infra/scripts/pr/prepare.py` (`GATES`).
+- Full gate order: [`.cursor/rules/pr-workflow-enforcement.mdc`](pr-workflow-enforcement.mdc) and `.ai_infra/scripts/pr/prepare.py` (`resolve_gates()`; `GATES` = 2-gate back-compat alias).
 
 ## Efficiency (less noise)
 
