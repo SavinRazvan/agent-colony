@@ -98,6 +98,21 @@ This loads agents, skills, and rules into Cursor. Your project may only get `.cu
 
 Shorter variant: [consumer-quickstart.md](consumer-quickstart.md).
 
+### Consumer project_ssot onboarding checklist
+
+Use this when your team opts into **GitHub Project as the only writable SSOT** (`project_ssot.enabled: true`, `sync_policy: board_only`). Complete in order after §2 activate.
+
+| Step | Action |
+|------|--------|
+| 1. Install / activate | Agent chat: `/add-plugin …` then **`/workflow-activate`** in **your app repo** — wait for **`VERIFY PASS`**. |
+| 2. Collaboration YAML | Edit `.local/user_settings/github.collaboration.yaml`: set `project_ssot.enabled: true`, `sync_policy: board_only`, and board identity — `name`, `number`, `owner`, `project_id` (from Project URL / `gh project view`). Copy field ids from `gh project field-list <number> --owner <owner>` when wiring `fields.status` / Priority / Size. |
+| 3. GitHub auth | Ensure `gh` can reach Projects: `gh auth refresh -h github.com -s read:project,project` (keep existing **`repo`** scopes). |
+| 4. Doctor + status | `python3 -m cursor_workflow project doctor` (config + templates + `gh` access) then `python3 -m cursor_workflow project status` (shows enabled board). |
+| 5. First card | `python3 -m cursor_workflow project create-from-template --template slice --title "…" --agent implementer` → `python3 -m cursor_workflow project claim --last --agent implementer`. Prefer `project guide` for copy-safe recipes. |
+| 6. Rate-limit buffer | If a write returns **EXIT_QUEUED (6)**, do not retry-loop — continue local evidence; after GraphQL quota recovers run `python3 -m cursor_workflow project outbox status` then `project outbox flush`. Outbox is a local buffer, not a second Status SSOT. |
+
+Daily Entry after onboarding: `project status` (board first) — see [project-board-collaboration.md](project-board-collaboration.md).
+
 ---
 
 ## 3. What lands on disk after activate
