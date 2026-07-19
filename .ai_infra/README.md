@@ -13,7 +13,7 @@ Versioned workflow kit assets live here. **`.cursor/` and `.agents/` stay at rep
 | `.ai_infra/mcp_servers/workflow_mcp/` | Optional MCP server (wraps scripts) |
 | `.ai_infra/docs/` | governance, operations, roadmap, handoff, architecture |
 | `.ai_infra/templates/` | AGENTS stub, local-workspace exemplars, plugin skills |
-| `.ai_infra/install/cursor_workflow/` | `cursor-workflow` CLI (install, gates, health, mcp) |
+| `.ai_infra/install/cursor_workflow/` | `cursor-workflow` CLI — twelve top-level commands (`install`, `activate`, `gates`, `health`, `mcp`, `contributors`, `integrate`, `drift`, `doc`, `verify`, `project`, `research`; see `cursor-workflow --help`) |
 
 ## Path resolution
 
