@@ -137,7 +137,7 @@ def render_markdown(root: Path, data: dict, test_count: int) -> str:
         f"- Missing lines: `{total_miss}`",
         f"- Total coverage: `{pct:.2f}%`",
         f"- Low threshold: `{LOW_THRESHOLD}%`",
-        f"- Test run: `{test_count} passed` (pytest, `{resolve_project_python(root)}`)",
+        f"- Test run: `{test_count} collected` (pytest, `{resolve_project_python(root)}`)",
         "",
         "## Module Coverage",
         "",

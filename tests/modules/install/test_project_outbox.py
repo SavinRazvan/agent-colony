@@ -1268,3 +1268,143 @@ def test_cmd_doctor_warns_low_remaining_and_pending(
     finally:
         if path.is_file():
             path.unlink()
+
+
+def test_apply_outbox_claim_start_date_fail(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    ssot["fields"] = {**ssot["fields"], "start_date": {"field_id": "PVTF_start"}}
+    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "ok"))
+    monkeypatch.setattr(
+        project_cli, "set_item_date", lambda *a, **k: (False, "date failed")
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(
+            op="claim",
+            payload={"to": "in_progress", "start_date": "2026-07-18", "text": "x"},
+        ),
+    )
+    assert not ok
+    assert "start_date failed" in detail
+
+
+def test_apply_outbox_set_field_estimate_bad_type(tmp_path: Path) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="set-field", payload={"field": "estimate", "to": "nope"}),
+    )
+    assert not ok
+    assert "must be a number" in detail
+
+
+def test_apply_outbox_set_field_priority(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    monkeypatch.setattr(
+        project_cli,
+        "run_gh",
+        lambda *a, **k: SimpleNamespace(returncode=0, stdout="", stderr=""),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="set-field", payload={"field": "priority", "to": "p1"}),
+    )
+    assert ok
+    assert "priority=p1" in detail
+
+
+def test_apply_outbox_set_field_unsupported(tmp_path: Path) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="set-field", payload={"field": "labels", "to": "x"}),
+    )
+    assert not ok
+    assert "unsupported set-field" in detail
+
+
+def test_apply_outbox_promote_fail(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    ssot["default_repo"] = "o/r"
+    monkeypatch.setattr(
+        project_cli,
+        "promote_draft_item_to_issue",
+        lambda *a, **k: (False, "promote failed", {}),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="promote-to-issue", payload={"repo": "o/r"}),
+    )
+    assert not ok
+    assert detail == "promote failed"
+
+
+def test_apply_outbox_promote_notes_fail(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    ssot["default_repo"] = "o/r"
+    monkeypatch.setattr(
+        project_cli,
+        "promote_draft_item_to_issue",
+        lambda *a, **k: (
+            True,
+            "Issue #8",
+            {"item_id": VALID_ITEM_ID, "issue_number": "8", "url": "u", "noop": False},
+        ),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "append_notes_helper",
+        lambda *a, **k: (False, "notes failed", project_cli.EXIT_GH),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(
+            op="promote-to-issue",
+            payload={"repo": "o/r", "text": "promoted"},
+        ),
+    )
+    assert not ok
+    assert "Notes failed" in detail
+
+
+def test_apply_outbox_set_field_priority_keyerror(tmp_path: Path) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="set-field", payload={"field": "priority", "to": "p99"}),
+    )
+    assert not ok
+    assert "unknown priority" in detail
+
+
+def test_apply_outbox_set_field_priority_gh_fail(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    monkeypatch.setattr(
+        project_cli,
+        "run_gh",
+        lambda *a, **k: SimpleNamespace(returncode=1, stdout="", stderr="edit failed"),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="set-field", payload={"field": "priority", "to": "p1"}),
+    )
+    assert not ok
+    assert "edit failed" in detail

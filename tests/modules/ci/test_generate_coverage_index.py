@@ -41,7 +41,7 @@ def test_render_markdown_reports_full_coverage() -> None:
         }
     }
     text = mod.render_markdown(REPO_ROOT, data, test_count=605)
-    assert "605 passed" in text
+    assert "605 collected" in text
     assert "Total statements: `15`" in text
     assert "100.00%" in text
     assert "## Module Coverage" in text

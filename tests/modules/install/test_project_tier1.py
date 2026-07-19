@@ -66,6 +66,10 @@ def test_resolve_plain_field_id() -> None:
     assert project_cli.resolve_plain_field_id(ssot, "estimate") == "PVTF_estimate"
     with pytest.raises(KeyError):
         project_cli.resolve_plain_field_id(SAMPLE_SSOT, "estimate")
+    ssot_missing_id = json.loads(json.dumps(_tier1_ssot()))
+    ssot_missing_id["fields"]["estimate"] = {}
+    with pytest.raises(KeyError, match="field_id missing"):
+        project_cli.resolve_plain_field_id(ssot_missing_id, "estimate")
 
 
 def test_set_item_date_arg_shape(monkeypatch: pytest.MonkeyPatch) -> None:
