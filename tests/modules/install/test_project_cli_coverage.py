@@ -2326,3 +2326,79 @@ def test_cmd_export_ssot_disabled(monkeypatch: pytest.MonkeyPatch, tmp_path: Pat
         )
         == project_cli.EXIT_USAGE
     )
+
+
+def test_cmd_set_field_estimate_queues_on_gh_fail(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    ssot = _ssot()
+    ssot["fields"]["estimate"] = {"field_id": "PVTF_estimate"}
+    monkeypatch.setattr(project_cli, "_load_enabled_ssot", lambda root, cmd: (ssot, []))
+    monkeypatch.setattr(
+        project_cli,
+        "set_item_number",
+        lambda *a, **k: (False, "API rate limit exceeded"),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "_try_queue_rate_limit",
+        lambda *a, **k: project_cli.EXIT_QUEUED,
+    )
+    args = argparse.Namespace(
+        directory=tmp_path,
+        id=VALID_ITEM,
+        last=False,
+        field="estimate",
+        to="3",
+        agent="implementer",
+    )
+    assert project_cli.cmd_set_field(args) == project_cli.EXIT_QUEUED
+
+
+def test_cmd_set_field_priority_queues_on_gh_fail(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    ssot = _patch_ssot(monkeypatch)
+    monkeypatch.setattr(project_cli, "_load_enabled_ssot", lambda root, cmd: (ssot, []))
+    monkeypatch.setattr(
+        project_cli,
+        "run_gh",
+        lambda *a, **k: SimpleNamespace(returncode=1, stdout="", stderr="API rate limit exceeded"),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "_try_queue_rate_limit",
+        lambda *a, **k: project_cli.EXIT_QUEUED,
+    )
+    args = argparse.Namespace(
+        directory=tmp_path,
+        id=VALID_ITEM,
+        last=False,
+        field="priority",
+        to="p1",
+        agent="implementer",
+    )
+    assert project_cli.cmd_set_field(args) == project_cli.EXIT_QUEUED
+
+
+def test_cmd_set_field_estimate_fails_without_queue(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    ssot = _ssot()
+    ssot["fields"]["estimate"] = {"field_id": "PVTF_estimate"}
+    monkeypatch.setattr(project_cli, "_load_enabled_ssot", lambda root, cmd: (ssot, []))
+    monkeypatch.setattr(
+        project_cli,
+        "set_item_number",
+        lambda *a, **k: (False, "estimate edit failed"),
+    )
+    monkeypatch.setattr(project_cli, "_try_queue_rate_limit", lambda *a, **k: None)
+    args = argparse.Namespace(
+        directory=tmp_path,
+        id=VALID_ITEM,
+        last=False,
+        field="estimate",
+        to="3",
+        agent="implementer",
+    )
+    assert project_cli.cmd_set_field(args) == project_cli.EXIT_GH

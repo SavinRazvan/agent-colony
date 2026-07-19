@@ -285,6 +285,55 @@ def test_check_doc007_missing_agents_dir(tmp_path: Path) -> None:
     assert "missing" in result.detail
 
 
+def test_check_doc007_missing_board_rights_marker(tmp_path: Path) -> None:
+    _copy_minimal_kit(tmp_path)
+    agent = tmp_path / ".cursor" / "agents" / "implementer.md"
+    text = agent.read_text(encoding="utf-8")
+    agent.write_text(text.replace("**Board rights:**", "**Board scope:**"), encoding="utf-8")
+    paths = dfc.doc_facts_paths(tmp_path)
+    result = dfc.check_doc007_agent_board_rights(paths)
+    assert not result.passed
+    assert "missing Board rights" in result.detail
+
+
+def test_check_doc008_empty_agents_dir(tmp_path: Path) -> None:
+    paths = dfc.doc_facts_paths(tmp_path)
+    result = dfc.check_doc008_canvas_roster(paths)
+    assert not result.passed
+    assert "missing .cursor/agents" in result.detail
+
+
+def test_check_doc008_many_roster_gaps_truncates_detail(tmp_path: Path) -> None:
+    _copy_minimal_kit(tmp_path)
+    dst_canvas = tmp_path / "canvases"
+    dst_canvas.mkdir(parents=True, exist_ok=True)
+    for name in dfc.CANVAS_ROSTER_HUBS:
+        shutil.copy2(REPO_ROOT / "canvases" / name, dst_canvas / name)
+    for i in range(6):
+        (dst_canvas / f"agent-gap-{i}.canvas.tsx").write_text(
+            f'const edge = {{ from: "missing-agent-{i}" }};\n',
+            encoding="utf-8",
+        )
+    paths = dfc.doc_facts_paths(tmp_path)
+    result = dfc.check_doc008_canvas_roster(paths)
+    assert not result.passed
+    assert "+2 more" in result.detail
+
+
+def test_check_doc008_missing_hub_canvas(tmp_path: Path) -> None:
+    _copy_minimal_kit(tmp_path)
+    canvas_dir = tmp_path / "canvases"
+    canvas_dir.mkdir(parents=True, exist_ok=True)
+    for name in dfc.CANVAS_ROSTER_HUBS:
+        shutil.copy2(REPO_ROOT / "canvases" / name, canvas_dir / name)
+    (canvas_dir / "agent-other.canvas.tsx").write_text('const x = "implementer";\n', encoding="utf-8")
+    (canvas_dir / "agent-relations.canvas.tsx").unlink()
+    paths = dfc.doc_facts_paths(tmp_path)
+    result = dfc.check_doc008_canvas_roster(paths)
+    assert not result.passed
+    assert "agent-relations.canvas.tsx: file missing" in result.detail
+
+
 # ---------------------------------------------------------------------------
 # check_doc_facts.py
 # ---------------------------------------------------------------------------

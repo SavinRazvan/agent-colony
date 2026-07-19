@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (MAS Workflow Kit — Project SSOT)
 
-**Last updated:** 2026-07-18 (WORKSPACE-CLEAN — DOC-008 canvas roster)  
-**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 943
+**Last updated:** 2026-07-19 (COV-100 verify — 100% scoped kit coverage)  
+**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1062
 
 ## Shipped (confirmed in repo)
 
@@ -48,16 +48,15 @@ Notes:
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Kit version on install | `kit_version` 0.4.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 943 collected (941 passed + 2 skipped on full run) | `tests/modules/` |
+| Tests | 1062 collected (1060 passed + 2 skipped on full run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 
 `pytest --cov=.ai_infra --cov=cursor_workflow` measures the **import surface** of the
-installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-18
-(post-COV-100 growth): **6161 statements, 97.05%** on a full suite pass (**943
-collected**; 941 passed, 2 skipped). Primary gaps: `research_cli.py` (~75%),
-`gh_project_adapter.py` (~88%); secondary: `project_cli.py` / `project_outbox.py`
-(~95%). One import-order `sys.path` bootstrap in `merge.py` is `# pragma: no cover`.
+installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-19
+(COV-100 verify): **6208 statements, 100.00%** on a full suite pass (**1062
+collected**; 1060 passed, 2 skipped). One import-order `sys.path` bootstrap in
+`merge.py` is `# pragma: no cover` (justified — import-order bootstrap only).
 Subprocess-only maintainer scanners (`check_governance_consistency.py`,
 `check_debrand.py`, `check_consumer_purity.py`, `check_file_headers.py`) have
 dedicated module tests but are excluded from this metric by design — they are

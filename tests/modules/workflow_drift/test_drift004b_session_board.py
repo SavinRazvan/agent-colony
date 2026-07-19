@@ -158,6 +158,13 @@ def test_drift004b_passes_matching_in_progress(tmp_path: Path) -> None:
     assert "aligns" in result.detail
 
 
+def test_drift004b_skips_without_board_item_id(tmp_path: Path) -> None:
+    root = _scaffold(tmp_path, board_cell="", snapshot={"items": []})
+    result = check_drift004b(drift_paths(root))
+    assert result.passed
+    assert "skipped" in result.detail
+
+
 def test_drift004b_fails_missing_item(tmp_path: Path) -> None:
     snap = {"schema": "project-board-snapshot/v1", "items": []}
     root = _scaffold(
