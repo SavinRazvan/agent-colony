@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-07-18";
+const VERIFIED = "2026-07-19";
 const SOURCES =
   ".cursor/agents/integrator-mas-agent.md · mas-infrastructure-integration/SKILL.md · project-board-ssot/SKILL.md";
 

@@ -141,7 +141,7 @@ const FOLLOWUP_SLICES = [
     items: [
       "Issue body, GraphQL errors, merge Notes warn",
       "set_item_status PVTI-only paths; outbox queue/flush",
-      "929 tests collected; drift validate green",
+      "1062 tests collected; drift validate green",
     ],
   },
   {
@@ -329,7 +329,7 @@ export default function BoardSsotVsKitCanvas() {
         <Text tone="secondary">
           Before/after comparison for mas-workflow-kit-project-ssot as of 2026-07-18.
           PR #2 merged A→B→C on main; FIX-NOTES-DI, doc-drift residuals, EA-001/004,
-          and expanded tests (929 collected) are shipped on main.
+          and expanded tests (1062 collected) are shipped on main.
         </Text>
       </Stack>
 
@@ -616,7 +616,7 @@ export default function BoardSsotVsKitCanvas() {
               <Text size="small">8 agent Anchors + continuation contract</Text>
               <Text size="small">ADR-008 + project-ssot-precedence overlay</Text>
               <Text size="small">A→B→C merged (PR #2); FIX-NOTES-DI on main (PR #3)</Text>
-              <Text size="small">929 tests collected; DRIFT validate P0=0 P1=0 P2=0</Text>
+              <Text size="small">1062 tests collected; DRIFT validate P0=0 P1=0 P2=0</Text>
               <Text size="small">STANDALONE decided — this repo is the product</Text>
               <Text size="small">
                 BOARD-PROMOTE: Draft→Issue via promote-to-issue / mention-pr auto
