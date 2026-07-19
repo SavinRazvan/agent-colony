@@ -36,6 +36,7 @@ Notes:
 | Board outbox (rate-limit) | `project queue` / `outbox status|flush`; EXIT_QUEUED=6; **58 mocked unit tests** | `project_outbox.py` + `project_atomics.py` / `project_cli.py` + `tests/modules/install/test_project_outbox.py` |
 | EA-001 residual thin CLI | `project_cli.py` facade (~660 LOC) + `project_parser.py` + `project_handlers.py` | PR close-remaining-ea-gaps |
 | Doc facts validate | DOC-001…008 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
+| Kit canvases | **12** files under `canvases/`; DOC-008 counts **11** `agent-*.canvas.tsx` (excludes concept hub `board-ssot-vs-kit.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
 | MCP tools + resources | 20 tools + 6 resources | `.ai_infra/mcp_servers/workflow_mcp/` |

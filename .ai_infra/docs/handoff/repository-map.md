@@ -52,7 +52,7 @@ mas-workflow-kit-project-ssot/
 ├── cursor_workflow/            SSOT — thin CLI shim (also copied to consumer)
 ├── schemas/                    Legacy gate.json stub (GATES live in prepare.py)
 ├── .local/                     Kit-dev runtime (gitignored); CI seed fixture — not consumer exemplars
-├── tests/                      Kit-dev only — full pytest suite (929)
+├── tests/                      Kit-dev only — full pytest suite (1062; see IMPLEMENTATION-STATUS)
 ├── Makefile, pyproject.toml    Kit-dev only
 ├── overlays/                   Optional product rules source (empty in core kit)
 ├── project-rules/              Deprecated alias → use overlays/rules/
@@ -89,7 +89,7 @@ my-app/
 ├── .cursor/
 │   ├── agents/                     8 agents (from payload; incl. project-board)
 │   ├── rules/                      6 rules
-│   └── skills/                     10 canonical skills only (no repo-root skills/ merge)
+│   └── skills/                     11 canonical skills only (no repo-root skills/ merge)
 ├── .agents/skills/                 5 maintainer slash folders (+ audit-alignment stub)
 ├── .ai_infra/                      Slim bundle (manifest copy_ai_infra only)
 │   ├── scripts/pr|architecture|integration|workflow|install/
@@ -102,7 +102,7 @@ my-app/
 └── .local/                         Scaffolded trackers + artifact buckets (gitignored)
 ```
 
-**Not installed:** kit `tests/modules/` (929), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `scripts/ci/`, `scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
+**Not installed:** kit `tests/modules/` (1062; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `scripts/ci/`, `scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
 
 Consumer tree detail: [PLUGIN-ARCHITECTURE.md § Installed consumer project](PLUGIN-ARCHITECTURE.md).
 
