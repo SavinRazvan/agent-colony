@@ -276,7 +276,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | `/verifier` | `.cursor/agents/verifier.md` |
 | `/enterprise-auditor` | `.cursor/agents/enterprise-auditor.md` |
 | `/workflow-drift-guard` | `.cursor/agents/workflow-drift-guard.md` |
-| `/researcher` | `.cursor/agents/researcher.md` — adaptive Brief; public/private GitHub (private needs `gh`/git auth); anti-loop ≤6 rounds; `research init\|fetch\|validate` |
+| `/researcher` | `.cursor/agents/researcher.md` — **shipped/proven**; adaptive Brief; public/private GitHub (private needs `gh`/git auth); anti-loop ≤6 rounds; `research init\|fetch\|validate`; corpus opt-in after init |
 | `/integrator-mas-agent` | `.cursor/agents/integrator-mas-agent.md` |
 | `/review-pr`, `/prepare-pr`, `/merge-pr` | `.agents/skills/` |
 | `/mas-infrastructure-integration` | `.cursor/skills/mas-infrastructure-integration/` |

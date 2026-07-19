@@ -55,7 +55,7 @@ const AGENTS = [
   {
     id: "researcher",
     description:
-      "Brief-driven multi-round research (chat/agent adaptive intake); packs under _research_results/; hard-stop on product code",
+      "Shipped/proven corpus researcher — adaptive Brief; packs under _research_results/ (opt-in after init); hard-stop on product code",
   },
 ];
 
@@ -194,8 +194,8 @@ export default function AgentRosterCanvas() {
         </Row>
         <Text tone="secondary">
           Explicit handoff edges from agent cards (skill chain test-runner→verifier
-          when tests gate PR). researcher is non-product — redirects to product
-          agents.
+          when tests gate PR). researcher is shipped/proven and non-product —
+          corpus opt-in; redirects to product agents for code/PR.
         </Text>
         <Callout tone="info" title="Board lifecycle (all 8)">
           Tier-1: Start date on claim or first In progress; Size↔Estimate points
@@ -242,10 +242,11 @@ export default function AgentRosterCanvas() {
             headers={["Agent", "When"]}
             rows={RESEARCHER_REDIRECTS}
           />
-          <Callout tone="warning" title="Non-product agent">
-            researcher writes only _research_results/ (adaptive Brief from
-            chat/agents). No src/tests/scripts; no git/PR. Not connected in
-            product handoff DAG — consumers read AGENT_BRIEF.md.
+          <Callout tone="info" title="Shipped non-product agent">
+            researcher is fully functional (live E2E + verifier PASS 2026-07-19).
+            Writes only _research_results/ after research init (opt-in corpus).
+            No src/tests/scripts; no git/PR. Not in product handoff DAG —
+            consumers read AGENT_BRIEF.md. See agent-researcher canvas.
           </Callout>
         </CardBody>
       </Card>

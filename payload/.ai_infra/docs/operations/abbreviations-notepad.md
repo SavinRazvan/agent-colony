@@ -49,9 +49,9 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs.
 | test-runner | Module tests and coverage |
 | verifier | Evidence-based verification |
 | enterprise-auditor | Architecture audits |
-| researcher | Brief-driven research packs; adaptive intake from chat/agents/board; CLI `research init\|fetch\|validate` |
+| researcher | Shipped corpus researcher; adaptive Brief; CLI `research init\|fetch\|validate`; packs opt-in after init |
 
-## Research (optional)
+## Research (opt-in corpus)
 
 | Term | Meaning |
 |------|---------|

@@ -76,8 +76,8 @@ const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
   },
   {
     id: "researcher",
-    role: "Adaptive Brief research packs (no product PRs)",
-    lane: "Optional",
+    role: "Shipped corpus researcher — packs under _research_results/ (opt-in)",
+    lane: "Research (opt-in corpus)",
   },
 ];
 
@@ -194,7 +194,7 @@ const LANES: [string, string][] = [
   ["Delivery", "implementer · test-runner · verifier"],
   ["Infrastructure", "integrator-mas-agent"],
   ["Quality", "enterprise-auditor · workflow-drift-guard"],
-  ["Optional", "researcher"],
+  ["Research (opt-in corpus)", "researcher"],
 ];
 
 const DAG_NODES = AGENTS.filter((a) => a.id !== "researcher").map((a) => ({
@@ -385,13 +385,13 @@ export default function AgentRelationsCanvas() {
             </Pill>
           }
         >
-          Collaboration graph (researcher omitted — redirects only)
+          Collaboration graph (researcher omitted — non-product redirects)
         </CardHeader>
         <CardBody>
           <RelationDag focus={focus} tokens={tokens} />
           <Text tone="tertiary" size="small">
             Accent edges = selected agent’s handoffs. Dashed = back-edge (cycle).
-            researcher has no product edges — see redirects below.
+            researcher is shipped/proven but has no product edges — see redirects.
           </Text>
         </CardBody>
       </Card>
@@ -441,8 +441,9 @@ export default function AgentRelationsCanvas() {
             />
             <Spacer />
             <Text size="small" tone="tertiary">
-              Hard stop: write only under _research_results/; no product
-              commit/push/PR.
+              Shipped/proven (live E2E + verifier 2026-07-19). Hard stop: write
+              only under _research_results/; no product commit/push/PR. Corpus
+              opt-in after research init — see agent-researcher canvas.
             </Text>
           </CardBody>
         </Card>

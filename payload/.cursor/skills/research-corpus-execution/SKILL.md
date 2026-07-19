@@ -120,3 +120,7 @@ If `DEPTH_BACKLOG.md` exists and user asks for host deepening: one backlog ID pe
 ```text
 slug · mode · rounds · curated_count · AGENT_BRIEF path · validate PASS/FAIL · next consumer
 ```
+
+## Status
+
+**Agent shipped/proven** (2026-07-19): live external pack (`flexiai-toolsmith`, 18 curated, validate PASS) + verifier Claim A (efficiency) / Claim B (correctness) VERIFIED. Corpus remains **opt-in** after first `research init` — not an incomplete agent. Canvas: `canvases/agent-researcher.canvas.tsx`.

@@ -20,7 +20,7 @@ description: Brief-driven multi-round research (GitHub/local) into _research_res
 
 **Templates:** `--template research` for research cards; Notes timestamps via CLI; do not hand-forge times.
 
-Build and maintain a **local research corpus** of verified packs. **Off by default** until `_research_results/` is initialized (`research init`). Supports **external** sources (GitHub or local path) and optional host **self** deepening.
+Build and maintain a **local research corpus** of verified packs. **Agent is shipped/proven** (live E2E + verifier PASS 2026-07-19); corpus packs remain **opt-in** until `_research_results/` is initialized (`research init`). Supports **external** sources (GitHub or local path) and optional host **self** deepening.
 
 ## Adaptive intake (mandatory before research)
 
