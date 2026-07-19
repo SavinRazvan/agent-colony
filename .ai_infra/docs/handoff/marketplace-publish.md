@@ -208,6 +208,8 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-07-19 DOC-CANVAS-ALIGN):** Re-verified against `IMPLEMENTATION-STATUS.md` — **1062** tests collected (1060 passed + 2 skipped), **6208** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts (8 / 11 / 7). Prior 931/5352 line superseded.
 
+**Listing copy refresh (2026-07-19 EA-019 / PR #70):** Re-verified against `IMPLEMENTATION-STATUS.md` on `main` post Tier-1 Size/Estimate + Start date — **1072** tests collected (1070 passed + 2 skipped), **6208** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts unchanged (**8** / **11** / **7**); kit version **0.4.0**. Prior 1062 line superseded. Ship Marketplace against `0.4.0` (no version bump in this slice).
+
 **Consumer smoke (2026-07-08):** Real app **Smart-Notes** — `/add-plugin` + chat **`/workflow-activate`**, `health`/`gates`/`integrate`/`mcp validate` PASS, kit smoke **1** of **120** pytest during gates. Local evidence file was not retained in this workspace; recreate with `make smoke-consumer` and write under `.local/workflow-artifacts/release/smoke-consumer-<app>-<date>.md` on the next consumer run.
 
 ## Publish
