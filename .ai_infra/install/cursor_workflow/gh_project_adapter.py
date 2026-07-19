@@ -219,12 +219,12 @@ def create_issue_item(ssot: dict[str, Any], title: str, body: str) -> tuple[str 
         return None, raw, f"item-add ok but no PVTI_ in output (issue={issue_url})"
     return item_id, raw or issue_url, None
 def create_board_item(ssot: dict[str, Any], title: str, body: str) -> tuple[str | None, str | None, str | None]:
-    """Route create by conventions.item_kind_default: draft (default) | issue."""
+    """Route create by conventions.item_kind_default: issue (product default) | draft."""
     conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
-    kind = str((conventions or {}).get("item_kind_default") or "draft").strip().lower()
-    if kind == "issue":
-        return _cli().create_issue_item(ssot, title, body)
-    return _cli().create_draft_item(ssot, title, body)
+    kind = str((conventions or {}).get("item_kind_default") or "issue").strip().lower()
+    if kind == "draft":
+        return _cli().create_draft_item(ssot, title, body)
+    return _cli().create_issue_item(ssot, title, body)
 def resolve_repository_id(ssot: dict[str, Any], repo: str = "") -> tuple[str | None, str | None]:
     """
     Resolve GitHub repository node id (R_…) for promote / issue create.

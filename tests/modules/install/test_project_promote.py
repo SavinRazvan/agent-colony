@@ -307,6 +307,36 @@ def test_create_board_item_issue_path(monkeypatch: pytest.MonkeyPatch) -> None:
     assert not any(c[:2] == ["project", "item-create"] for c in calls)
 
 
+
+
+def test_create_board_item_defaults_to_issue(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Missing item_kind_default must create an Issue (not Draft)."""
+    calls: list[list[str]] = []
+
+    def fake_gh(args: list[str], *, timeout_s: float = 60.0):
+        calls.append(args)
+        if args[:2] == ["issue", "create"]:
+            return SimpleNamespace(
+                returncode=0,
+                stdout="https://github.com/o/r/issues/42\n",
+                stderr="",
+            )
+        if args[:2] == ["project", "item-add"]:
+            return SimpleNamespace(
+                returncode=0,
+                stdout=json.dumps({"id": VALID_PVTI}),
+                stderr="",
+            )
+        return SimpleNamespace(returncode=1, stdout="", stderr="bad")
+
+    monkeypatch.setattr(project_cli, "run_gh", fake_gh)
+    ssot = _ssot(conventions={})  # no item_kind_default
+    item_id, raw, err = project_cli.create_board_item(ssot, "Title", "## Notes\n")
+    assert err is None
+    assert item_id == VALID_PVTI
+    assert any(c[:2] == ["issue", "create"] for c in calls)
+    assert not any(c[:2] == ["project", "item-create"] for c in calls)
+
 def test_apply_outbox_promote(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

@@ -290,7 +290,7 @@ Do **not** run upstream marketplace publish from this repo against `mas-workflow
 | Question | Notes |
 |----------|-------|
 | Board-only vs dual mirror? | **Board wins — only writable SSOT.** Offline fallback only; no dual writers “for safety.” |
-| DraftIssue vs real Issues? | Default Draft (`item_kind_default: draft`); promote via `python3 -m cursor_workflow project promote-to-issue --last --agent <name>` or `mention-pr` auto when `promote_to_issue_on_pr` (default true). Issue-at-create when `item_kind_default: issue`. Do not leave shippable work as Draft through merge. |
+| DraftIssue vs real Issues? | **Default Issue** (`item_kind_default: issue`) so Assignees + Linked PRs work from claim. Draft is scratch-only (`item_kind_default: draft`). Promote leftovers via `promote-to-issue --last` or `mention-pr` when `promote_to_issue_on_pr`. Do not create shippable work as Draft. |
 | Tier-1 board fields? | **Start date** may set on `claim` (UTC). **Estimate** (and Priority/Size) via `set-field` on triage/own cards. **PR URL** via `mention-pr`. Iteration / Labels / Reviewers / End date out of scope for agents by default. Humans own Ready prioritization. |
 | Consumer installs? | Install plugin from **this** repo: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` |
 | Offline / no `gh`? | `fallback: local_trackers` then resume board sync. |

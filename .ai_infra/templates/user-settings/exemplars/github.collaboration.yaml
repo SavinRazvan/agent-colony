@@ -93,7 +93,7 @@ project_ssot:
     claim: set_assignee                   # set_assignee | title_prefix | none
     set_start_date_on_claim: true         # no-op if start_date.field_id missing
     one_in_progress_per_assignee: true
-    item_kind_default: draft              # draft | issue
+    item_kind_default: issue              # issue (default — Assignees + Linked PRs) | draft (scratch only)
     promote_to_issue_on_pr: true
     # Board Notes: @github_user/agent (owner.github_user from this file — not project_ssot.owner)
     attribution_format: "{github_user}/{agent}"
