@@ -35,7 +35,7 @@ See [PLUGIN-USER-GUIDE.md](../operations/PLUGIN-USER-GUIDE.md) §1 for the plugi
 
 ## Pattern A (maintainer PR)
 
-Hub: `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` (`prepare.py` GATES) → `merge-pr` → `finalize.py`
+Hub: `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` (`prepare.py` `resolve_gates()`) → `merge-pr` → `finalize.py`
 
 Gate order: read `.ai_infra/scripts/pr/prepare.py` only — do not duplicate here.
 

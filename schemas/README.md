@@ -6,7 +6,7 @@ Used By:
  - MCP inventory evolution
  - docs/roadmap alignment
 Depends On:
- - .ai_infra/scripts/pr/prepare.py (GATES authoritative)
+ - .ai_infra/scripts/pr/prepare.py (resolve_gates() authoritative; GATES = back-compat alias)
 Notes:
  - Pattern A: gates are hardcoded in prepare.py; schema documents shape only.
 -->

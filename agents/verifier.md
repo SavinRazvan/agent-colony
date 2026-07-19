@@ -24,7 +24,7 @@ description: Claims vs evidence; minimal high-signal checks.
 2. Point to files/lines or command output as evidence.
 3. Run the **smallest** checks that disprove the claim; expand if still uncertain:
    - targeted `pytest` → full `pytest -q` when scope warrants
-   - same **category** of checks as `.ai_infra/scripts/pr/prepare.py` `GATES` (see that file for the exact command list)
+   - same **category** of checks as `.ai_infra/scripts/pr/prepare.py` **`resolve_gates()`** (see that file; `GATES` is the 2-gate back-compat alias)
    - `python .ai_infra/scripts/architecture/check_governance_consistency.py` when governance/workflows/policy docs changed
    - `verify_publish.py --branch <branch>` when validating PR linkage
 4. Label each claim: Verified | Partial | Not verified.

@@ -18,7 +18,7 @@ Three gate surfaces exist by design (Pattern A).
 
 | Surface | When | Steps | Source of truth |
 |---------|------|-------|-----------------|
-| **`prepare.py` GATES** | PR merge prep | **2** universal (testing artifacts + pytest); **4** on kit-dev (auto-appends drift + doc facts) | `.ai_infra/scripts/pr/prepare.py` `resolve_gates()` |
+| **`prepare.py` `resolve_gates()`** | PR merge prep | **2** universal (testing artifacts + pytest); **4** on kit-dev (auto-appends drift + doc facts) | `.ai_infra/scripts/pr/prepare.py` `resolve_gates()` (`GATES` = 2-gate alias) |
 | **`cursor-workflow gates`** | Kit dev / maintainer hygiene | 5: testing artifacts + pytest + governance + debrand + doc facts | `.ai_infra/install/cursor_workflow/cli.py` |
 | **`make doc-validate`** | After doc/agent/rule changes | DOC-001…008 canonical fact checks | `.ai_infra/scripts/architecture/check_doc_facts.py` |
 | **`make verify-all`** | Pre-audit / release readiness | 7 (+ optional ci-seed): sync-plugin → gates → drift → integrate → check-plugin → health → contributors | `.ai_infra/scripts/architecture/verify_all.py` |

@@ -259,7 +259,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | **Verify a claim** | `/verifier` | — | Evidence-only checks |
 | **Architecture audit** | `/enterprise-auditor` | — (subagent only; no dedicated MCP tool) | [agent-workflow-procedures.md](agent-workflow-procedures.md) §1 |
 | **Operational drift** (plan ↔ tracker) | `/workflow-drift-guard` (optional) | `python3 -m cursor_workflow drift validate --profile consumer` on app projects | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) · [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
-| **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` GATES | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
+| **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` `resolve_gates()` | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
 | **Add agents / skills / MCP** | `/integrator-mas-agent` + `/mas-infrastructure-integration` | `integrate validate` | [mas-infrastructure-integration.md](mas-infrastructure-integration.md) |
 | **Connect external MCP** | `/connect-external-mcp` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
 | **Upgrade / refresh dashboards** | `/workflow-activate` | `python3 -m cursor_workflow activate --directory .` | [upgrade-kit.md](upgrade-kit.md) |
@@ -278,6 +278,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | `/workflow-drift-guard` | `.cursor/agents/workflow-drift-guard.md` |
 | `/researcher` | `.cursor/agents/researcher.md` — **shipped/proven**; adaptive Brief; public/private GitHub (private needs `gh`/git auth); anti-loop ≤6 rounds; `research init\|fetch\|validate`; corpus opt-in after init |
 | `/integrator-mas-agent` | `.cursor/agents/integrator-mas-agent.md` |
+| `/project-board` | `.cursor/agents/project-board.md` + `.cursor/skills/project-board-ssot/` |
 | `/review-pr`, `/prepare-pr`, `/merge-pr` | `.agents/skills/` |
 | `/mas-infrastructure-integration` | `.cursor/skills/mas-infrastructure-integration/` |
 | `/connect-external-mcp` | `.cursor/skills/connect-external-mcp/` |
@@ -308,7 +309,7 @@ Pattern A — one script command per step; gate order lives only in `prepare.py`
 
 1. Feature branch (`feature/`, `fix/`, `chore/`)
 2. Implement + test → **`/review-pr`**
-3. **`/prepare-pr`** (runs `prepare.py` GATES — **2** checks on consumer, **4** on kit-dev)
+3. **`/prepare-pr`** (runs `prepare.py` **`resolve_gates()`** — **2** checks on consumer, **4** on kit-dev)
 4. **`/merge-pr`** → sync `main`, delete branch
 
 Full checklist: [workflow-complete.md](workflow-complete.md).

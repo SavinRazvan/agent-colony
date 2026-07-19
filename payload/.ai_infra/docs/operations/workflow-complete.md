@@ -25,7 +25,7 @@ Notes:
 4. **Publish checkpoint** (before merge workflow):
    - `python .ai_infra/scripts/pr/verify_publish.py --branch "$(git branch --show-current)"`
    - `gh pr view --json number,url,headRefName,state,mergeStateStatus`
-5. **Prepare gates (before merge / push)** — run **`python .ai_infra/scripts/pr/prepare.py`** (executes all `GATES` — see `.ai_infra/scripts/pr/prepare.py` for the canonical list). Additionally run **`python .ai_infra/scripts/architecture/check_governance_consistency.py`** when changing governance/workflows.
+5. **Prepare gates (before merge / push)** — run **`python .ai_infra/scripts/pr/prepare.py`** (executes **`resolve_gates()`** — see `.ai_infra/scripts/pr/prepare.py`; `GATES` is the 2-gate back-compat alias). Additionally run **`python .ai_infra/scripts/architecture/check_governance_consistency.py`** when changing governance/workflows.
 6. **Skills order (do not skip)** — see `.agents/skills/pr-workflow/SKILL.md`:
    - `review-pr` → `prepare-pr` → `merge-pr`
 7. **Artifacts** (must exist before merge; fill with real content):
@@ -104,7 +104,7 @@ Canonical detail: **`.local/index-and-planning/current/plan.md`** / board card b
 
 - Procedures + dedup rules: **`agent-workflow-procedures.md`**
 - Skill order + finalization: **`.agents/skills/pr-workflow/SKILL.md`**
-- Prepare gate list: **`.ai_infra/scripts/pr/prepare.py`** (`GATES`)
+- Prepare gate list: **`.ai_infra/scripts/pr/prepare.py`** (`resolve_gates()`; `GATES` = 2-gate back-compat alias)
 - CI shape: **`.github/workflows/kit-quality.yml`**
 
 If this file and `pr-workflow/SKILL.md` or `prepare.py` disagree, **fix this file** to match the script/workflow truth.

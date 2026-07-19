@@ -113,7 +113,7 @@ cp -r "$SOURCE/tests" "$TARGET/"
 ## 4. Customize once
 
 - [ ] `project.config.yaml` — copy from `project.config.yaml.example` (optional metadata)
-- [ ] `.ai_infra/scripts/pr/prepare.py` — `GATES` (default 2 gates OK)
+- [ ] `.ai_infra/scripts/pr/prepare.py` — `resolve_gates()` (default 2 gates OK; `GATES` = back-compat alias)
 - [ ] `.ai_infra/scripts/pr/local_workflow_paths.py` — `DEFAULT_GITHUB_USER`
 - [ ] `AGENTS.md` — project first-reads
 - [ ] Optional: overlay rules via `cp overlays/rules/*.mdc .cursor/rules/`
@@ -124,7 +124,7 @@ cp -r "$SOURCE/tests" "$TARGET/"
 cd "$TARGET"
 .venv/bin/python .ai_infra/scripts/pr/check_testing_artifacts.py
 .venv/bin/python -m pytest -q
-.venv/bin/python scripts/architecture/check_governance_consistency.py
+.venv/bin/python .ai_infra/scripts/architecture/check_governance_consistency.py
 ```
 
 Expected: all PASS (governance may skip CI workflow if `.github/` absent).
