@@ -17,6 +17,8 @@ Notes:
 
 When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project is the only writable SSOT** for backlog, Status, and continuation. Local trackers are offline fallback only; read-only exports never compete with Status. Canonical skill: `.cursor/skills/project-board-ssot/SKILL.md`.
 
+**First-time consumer setup:** step-by-step checklist in [PLUGIN-USER-GUIDE.md § Consumer project_ssot onboarding](PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) (install → collab YAML → `gh auth` → `project doctor` / `status` → first card → outbox flush).
+
 ## Continuation (why agents update the board)
 
 | Without board Exit | With board Exit |

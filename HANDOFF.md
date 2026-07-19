@@ -71,7 +71,7 @@ Notes:
 1. Agents **create** and **load** tasks from the configured Project (not from `work-tracker.md`).
 2. Agent Anchors read `project_ssot` from collab YAML → board; Exit updates card Status and Notes (continuation contract).
 3. Humans follow progress **only** on the Project UI; local tracker markdown is **offline fallback only**.
-4. Clear auth (`project` scopes) + settings onboarding for every collaborator who opts in.
+4. Clear auth (`project` scopes) + settings onboarding for every collaborator who opts in — [Consumer project_ssot onboarding checklist](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist).
 5. Rollback = disable `project_ssot` / use `fallback: local_trackers` **in this repo** (not abandon the product).
 
 **Failure / abort if:**
