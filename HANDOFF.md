@@ -105,7 +105,11 @@ Do **not** publish marketplace releases from this repo against upstream `mas-wor
 
 ## Deferred product backlog (board)
 
-Scheduled only when claimed from the Project (Backlog → Ready). Examples: marketplace publish (EA-019), adapter thinning (EA-020), ICC `pages.json` module-map (EA-024). Always-on GitHub Actions bots and MCP-before-`gh` remain explicitly deferred.
+Scheduled only when claimed from the Project (Backlog → Ready).
+
+- **In progress / Ready:** marketplace publish (**EA-019**) — live Cursor Marketplace listing; prep checklist in [marketplace-publish.md](.ai_infra/docs/handoff/marketplace-publish.md).
+- **Closed hygiene (2026-07-19):** EA-020 `gh_project_adapter` thinning (EA-001 + coverage enough); EA-024 ICC module-map tab (ICC deprecated; map at `.local/module-map.md`).
+- **Prose-only (no board card):** always-on GitHub Actions bots; MCP-before-`gh` for board writes.
 
 ---
 
@@ -115,4 +119,4 @@ Mirrored from `mas-workflow-kit` on 2026-07-17 (`1cb6dd7`). Board SSOT, Pattern 
 
 ---
 
-**Last updated:** 2026-07-19 · **Next:** `project status` → claim Ready (or schedule deferred Backlog)
+**Last updated:** 2026-07-19 · **Next:** complete EA-019 Marketplace publish (or `project status` → claim Ready)
