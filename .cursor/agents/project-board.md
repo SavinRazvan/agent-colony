@@ -29,7 +29,7 @@ Own **board triage and Status transitions** for the product Project SSOT (`mas-w
 - `.cursor/skills/project-board-ssot/SKILL.md`
 - `.ai_infra/templates/project-board/README.md` — when creating cards
 - `.local/user_settings/github.collaboration.yaml` (`project_ssot`)
-- `HANDOFF.md` §1 (STANDALONE product + board SSOT)
+- `HANDOFF.md` (STANDALONE product + board SSOT north star)
 - `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`
 
 ## Loop
