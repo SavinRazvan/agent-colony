@@ -110,14 +110,14 @@ Install the **MAS Workflow Kit — Project SSOT** plugin, open **your app repo**
 
 **Activate installs (same for every consumer):** agents, skills, rules, CLI, docs, templates, `.local/` scaffold — not your board ids.
 
-**Board shape constraint:** Your Project must be **kit-shaped**. Arbitrary custom layouts are not auto-supported; activate does **not** invent field ids from a Project URL.
+**Board shape constraint:** Your Project must be **kit-shaped**. Arbitrary custom layouts are not auto-supported; activate does **not** invent field ids from a Project URL. **Estimate** is relative **points** (not hours) — see skill § Size↔Estimate. **Start date** is set on first In progress.
 
 | Field | Required option keys |
 |-------|---------------------|
 | **Status** (single-select) | `backlog`, `ready`, `in_progress`, `in_review`, `done` |
 | **Priority** (single-select) | `p0`, `p1`, `p2` |
 | **Size** (single-select) | `xs`, `s`, `m`, `l`, `xl` |
-| **Estimate** (number) | numeric field id |
+| **Estimate** (number) | numeric field id (points) |
 | **Start date** (date) | date field id |
 
 Discover ids manually: `gh project view <N> --owner <login>` (for `project_id`) and `gh project field-list <N> --owner <login>` — paste into `github.collaboration.yaml`. No bootstrap CLI in this release; agents can walk lazy users through these commands.
@@ -128,7 +128,7 @@ Discover ids manually: `gh project view <N> --owner <login>` (for `project_id`) 
 | 2. Collaboration YAML | Edit `.local/user_settings/github.collaboration.yaml`: set `project_ssot.enabled: true`, `sync_policy: board_only`, and board identity — `name`, `number`, `owner`, `project_id` (from Project URL / `gh project view`). Copy field ids from `gh project field-list <number> --owner <owner>` when wiring `fields.status` / Priority / Size. |
 | 3. GitHub auth | Ensure `gh` can reach Projects: `gh auth refresh -h github.com -s read:project,project` (keep existing **`repo`** scopes). |
 | 4. Doctor + status | `python3 -m cursor_workflow project doctor` (config + templates + `gh` access) then `python3 -m cursor_workflow project status` (shows enabled board). |
-| 5. First card | `python3 -m cursor_workflow project create-from-template --template slice --title "…" --agent implementer` → `python3 -m cursor_workflow project claim --last --agent implementer`. Prefer `project guide` for copy-safe recipes. |
+| 5. First card | `python3 -m cursor_workflow project create-from-template --template slice --title "…" --priority p1 --size s --estimate 1 --agent implementer` → `claim --last --agent implementer` (sets Start date). Prefer `project guide`. |
 | 6. Rate-limit buffer | If a write returns **EXIT_QUEUED (6)**, do not retry-loop — continue local evidence; after GraphQL quota recovers run `python3 -m cursor_workflow project outbox status` then `project outbox flush`. Outbox is a local buffer, not a second Status SSOT. |
 
 Daily Entry after onboarding: `project status` (board first) — see [project-board-collaboration.md](project-board-collaboration.md).

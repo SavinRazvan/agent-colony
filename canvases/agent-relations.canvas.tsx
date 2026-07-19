@@ -450,7 +450,7 @@ export default function AgentRelationsCanvas() {
 
       <Callout tone="info" title="Shared board contract">
         Every agent: Entry = project status / claim; Exit = Status + Notes.
-        Tier-1: claim may set Start date; triage may set Estimate. Promote
+        Tier-1: Start date on first In progress; Size/Estimate per skill table. Promote
         Draft→Issue via promote-to-issue or mention-pr (auto when
         promote_to_issue_on_pr) before shippable PR — claim does not auto-promote.
         Notes: @owner.github_user/&lt;agent&gt; · YYYY-MM-DDTHH:MM:SSZ · … via

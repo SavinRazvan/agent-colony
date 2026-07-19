@@ -109,17 +109,17 @@ const PER_AGENT_ENTRY_EXIT = [
 const BOARD_TIER1 = [
   [
     "Start date",
-    "claim (In progress)",
-    "UTC today when set_start_date_on_claim + fields.start_date.field_id",
-    "All agents on claim",
-    "WARN only on failure; claim still succeeds",
+    "claim / set-status / handoff → in_progress",
+    "UTC today if empty when set_start_date_on_claim + fields.start_date.field_id",
+    "All agents on first In progress",
+    "WARN only on failure; parent op still succeeds",
   ],
   [
-    "Estimate",
-    "Triage / own card",
-    "set-field --field estimate --to N (N ≥ 0)",
-    "project-board, implementer, integrator",
-    "Number field via YAML field_id",
+    "Size / Estimate",
+    "create-from-template / set-field",
+    "Points table in project-board-ssot skill (defaults s/1 when guessed)",
+    "Triage + create",
+    "Priority required; Estimate = points not hours",
   ],
   [
     "Promote Draft→Issue",

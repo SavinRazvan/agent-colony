@@ -93,7 +93,7 @@ const READ_FIRST = [
 const PATTERNS = [
   ["create-from-template", "slice [AUDIT] then claim --last"],
   ["Board lifecycle", "Notes = artifact paths; Status in_review/done"],
-  ["Tier-1", "Shared Board rights; Start date on claim"],
+  ["Tier-1", "Shared Board rights; Start date on claim / first In progress"],
   ["Tracker etiquette", "Propose edits in audit-actions; implementer applies"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/enterprise-auditor via --agent"],

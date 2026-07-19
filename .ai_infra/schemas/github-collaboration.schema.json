@@ -107,12 +107,12 @@
             "claim": { "type": "string" },
             "set_start_date_on_claim": {
               "type": "boolean",
-              "description": "When true and fields.start_date.field_id set, claim writes UTC YYYY-MM-DD"
+              "description": "When true and fields.start_date.field_id set, write UTC YYYY-MM-DD on claim and on first transition to in_progress (set-status / handoff) if Start date is empty"
             },
             "one_in_progress_per_assignee": { "type": "boolean" },
             "item_kind_default": {
               "type": "string",
-              "description": "Default card kind on create-from-template: draft (DraftIssue) or issue (gh issue create + gh project item-add)"
+              "description": "Default card kind on create: issue (product default — gh issue create + item-add; Assignees + Linked PRs) or draft (DraftIssue scratch-only)"
             },
             "promote_to_issue_on_pr": {
               "type": "boolean",

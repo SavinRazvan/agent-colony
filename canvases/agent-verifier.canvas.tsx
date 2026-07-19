@@ -97,7 +97,7 @@ const READ_FIRST = [
 const PATTERNS = [
   ["Consume only", "Do NOT create-from-template"],
   ["Board lifecycle", "Evidence on handed-off card; promote not primary path"],
-  ["Tier-1", "Shared Board rights; Start date on claim if reclaiming"],
+  ["Tier-1", "Shared Board rights; Start date on claim / first In progress"],
   ["Checks", "pytest · GATES category · governance · verify_publish"],
   ["Merge gate", "Do not approve merge without pr/ artifacts when maintainer workflow active"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],

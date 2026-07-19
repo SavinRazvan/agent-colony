@@ -31,18 +31,29 @@ from test_project_cli import SAMPLE_SSOT  # noqa: E402
 def _ssot(**overrides):
     data = json.loads(json.dumps(SAMPLE_SSOT))
     data["default_repo"] = data.get("default_repo") or "SavinRazvan/mas-workflow-kit-project-ssot"
+    data["fields"] = {
+        **data.get("fields", {}),
+        "estimate": {"field_id": "PVTF_estimate"},
+        "start_date": {"field_id": "PVTF_start"},
+    }
     data["conventions"] = {
         **data.get("conventions", {}),
         "body_sections": ["Acceptance", "Rollback", "Notes"],
         "require_attribution_on_exit": True,
         "one_in_progress_per_assignee": True,
         "claim": "set_assignee",
+        "set_start_date_on_claim": True,
     }
     data.update(overrides)
     if "conventions" in overrides:
         data["conventions"] = {
             **data["conventions"],
             **overrides["conventions"],
+        }
+    if "fields" in overrides:
+        data["fields"] = {
+            **data["fields"],
+            **overrides["fields"],
         }
     return data
 
@@ -108,13 +119,86 @@ def test_cmd_create_from_template(
         rollback="revert",
         notes="",
         status="ready",
+        priority="p1",
+        size=None,
+        estimate=None,
+        agent="",
     )
     assert project_cli.cmd_create_from_template(args) == 0
-    out = capsys.readouterr().out
+    captured = capsys.readouterr()
+    out = captured.out
     assert "item_id=PVTI_lAHOBl46-84A9KZxnew001" in out
+    assert "priority=p1" in out
+    assert "size=s" in out
+    assert "estimate=1.0" in out
+    assert "Size/Estimate guessed" in captured.err
     assert any(c[:2] == ["issue", "create"] for c in calls)
     assert any(c[:2] == ["project", "item-add"] for c in calls)
     assert any("--single-select-option-id" in c for c in calls)
+
+
+def test_cmd_create_from_template_requires_priority(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
+    args = argparse.Namespace(
+        directory=REPO_ROOT,
+        title="[T] slice",
+        template="slice",
+        acceptance="do X",
+        rollback="revert",
+        notes="",
+        status="ready",
+        priority="",
+        size=None,
+        estimate=None,
+        agent="",
+    )
+    assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_USAGE
+
+
+def test_cmd_create_from_template_explicit_size_estimate_no_guess_warn(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
+
+    def fake_gh(args: list[str], *, timeout_s: float = 60.0):
+        if args[:2] == ["issue", "create"]:
+            return SimpleNamespace(
+                returncode=0,
+                stdout="https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/issues/99\n",
+                stderr="",
+            )
+        if args[:2] == ["project", "item-add"]:
+            return SimpleNamespace(
+                returncode=0,
+                stdout=json.dumps({"id": "PVTI_lAHOBl46-84A9KZxnew002"}),
+                stderr="",
+            )
+        if args[:2] == ["project", "item-edit"]:
+            return SimpleNamespace(returncode=0, stdout="", stderr="")
+        return SimpleNamespace(returncode=1, stdout="", stderr="unexpected")
+
+    monkeypatch.setattr(project_cli, "run_gh", fake_gh)
+    args = argparse.Namespace(
+        directory=REPO_ROOT,
+        title="[T] slice",
+        template="slice",
+        acceptance="do X",
+        rollback="revert",
+        notes="",
+        status="ready",
+        priority="p0",
+        size="m",
+        estimate="3",
+        agent="implementer",
+    )
+    assert project_cli.cmd_create_from_template(args) == 0
+    captured = capsys.readouterr()
+    assert "size=m" in captured.out
+    assert "estimate=3.0" in captured.out
+    assert "guessed" not in captured.err
+    assert "guessed" not in captured.out
 
 
 def test_cmd_claim_draft_warns_assignee(

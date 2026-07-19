@@ -77,13 +77,17 @@ def run_claim(args: argparse.Namespace) -> int:
             print(f'claim: WARN — assignee skipped: {a_detail}', file=sys.stderr)
         else:
             print(f'claim: assignee=@{a_detail.lstrip('@')}')
-    if claim_payload.get('start_date'):
-        today = str(claim_payload['start_date'])
-        d_ok, d_detail = pc.set_item_date(ssot, item_id, 'start_date', today)
-        if not d_ok:
+    d_ok, d_detail, d_applied = pc.ensure_start_date_if_starting(ssot, item_id, item=item)
+    if not d_ok:
+        print(f'claim: WARN — start_date skipped: {d_detail}', file=sys.stderr)
+    elif d_applied:
+        print(f'claim: start_date={d_detail}')
+    elif d_detail.startswith('skipped:'):
+        if 'field_id missing' in d_detail:
             print(f'claim: WARN — start_date skipped: {d_detail}', file=sys.stderr)
-        else:
-            print(f'claim: start_date={d_detail}')
+    else:
+        # already had a date
+        pass
     note = getattr(args, 'text', None) or 'claimed'
     n_ok, n_detail, n_code = pc.append_notes_helper(root, ssot, item_id, agent=agent, text=note, limit=args.limit)
     if not n_ok:
@@ -145,6 +149,14 @@ def run_handoff(args: argparse.Namespace) -> int:
             if queued is not None:
                 return queued
             return pc.fail('handoff', pc.EXIT_GH, detail)
+        if pc._normalize_status(status_to) == 'in_progress':
+            d_ok, d_detail, d_applied = pc.ensure_start_date_if_starting(ssot, item_id, item=item)
+            if not d_ok:
+                print(f'handoff: WARN — start_date skipped: {d_detail}', file=sys.stderr)
+            elif d_applied:
+                print(f'handoff: start_date={d_detail}')
+            elif 'field_id missing' in d_detail:
+                print(f'handoff: WARN — start_date skipped: {d_detail}', file=sys.stderr)
     n_ok, n_detail, n_code = pc.append_notes_helper(root, ssot, item_id, agent=agent, text=note_core, limit=args.limit)
     if not n_ok:
         if n_code == pc.EXIT_GH:
@@ -325,15 +337,16 @@ def run_doctor(args: argparse.Namespace) -> int:
     print(f'human: {user}')
     print(f'templates: {tpl_dir}')
     fields = ssot.get('fields') if isinstance(ssot.get('fields'), dict) else {}
-    for key in ('start_date', 'estimate'):
+    for key in ('start_date', 'estimate', 'size'):
         block = fields.get(key) if isinstance(fields, dict) else None
         if isinstance(block, dict) and block.get('field_id'):
             print(f'tier1.{key}: {block['field_id']}')
         else:
-            print(f'doctor: WARN — fields.{key}.field_id missing (Tier-1 claim/estimate)', file=sys.stderr)
+            print(f'doctor: WARN — fields.{key}.field_id missing (Tier-1)', file=sys.stderr)
     conventions = ssot.get('conventions') if isinstance(ssot.get('conventions'), dict) else {}
-    print(f'set_start_date_on_claim: {conventions.get('set_start_date_on_claim', True)}')
-    print(f'item_kind_default: {conventions.get('item_kind_default', 'issue')}')
+    print(f"set_start_date_on_claim: {conventions.get('set_start_date_on_claim', True)}")
+    print('doctor: note — Size/Estimate use points table in project-board-ssot skill (not hours)')
+    print(f"item_kind_default: {conventions.get('item_kind_default', 'issue')}")
     print(f'promote_to_issue_on_pr: {conventions.get('promote_to_issue_on_pr', True)}')
     default_repo = str(ssot.get('default_repo') or '').strip()
     if default_repo:

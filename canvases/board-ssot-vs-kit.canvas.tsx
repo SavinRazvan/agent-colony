@@ -161,7 +161,7 @@ const FOLLOWUP_SLICES = [
 ];
 
 const CLI_RECIPE_ROWS = [
-  ["claim", "Pattern A — In progress + Start date + Notes @user/agent · UTC"],
+  ["claim", "Pattern A — In progress + Start date (if empty) + Notes @user/agent · UTC"],
   ["handoff", "Pattern A — Status + Notes + next=@user/agent"],
   ["create-from-template", "Pattern A — slice/bug card + body sections"],
   ["mention-pr", "Pattern A — PR Notes; auto-promote when promote_to_issue_on_pr"],
@@ -630,7 +630,7 @@ export default function BoardSsotVsKitCanvas() {
                 BOARD-PROMOTE: Draft→Issue via promote-to-issue / mention-pr auto
                 (promote_to_issue_on_pr default true); claim does not auto-promote
               </Text>
-              <Text size="small">BOARD-TIER1: claim Start date + Estimate set-field + mention-pr</Text>
+              <Text size="small">BOARD-TIER1: Start date on In progress; Size/Estimate table; mention-pr</Text>
               <Text size="small">EA-001: project_cli split (atomics/adapter/recipes/outbox)</Text>
               <Text size="small">EA-004: pyright blocking in kit-quality CI</Text>
               <Text size="small">EA-010: deprecated HTML ICC tab (offline export; prefer board + Open Canvas)</Text>

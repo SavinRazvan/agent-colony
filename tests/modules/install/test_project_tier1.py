@@ -403,3 +403,173 @@ def test_enqueue_allows_set_field_op(tmp_path: Path) -> None:
     assert entry is not None
     assert entry["op"] == "set-field"
     assert entry["status"] == "pending"
+
+
+def test_ensure_start_date_if_starting_sets_when_empty(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ssot = _tier1_ssot()
+    date_calls: list[str] = []
+    monkeypatch.setattr(
+        project_cli,
+        "set_item_date",
+        lambda s, iid, key, d: date_calls.append(d) or (True, d),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: ([{"id": VALID_PVTI, "title": "W"}], None),
+    )
+    ok, detail, applied = project_cli.ensure_start_date_if_starting(ssot, VALID_PVTI)
+    assert ok and applied
+    assert date_calls and len(date_calls[0]) == 10
+
+
+def test_ensure_start_date_no_overwrite(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ssot = _tier1_ssot()
+    monkeypatch.setattr(
+        project_cli,
+        "set_item_date",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("should not set")),
+    )
+    ok, detail, applied = project_cli.ensure_start_date_if_starting(
+        ssot,
+        VALID_PVTI,
+        item={"id": VALID_PVTI, "start date": "2026-01-01"},
+    )
+    assert ok and not applied
+    assert detail == "2026-01-01"
+
+
+def test_ensure_start_date_convention_off() -> None:
+    ssot = _tier1_ssot(conventions={"set_start_date_on_claim": False})
+    ok, detail, applied = project_cli.ensure_start_date_if_starting(ssot, VALID_PVTI)
+    assert ok and not applied
+    assert "false" in detail
+
+
+def test_ensure_start_date_missing_field() -> None:
+    ssot = _tier1_ssot()
+    ssot["fields"] = {k: v for k, v in ssot["fields"].items() if k != "start_date"}
+    ok, detail, applied = project_cli.ensure_start_date_if_starting(ssot, VALID_PVTI)
+    assert ok and not applied
+    assert "field_id missing" in detail
+
+
+def test_cmd_set_status_in_progress_sets_start_date(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    ssot = _tier1_ssot()
+    date_calls: list[str] = []
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(
+        project_cli,
+        "run_gh",
+        lambda *a, **k: SimpleNamespace(returncode=0, stdout="", stderr=""),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: ([{"id": VALID_PVTI}], None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "set_item_date",
+        lambda s, iid, key, d: date_calls.append(d) or (True, d),
+    )
+    args = argparse.Namespace(
+        directory=tmp_path, id=VALID_PVTI, last=False, to="in_progress", agent="implementer"
+    )
+    assert project_cli.cmd_set_status(args) == 0
+    assert date_calls
+    assert "start_date=" in capsys.readouterr().out
+
+
+def test_cmd_handoff_to_in_progress_sets_start_date(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    ssot = _tier1_ssot()
+    date_calls: list[str] = []
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: (
+            [
+                {
+                    "id": VALID_PVTI,
+                    "title": "W",
+                    "status": "Ready",
+                    "content": {
+                        "body": "## Acceptance\n\na\n\n## Rollback\n\nb\n\n## Notes\n\n"
+                    },
+                }
+            ],
+            None,
+        ),
+    )
+    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "oid"))
+    monkeypatch.setattr(
+        project_cli,
+        "set_item_date",
+        lambda s, iid, key, d: date_calls.append(d) or (True, d),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "append_notes_helper",
+        lambda *a, **k: (True, "updated", project_cli.EXIT_OK),
+    )
+    args = argparse.Namespace(
+        directory=tmp_path,
+        id=VALID_PVTI,
+        last=False,
+        agent="implementer",
+        next="verifier",
+        to="in_progress",
+        text="starting",
+        limit=100,
+    )
+    assert project_cli.cmd_handoff(args) == 0
+    assert date_calls
+    assert "start_date=" in capsys.readouterr().out
+
+
+def test_apply_outbox_set_status_in_progress_start_date(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    ssot["fields"] = {
+        **ssot["fields"],
+        "start_date": {"field_id": "PVTF_start"},
+    }
+    ssot["conventions"] = {
+        **ssot.get("conventions", {}),
+        "set_start_date_on_claim": True,
+    }
+    dates: list[str] = []
+    monkeypatch.setattr(
+        project_cli, "set_item_status", lambda *a, **k: (True, "47fc9ee4")
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "set_item_date",
+        lambda s, iid, key, d: dates.append(d) or (True, d),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: ([{"id": VALID_ITEM_ID}], None),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(
+            op="set-status",
+            payload={"to": "in_progress", "start_date": "2026-07-19"},
+        ),
+    )
+    assert ok
+    assert dates == ["2026-07-19"]

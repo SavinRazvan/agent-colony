@@ -69,38 +69,69 @@ When you **create** or **own** a Project card, fill the Tier-1 fields below. Do 
 | **P2** | `p2` | Planned hygiene / polish |
 | **P3** (deferred) | `p2` + Notes line `deferred` | Optional later — **no** `p3` option id in YAML |
 
+Priority is **independent** of Size (a P0 can be XS).
+
+### Size ↔ Estimate rubric (points, not hours)
+
+**Estimate** is relative **points**. Do not invent hours unless the consumer’s Project README defines hours→points.
+
+| Size | Typical slice | Estimate band | Default if unsure |
+|------|---------------|---------------|-------------------|
+| **xs** | Trivial (&lt; ~1h), one file / one paragraph | **1** | 1 |
+| **s** | Small, clear boundary | **1–2** | **1** |
+| **m** | Multi-file / multi-step, one PR | **3–5** | **3** |
+| **l** | Large or high risk — prefer split | **5–8** | **5** |
+| **xl** | Too big for one agent turn — **split** before coding | **8+** | refuse / split |
+
+**Honesty rules**
+
+1. Prefer smaller cards; if Size would be `l`/`xl`, create multiple Ready cards.
+2. If Size and Estimate disagree with the table, explain in Notes.
+3. Unknown → Size=`s`, Estimate=`1`, and Notes: `Size/Estimate guessed (default s/1)`.
+4. Keep Size and Estimate aligned with this table (e.g. Size=`m` → Estimate in 3–5).
+
+### Timing matrix
+
+| Moment | Status | Priority | Size | Estimate | Start date | Assignee | Linked PR |
+|--------|--------|----------|------|----------|------------|----------|-----------|
+| Create (Ready/Backlog) | ✓ | ✓ required | ✓ | ✓ | — | optional | — |
+| First In progress | ✓ | confirm | confirm | confirm | **✓ required** | ✓ (Issue) | — |
+| Open PR | — | — | — | — | — | — | ✓ `mention-pr` |
+| Exit In review / Done | ✓ | Notes | Notes | Notes | already set | — | if PR |
+
+**Start date** = UTC calendar day work began. Set when Status becomes `in_progress` if empty — via `claim`, `set-status --to in_progress`, or `handoff --to in_progress` (master switch: `conventions.set_start_date_on_claim`). Never set on create while Ready/Backlog. End date is human-only.
+
 ### Mandatory field checklist
 
 | Field | When | CLI | Rules |
 |-------|------|-----|-------|
 | **Status** | Always | `claim` / `handoff` / `set-status` | Create → `ready` (or claim → `in_progress`); Exit → `in_review` / `done` |
-| **Priority** | Create / claim / own | `set-field --field priority --to p0\|p1\|p2` | Before coding |
-| **Size** | Create / claim / own | `set-field --field size --to xs\|s\|m\|l\|xl` | Before coding; default `s` if unknown (note guess in Notes) |
-| **Estimate** | Create / claim / own | `set-field --field estimate --to N` | Integer ≥ 0; default `1` if unknown (note guess in Notes) |
-| **Start date** | Claim | `claim --last --agent <agent>` | Requires `conventions.set_start_date_on_claim: true`; if WARN, retry or set via UI — do not ignore silently |
-| **Assignee** | Claim / triage (human login) | `claim` (when `conventions.claim: set_assignee`) or `set-assignee --login …` | **Create as Issue** (`item_kind_default: issue`) so Assignees work on claim. Draft is scratch-only — if you must use Draft, promote before assignee/PR. |
-| **Linked PR** | When a PR exists | `mention-pr --pr N --last --agent <agent>` | Before review handoff / merge; auto-promotes Draft when `promote_to_issue_on_pr` |
+| **Priority** | Create / claim / own | `create-from-template --priority p0\|p1\|p2` or `set-field` | Required on template create — no silent default |
+| **Size** | Create / claim / own | `--size` / `set-field --field size --to xs\|s\|m\|l\|xl` | Per Size↔Estimate table; default `s` + Notes if guessed |
+| **Estimate** | Create / claim / own | `--estimate` / `set-field --field estimate --to N` | Points per table; default `1` + Notes if guessed |
+| **Start date** | First In progress | `claim` / `set-status --to in_progress` / `handoff --to in_progress` | Auto when `set_start_date_on_claim` + `fields.start_date.field_id`; if WARN, retry — do not ignore |
+| **Assignee** | Claim / triage (human login) | `claim` or `set-assignee --login …` | **Create as Issue** (`item_kind_default: issue`). Draft is scratch-only |
+| **Linked PR** | When a PR exists | `mention-pr --pr N --last --agent <agent>` | Auto-promotes Draft when `promote_to_issue_on_pr` |
 
 ```bash
-# Pattern A — fill Tier-1 after create
-python3 -m cursor_workflow project create-from-template --template slice --title "[P1] …" --status ready
+# Pattern A — Tier-1 at create + Start date on claim
+python3 -m cursor_workflow project create-from-template \
+  --template slice --title "[P1] …" --status ready \
+  --priority p1 --size s --estimate 1 --agent implementer
 python3 -m cursor_workflow project claim --last --agent implementer
-python3 -m cursor_workflow project set-field --field priority --to p1 --last
-python3 -m cursor_workflow project set-field --field size --to s --last
-python3 -m cursor_workflow project set-field --field estimate --to 1 --last
 # When opening a shippable PR:
 python3 -m cursor_workflow project mention-pr --pr N --last --agent implementer
-# If assignee still empty after promote:
-python3 -m cursor_workflow project set-assignee --user @SavinRazvan --last
 ```
+
+Plain `project create` (non-template) still needs follow-up `set-field` for Priority/Size/Estimate.
 
 Rules:
 
-1. After `create-from-template` / `claim`: set **Priority + Size + Estimate** before coding; confirm **Status** and **Start date** from claim output.
-2. Exit Notes and chat: list open work as `[P0]…; [P1]…; [P2]…; [P3]…` and include `Priority=p? · Size=? · Estimate=?` in the handoff line.
-3. `enterprise-auditor` / `workflow-drift-guard`: findings keep Severity **and** recommend board Priority/Size when seeding Ready cards.
-4. `verifier`: on closure, spot-check Status, Priority, Size, Estimate, Start date; Assignee when Issue-backed; Linked PR when a PR was opened.
-5. Missing Tier-1 fields = **incomplete Exit** — fill or document blocker in Notes before handoff.
+1. After create: **Priority + Size + Estimate** before coding; on first In progress confirm **Start date** from CLI output.
+2. Exit Notes and chat: `[P0]…; [P1]…; [P2]…; [P3]…` and `Priority=p? · Size=? · Estimate=?`.
+3. `enterprise-auditor` / `workflow-drift-guard`: recommend Priority/Size/Estimate (per table) when seeding Ready cards.
+4. `verifier`: spot-check Status, Priority, Size, Estimate, **Start date on In progress / In review / Done**; Assignee when Issue-backed; Linked PR when a PR opened. Missing Start date on those statuses = **incomplete Exit**.
+5. Missing Tier-1 fields = incomplete Exit — fill or document blocker in Notes before handoff.
 
 ## When to use
 

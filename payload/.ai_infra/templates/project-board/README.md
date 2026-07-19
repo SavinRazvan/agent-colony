@@ -40,15 +40,14 @@ Card bodies always include `## Acceptance`, `## Rollback`, and `## Notes` so `va
 
 ```bash
 python3 -m cursor_workflow project guide --agent implementer
-python3 -m cursor_workflow project create-from-template --title "[SLICE] short-name" --template slice --status ready
+python3 -m cursor_workflow project create-from-template --title "[SLICE] short-name" --template slice --status ready --priority p1 --size s --estimate 1 --agent implementer
 python3 -m cursor_workflow project claim --last --agent implementer
-python3 -m cursor_workflow project set-field --field estimate --to 3 --last
 python3 -m cursor_workflow project promote-to-issue --last --agent implementer
 python3 -m cursor_workflow project mention-pr --pr <n> --last --agent implementer
 python3 -m cursor_workflow project handoff --last --agent implementer --next verifier --to in_review
 ```
 
-`--last` reads `.local/generated-data/project-last-item.json` (machine-local pointer, not a second Status SSOT). Claim does **not** auto-promote; `mention-pr` auto-promotes Draft when `promote_to_issue_on_pr` (default true).
+`--priority` is required on `create-from-template`. `--size`/`--estimate` default to `s`/`1` (Notes when guessed). Size↔Estimate points table: `project-board-ssot` skill. `--last` reads `.local/generated-data/project-last-item.json` (machine-local pointer, not a second Status SSOT). Claim does **not** auto-promote; `mention-pr` auto-promotes Draft when `promote_to_issue_on_pr` (default true). Start date sets on claim / first In progress when configured.
 
 **Rate-limit outbox (do not hammer GraphQL):**
 

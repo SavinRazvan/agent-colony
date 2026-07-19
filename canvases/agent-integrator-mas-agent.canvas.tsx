@@ -95,7 +95,7 @@ const READ_FIRST = [
 const PATTERNS = [
   ["Pattern A", "claim --last / handoff --last / create-from-template"],
   ["Promote before PR", "promote-to-issue OR mention-pr when shipping integration"],
-  ["Tier-1", "claim → Start date; set-field estimate on own card"],
+  ["Tier-1", "claim/set-status→In progress Start date; Size/Estimate per skill table"],
   ["STANDALONE", "Product lives only in mas-workflow-kit-project-ssot"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/integrator-mas-agent via --agent"],
