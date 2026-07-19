@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -69,7 +70,14 @@ def test_live_create_claim_handoff_validate_done() -> None:
             text="live claim",
             limit=100,
         )
-        assert project_cli.cmd_claim(claim) == 0
+        # GraphQL eventual consistency: newly created items may 404 briefly.
+        claim_rc = 1
+        for _ in range(8):
+            claim_rc = project_cli.cmd_claim(claim)
+            if claim_rc == 0:
+                break
+            time.sleep(1.5)
+        assert claim_rc == 0, f"claim failed after retries: exit={claim_rc} id={item_id}"
         handoff = argparse.Namespace(
             directory=REPO_ROOT,
             id=item_id,

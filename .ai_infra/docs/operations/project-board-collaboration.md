@@ -138,12 +138,15 @@ Stderr: `project <cmd>: FAIL — CODE=n · reason` or `QUEUED — …`.
 
 Optional end-to-end check against the real Project (skipped in default CI).
 
+**Last PASS:** 2026-07-19 — `make live-board-smoke` (evidence: `.local/workflow-artifacts/release/live-board-smoke-2026-07-19.md`).
+
 1. Auth with Project scopes: `gh auth refresh -h github.com -s read:project,project` (plus existing `repo` scopes).
 2. Confirm: `python3 -m cursor_workflow project doctor` and `project status`.
-3. Run: `make live-board-smoke`  
-   (sets `PROJECT_SSOT_LIVE=1` and runs `tests/modules/install/test_project_cli_live.py`).
-4. If EXIT_QUEUED / rate-limit: `project outbox status` then `outbox flush` when GraphQL remaining recovers.
-5. Record PASS/FAIL under `.local/workflow-artifacts/release/` (local evidence only).
+3. Clear any other card **In progress** for the same assignee (claim enforces `one_in_progress_per_assignee`).
+4. Run: `make live-board-smoke`  
+   (sets `PROJECT_SSOT_LIVE=1` and runs `tests/modules/install/test_project_cli_live.py`; claim retries briefly for GraphQL eventual consistency).
+5. If EXIT_QUEUED / rate-limit: `project outbox status` then `outbox flush` when GraphQL remaining recovers.
+6. Record PASS/FAIL under `.local/workflow-artifacts/release/` (local evidence only).
 
 Do **not** add this to default PR gates — it mutates the live board.
 
