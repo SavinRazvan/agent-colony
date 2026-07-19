@@ -92,6 +92,8 @@ from project_atomics import (
     utc_note_timestamp,
     utc_today_iso,
     validate_card_body,
+    ensure_start_date_if_starting,
+    item_start_date_value,
 )
 
 def _load_enabled_ssot(root: Path, cmd: str) -> tuple[dict[str, Any] | None, int]:
@@ -236,6 +238,27 @@ def cmd_create_from_template(args: argparse.Namespace) -> int:
     ssot, code = _load_enabled_ssot(root, "create-from-template")
     if ssot is None:
         return code
+    priority = str(getattr(args, "priority", None) or "").strip().lower()
+    if not priority:
+        return fail(
+            "create-from-template",
+            EXIT_USAGE,
+            "--priority is required (p0|p1|p2); no silent default",
+        )
+    size_raw = getattr(args, "size", None)
+    estimate_raw = getattr(args, "estimate", None)
+    size_defaulted = not str(size_raw or "").strip()
+    estimate_defaulted = estimate_raw is None or str(estimate_raw).strip() == ""
+    size = "s" if size_defaulted else str(size_raw).strip().lower()
+    estimate_s = "1" if estimate_defaulted else str(estimate_raw).strip()
+    try:
+        estimate_num = float(estimate_s)
+    except ValueError:
+        return fail("create-from-template", EXIT_USAGE, "--estimate must be a number")
+    if estimate_num < 0:
+        return fail("create-from-template", EXIT_USAGE, "estimate must be >= 0")
+    guessed = size_defaulted or estimate_defaulted
+    agent = str(getattr(args, "agent", None) or "").strip()
     tmpl_name = getattr(args, "template", None) or "slice"
     try:
         tmpl = load_card_template(root, str(tmpl_name))
@@ -263,6 +286,85 @@ def cmd_create_from_template(args: argparse.Namespace) -> int:
         ok, detail = set_item_status(ssot, item_id, status_to)
         if not ok:
             return fail("create-from-template", EXIT_GH, f"created but set-status failed: {detail}")
+    if item_id:
+        try:
+            field_id, option_id = resolve_field_option_id(ssot, "priority", priority)
+        except KeyError as exc:
+            return fail(
+                "create-from-template",
+                EXIT_USAGE,
+                f"created but priority failed: {exc}",
+            )
+        project_id = str(ssot["project_id"])
+        proc = run_gh(
+            [
+                "project",
+                "item-edit",
+                "--project-id",
+                project_id,
+                "--id",
+                item_id,
+                "--field-id",
+                field_id,
+                "--single-select-option-id",
+                option_id,
+            ]
+        )
+        if proc.returncode != 0:
+            detail = (proc.stderr or proc.stdout or "gh project item-edit failed").strip()
+            return fail(
+                "create-from-template",
+                EXIT_GH,
+                f"created but priority failed: {detail}",
+            )
+        print(f"priority={priority}")
+        try:
+            size_fid, size_oid = resolve_field_option_id(ssot, "size", size)
+            proc = run_gh(
+                [
+                    "project",
+                    "item-edit",
+                    "--project-id",
+                    project_id,
+                    "--id",
+                    item_id,
+                    "--field-id",
+                    size_fid,
+                    "--single-select-option-id",
+                    size_oid,
+                ]
+            )
+            if proc.returncode != 0:
+                detail = (proc.stderr or proc.stdout or "gh project item-edit failed").strip()
+                print(f"create-from-template: WARN — size skipped: {detail}", file=sys.stderr)
+            else:
+                print(f"size={size}")
+        except KeyError as exc:
+            print(f"create-from-template: WARN — size skipped: {exc}", file=sys.stderr)
+        ok, detail = set_item_number(ssot, item_id, "estimate", estimate_num)
+        if not ok:
+            print(f"create-from-template: WARN — estimate skipped: {detail}", file=sys.stderr)
+        else:
+            print(f"estimate={estimate_num}")
+        if guessed:
+            guess_note = "Size/Estimate guessed (default s/1)"
+            if agent:
+                n_ok, n_detail, _n_code = append_notes_helper(
+                    root, ssot, item_id, agent=agent, text=guess_note, limit=100
+                )
+                if not n_ok:
+                    print(
+                        f"create-from-template: WARN — guessed Notes failed: {n_detail}",
+                        file=sys.stderr,
+                    )
+                else:
+                    print(f"notes: {guess_note}")
+            else:
+                print(
+                    f"create-from-template: WARN — {guess_note} "
+                    "(pass --agent to append Notes)",
+                    file=sys.stderr,
+                )
     if raw:
         print(raw)
     if item_id:
@@ -286,6 +388,15 @@ def cmd_set_status(args: argparse.Namespace) -> int:
     except KeyError as exc:
         return fail("set-status", EXIT_USAGE, str(exc))
     project_id = str(ssot["project_id"])
+    queue_payload: dict[str, Any] = {"to": args.to}
+    if _normalize_status(str(args.to)) == "in_progress":
+        conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
+        fields_block = ssot.get("fields") if isinstance(ssot.get("fields"), dict) else {}
+        start_cfg = fields_block.get("start_date") if isinstance(fields_block, dict) else None
+        if conventions.get("set_start_date_on_claim", True) and isinstance(start_cfg, dict) and start_cfg.get(
+            "field_id"
+        ):
+            queue_payload["start_date"] = utc_today_iso()
     proc = run_gh(
         [
             "project",
@@ -310,12 +421,20 @@ def cmd_set_status(args: argparse.Namespace) -> int:
             op="set-status",
             item_id=item_id,
             agent=(getattr(args, "agent", None) or "project-cli"),
-            payload={"to": args.to},
+            payload=queue_payload,
         )
         if queued is not None:
             return queued
         return fail("set-status", EXIT_GH, detail)
     print(f"set-status: {item_id} → {args.to} ({option_id})")
+    if _normalize_status(str(args.to)) == "in_progress":
+        d_ok, d_detail, d_applied = ensure_start_date_if_starting(ssot, item_id)
+        if not d_ok:
+            print(f"set-status: WARN — start_date skipped: {d_detail}", file=sys.stderr)
+        elif d_applied:
+            print(f"set-status: start_date={d_detail}")
+        elif "field_id missing" in d_detail:
+            print(f"set-status: WARN — start_date skipped: {d_detail}", file=sys.stderr)
     return EXIT_OK
 def cmd_set_field(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
@@ -573,18 +692,19 @@ def cmd_guide(args: argparse.Namespace) -> int:
     print("python3 -m cursor_workflow project outbox status")
     print(
         'python3 -m cursor_workflow project create-from-template '
-        '--title "[SLICE] short-name" --template slice --status ready'
+        f'--title "[SLICE] short-name" --template slice --status ready '
+        f'--priority p1 --size s --estimate 1 --agent {agent}'
     )
     print(
         f"python3 -m cursor_workflow project claim --last --agent {agent}  "
-        "# In progress + assignee (Issue) + Start date (UTC)"
+        "# In progress + assignee (Issue) + Start date UTC (also set-status/handoff→in_progress)"
     )
     print(
         f"python3 -m cursor_workflow project promote-to-issue --last --agent {agent}  "
         "# Draft→Issue (same PVTI_); before PR"
     )
     print(
-        "python3 -m cursor_workflow project set-field --field estimate --to 3 --last"
+        "# Size↔Estimate points table: project-board-ssot skill (defaults s/1 if omitted)"
     )
     print(
         f"python3 -m cursor_workflow project handoff --last --agent {agent} "

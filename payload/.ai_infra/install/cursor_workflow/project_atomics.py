@@ -297,6 +297,54 @@ def resolve_plain_field_id(ssot: dict[str, Any], field: str) -> str:
 def utc_today_iso() -> str:
     """UTC calendar date YYYY-MM-DD for Project date fields."""
     return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
+def item_start_date_value(item: dict[str, Any] | None) -> str:
+    """Best-effort Start date string from a gh project item dict."""
+    if not isinstance(item, dict):
+        return ""
+    raw = (
+        item.get("start date")
+        or item.get("Start date")
+        or item.get("start_date")
+        or ""
+    )
+    return str(raw).strip()
+
+
+def ensure_start_date_if_starting(
+    ssot: dict[str, Any],
+    item_id: str,
+    *,
+    item: dict[str, Any] | None = None,
+) -> tuple[bool, str, bool]:
+    """
+    If set_start_date_on_claim and start_date field configured and empty, set UTC today.
+
+    Returns (ok, detail, applied). ok is False only when a write was attempted and failed.
+    """
+    conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
+    if not conventions.get("set_start_date_on_claim", True):
+        return True, "skipped: set_start_date_on_claim=false", False
+    fields = ssot.get("fields") if isinstance(ssot.get("fields"), dict) else {}
+    start_cfg = fields.get("start_date") if isinstance(fields, dict) else None
+    if not isinstance(start_cfg, dict) or not str(start_cfg.get("field_id") or "").strip():
+        return True, "skipped: fields.start_date.field_id missing", False
+    snapshot = item
+    if snapshot is None:
+        items, err = _cli().fetch_project_items(ssot, limit=100)
+        if not err:
+            snapshot = _cli().find_item_by_id(items, item_id)
+    existing = item_start_date_value(snapshot if isinstance(snapshot, dict) else None)
+    if existing:
+        return True, existing, False
+    today = utc_today_iso()
+    ok, detail = _cli().set_item_date(ssot, item_id, "start_date", today)
+    if not ok:
+        return False, detail, False
+    return True, detail, True
+
+
 def status_field_id(ssot: dict[str, Any]) -> str:
     fields = ssot.get("fields") or {}
     status = fields.get("status") or {}

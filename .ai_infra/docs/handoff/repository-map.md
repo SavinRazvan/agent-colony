@@ -52,7 +52,7 @@ mas-workflow-kit-project-ssot/
 ├── cursor_workflow/            SSOT — thin CLI shim (also copied to consumer)
 ├── schemas/                    Legacy gate.json stub (GATES live in prepare.py)
 ├── .local/                     Kit-dev runtime (gitignored); CI seed fixture — not consumer exemplars
-├── tests/                      Kit-dev only — full pytest suite (1063; see IMPLEMENTATION-STATUS)
+├── tests/                      Kit-dev only — full pytest suite (1072; see IMPLEMENTATION-STATUS)
 ├── Makefile, pyproject.toml    Kit-dev only
 ├── overlays/                   Optional product rules source (`overlays/rules/project-ssot-precedence.mdc`); this product payload ships **7** rules (6 kit + SSOT precedence)
 ├── project-rules/              Deprecated alias → use overlays/rules/
@@ -102,7 +102,7 @@ my-app/
 └── .local/                         Scaffolded trackers + artifact buckets (gitignored)
 ```
 
-**Not installed:** kit `tests/modules/` (1063; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `scripts/ci/`, `scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
+**Not installed:** kit `tests/modules/` (1072; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `scripts/ci/`, `scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
 
 Consumer tree detail: [PLUGIN-ARCHITECTURE.md § Installed consumer project](PLUGIN-ARCHITECTURE.md).
 

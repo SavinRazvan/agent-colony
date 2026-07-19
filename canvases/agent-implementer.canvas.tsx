@@ -78,7 +78,7 @@ const FALLBACK_EDGES = [
 const BOARD_LABELS: Record<string, string> = {
   yaml: "project_ssot YAML",
   status: "project status",
-  claim: "claim (+ Start date)",
+  claim: "claim (+ Start date if empty)",
   code: "contracts → code → tests",
   gates: "prepare.py GATES",
   evidence: "change-index + updates-log",
@@ -142,7 +142,7 @@ const ARTIFACTS = [
 
 const PATTERNS = [
   ["Pattern A recipes", "claim --last / handoff --last / create-from-template"],
-  ["Tier-1", "claim → Start date; set-field estimate on own card"],
+  ["Tier-1", "claim/set-status→In progress Start date; Size/Estimate per skill table"],
   ["Promote before PR", "promote-to-issue OR mention-pr (auto when promote_to_issue_on_pr)"],
   ["Templates", "slice (feature/chore) · bug (defect/fix)"],
   ["Module headers", "file-docstring-header-relations.mdc on new sources"],

@@ -316,10 +316,20 @@ def apply_outbox_entry(
     limit: int = 100,
 ) -> tuple[bool, str]:
     """Apply one pending entry to the live board. Returns (ok, detail)."""
+    # Late imports avoid circular import with project_cli (documented exception).
+    from project_atomics import (  # noqa: PLC0415
+        _normalize_status,
+        ensure_start_date_if_starting,
+    )
     from project_cli import (  # noqa: PLC0415
         append_notes_helper,
         format_agent_attribution,
+        promote_draft_item_to_issue,
+        resolve_field_option_id,
+        run_gh,
         set_item_assignee,
+        set_item_date,
+        set_item_number,
         set_item_status,
     )
 
@@ -340,8 +350,21 @@ def apply_outbox_entry(
         return ok, detail
 
     if op == "set-status":
-        ok, detail = set_item_status(ssot, item_id, str(payload.get("to") or ""))
-        return ok, detail
+        to = str(payload.get("to") or "")
+        ok, detail = set_item_status(ssot, item_id, to)
+        if not ok:
+            return False, detail
+        if _normalize_status(to) == "in_progress":
+            start = str(payload.get("start_date") or "").strip()
+            if start:
+                d_ok, d_detail = set_item_date(ssot, item_id, "start_date", start)
+                if not d_ok:
+                    return False, f"status set but start_date failed: {d_detail}"
+            else:
+                d_ok, d_detail, _applied = ensure_start_date_if_starting(ssot, item_id)
+                if not d_ok:
+                    return False, f"status set but start_date failed: {d_detail}"
+        return True, detail
 
     if op == "set-assignee":
         login = str(payload.get("login") or "").lstrip("@")
@@ -355,8 +378,6 @@ def apply_outbox_entry(
             return False, detail
         start = str(payload.get("start_date") or "").strip()
         if start:
-            from project_cli import set_item_date  # noqa: PLC0415
-
             d_ok, d_detail = set_item_date(ssot, item_id, "start_date", start)
             if not d_ok:
                 return False, f"status set but start_date failed: {d_detail}"
@@ -369,12 +390,6 @@ def apply_outbox_entry(
         return True, "claimed"
 
     if op == "set-field":
-        from project_cli import (  # noqa: PLC0415
-            resolve_field_option_id,
-            run_gh,
-            set_item_number,
-        )
-
         field = str(payload.get("field") or "").strip().lower()
         to_val = payload.get("to")
         if field == "estimate":
@@ -413,8 +428,6 @@ def apply_outbox_entry(
         return False, f"unsupported set-field {field!r}"
 
     if op == "promote-to-issue":
-        from project_cli import promote_draft_item_to_issue  # noqa: PLC0415
-
         repo = str(payload.get("repo") or ssot.get("default_repo") or "")
         ok, detail, meta = promote_draft_item_to_issue(ssot, item_id, repo=repo)
         if not ok:
@@ -441,6 +454,10 @@ def apply_outbox_entry(
             ok, detail = set_item_status(ssot, item_id, status_to)
             if not ok:
                 return False, detail
+            if _normalize_status(status_to) == "in_progress":
+                d_ok, d_detail, _applied = ensure_start_date_if_starting(ssot, item_id)
+                if not d_ok:
+                    return False, f"status set but start_date failed: {d_detail}"
         try:
             next_attr = format_agent_attribution(root, next_agent)
         except ValueError as exc:

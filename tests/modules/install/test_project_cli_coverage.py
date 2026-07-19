@@ -713,6 +713,10 @@ def test_cmd_create_from_template_errors(
         rollback="r",
         notes="",
         status="",
+        priority="p1",
+        size=None,
+        estimate=None,
+        agent="",
     )
     assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_USAGE
 
@@ -735,6 +739,10 @@ def test_cmd_create_from_template_gh_and_status_fail(
         rollback="r",
         notes="",
         status="ready",
+        priority="p1",
+        size=None,
+        estimate=None,
+        agent="",
     )
     assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_GH
     monkeypatch.setattr(
@@ -1299,6 +1307,10 @@ def test_cmd_create_from_template_disabled(monkeypatch: pytest.MonkeyPatch, tmp_
         rollback="r",
         notes="",
         status="",
+        priority="p1",
+        size=None,
+        estimate=None,
+        agent="",
     )
     assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_USAGE
 
@@ -1664,6 +1676,10 @@ def test_cmd_create_from_template_missing_sections(
         rollback="r",
         notes="",
         status="",
+        priority="p1",
+        size=None,
+        estimate=None,
+        agent="",
     )
     assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_VALIDATION
 
@@ -2141,6 +2157,10 @@ def test_cmd_create_from_template_ssot_disabled(
         rollback="r",
         notes="",
         status="ready",
+        priority="p1",
+        size=None,
+        estimate=None,
+        agent="",
     )
     assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_USAGE
 

@@ -71,6 +71,7 @@ project_ssot:
         p1: "PRIORITY_P1_OPTION_ID"
         p2: "PRIORITY_P2_OPTION_ID"
     size:
+      # Size↔Estimate table (points): see project-board-ssot skill — xs=1, s=1–2, m=3–5, l=5–8, xl=split
       field_id: PVTSSF_PLACEHOLDER_SIZE
       options:
         xs: "SIZE_XS_OPTION_ID"
@@ -80,10 +81,12 @@ project_ssot:
         xl: "SIZE_XL_OPTION_ID"
     # Tier-1 (replace ids from `gh project field-list`)
     start_date:
+      # Set on claim / first in_progress when set_start_date_on_claim: true
       field_id: PVTF_PLACEHOLDER_START_DATE
     end_date:
       field_id: PVTF_PLACEHOLDER_END_DATE   # reserved; no CLI write yet
     estimate:
+      # Points (not hours) — align with Size band in skill
       field_id: PVTF_PLACEHOLDER_ESTIMATE
 
   # Multi-agent / multi-collaborator conventions
@@ -93,7 +96,7 @@ project_ssot:
     review_status: in_review
     done_status: done
     claim: set_assignee                   # set_assignee | title_prefix | none
-    set_start_date_on_claim: true         # no-op if start_date.field_id missing
+    set_start_date_on_claim: true         # also first set-status/handoff → in_progress if empty
     one_in_progress_per_assignee: true
     item_kind_default: issue              # issue (default — Assignees + Linked PRs) | draft (scratch only)
     promote_to_issue_on_pr: true

@@ -43,7 +43,7 @@ Abbreviations: [`.ai_infra/docs/operations/abbreviations-notepad.md`](.ai_infra/
 1. If `project_ssot.enabled` → `python -m cursor_workflow project status` → board list/claim (`.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract). Read card Notes for prior handoffs.
 2. Else → `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
 
-**After every agent part:** update board Status (`in_review` / `done` / Notes + next agent) so continuation is indexed on the Project — not chat-only. **Tier-1 fields are mandatory** on cards you create/own: Status, Priority (`p0|p1|p2`), Size (`xs|s|m|l|xl`), Estimate (`N`), Start date (via `claim`), Assignee (human login — **create as Issue** via `item_kind_default: issue`), and Linked PR via `mention-pr` when a PR exists. Exit task lists use `[P0]`…`[P3]`. Notes attribution: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC). Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime. Ops: `.ai_infra/docs/operations/project-board-collaboration.md`. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Tier-1 card fields contract.
+**After every agent part:** update board Status (`in_review` / `done` / Notes + next agent) so continuation is indexed on the Project — not chat-only. **Tier-1 fields are mandatory** on cards you create/own: Status, Priority (`p0|p1|p2`), Size/Estimate per skill **Size↔Estimate** table (points, not hours), Start date on first **In progress** (`claim` / `set-status` / `handoff --to in_progress`), Assignee (human — **create as Issue** via `item_kind_default: issue`), and Linked PR via `mention-pr` when a PR exists. Exit task lists use `[P0]`…`[P3]`. Notes attribution: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC). Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime. Ops: `.ai_infra/docs/operations/project-board-collaboration.md`. Canon: `.cursor/skills/project-board-ssot/SKILL.md` § Tier-1 card fields contract.
 
 ### Board SSOT (Pattern A + Tier-1)
 
@@ -51,7 +51,7 @@ When `project_ssot.enabled`, prefer CLI recipes over multi-step atomics (`projec
 
 | Step | Command | Notes |
 |------|---------|--------|
-| Claim | `project claim --last --agent <name>` | In progress; may set **Start date** (UTC) |
+| Claim | `project claim --last --agent <name>` | In progress; sets **Start date** (UTC) if empty when configured |
 | Triage | `project set-field --field priority\|size\|estimate --to … --last` | Agents may set on triage/own cards; humans own Ready *ordering* |
 | Promote | `project promote-to-issue --last --agent <name>` | Draft→Issue (same `PVTI_`); claim does **not** auto-promote |
 | PR link | `project mention-pr --pr N --last --agent <name>` | Notes + auto-promote when `promote_to_issue_on_pr` (default true) |

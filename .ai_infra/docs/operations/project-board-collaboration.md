@@ -35,8 +35,8 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 |---------|-------|--------|--------|
 | Card Status | Yes | Yes — every agent Exit | — |
 | Priority / Size | Yes | Triage + own card | — |
-| Start date | Yes (UI) | Claim sets UTC today when `set_start_date_on_claim` + `fields.start_date.field_id` | — |
-| Estimate | Yes (UI) | Triage + own card — `set-field --field estimate --to N` | — |
+| Start date | Yes (UI) | Set UTC today when Status → `in_progress` if empty (`claim`, `set-status`, `handoff --to in_progress`) when `set_start_date_on_claim` + `fields.start_date.field_id` | — |
+| Estimate | Yes (UI) | Triage + own card — `set-field --field estimate --to N` (points; Size↔Estimate table in skill) | — |
 | Promote Draft→Issue | Yes (UI) | `promote-to-issue --last --agent <name> [--repo owner/repo]` | GraphQL `convertProjectV2DraftIssueItemToIssue`; same `PVTI_`; Assignees + Linked PRs after promote; Notes `promoted to Issue #N`; fine-grained PAT caveat (`doctor` / `guide`); claim does **not** auto-promote |
 | Linked PRs | Yes (UI link) | `mention-pr --pr N` → Notes with PR URL; auto-promotes Draft when `promote_to_issue_on_pr` (default true) — FAIL if promote fails; WARN-only if false | GitHub **Linked pull requests** column derived from Issue↔PR (works after Issue) |
 | Create cards | Yes | project-board, implementer, integrator | — |

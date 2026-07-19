@@ -63,7 +63,7 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 
 ## Post-activate (tell the user)
 
-1. Open `.local/user_settings/github.collaboration.yaml` — set **display_name**, **github_user**, then **project_ssot** (enable + board ids + `default_repo`). Discover ids: `gh project view <N> --owner <login>` and `gh project field-list <N> --owner <login>` (no bootstrap CLI — paste into YAML).
+1. Open `.local/user_settings/github.collaboration.yaml` — set **display_name**, **github_user**, then **project_ssot** (enable + board ids + `default_repo`). Wire Status/Priority/**Size**/Estimate/**Start date** field ids (`gh project field-list`). Estimate = **points**; Size↔Estimate table lives in `project-board-ssot` skill. Discover ids: `gh project view <N> --owner <login>` and `gh project field-list <N> --owner <login>` (no bootstrap CLI).
 2. Terminal: `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` (must PASS)
 3. `python3 -m cursor_workflow project doctor` then `python3 -m cursor_workflow project status` (when board SSOT enabled)
 4. **`/implementer`** to start · when `project_ssot.enabled`, run **`python -m cursor_workflow project status`** first each session (board SSOT); else read `session-pointer.md` first

@@ -53,7 +53,7 @@ This repository **is** the product: installable multi-agent workflow infrastruct
 - No dual-write of Status to `work-tracker.md` / `session-pointer.md` when `board_only`.
 - No merge of this product’s board doctrine into upstream `mas-workflow-kit`.
 - Create shippable cards as **Issues** (`item_kind_default: issue`). Draft is scratch-only.
-- Fill **Tier-1** fields (Status, Priority, Size, Estimate, Start date on claim, Assignee, Linked PR via `mention-pr`).
+- Fill **Tier-1** fields (Status, Priority, Size/Estimate per skill rubric, Start date on first In progress, Assignee, Linked PR via `mention-pr`).
 - GraphQL rate-limit → EXIT_QUEUED (6) / `project outbox`; flush after reset — outbox is not SSOT.
 
 Doctrine detail: [ADR-008](.ai_infra/docs/decisions/ADR-008-project-board-ssot.md) · ops [project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md) · skill [project-board-ssot](.cursor/skills/project-board-ssot/SKILL.md).

@@ -64,11 +64,31 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         default="",
         help="Optional status after create (e.g. ready) when using --template",
     )
+    create_cmd.add_argument(
+        "--priority",
+        default="",
+        help="Required with --template: p0|p1|p2 (no silent default)",
+    )
+    create_cmd.add_argument(
+        "--size",
+        default=None,
+        help="With --template: xs|s|m|l|xl (default s)",
+    )
+    create_cmd.add_argument(
+        "--estimate",
+        default=None,
+        help="With --template: points number (default 1)",
+    )
+    create_cmd.add_argument(
+        "--agent",
+        default="",
+        help="With --template: agent id for guessed Size/Estimate Notes",
+    )
     create_cmd.set_defaults(func=pc.cmd_create)
 
     cft = project_sub.add_parser(
         "create-from-template",
-        help="Create DraftIssue from card-body template (Pattern A)",
+        help="Create board item from card-body template (Pattern A)",
     )
     cft.add_argument("--directory", type=Path, default=".")
     cft.add_argument("--title", required=True)
@@ -77,6 +97,26 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     cft.add_argument("--rollback", default="")
     cft.add_argument("--notes", default="")
     cft.add_argument("--status", default="", help="Optional: ready|backlog|…")
+    cft.add_argument(
+        "--priority",
+        required=True,
+        help="Required: p0|p1|p2 (no silent default)",
+    )
+    cft.add_argument(
+        "--size",
+        default=None,
+        help="xs|s|m|l|xl (default s; Notes when guessed)",
+    )
+    cft.add_argument(
+        "--estimate",
+        default=None,
+        help="Points number (default 1; Notes when guessed)",
+    )
+    cft.add_argument(
+        "--agent",
+        default="",
+        help="Agent id for Size/Estimate guessed Notes line",
+    )
     cft.set_defaults(func=pc.cmd_create_from_template)
 
     set_status = project_sub.add_parser("set-status", help="Set item Status from YAML option ids")

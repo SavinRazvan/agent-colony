@@ -179,7 +179,7 @@ const ARTIFACT_LANES: string[][] = [
 
 const HAPPY_PATH = [
   "1. Entry — project status → list Ready / In progress",
-  "2. claim --last --agent <name> (Start date when configured)",
+  "2. claim --last --agent <name> (Start date on In progress when configured)",
   "3. Work — code/tests and/or write .local artifacts",
   "4. Exit — handoff --to in_review|done + Notes (@user/agent · UTC · …)",
   "5. PR — mention-pr; merge.py can set card Done",

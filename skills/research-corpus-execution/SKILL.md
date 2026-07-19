@@ -29,7 +29,7 @@ Build a Brief from **any** of:
 
 1. **User chat** — including terse forms like `/researcher https://github.com/owner/repo`
 2. **Peer agents** — board Notes, handoff line, cited `AGENT_BRIEF.md` / pack path, implementer/integrator ask
-3. **Board card** — `create-from-template --template research` body Brief table
+3. **Board card** — `create-from-template --template research --priority p2` body Brief table
 4. **Existing** `sources/<slug>/BRIEF.md`
 
 ### Normalize source
