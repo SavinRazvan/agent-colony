@@ -24,7 +24,7 @@ cursor-workflow = "cursor_workflow.cli:main"
 where = [".ai_infra/install", ".ai_infra/mcp_servers"]
 
 [tool.pyright]
-include = [".ai_infra/install", ".ai_infra/mcp_servers", ".ai_infra/scripts", "tests"]
+include = [".ai_infra/install", ".ai_infra/mcp_servers", ".ai_infra/scripts"]
 extraPaths = [".ai_infra/install/cursor_workflow", ".ai_infra/mcp_servers"]
 typeCheckingMode = "basic"
 reportMissingImports = "warning"
