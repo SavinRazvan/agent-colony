@@ -2,6 +2,8 @@
 
 **Brief-driven multi-round research** for `_research_results/` — not implementation slices (`implementer` + board / `.local/.../current/*`).
 
+**Status (2026-07-19):** Agent is **shipped and proven** (live external pack + verifier PASS). Corpus packs remain **opt-in** — they appear only after `research init` (not an incomplete agent).
+
 Versioned hub (in git). Corpus boundaries: `_research_results/RESEARCH_BOUNDARIES.md` (from `research init`).
 
 ## Order (active)
@@ -11,7 +13,17 @@ Versioned hub (in git). Corpus boundaries: `_research_results/RESEARCH_BOUNDARIE
 3. Normalize source → `research init` → `research fetch` → rounds → `validate`
 4. Pack `BRIEF.md` + `SOURCE.md` under `_research_results/sources/<slug>/`
 
-Agent: **`.cursor/agents/researcher.md`**.
+Agent: **`.cursor/agents/researcher.md`**. Canvas: `canvases/agent-researcher.canvas.tsx`.
+
+## How it works (7 steps)
+
+1. **Intake** — normalize source + question → `BRIEF.md` (defaults for terse `/researcher <url>`)
+2. **Init/fetch** — CLI scaffolds pack + shallow clone to `cache/<slug>/`
+3. **Map/extract** — `MAP.md` + `findings/<lens>.md` with path + ~Lnn evidence
+4. **Deepen** — `rounds/round-N.md` only for open questions (cap ≤6; anti-loop)
+5. **Curate/pack** — `CURATED.md` → `AGENT_BRIEF.md` → `INDEX.json` `status=complete`
+6. **Validate** — `python3 -m cursor_workflow research validate --slug <slug>` PASS
+7. **Exit** — research card Done + Notes with pack paths; handoff to consumer
 
 ## Hard boundary
 
@@ -31,6 +43,7 @@ No product repo edits; no git commits for research packs; writes only `_research
 | D7 | Accept HTTPS GitHub URLs and terse `/researcher <url>` chat; apply skill defaults |
 | D8 | Anti-loop: rounds_max≤6; no re-fetch/re-init without `--force`; exit on complete |
 | D9 | Private GitHub needs consumer `gh`/git auth; public needs network only |
+| D10 | Agent shipped/proven; corpus remains opt-in after first `research init` |
 
 ## Forbidden
 
@@ -57,7 +70,15 @@ No product repo edits; no git commits for research packs; writes only `_research
 
 ## Board
 
-`create-from-template --template research` → claim → Done + Notes with pack paths.
+`create-from-template --template research --priority p2` → claim → Done + Notes with pack paths.
+
+## Live proof
+
+| Field | Evidence |
+|-------|----------|
+| Slug | `flexiai-toolsmith` (Issue #74) |
+| Source | `github:SavinRazvan/flexiai-toolsmith` @ `3f8b0c7` |
+| Result | 6 rounds · 18 curated · validate PASS · verifier Claim A+B VERIFIED |
 
 ## Related
 
@@ -67,3 +88,4 @@ No product repo edits; no git commits for research packs; writes only `_research
 | Implementation | `implementer` (reads `AGENT_BRIEF.md`) |
 | Integration | `integrator-mas-agent` |
 | Audit | `enterprise-auditor` |
+| Agent canvas | `canvases/agent-researcher.canvas.tsx` |

@@ -25,12 +25,13 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-19";
 const SOURCES =
-  ".cursor/agents/researcher.md · research-corpus-execution/SKILL.md · research_cli.py · .agents/skills/RESEARCH_WORKFLOW.md";
+  ".cursor/agents/researcher.md · research-corpus-execution/SKILL.md · research_cli.py · .agents/skills/RESEARCH_WORKFLOW.md · live pack flexiai-toolsmith + verifier";
 
 const GOALS = [
   "Adaptive Brief from chat, peer agent Notes/handoffs, or board research card",
   "Multi-round packs under _research_results/sources/<slug>/ + AGENT_BRIEF for MAS",
   "Hard-stop: write only _research_results/ — no product git/PR",
+  "Anti-loop efficient: ≤6 rounds, one init/fetch, exit on validate PASS",
 ];
 
 const BOARD_NODES = [
@@ -79,6 +80,26 @@ const FALLBACK_LABELS: Record<string, string> = {
   close: "local close",
 };
 
+const HOW_IT_WORKS = [
+  ["1 Intake", "Normalize source (HTTPS | github: | path) + question → BRIEF.md"],
+  ["2 Init/fetch", "research init → research fetch (shallow clone → cache/<slug>/)"],
+  ["3 Map/extract", "MAP.md + findings/<lens>.md with path + ~Lnn evidence"],
+  ["4 Deepen", "rounds/round-N.md only for open questions (cap ≤6)"],
+  ["5 Curate/pack", "CURATED.md → AGENT_BRIEF.md → INDEX.json status=complete"],
+  ["6 Validate", "research validate --slug <slug> must PASS"],
+  ["7 Exit", "Research card Done + Notes with pack paths; handoff to consumer"],
+];
+
+const LIVE_PROOF = [
+  ["Slug", "flexiai-toolsmith"],
+  ["Source", "github:SavinRazvan/flexiai-toolsmith @ 3f8b0c7"],
+  ["Rounds", "6/6 (justified; anti-loop exit)"],
+  ["Curated", "18 verified rows"],
+  ["Validate", "PASS"],
+  ["Verifier", "Claim A+B VERIFIED (2026-07-19)"],
+  ["Board", "Issue #74 Done · pack paths in Notes"],
+];
+
 const READ_FIRST = [
   [".cursor/skills/research-corpus-execution/SKILL.md", "Intake + rounds canon"],
   ["_research_results/RESEARCH_BOUNDARIES.md", "Hard-stop boundaries"],
@@ -86,13 +107,15 @@ const READ_FIRST = [
 ];
 
 const PATTERNS = [
+  ["Shipped agent", "Fully functional — live E2E + verifier PASS"],
+  ["Opt-in corpus", "Packs appear only after research init (not incomplete)"],
   ["Hard stop", "Write only _research_results/"],
   ["Adaptive intake", "Chat / peer Notes / board card → Brief (+ defaults)"],
   ["Terse chat", "/researcher https://github.com/owner/repo OK"],
   ["Anti-loop", "≤6 deepen rounds; no re-fetch without --force; exit on complete"],
   ["GitHub auth", "Public: network; private: consumer gh/git credentials"],
   ["Board lifecycle", "create-from-template research → done + pack paths"],
-  ["Consumers", "implementer / integrator read AGENT_BRIEF.md"],
+  ["Consumers", "implementer / integrator / chat-user read AGENT_BRIEF.md"],
 ];
 
 const ARTIFACTS = [
@@ -108,6 +131,7 @@ const PEERS = [
   ["Use instead", "enterprise-auditor", "Architecture audits"],
   ["Use instead", "verifier", "Claims vs evidence"],
   ["Consumes from", "any agent", "Notes / handoff / cited pack path"],
+  ["Proven with", "verifier", "Post-pack Claim A/B check (optional)"],
 ];
 
 function DagPanel({
@@ -188,6 +212,9 @@ export default function AgentResearcherCanvas() {
       <Stack gap={8}>
         <Row gap={10} style={{ alignItems: "center" }}>
           <H1 style={{ margin: 0 }}>researcher</H1>
+          <Pill tone="success" size="sm">
+            shipped / proven
+          </Pill>
           <Pill tone="info" size="sm">
             kit agent
           </Pill>
@@ -198,17 +225,26 @@ export default function AgentResearcherCanvas() {
         <Text tone="secondary">
           Brief-driven multi-round research (GitHub HTTPS / github: / local path).
           Adaptive intake from chat or peer agents; hard-stop on product code.
+          Agent is fully functional; corpus packs are opt-in after research init.
         </Text>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only
         </Text>
       </Stack>
 
-      <Grid columns={3} gap={12}>
+      <Grid columns={4} gap={12}>
+        <Stat value="proven" label="Live E2E + verifier" tone="success" />
         <Stat value="_research_results/" label="Only write target" />
-        <Stat value="adaptive Brief" label="Chat / agents / card" tone="info" />
+        <Stat value="≤6 rounds" label="Anti-loop cap" tone="info" />
         <Stat value="EXIT_QUEUED" label="Outbox on rate-limit" tone="warning" />
       </Grid>
+
+      <Callout tone="success" title="Status (2026-07-19)">
+        Researcher is shipped and efficient. Live proof: flexiai-toolsmith pack
+        (18 curated, validate PASS) + verifier Claim A (efficiency) and Claim B
+        (correctness) VERIFIED. “Optional” means opt-in corpus — not an incomplete
+        agent.
+      </Callout>
 
       <Stack gap={8}>
         <H2>Goals</H2>
@@ -218,6 +254,27 @@ export default function AgentResearcherCanvas() {
       </Stack>
 
       <Divider />
+
+      <Stack gap={10}>
+        <H2 style={{ margin: 0 }}>How it works</H2>
+        <Table headers={["Step", "Action"]} rows={HOW_IT_WORKS} />
+        <Callout tone="info" title="CLI owns scaffold; agent owns evidence">
+          python3 -m cursor_workflow research init|fetch|validate. Agent fills
+          rounds 1–6 prose under sources/&lt;slug&gt;/ then exits on complete.
+        </Callout>
+      </Stack>
+
+      <Card>
+        <CardHeader>Live proof (flexiai-toolsmith)</CardHeader>
+        <CardBody>
+          <Table headers={["Field", "Evidence"]} rows={LIVE_PROOF} />
+          <Spacer size={8} />
+          <Text tone="tertiary" size="small">
+            Pack: _research_results/sources/flexiai-toolsmith/AGENT_BRIEF.md ·
+            Board Issue #74
+          </Text>
+        </CardBody>
+      </Card>
 
       <Stack gap={10}>
         <Row gap={12} style={{ alignItems: "center" }}>
@@ -289,7 +346,8 @@ export default function AgentResearcherCanvas() {
         <CardBody>
           <Stack gap={6}>
             <Text>
-              Create: create-from-template --template research (or claim Ready card).
+              Create: create-from-template --template research --priority p2
+              --size m --estimate 3 --agent researcher (or claim Ready card).
             </Text>
             <Text>Entry: project status + research card when board on.</Text>
             <Text>

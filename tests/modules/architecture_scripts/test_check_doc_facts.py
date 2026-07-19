@@ -82,8 +82,8 @@ def test_missing_agent_in_roster_hub_fails_doc008(tmp_path: Path) -> None:
     needle = (
         '  {\n'
         '    id: "researcher",\n'
-        '    role: "Adaptive Brief research packs (no product PRs)",\n'
-        '    lane: "Optional",\n'
+        '    role: "Shipped corpus researcher — packs under _research_results/ (opt-in)",\n'
+        '    lane: "Research (opt-in corpus)",\n'
         "  },\n"
     )
     assert needle in text, "fixture must match agent-relations researcher AGENTS row"

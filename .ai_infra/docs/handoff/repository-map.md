@@ -135,7 +135,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `integrator-mas-agent` | Yes | Yes | `/integrator-mas-agent` |
 | `workflow-drift-guard` | Yes | Yes | `/workflow-drift-guard` |
 | `project-board` | Yes | Yes | `/project-board` |
-| `researcher` | Yes | Yes (optional packs) | `/researcher` (adaptive Brief + HTTPS) |
+| `researcher` | Yes | Yes (opt-in packs after `research init`) | `/researcher` (adaptive Brief + HTTPS; shipped/proven) |
 
 **Deprecated agents:** none.
 
