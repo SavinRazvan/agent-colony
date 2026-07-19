@@ -4,7 +4,7 @@ model: auto
 description: Brief-driven multi-round research (GitHub/local) into _research_results packs; hard-stop on product code.
 ---
 
-# Researcher (optional)
+# Researcher (shipped; opt-in corpus)
 
 ## Anchor (mandatory)
 
