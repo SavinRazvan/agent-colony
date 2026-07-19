@@ -26,6 +26,8 @@ import {
 
 type Mode = "classic" | "shipped" | "compare";
 
+const VERIFIED = "2026-07-19";
+
 const CLASSIC_NODES = [
   { id: "agent" },
   { id: "session" },
@@ -141,7 +143,7 @@ const FOLLOWUP_SLICES = [
     items: [
       "Issue body, GraphQL errors, merge Notes warn",
       "set_item_status PVTI-only paths; outbox queue/flush",
-      "1062 tests collected; drift validate green",
+      "1062 tests collected; COV-100 6208 stmts / 100%; drift validate green",
     ],
   },
   {
@@ -327,7 +329,7 @@ export default function BoardSsotVsKitCanvas() {
       <Stack gap={8}>
         <H1>MAS Workflow Kit → Board SSOT (shipped)</H1>
         <Text tone="secondary">
-          Before/after comparison for mas-workflow-kit-project-ssot as of 2026-07-18.
+          Before/after comparison for mas-workflow-kit-project-ssot as of {VERIFIED}.
           PR #2 merged A→B→C on main; FIX-NOTES-DI, doc-drift residuals, EA-001/004,
           and expanded tests (1062 collected) are shipped on main.
         </Text>
@@ -494,7 +496,7 @@ export default function BoardSsotVsKitCanvas() {
 
       <Divider />
 
-      <H2>project CLI — 21 subcommands (shipped)</H2>
+      <H2>project CLI — 22 leaf subcommands (shipped)</H2>
       <Callout tone="info" title="Module split (EA-001 shipped)">
         Dispatcher: project_cli.py · atomics: project_atomics.py · GraphQL adapter:
         gh_project_adapter.py · Pattern A recipes: project_recipes.py · rate-limit
@@ -612,11 +614,17 @@ export default function BoardSsotVsKitCanvas() {
           <CardBody>
             <Stack gap={4}>
               <Text size="small">project_ssot + board_only in collab YAML</Text>
-              <Text size="small">cursor_workflow project CLI (21 subcommands)</Text>
+              <Text size="small">
+                cursor_workflow project CLI (22 leaf subcommands; outbox status +
+                flush counted separately)
+              </Text>
               <Text size="small">8 agent Anchors + continuation contract</Text>
               <Text size="small">ADR-008 + project-ssot-precedence overlay</Text>
               <Text size="small">A→B→C merged (PR #2); FIX-NOTES-DI on main (PR #3)</Text>
-              <Text size="small">1062 tests collected; DRIFT validate P0=0 P1=0 P2=0</Text>
+              <Text size="small">
+                1062 tests collected; COV-100 6208 stmts / 100%; DRIFT validate
+                P0=0 P1=0 P2=0
+              </Text>
               <Text size="small">STANDALONE decided — this repo is the product</Text>
               <Text size="small">
                 BOARD-PROMOTE: Draft→Issue via promote-to-issue / mention-pr auto
@@ -652,7 +660,7 @@ export default function BoardSsotVsKitCanvas() {
 
       <Text size="small" tone="tertiary">
         Source: HANDOFF §1 · ADR-008 · STANDALONE 2026-07-18 · PR #2/#3 merged ·
-        drift validate green · 2026-07-18
+        drift validate green · verified {VERIFIED} · 1062 tests · COV-100 6208 stmts
       </Text>
     </Stack>
   );

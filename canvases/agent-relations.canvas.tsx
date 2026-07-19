@@ -372,7 +372,7 @@ export default function AgentRelationsCanvas() {
           label={focus === "all" ? "Handoff edges" : "Outbound"}
         />
         <Stat
-          value={String(focus === "all" ? "4" : inbound)}
+          value={String(focus === "all" ? "5" : inbound)}
           label={focus === "all" ? "Lanes" : "Inbound"}
         />
       </Grid>
