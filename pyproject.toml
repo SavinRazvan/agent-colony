@@ -25,11 +25,12 @@ where = [".ai_infra/install", ".ai_infra/mcp_servers"]
 
 [tool.pyright]
 include = [".ai_infra/install", ".ai_infra/mcp_servers", ".ai_infra/scripts"]
+extraPaths = [".ai_infra/install/cursor_workflow", ".ai_infra/mcp_servers"]
 typeCheckingMode = "basic"
 reportMissingImports = "warning"
 
 [tool.pytest.ini_options]
-pythonpath = [".", ".ai_infra/mcp_servers"]
+pythonpath = [".", ".ai_infra/mcp_servers", ".ai_infra/install/cursor_workflow"]
 addopts = "-ra"
 testpaths = ["tests"]
 markers = [
