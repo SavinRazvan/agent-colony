@@ -48,7 +48,7 @@ Work is **indexed on the Project**, not in chat alone.
 Handoff line (chat + card Notes):
 
 ```text
-item_id=<from project last or create> · @User/implementer · Status=before→after · Priority=p1 · next=@User/verifier
+item_id=<from project last or create> · @User/implementer · Status=before→after · Priority=p1 · Size=s · Estimate=1 · next=@User/verifier
 Tasks: [P1] …; [P2] …; [P3] …
 ```
 
@@ -56,9 +56,11 @@ Prefer `--last` after create so agents never invent ids.
 
 Multi-collaborator: each human’s `owner.github_user` namespaces their agents (`@Alice/implementer` vs `@Bob/implementer`) on the same board.
 
-## Priority contract (all agents — mandatory)
+## Tier-1 card fields contract (all agents — mandatory)
 
-Every task and board card must carry an explicit priority. Do **not** leave Priority empty on a card you create or own.
+When you **create** or **own** a Project card, fill the Tier-1 fields below. Do **not** leave them empty and move on. Verifier spot-checks this on closure.
+
+### Priority scale
 
 | Chat / plan label | Board `set-field --field priority --to` | When |
 |-------------------|----------------------------------------|------|
@@ -67,16 +69,38 @@ Every task and board card must carry an explicit priority. Do **not** leave Prio
 | **P2** | `p2` | Planned hygiene / polish |
 | **P3** (deferred) | `p2` + Notes line `deferred` | Optional later — **no** `p3` option id in YAML |
 
+### Mandatory field checklist
+
+| Field | When | CLI | Rules |
+|-------|------|-----|-------|
+| **Status** | Always | `claim` / `handoff` / `set-status` | Create → `ready` (or claim → `in_progress`); Exit → `in_review` / `done` |
+| **Priority** | Create / claim / own | `set-field --field priority --to p0\|p1\|p2` | Before coding |
+| **Size** | Create / claim / own | `set-field --field size --to xs\|s\|m\|l\|xl` | Before coding; default `s` if unknown (note guess in Notes) |
+| **Estimate** | Create / claim / own | `set-field --field estimate --to N` | Integer ≥ 0; default `1` if unknown (note guess in Notes) |
+| **Start date** | Claim | `claim --last --agent <agent>` | Requires `conventions.set_start_date_on_claim: true`; if WARN, retry or set via UI — do not ignore silently |
+| **Assignee** | Claim / triage (human login) | `claim` (when `conventions.claim: set_assignee`) or `set-assignee --user @owner` | **GitHub Assignees need an Issue** — DraftIssue cannot hold assignees. If claim WARNs: `promote-to-issue --last` then `set-assignee`, **or** keep Notes `@owner.github_user/<agent>` until promote. Never leave shippable work Draft through merge. |
+| **Linked PR** | When a PR exists | `mention-pr --pr N --last --agent <agent>` | Before review handoff / merge; auto-promotes Draft when `promote_to_issue_on_pr` |
+
 ```bash
+# Pattern A — fill Tier-1 after create
+python3 -m cursor_workflow project create-from-template --template slice --title "[P1] …" --status ready
+python3 -m cursor_workflow project claim --last --agent implementer
 python3 -m cursor_workflow project set-field --field priority --to p1 --last
+python3 -m cursor_workflow project set-field --field size --to s --last
+python3 -m cursor_workflow project set-field --field estimate --to 1 --last
+# When opening a shippable PR:
+python3 -m cursor_workflow project mention-pr --pr N --last --agent implementer
+# If assignee still empty after promote:
+python3 -m cursor_workflow project set-assignee --user @SavinRazvan --last
 ```
 
 Rules:
 
-1. After `create-from-template` / `claim`: set Priority **before** coding.
-2. Exit Notes and chat: list open work as `[P0]…; [P1]…; [P2]…; [P3]…` and include `Priority=p?` in the handoff line.
-3. `enterprise-auditor` / `workflow-drift-guard`: findings keep Severity **and** recommend board Priority when seeding Ready cards.
-4. `verifier`: when verifying closure, spot-check claimed Priority matches board `set-field`.
+1. After `create-from-template` / `claim`: set **Priority + Size + Estimate** before coding; confirm **Status** and **Start date** from claim output.
+2. Exit Notes and chat: list open work as `[P0]…; [P1]…; [P2]…; [P3]…` and include `Priority=p? · Size=? · Estimate=?` in the handoff line.
+3. `enterprise-auditor` / `workflow-drift-guard`: findings keep Severity **and** recommend board Priority/Size when seeding Ready cards.
+4. `verifier`: on closure, spot-check Status, Priority, Size, Estimate, Start date; Assignee when Issue-backed; Linked PR when a PR was opened.
+5. Missing Tier-1 fields = **incomplete Exit** — fill or document blocker in Notes before handoff.
 
 ## When to use
 
@@ -105,11 +129,13 @@ Rules:
 
 | Field / action | When | CLI | Notes |
 |----------------|------|-----|-------|
-| **Start date** | Claim | `project claim --last --agent <agent>` | UTC today when `conventions.set_start_date_on_claim: true` and `fields.start_date.field_id` is set; WARN only on failure — claim still succeeds |
-| **Estimate** | Triage / own card | `project set-field --field estimate --to N` | Number field; N ≥ 0 |
-| **Priority** | Create / claim / triage (own card) | `project set-field --field priority --to p0\|p1\|p2` | **Mandatory** — see § Priority contract; chat P3 → `p2` + Notes `deferred` |
-| **Promote Draft→Issue** | Before PR / explicit | `project promote-to-issue --last --agent <name> [--repo owner/repo]` | GraphQL `convertProjectV2DraftIssueItemToIssue`; **same PVTI_** preserved; Assignees + Linked PRs work after promote; Notes line `promoted to Issue #N`; fine-grained PAT caveat (`doctor` / `guide`); **claim does NOT auto-promote** |
-| **Linked PR** | PR open (Issue-backed) | `project mention-pr --pr N --last --agent <agent>` | Auto-promotes Draft when `conventions.promote_to_issue_on_pr` (default true) — **FAIL** if promote fails; **WARN-only** if convention false; Notes with canonical PR URL; GitHub **Linked pull requests** column derived (Issue↔PR) |
+| **Start date** | Claim | `project claim --last --agent <agent>` | **Mandatory** — UTC today when `conventions.set_start_date_on_claim: true`; see § Tier-1 card fields contract |
+| **Estimate** | Create / claim / own | `project set-field --field estimate --to N` | **Mandatory** — default `1` if unknown |
+| **Size** | Create / claim / own | `project set-field --field size --to xs\|s\|m\|l\|xl` | **Mandatory** — default `s` if unknown |
+| **Priority** | Create / claim / own | `project set-field --field priority --to p0\|p1\|p2` | **Mandatory** — chat P3 → `p2` + Notes `deferred` |
+| **Assignee** | Claim / after promote | `claim` / `set-assignee` | **Mandatory when Issue-backed**; Draft → promote first or Notes `@user/agent` until promote |
+| **Linked PR** | PR open | `project mention-pr --pr N --last` | **Mandatory when a PR exists** for the card |
+| **Promote Draft→Issue** | Before PR / assignee | `project promote-to-issue --last --agent <name>` | Enables Assignees + Linked PRs; **claim does NOT auto-promote** |
 | **Out of scope (agents default)** | — | — | Iteration, Labels, Reviewers, End date — human / UI only |
 
 ### Issue lifecycle (Draft vs Issue)
