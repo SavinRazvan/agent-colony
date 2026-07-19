@@ -8,6 +8,7 @@
  * Depends On:
  *  - <html data-local-site="dashboards|audits" data-local-active="home|control|audit">
  * Notes:
+ *  - Deprecated 2026-07-19 with the HTML dashboards (prefer board SSOT + Open Canvas).
  *  - Add new pages here + update data-local-active values on each HTML shell.
  */
 (function () {
@@ -112,11 +113,11 @@
 
   const title = document.createElement("span");
   title.className = "local-site-nav-title";
-  title.textContent = "Navigator";
+  title.textContent = "Navigator (deprecated)";
 
   const count = document.createElement("span");
   count.className = "local-site-nav-count";
-  count.textContent = "3 HTML pages";
+  count.textContent = "3 HTML pages · offline fallback";
 
   inner.appendChild(title);
   inner.appendChild(count);

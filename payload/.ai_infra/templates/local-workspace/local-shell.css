@@ -169,6 +169,25 @@ a.local-card .local-card-desc {
   line-height: 1.5;
 }
 
+/* Deprecation banner (ICC HTML — prefer board SSOT + Cursor Open Canvas) */
+.local-deprecation {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #8a6a1a;
+  background: #2a2208;
+  color: #f0e2b0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.local-deprecation strong {
+  color: #ffd666;
+}
+.local-deprecation code {
+  background: #1a1505;
+  color: #ffe9a0;
+}
+
 /* Inline / panel code */
 code,
 .local-panel code {

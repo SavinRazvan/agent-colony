@@ -51,7 +51,7 @@ flowchart LR
 |-------|-------|--------------|---------|
 | **Cursor contract** | `.cursor/`, `.agents/`, `AGENTS.md` | Yes | Agents, skills, rules, MCP config |
 | **Infrastructure** | `.ai_infra/`, `cursor_workflow/` | No | Scripts, docs, templates, optional MCP server |
-| **Runtime** | `.local/`, `.venv` | No | Trackers, dashboards, user settings (gitignored) |
+| **Runtime** | `.local/`, `.venv` | No | Trackers, deprecated HTML dashboards, user settings (gitignored) |
 
 **Important:** Enabling the plugin does **not** replace activate. Open **your app folder** in Cursor, then run **`/workflow-activate`** once (safe to re-run — idempotent).
 
@@ -137,7 +137,7 @@ your-project/
 │   ├── templates/local-workspace|user-settings|agent-integration/
 │   ├── mcp_servers/workflow_mcp/  # with_mcp profile
 │   └── workflows/
-├── .local/                        # trackers, dashboards (gitignored)
+├── .local/                        # trackers, deprecated HTML dashboards (gitignored)
 │   ├── index-and-planning/current/
 │   ├── user_settings/             # YOU edit these
 │   └── agents-control-center/
@@ -157,7 +157,7 @@ your-project/
 | Where | Use for |
 |-------|---------|
 | **Agent chat** (`/` menu) | Plugin install, activate, subagents, skills, PR slash workflow |
-| **Terminal** | `python3 -m cursor_workflow …`, pytest, serving dashboards |
+| **Terminal** | `python3 -m cursor_workflow …`, pytest, serving deprecated dashboards |
 
 ### Agent chat commands
 
@@ -191,11 +191,12 @@ Full list: [consumer-quickstart.md](consumer-quickstart.md) § Terminal commands
 
 ---
 
-## 5. Control Center dashboards
+## 5. Control Center dashboards (deprecated)
 
-Local browser UI for trackers and docs under `.local/agents-control-center/`.
+> **Deprecated (2026-07-19).** Prefer the **GitHub Project board** (`python3 -m cursor_workflow project status`)
+> and **Ctrl+Shift+P → Open Canvas**. HTML under `.local/agents-control-center/` is offline fallback only (ADR-008).
 
-**Do not open HTML via `file://`** — browsers block fetch. From project root:
+Legacy browser UI still ships on activate. **Do not open HTML via `file://`**. From project root:
 
 ```bash
 cd ~/Projects/my-app
@@ -265,7 +266,7 @@ Every session:
 2. Board card Status/Notes — attribution `@user/agent · <ISO-8601-UTC> · …` (CLI stamps); local `history/continuity-index.md` rolls ≥3 days (local `plan.md` / `work-tracker.md` = offline fallback under `board_only`)
 3. Rate-limit: EXIT_QUEUED → `python3 -m cursor_workflow project outbox flush` after quota recovers (`project_ssot.outbox` in collaboration YAML)
 4. **`/implementer`** (or specialist agent from §6)
-5. Optional: [Control Center dashboards](#5-control-center-dashboards) — `http.server` + full URL in §5
+5. Optional: [Control Center dashboards (deprecated)](#5-control-center-dashboards-deprecated) — `http.server` + full URL in §5
 
 Token contract: [token-efficiency.md](token-efficiency.md) · Layout: [local-workspace-layout.md](local-workspace-layout.md).
 

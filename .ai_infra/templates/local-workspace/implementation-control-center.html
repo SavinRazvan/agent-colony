@@ -9,6 +9,7 @@ Depends On:
  - ../config/pages.json (after copy: `.local/agents-control-center/config/pages.json`)
  - Paths declared inside pages.json (`.local/...` and `docs/...`)
 Notes:
+ - Deprecated 2026-07-19: prefer GitHub Project board (ADR-008) + Cursor Open Canvas.
  - Page list is manifest-driven; edit `pages.json` instead of hardcoding PAGES here.
  - Default manifest includes **Strategy index** tab (`.ai_infra/docs/roadmap/README.md`); product plan tabs belong in consumer overlays.
 -->
@@ -17,11 +18,17 @@ Notes:
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Implementation Control Center</title>
+  <title>Implementation Control Center (deprecated)</title>
   <link rel="stylesheet" href="local-shell.css" />
 </head>
 <body>
   <div class="local-content">
+    <aside class="local-deprecation" role="status">
+      <strong>Deprecated.</strong>
+      When <code>project_ssot.enabled</code>, the GitHub Project is the writable SSOT — not this HTML UI.
+      Use <code>python3 -m cursor_workflow project status</code> / board recipes; open kit canvases via
+      <strong>Ctrl+Shift+P → Open Canvas</strong>. This page is an offline markdown browser only.
+    </aside>
     <section class="local-surface local-page-head">
       <h1>Implementation Control Center</h1>
       <p class="local-sub">Markdown-backed workspace: pick a tab below. Paths come from <code>../config/pages.json</code> (relative to this file).</p>

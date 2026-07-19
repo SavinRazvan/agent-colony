@@ -68,6 +68,8 @@ AUDIT_EXEMPLARS = (
     "agent-governance-todos.md",
 )
 DASHBOARD_HTML = ("index.html", "implementation-control-center.html")
+# Deprecated HTML ICC (2026-07-19): still refreshed on activate for offline fallback;
+# prefer GitHub Project board (ADR-008) + Cursor Open Canvas.
 DASHBOARD_ASSETS = (
     "site-nav.js",
     "local-shell.css",

@@ -46,7 +46,7 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 | `index-and-planning/current/` | Live trackers: `plan.md`, `work-tracker.md`, `session-pointer.md`, `change-index.md`, tests, `architecture.md` |
 | `index-and-planning/history/` | `updates-log.md` (UTC-prefixed lines), `continuity-index.md` (rolling ≥3-day board↔artifact index) |
 | `index-and-planning/audits/` | Local governance audit snapshots |
-| `agents-control-center/` | Dashboard config (`config/pages.json`) and optional HTML |
+| `agents-control-center/` | **Deprecated** HTML dashboards + `config/pages.json` (offline tracker browser; prefer board SSOT) |
 | `workflow-artifacts/pr/` | `review.md`, `prep.md`, `merge.md` |
 | `workflow-artifacts/alignment/` | `alignment-audit.md`, `alignment-todos.md` |
 | `workflow-artifacts/enterprise-architecture-audit/` | Full audit report + actions |
@@ -74,14 +74,14 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 |--------|----------|
 | `.ai_infra/scripts/pr/check_testing_artifacts.py` | Default `--planning-dir`: `.local/index-and-planning/current` |
 | `.ai_infra/scripts/pr/review.py`, `prepare.py`, `merge.py` | Artifacts via `local_workflow_paths.py` |
-| `.ai_infra/scripts/install/scaffold.py` | Tier 1: exemplar trackers (if missing), artifact buckets, README stubs, `AGENTS.md` (if missing); kit-managed dashboards + `pages.json` **always refreshed** on scaffold/activate |
+| `.ai_infra/scripts/install/scaffold.py` | Tier 1: exemplar trackers (if missing), artifact buckets, README stubs, `AGENTS.md` (if missing); kit-managed **deprecated** dashboards + `pages.json` **always refreshed** on scaffold/activate |
 | `.ai_infra/scripts/ci/seed_kit_workspace.py` | CI fixture seed; same bucket set as scaffold |
 
 ## Templates (versioned in git)
 
 Copy from **`.ai_infra/templates/local-workspace/`** into `.local/` at scaffold (`exemplars/`, `artifact-stubs/`). Dashboard HTML, assets, `module-audit.html`, and `pages.json` refresh from templates on every scaffold/activate (idempotent re-activate included).
 
-**Implementation Control Center:** manifest tab **Project Board** (`format: project-board-snapshot`) renders `.local/generated-data/project-board-snapshot.json` via `local-board-snapshot.js`. Refresh snapshot with `python3 -m cursor_workflow project export`. The panel is **read-only** — it never writes GitHub Project Status.
+**Implementation Control Center (deprecated HTML):** manifest tab **Project Board** (`format: project-board-snapshot`) renders `.local/generated-data/project-board-snapshot.json` via `local-board-snapshot.js`. Refresh snapshot with `python3 -m cursor_workflow project export`. The panel is **read-only** — it never writes GitHub Project Status. Prefer the live Project board when `project_ssot.enabled`.
 
 **User settings:** copy from **`.ai_infra/templates/user-settings/exemplars/`** into **`.local/user_settings/`** (`github.collaboration.yaml`, `mcp.agents.yaml`). See [RENDERED-EXAMPLES.md](../../templates/user-settings/RENDERED-EXAMPLES.md).
 
