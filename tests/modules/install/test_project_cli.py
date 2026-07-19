@@ -47,6 +47,7 @@ SAMPLE_SSOT = {
     "enabled": True,
     "name": "Playground",
     "owner": "SavinRazvan",
+    "default_repo": "SavinRazvan/mas-workflow-kit-project-ssot",
     "number": 3,
     "url": "https://github.com/users/SavinRazvan/projects/3",
     "project_id": "PVT_kwHOBl46-84A9KZx",

@@ -66,7 +66,7 @@ def test_resolve_repository_id(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_resolve_repository_id_missing() -> None:
     project_cli._REPO_ID_CACHE.clear()
-    rid, err = project_cli.resolve_repository_id({**SAMPLE_SSOT}, "")
+    rid, err = project_cli.resolve_repository_id({**SAMPLE_SSOT, "default_repo": ""}, "")
     assert rid is None
     assert err and "repository required" in err
 

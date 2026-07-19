@@ -30,6 +30,7 @@ from test_project_cli import SAMPLE_SSOT  # noqa: E402
 
 def _ssot(**overrides):
     data = json.loads(json.dumps(SAMPLE_SSOT))
+    data["default_repo"] = data.get("default_repo") or "SavinRazvan/mas-workflow-kit-project-ssot"
     data["conventions"] = {
         **data.get("conventions", {}),
         "body_sections": ["Acceptance", "Rollback", "Notes"],
@@ -81,7 +82,13 @@ def test_cmd_create_from_template(
 
     def fake_gh(args: list[str], *, timeout_s: float = 60.0):
         calls.append(args)
-        if args[:2] == ["project", "item-create"]:
+        if args[:2] == ["issue", "create"]:
+            return SimpleNamespace(
+                returncode=0,
+                stdout="https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/issues/99\n",
+                stderr="",
+            )
+        if args[:2] == ["project", "item-add"]:
             return SimpleNamespace(
                 returncode=0,
                 stdout=json.dumps({"id": "PVTI_lAHOBl46-84A9KZxnew001"}),
@@ -105,7 +112,8 @@ def test_cmd_create_from_template(
     assert project_cli.cmd_create_from_template(args) == 0
     out = capsys.readouterr().out
     assert "item_id=PVTI_lAHOBl46-84A9KZxnew001" in out
-    assert any(c[:2] == ["project", "item-create"] for c in calls)
+    assert any(c[:2] == ["issue", "create"] for c in calls)
+    assert any(c[:2] == ["project", "item-add"] for c in calls)
     assert any("--single-select-option-id" in c for c in calls)
 
 

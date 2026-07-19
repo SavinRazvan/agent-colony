@@ -54,6 +54,7 @@ def _ensure_pr_scripts(tmp_path: Path) -> None:
 
 def _ssot(**overrides: object) -> dict:
     data = json.loads(json.dumps(SAMPLE_SSOT))
+    data["default_repo"] = data.get("default_repo") or "SavinRazvan/mas-workflow-kit-project-ssot"
     data["conventions"] = {
         **data.get("conventions", {}),
         "body_sections": ["Acceptance", "Rollback", "Notes"],
@@ -685,7 +686,7 @@ def test_cmd_create_plain(
     _patch_ssot(monkeypatch, ssot)
     monkeypatch.setattr(
         project_cli,
-        "create_draft_item",
+        "create_board_item",
         lambda *a, **k: (VALID_ITEM, '{"id":"x"}', None),
     )
     args = argparse.Namespace(directory=tmp_path, template=None, title="T", body="")
@@ -723,7 +724,7 @@ def test_cmd_create_from_template_gh_and_status_fail(
     monkeypatch.setattr(project_cli, "load_card_template", lambda *a, **k: "## Acceptance\n\n{{acceptance}}\n\n## Rollback\n\n{{rollback}}\n\n## Notes\n\n{{notes}}\n")
     monkeypatch.setattr(
         project_cli,
-        "create_draft_item",
+        "create_board_item",
         lambda *a, **k: (None, None, "create err"),
     )
     args = argparse.Namespace(
@@ -738,7 +739,7 @@ def test_cmd_create_from_template_gh_and_status_fail(
     assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_GH
     monkeypatch.setattr(
         project_cli,
-        "create_draft_item",
+        "create_board_item",
         lambda *a, **k: (VALID_ITEM, "", None),
     )
     monkeypatch.setattr(
@@ -1638,7 +1639,7 @@ def test_cmd_create_disabled_and_gh_error(
     _patch_ssot(monkeypatch)
     monkeypatch.setattr(
         project_cli,
-        "create_draft_item",
+        "create_board_item",
         lambda *a, **k: (None, None, "create failed"),
     )
     assert project_cli.cmd_create(args) == project_cli.EXIT_GH

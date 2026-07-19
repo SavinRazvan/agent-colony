@@ -102,6 +102,26 @@ Shorter variant: [consumer-quickstart.md](consumer-quickstart.md).
 
 Use this when your team opts into **GitHub Project as the only writable SSOT** (`project_ssot.enabled: true`, `sync_policy: board_only`). Complete in order after §2 activate.
 
+#### Product promise
+
+Install the **MAS Workflow Kit — Project SSOT** plugin, open **your app repo** (not the kit product repo), and run **`/workflow-activate`**. Activate copies the **full kit infrastructure** — the same three planes kit maintainers use: Cursor contract (`.cursor/` agents, skills, rules; `.agents/skills/`; `AGENTS.md`), infrastructure (`.ai_infra/`, `cursor_workflow/` CLI), and runtime scaffold (`.local/` including `user_settings/` exemplars). You then wire **your** identity and **your** GitHub Project in `.local/user_settings/github.collaboration.yaml`; after `contributors validate`, `project doctor`, and `project status` pass, agents use claim/handoff/Tier-1 the same way as kit-dev.
+
+**You configure (consumer-specific):** `owner.display_name`, `owner.github_user`, `project_ssot` board identity + field/option ids, `default_repo`, and `gh` auth scopes (`read:project`, `project`, `repo`).
+
+**Activate installs (same for every consumer):** agents, skills, rules, CLI, docs, templates, `.local/` scaffold — not your board ids.
+
+**Board shape constraint:** Your Project must be **kit-shaped**. Arbitrary custom layouts are not auto-supported; activate does **not** invent field ids from a Project URL.
+
+| Field | Required option keys |
+|-------|---------------------|
+| **Status** (single-select) | `backlog`, `ready`, `in_progress`, `in_review`, `done` |
+| **Priority** (single-select) | `p0`, `p1`, `p2` |
+| **Size** (single-select) | `xs`, `s`, `m`, `l`, `xl` |
+| **Estimate** (number) | numeric field id |
+| **Start date** (date) | date field id |
+
+Discover ids manually: `gh project view <N> --owner <login>` (for `project_id`) and `gh project field-list <N> --owner <login>` — paste into `github.collaboration.yaml`. No bootstrap CLI in this release; agents can walk lazy users through these commands.
+
 | Step | Action |
 |------|--------|
 | 1. Install / activate | Agent chat: `/add-plugin …` then **`/workflow-activate`** in **your app repo** — wait for **`VERIFY PASS`**. |

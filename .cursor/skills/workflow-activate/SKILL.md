@@ -23,10 +23,12 @@ User enabled the **MAS Workflow Kit — Project SSOT** plugin (`mas-workflow-kit
 
 ## Guide the user (keep it simple)
 
+**Product promise:** Plugin install loads agents/skills in Cursor only. **`/workflow-activate`** in **their app repo** installs the **full kit** (same three planes as kit-dev). They then edit `.local/user_settings/github.collaboration.yaml` for **their** name, **their** GitHub Project ids, and `default_repo`. After validate + doctor + status pass, usage matches kit-dev (claim/handoff/Tier-1, Issue-at-create). Board must be kit-shaped (Status/Priority/Size/Estimate/Start date keys) — see [PLUGIN-USER-GUIDE § Product promise](../../.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
+
 1. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` (chat only — not terminal). Show [install screenshot](https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit-project-ssot/main/assets/mas-workflow-kit-install.png) or [consumer-quickstart § step 1](../../.ai_infra/docs/operations/consumer-quickstart.md#step-1-detail--install-plugin-from-github) — user clicks the **MAS Workflow Kit — Project SSOT** card in the preview.
 2. Confirm the open folder is **their app**, not the kit product repo (`mas-workflow-kit-project-ssot`).
 3. Run activate (below) — or tell them to pick **`/workflow-activate`** from the **`/`** menu.
-4. Tell them to edit `.local/user_settings/github.collaboration.yaml` → `contributors validate` (set `project_ssot` for board SSOT).
+4. Wire collaboration YAML (below) — set name/@handle, then **their** Project URL → `gh project view` / `gh project field-list` → fill `project_ssot` + `default_repo` → `contributors validate` → `project doctor` → `project status`.
 5. Point them to **`/implementer`** (from **`/`** menu). When `project_ssot.enabled`, Entry is **`python -m cursor_workflow project status`** (board SSOT); else read `session-pointer.md` first.
 
 Do **not** dump gate lists or maintainer `make` commands.
@@ -61,9 +63,10 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 
 ## Post-activate (tell the user)
 
-1. Open `.local/user_settings/github.collaboration.yaml` — set **display_name** and **github_user**
-2. Terminal: `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` (must PASS before git/PR)
-3. **`/implementer`** to start · when `project_ssot.enabled`, run **`python -m cursor_workflow project status`** first each session (board SSOT); else read `session-pointer.md` first
+1. Open `.local/user_settings/github.collaboration.yaml` — set **display_name**, **github_user**, then **project_ssot** (enable + board ids + `default_repo`). Discover ids: `gh project view <N> --owner <login>` and `gh project field-list <N> --owner <login>` (no bootstrap CLI — paste into YAML).
+2. Terminal: `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` (must PASS)
+3. `python3 -m cursor_workflow project doctor` then `python3 -m cursor_workflow project status` (when board SSOT enabled)
+4. **`/implementer`** to start · when `project_ssot.enabled`, run **`python -m cursor_workflow project status`** first each session (board SSOT); else read `session-pointer.md` first
 
 **Dashboards (optional):** from project root run `python3 -m http.server 8000`, then open
 http://localhost:8000/.local/agents-control-center/dashboards/index.html (not `file://`).
