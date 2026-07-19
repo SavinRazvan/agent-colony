@@ -34,7 +34,7 @@ Install **MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) 
 
 **Healthy install?** `python3 -m cursor_workflow health`
 
-> **Cheat sheet:** [Agent chat vs terminal](#agent-chat-vs-terminal) · [Dashboards](#control-center-dashboards) · [All CLI commands](#terminal-commands-cheat-sheet)
+> **Cheat sheet:** [Agent chat vs terminal](#agent-chat-vs-terminal) · [Dashboards (deprecated)](#control-center-dashboards-deprecated) · [All CLI commands](#terminal-commands-cheat-sheet)
 
 ### Step 1 detail — install plugin from GitHub
 
@@ -157,7 +157,7 @@ Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → **`/connect
 2. Claim/update the board card (Status + Notes `@user/agent · <ISO-8601-UTC> · …`); local `plan.md` / `work-tracker.md` only as offline fallback under `board_only`; optional `history/continuity-index.md` (≥3-day local rollup)
 3. If board writes hit GraphQL rate-limit (EXIT_QUEUED): `project outbox status` / later `outbox flush` — enable `project_ssot.outbox` defaults after activate
 4. **`/implementer`** (or `/test-runner`, `/verifier`, `/enterprise-auditor`)
-5. Dashboard (optional): see [Control Center dashboards](#control-center-dashboards) below
+5. Dashboard (optional, **deprecated**): see [Control Center dashboards](#control-center-dashboards-deprecated) below
 
 **Add your own agent/skill/MCP:** **`/integrator-mas-agent`** + **`/mas-infrastructure-integration`**
 
@@ -168,7 +168,7 @@ Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → **`/connect
 | Where | Use for | Examples |
 |-------|---------|----------|
 | **Agent chat** | Plugin install, subagents, skills, slash workflows | `/add-plugin …`, `/workflow-activate`, `/implementer`, `/review-pr` |
-| **Terminal** | Validation, health, gates, serving dashboards | `python3 -m cursor_workflow health`, `http.server` → [dashboard URL](#control-center-dashboards) |
+| **Terminal** | Validation, health, gates, serving deprecated dashboards | `python3 -m cursor_workflow health`, `http.server` → [dashboard URL](#control-center-dashboards-deprecated) |
 
 **Rule:** `/add-plugin` and `/workflow-activate` are **chat commands** — do not paste them into bash.
 
@@ -216,9 +216,14 @@ Commit trailer preview: `python3 -m cursor_workflow contributors commit-trailers
 
 ---
 
-## Control Center dashboards
+## Control Center dashboards (deprecated)
 
-Local HTML dashboards browse your trackers and kit docs in the browser. They ship under `.local/agents-control-center/` on activate.
+> **Deprecated (2026-07-19).** Prefer the **GitHub Project board** when `project_ssot.enabled`
+> (`python3 -m cursor_workflow project status`) and **Ctrl+Shift+P → Open Canvas** for kit
+> visualizations. Local HTML under `.local/agents-control-center/` remains an **offline**
+> markdown/tracker browser only; it is not the backlog or status SSOT (ADR-008).
+
+Local HTML pages still ship on activate for legacy/offline use.
 
 **Do not** open HTML via `file://` — browsers block `fetch()`.
 
@@ -233,23 +238,18 @@ python3 -m http.server 8000
 
 *(Port busy? Use `8001` — swap the port in every URL below.)*
 
-Leave the terminal open while browsing. More pages:
-
 | Page | URL |
 |------|-----|
 | **Home** | http://localhost:8000/.local/agents-control-center/dashboards/index.html |
 | **Implementation Control Center** | http://localhost:8000/.local/agents-control-center/dashboards/implementation-control-center.html |
 | **Module audit** | http://localhost:8000/.local/agents-control-center/audits/module-audit.html |
 
-Use the top **navigator** to switch between Home, Control Center, and Module audit.
+### What still works (offline only)
 
-### What you can do there
+- **Control Center** — sidebar tabs over local markdown (`session-pointer`, `plan`, …) and read-only board export snapshot
+- **Module audit** — workflow module map HTML when exported
 
-- **Control Center** — pick a page from the sidebar (`session-pointer`, `plan`, `work-tracker`, workflow docs, …); markdown renders with tables and lists
-- **Home** — links to trackers and quick paths
-- **Module audit** — workflow module map (when exported)
-
-### Refresh dashboards after a kit update
+### Refresh after a kit update
 
 Re-run activate (chat or terminal):
 

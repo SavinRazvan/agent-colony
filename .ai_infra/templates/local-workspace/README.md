@@ -16,6 +16,10 @@ Notes:
 
 Scaffold copies exemplars into `.local/index-and-planning/current/`, `pages.json` into `.local/agents-control-center/config/`, README stubs into `workflow-artifacts/*`, and optional dashboards.
 
+> **Deprecated (2026-07-19):** HTML dashboards under `agents-control-center/dashboards/` are **maintenance-only**.
+> Prefer the **GitHub Project board** (`project_ssot` / ADR-008) for backlog and status, and **Cursor → Open Canvas**
+> for kit visualizations. Templates still refresh on activate so existing offline browsers keep working.
+
 | Template | Target |
 |----------|--------|
 | `exemplars/*.md` | `.local/index-and-planning/current/` |
