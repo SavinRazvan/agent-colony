@@ -55,8 +55,8 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 
 | Surface | Includes drift? |
 |---------|-----------------|
-| `prepare.py` GATES | **Kit-dev only** — `resolve_gates()` appends drift + doc facts when `IMPLEMENTATION-STATUS.md` exists |
-| `prepare.py` GATES (consumer) | **No** — universal 2-gate consumer contract |
+| `prepare.py` `resolve_gates()` | **Kit-dev only** — appends drift + doc facts when `IMPLEMENTATION-STATUS.md` exists |
+| `prepare.py` `resolve_gates()` (consumer) | **No** — universal 2-gate consumer contract |
 | `make gates` | **No** — use `make drift-validate` |
 | `cursor_workflow health` | Optional P0 warn (diagnostic, non-blocking) |
 | Implementer slice closure | **Yes (recommended)** |

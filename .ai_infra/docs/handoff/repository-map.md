@@ -50,7 +50,7 @@ mas-workflow-kit-project-ssot/
 ├── assets/                     Marketplace logo (`logo.png`)
 ├── .github/                    CI workflows (kit-dev only)
 ├── cursor_workflow/            SSOT — thin CLI shim (also copied to consumer)
-├── schemas/                    Legacy gate.json stub (GATES live in prepare.py)
+├── schemas/                    Legacy gate.json stub (`resolve_gates()` in prepare.py; `GATES` = alias)
 ├── .local/                     Kit-dev runtime (gitignored); CI seed fixture — not consumer exemplars
 ├── tests/                      Kit-dev only — full pytest suite (1072; see IMPLEMENTATION-STATUS)
 ├── Makefile, pyproject.toml    Kit-dev only

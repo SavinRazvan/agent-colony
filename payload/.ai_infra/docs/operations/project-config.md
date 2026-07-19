@@ -43,6 +43,6 @@ Copy to `project.config.yaml` and edit `git.author`, `git.github_user`, `mcp.reg
 
 ## Related
 
-- [`.ai_infra/scripts/install/README.md`](../../scripts/install/README.md)
+- [`.ai_infra/scripts/install/README.md`](../../scripts/install/README.md) — install scaffold reference
 - [`connect-external-mcp.md`](connect-external-mcp.md)
 - [`overlays/README.md`](../../../overlays/README.md)

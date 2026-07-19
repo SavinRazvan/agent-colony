@@ -44,7 +44,7 @@ python .ai_infra/scripts/install/scaffold.py \
   --verify
 ```
 
-See [`scripts/install/README.md`](../../scripts/install/README.md).
+See [`.ai_infra/scripts/install/README.md`](../../scripts/install/README.md).
 
 **Marketplace / plugin smoke (Track A + B):** this product repo [`marketplace-publish.md`](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/blob/main/.ai_infra/docs/handoff/marketplace-publish.md) § Automated smoke, or `make smoke-consumer` from this repo.
 

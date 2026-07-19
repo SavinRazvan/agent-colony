@@ -264,7 +264,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | **Connect external MCP** | `/connect-external-mcp` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
 | **Upgrade / refresh dashboards** | `/workflow-activate` | `python3 -m cursor_workflow activate --directory .` | [upgrade-kit.md](upgrade-kit.md) |
 | **Check install health** | — | `python3 -m cursor_workflow health` | [gate-matrix.md](gate-matrix.md) |
-| **Dry-run install preview** | — | `scaffold.py --dry-run` | [install-dry-run.md](install-dry-run.md) |
+| **Dry-run install preview** | — | `python3 -m cursor_workflow install --target <dir> --dry-run` | [install-dry-run.md](install-dry-run.md) |
 
 ### Full `/` menu (8 agents + skills)
 
