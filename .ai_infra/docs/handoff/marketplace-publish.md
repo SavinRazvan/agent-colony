@@ -31,10 +31,12 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02)
 8. [x] `assets/logo.png` (1:1, background plate) — see `assets/README.md` — **present** (commit `1f16af1`, 1024×1024 PNG RGBA, ~1.5 MB; verified 2026-07-02)
 9. [x] Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — **PASS 2026-07-08**
-   on **Smart-Notes** (`~/Projects/Smart-Notes`): chat activate + terminal matrix green. Evidence:
-   `.local/workflow-artifacts/release/smoke-consumer-smart-notes-2026-07-08.md`,
-   `workflow-activate-ui-smoke.md`, `workflow-activate-live-ui-runbook.md` (Phases B–C filled).
-   CLI-equivalent path double-verified 2026-07-02. Optional: empty-folder rerun (`mas-ui-smoke-test`).
+   on **Smart-Notes** (`~/Projects/Smart-Notes`): chat activate + terminal matrix green.
+   Historical local evidence paths (recreate on next UI smoke under `.local/workflow-artifacts/release/`):
+   `smoke-consumer-smart-notes-<date>.md`, plus optional runbooks
+   `workflow-activate-ui-smoke.md` / `workflow-activate-live-ui-runbook.md` if you keep them locally.
+   CLI-equivalent path: `make smoke-consumer` / `make install-dry-run` (double-verified 2026-07-02).
+   Optional: empty-folder rerun (`mas-ui-smoke-test`).
 
 ## Versioning
 
@@ -206,7 +208,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-07-19 DOC-CANVAS-ALIGN):** Re-verified against `IMPLEMENTATION-STATUS.md` — **1062** tests collected (1060 passed + 2 skipped), **6208** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts (8 / 11 / 7). Prior 931/5352 line superseded.
 
-**Consumer smoke (2026-07-08):** Real app **Smart-Notes** — `/add-plugin` + chat **`/workflow-activate`**, `health`/`gates`/`integrate`/`mcp validate` PASS, kit smoke **1** of **120** pytest during gates. Record: `.local/workflow-artifacts/release/smoke-consumer-smart-notes-2026-07-08.md`.
+**Consumer smoke (2026-07-08):** Real app **Smart-Notes** — `/add-plugin` + chat **`/workflow-activate`**, `health`/`gates`/`integrate`/`mcp validate` PASS, kit smoke **1** of **120** pytest during gates. Local evidence file was not retained in this workspace; recreate with `make smoke-consumer` and write under `.local/workflow-artifacts/release/smoke-consumer-<app>-<date>.md` on the next consumer run.
 
 ## Publish
 
@@ -214,9 +216,9 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 - Attach release notes: ADR index, activation flow, MCP optional profile
 - After publish: enterprise re-audit (Phase 7 EA-506)
 
-### Live marketplace (EA-v4-002 — manual when channel ready)
+### Live marketplace (EA-v4-002 / EA-019 — manual when channel ready)
 
-Local pre-publish evidence: `.local/workflow-artifacts/enterprise-architecture-audit/marketplace-dry-run-2026-06-29.md` (PASS on kit tree).
+Local pre-publish evidence: run `make gates` + `make smoke-consumer` / `make install-dry-run` on the release tag, then record PASS under `.local/workflow-artifacts/enterprise-architecture-audit/marketplace-dry-run-<date>.md` (prior 2026-06-29 dry-run log is not present in this workspace — recreate rather than cite a missing path).
 
 **Not yet exercised:** upload/publish to the live Cursor Marketplace channel. When credentials and channel are available:
 
