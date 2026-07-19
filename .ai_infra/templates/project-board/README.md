@@ -57,4 +57,4 @@ python3 -m cursor_workflow project queue --op append-notes --last --agent implem
 python3 -m cursor_workflow project outbox flush
 ```
 
-When a write returns `EXIT_QUEUED` (6), continue local evidence (`change-index` / handoff line); flush after `gh api rate_limit` recovers. Outbox is **not** a second Status SSOT.
+When a write returns `EXIT_QUEUED` (6) — including precheck low quota, rate-limit / 429 / Forbidden throttle — continue local evidence (`change-index` / handoff line); do **not** retry-loop; flush after `gh api rate_limit` recovers. Outbox is **not** a second Status SSOT. See `project_ssot.outbox` (`precheck_writes`, `dedupe_pending`) in the collaboration exemplar.
