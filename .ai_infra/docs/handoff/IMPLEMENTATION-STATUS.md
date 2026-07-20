@@ -15,7 +15,7 @@ Notes:
 
 # Implementation status (MAS Workflow Kit — Project SSOT)
 
-**Last updated:** 2026-07-20 (DOC-ALIGN secondary surfaces + cov100_closure six-view mocks; Playground default + template-first; 1168 tests / 7089 stmts / 100%)
+**Last updated:** 2026-07-20 (DOC-CANVAS-ALIGN: canvases CLI+board-shell+test-runner sync; 1168 tests / 7089 stmts / 100%)
 **Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1168
 
 ## Shipped (confirmed in repo)

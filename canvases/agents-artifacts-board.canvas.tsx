@@ -26,7 +26,7 @@ import {
  * Not an agent-* canvas — excluded from DOC-008 roster scan (same as board-ssot-vs-kit).
  */
 
-const VERIFIED = "2026-07-19";
+const VERIFIED = "2026-07-20";
 const SOURCES =
   "ADR-008 · project-board-ssot/SKILL.md · project-board-collaboration.md · agent cards · HYGIENE post-COV100";
 
@@ -138,6 +138,12 @@ const ARTIFACT_LANES: string[][] = [
     "GitHub Project Status · Notes · Linked PRs",
     "All agents via cursor_workflow project …",
     "ADR-008 board_only — only Status writer",
+  ],
+  [
+    "Day-0 board shell",
+    "board-bootstrap --check · views-setup.md · board-shell-onboard",
+    "project-board / human (before claim)",
+    "Does not write Status — Playground six-view gate",
   ],
   [
     "PR Pattern A (local evidence)",

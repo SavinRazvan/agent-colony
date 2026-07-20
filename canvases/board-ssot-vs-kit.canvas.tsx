@@ -183,6 +183,7 @@ const CLI_ATOMIC_ROWS = [
   ["find-by-pr", "Resolve card from PR number"],
   ["export", "Read-only snapshot → project-board-snapshot.json"],
   ["doctor", "Config / PAT / field-id diagnostics"],
+  ["board-bootstrap", "Schema-aware shell check; opt-in --ensure-fields / --apply-readme"],
   ["queue", "Enqueue deferred board write"],
   ["outbox", "status | flush — EXIT_QUEUED (6) buffer"],
 ];
@@ -511,8 +512,8 @@ export default function BoardSsotVsKitCanvas() {
       <Text tone="tertiary" size="small">
         Full list: status · list · create · create-from-template · set-status ·
         set-field · get · append-notes · claim · mention-pr · promote-to-issue ·
-        handoff · validate-item · last · guide · doctor · set-assignee · find-by-pr ·
-        export · queue · outbox
+        handoff · validate-item · last · guide · doctor · board-bootstrap ·
+        set-assignee · find-by-pr · export · queue · outbox
       </Text>
 
       <Grid columns={2} gap={12}>
@@ -567,6 +568,11 @@ export default function BoardSsotVsKitCanvas() {
           ["Stale PR detection", "N/A", "DRIFT-010 + export snapshot"],
           ["PR merge gates", "prepare.py Pattern A", "Unchanged (local_only)"],
           ["Offline / no gh", "N/A (always local)", "fallback: local_trackers"],
+          [
+            "Day-0 board shell",
+            "N/A",
+            "board-bootstrap --check vs board-shell.schema.yaml (Playground six-view); board-shell-onboard coach",
+          ],
         ]}
         striped
       />
@@ -634,6 +640,10 @@ export default function BoardSsotVsKitCanvas() {
               <Text size="small">EA-001: project_cli split (atomics/adapter/recipes/outbox)</Text>
               <Text size="small">EA-004: pyright blocking in kit-quality CI</Text>
               <Text size="small">EA-010: deprecated HTML ICC tab (offline export; prefer board + Open Canvas)</Text>
+              <Text size="small">
+                Day-0: board-shell-onboard + board-bootstrap --check (Playground
+                six-view default; schema board-shell.schema.yaml)
+              </Text>
             </Stack>
           </CardBody>
         </Card>

@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-07-19";
+const VERIFIED = "2026-07-20";
 const SOURCES =
   ".cursor/agents/enterprise-auditor.md · enterprise-architecture-audit/SKILL.md · project-board-ssot/SKILL.md";
 
