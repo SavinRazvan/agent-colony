@@ -20,7 +20,8 @@ Notes:
 
 ## When
 
-- Fresh consumer after `/workflow-activate` + `github.collaboration.yaml` wired
+- Fresh consumer after `/workflow-activate` + identity in `github.collaboration.yaml` (board ids may still be empty)
+- Human pastes **Project URL + repo URL** after `gh` auth — help wire `project_ssot` / `default_repo` before shell check
 - User asks to apply the **kit default** board shell (Playground parity: six views + Tier-1 columns)
 - `board-bootstrap --check` FAILs missing default views or WARNs on missing **Priority** / Size / Estimate / Start date / empty README
 
@@ -28,6 +29,7 @@ Notes:
 
 | Do | Do not |
 |----|--------|
+| After `gh` auth, accept Project + repo URLs and propose YAML via `gh project view` / `field-list` | Write YAML without human confirm |
 | Coach humans through `views-setup.md` against `board-shell.schema.yaml` | Create/rename/delete Project **views** via API |
 | Run `board-bootstrap --check` until default views green + Tier-1 column WARNs gone | Mutate Insights / workflows / status updates |
 | Optional `--ensure-fields` / `--apply-readme` | Invent field option ids into YAML without discovery |
@@ -35,6 +37,7 @@ Notes:
 
 ## Entry
 
+0. If board ids missing and human provided URLs: propose collaboration YAML, confirm, save.
 1. `python3 -m cursor_workflow project status`
 2. `python3 -m cursor_workflow project doctor`
 3. Load desired state:
@@ -47,6 +50,8 @@ Notes:
 ```text
 doctor → board-bootstrap --check → (gaps?) → human paste pack → re-check → smoke card → ready
 ```
+
+**Read FAIL lines literally:** `FAIL — missing minimum view 'Status board'` (etc.) / `WARN — rename default view 'View 1'` → human [views-setup.md](../../.ai_infra/templates/project-board/views-setup.md) in the GitHub UI (agents cannot create views). Empty README / `--apply-readme` is a **separate** fix — do not tell the user a view-missing FAIL is “only README”.
 
 ### WARN vs FAIL (schema check)
 

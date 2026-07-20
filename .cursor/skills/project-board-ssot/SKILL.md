@@ -38,6 +38,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, use the GitHub Projec
 
 Day-0 requires the kit **default** shell: `.ai_infra/templates/project-board/board-shell.schema.yaml` (six Playground views; Priority/Size/Estimate/Start date on Status board + Prioritized backlog). Overlay: `.local/user_settings/board-shell.schema.yaml` when present.
 
+0. **Wire YAML from URLs (if ids missing):** after `gh` auth, human pastes Project URL + repo URL → use `gh project view` / `field-list` (optional `board-bootstrap --check --ensure-fields`) → propose `project_ssot` + `default_repo` → human confirms before save.
 1. Load `.cursor/skills/board-shell-onboard/SKILL.md` (coach) and the schema above.
 2. Run `python3 -m cursor_workflow project doctor` → `project board-bootstrap --check`.
 3. On FAIL or Tier-1 column WARNs: humans follow `views-setup.md` (views stay **human UI** — no API create/rename/delete). Optional: `--ensure-fields` / `--apply-readme`.

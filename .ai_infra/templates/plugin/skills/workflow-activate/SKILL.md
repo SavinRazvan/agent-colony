@@ -16,7 +16,7 @@ User enabled the **MAS Workflow Kit — Project SSOT** plugin (`mas-workflow-kit
 1. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` (chat only — not terminal).
 2. Confirm the open folder is **their app**, not the kit product repo.
 3. Run activate (below) — or **`/workflow-activate`** from the **`/`** menu.
-4. Wire collaboration YAML — name/@handle, Project ids, `default_repo` → `contributors validate` → `project doctor`. Grant `gh` scopes `read:project,project` (+ `repo`).
+4. Wire collaboration YAML — set name/@handle; when enabling Project SSOT: **`gh` auth first**, then paste **Project URL + repo URL** → **`/project-board`** proposes ids + `default_repo` (or `gh project view` / `field-list`) → `contributors validate` → `project doctor`. Grant scopes `read:project,project` (+ `repo`).
 5. When `project_ssot.enabled`: first-run board shell — **`/project-board`** + `board-shell-onboard` → human `views-setup.md` → `project board-bootstrap --check` (optional `--ensure-fields` / `--apply-readme`) → `project status`. **Do not** start with `/enterprise-auditor`.
 6. Point them to **`/implementer`**. When board SSOT on, Entry is `python -m cursor_workflow project status`; else read `session-pointer.md` first.
 
@@ -52,8 +52,8 @@ runs — not before. Use **`/connect-external-mcp`** after activate.
 
 ## Post-activate (tell the user)
 
-1. Open `.local/user_settings/github.collaboration.yaml` — set **display_name**, **github_user**, then **project_ssot** (enable + board ids + `default_repo`). Optional: `project board-bootstrap --check --ensure-fields`.
-2. Terminal: `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` (must PASS)
+1. Open `.local/user_settings/github.collaboration.yaml` — set **display_name**, **github_user**. For Project SSOT: enable + `board_only`; after **`gh` auth** paste **Project URL + repo URL** → **`/project-board`** proposes ids + `default_repo` (or `gh project view` / `field-list`). Optional: `board-bootstrap --check --ensure-fields`.
+2. Terminal: `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` (must PASS). Grant `gh` Project scopes before doctor.
 3. When board SSOT enabled: `python3 -m cursor_workflow project doctor` → **`/project-board`** + `board-shell-onboard` → `python3 -m cursor_workflow project board-bootstrap --check` until **default Playground shell** green → `python3 -m cursor_workflow project status`
 4. **`/implementer`** to start · audit (`/enterprise-auditor`) is later / architecture-impacting — not day-0.
 

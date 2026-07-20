@@ -22,9 +22,11 @@
 2. `source .venv/bin/activate && python3 -m cursor_workflow contributors validate`
 3. If `project_ssot.enabled: true`:
    - `gh auth refresh -h github.com -s read:project,project` (keep `repo`) — see [PLUGIN-USER-GUIDE § GitHub CLI auth](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#github-cli-auth-projects)
-   - `python3 -m cursor_workflow project doctor`
-   - **`/project-board`** (first-run coach: `.cursor/skills/board-shell-onboard/SKILL.md`) → follow views-setup + Project README
-   - `python3 -m cursor_workflow project board-bootstrap --check` until default Playground shell green
+   - Paste **Project URL** + this **repo URL** in Agent chat → **`/project-board`** wires `project_ssot` ids + `default_repo` (confirm before save), or fill via `gh project view` / `field-list`
+   - `python3 -m cursor_workflow project doctor` (expect **ok**)
+   - `python3 -m cursor_workflow project board-bootstrap --check` — **new Project FAIL on missing views is normal**
+   - **`/project-board`** again (board-shell coach) → follow [views-setup.md](.ai_infra/templates/project-board/views-setup.md) in GitHub UI + Project README (`--apply-readme` optional)
+   - Re-run `board-bootstrap --check` until default Playground shell green
    - `python3 -m cursor_workflow project status`
    - Local trackers are offline fallback when `sync_policy: board_only`
 4. If Project SSOT is disabled or unavailable:
