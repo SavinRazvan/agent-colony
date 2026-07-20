@@ -161,9 +161,11 @@ def compare_views_to_schema(
             )
         layout = got_layout or want_layout
         if layout in {"BOARD_LAYOUT", "TABLE_LAYOUT"}:
+            raw_fields = found.get("fields")
+            field_list: list[Any] = raw_fields if isinstance(raw_fields, list) else []
             fields = {
                 str(n).strip()
-                for n in (found.get("fields") if isinstance(found.get("fields"), list) else [])
+                for n in field_list
                 if str(n).strip()
             }
             missing = sorted(tier1 - fields)

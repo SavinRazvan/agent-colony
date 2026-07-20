@@ -56,7 +56,7 @@ Create additional views (New view) after minimum is done:
 | View name | Layout | Suggested filter / purpose |
 |-----------|--------|----------------------------|
 | **Roadmap** | Board or table | Status + Priority overview (optional Iteration later — human) |
-| **Bugs** | Table or board | Title contains `[BUG]` / bug template work |
+| **Bugs** | Table or board | **Filter required:** title contains `[BUG]` (or only `--template bug` cards). Without a filter this view shows all items. |
 | **In review** | Board or table | Status = In review |
 | **My items** | Table | Assignees = `@me` |
 

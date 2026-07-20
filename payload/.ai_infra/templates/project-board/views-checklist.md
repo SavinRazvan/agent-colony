@@ -11,7 +11,7 @@
 ## Recommended (Playground parity — customize later OK)
 
 - [ ] Add **Roadmap** view
-- [ ] Add **Bugs** view
+- [ ] Add **Bugs** view with filter: title contains `[BUG]` (view must not list non-bug cards)
 - [ ] Add **In review** view (Status = In review)
 - [ ] Add **My items** view (Assignees = `@me`)
 
