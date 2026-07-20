@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-07-19";
+const VERIFIED = "2026-07-20";
 const SOURCES =
   ".cursor/agents/test-runner.md · test-module-coverage/SKILL.md · project-board-ssot/SKILL.md";
 
@@ -31,6 +31,7 @@ const GOALS = [
   "Module-focused tests, regressions, coverage",
   "Run targeted module tests before full suite",
   "Update test-index and test-plan when tests change",
+  "After scoped 100%: doc reality sync (IMPLEMENTATION-STATUS + make coverage-index + make doc-validate)",
 ];
 
 const BOARD_NODES = [
@@ -76,7 +77,7 @@ const BOARD_LABELS: Record<string, string> = {
   claim: "claim card",
   index: "test-index.md",
   tests: "tests/modules/",
-  coverage: "pytest --cov",
+  coverage: "coverage.json",
   artifacts: "test-plan + change-index",
   handoff: "handoff",
   next: "next agent",
@@ -86,7 +87,7 @@ const FALLBACK_LABELS: Record<string, string> = {
   session: "session-pointer.md",
   index: "test-index.md",
   tests: "tests/modules/",
-  coverage: "pytest --cov",
+  coverage: "coverage.json",
   artifacts: "test-plan + change-index",
   handoff: "handoff / close",
 };
@@ -104,12 +105,18 @@ const PATTERNS = [
   ["Board lifecycle", "Exit in_review if tests gate PR else done"],
   ["Tier-1", "Shared Board rights; promote only if opening a shippable PR"],
   ["Module layout", "tests/modules/<module>/ matching source boundaries"],
+  ["Coverage evidence", "pytest --cov writes coverage.json only — do not invent alternate names"],
+  ["Shell filters", "Prefer grep/python over rg (often absent from PATH)"],
+  ["Post-100% sync", "IMPLEMENTATION-STATUS + make coverage-index + make doc-validate"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/test-runner via --agent test-runner"],
 ];
 
 const ARTIFACTS = [
   ["tests/modules/<module>/", "Implementation / regression", "CI / prepare.py"],
+  ["coverage.json", "Coverage evidence run", "test-runner / DOC-006"],
+  ["coverage-index.md", "After meaningful coverage / 100% closure", "test-runner / implementer"],
+  ["IMPLEMENTATION-STATUS.md", "After scoped 100% / count change", "DOC-006 / maintainers"],
   ["test-index.md", "When tests change", "test-runner / implementer"],
   ["test-plan.md", "When tests change", "test-runner / implementer"],
   ["change-index.md", "Exit", "Next agents / humans"],
@@ -256,9 +263,17 @@ export default function AgentTestRunnerCanvas() {
           <Text>1. Claim card (board) or read session-pointer (fallback).</Text>
           <Text>2. Read test-index / test-plan when tests or ownership change.</Text>
           <Text>3. Run module-focused tests; regressions; coverage when required.</Text>
-          <Text>4. check_testing_artifacts.py before PR path.</Text>
           <Text>
-            5. Exit: Status in_review if tests gate PR else done; update
+            4. Coverage evidence: pytest --cov writes coverage.json only; prefer
+            grep/python over rg.
+          </Text>
+          <Text>5. check_testing_artifacts.py before PR path.</Text>
+          <Text>
+            6. After scoped 100%: sync IMPLEMENTATION-STATUS, make coverage-index,
+            make doc-validate.
+          </Text>
+          <Text>
+            7. Exit: Status in_review if tests gate PR else done; update
             change-index + test-index/test-plan.
           </Text>
         </Stack>

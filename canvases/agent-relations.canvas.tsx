@@ -20,7 +20,7 @@ import {
   useHostTheme,
 } from "cursor/canvas";
 
-const VERIFIED = "2026-07-19";
+const VERIFIED = "2026-07-20";
 const SOURCES =
   ".cursor/agents/*.md PEERS · audit-orchestration Phase 3 · project-board-ssot § Continuation · agent-roster edges";
 

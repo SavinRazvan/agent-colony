@@ -19,7 +19,7 @@ import {
 /**
  * Inventory of GitHub API hammering / safety protections in MAS Workflow Kit.
  * Source: project_outbox.py, project_cli/handlers, agent Board-rights, ADR-008.
- * Verified: 2026-07-19 — post PR #83 (G1–G5) + #85 (soft-align docs/schema)
+ * Verified: 2026-07-20 — post PR #83 (G1–G5) + #85 (soft-align docs/schema)
  */
 
 const FIXED = [

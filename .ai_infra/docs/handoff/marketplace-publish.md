@@ -216,6 +216,8 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-07-20 board-shell completeness):** Re-verified — **1168** tests collected (Playground-default schema + template-first agent voice); agent/skill/rule counts (**8** / **12** / **7**); kit version **0.4.0**. Prior DOC-ONBOARD line superseded.
 
+**Listing copy refresh (2026-07-20 DOC-CANVAS-ALIGN):** Canvases re-aligned to live CLI (**22** leaves incl. `board-bootstrap`), board-shell day-0 story, test-runner `coverage.json` + post-100% doc sync, VERIFIED **2026-07-20**; metrics unchanged (**1168** / **7089** / **100%**; **8** / **12** / **7**).
+
 **Listing copy refresh (2026-07-20 DOC-ALIGN secondary + marketplace description):** Description row + `plugin.json` now mention Project SSOT / Playground board shell / **8 / 12 / 7**; archival stamps above remain historical.
 
 **Consumer smoke (2026-07-08):** Real app **Smart-Notes** — `/add-plugin` + chat **`/workflow-activate`**, `health`/`gates`/`integrate`/`mcp validate` PASS, kit smoke **1** of **120** pytest during gates. Local evidence file was not retained in this workspace; recreate with `make smoke-consumer` and write under `.local/workflow-artifacts/release/smoke-consumer-<app>-<date>.md` on the next consumer run.
