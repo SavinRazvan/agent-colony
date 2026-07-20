@@ -140,9 +140,15 @@ def _create_template_args(**overrides: object) -> argparse.Namespace:
         "size": None,
         "estimate": None,
         "agent": "",
+        "no_assignee": False,
     }
     base.update(overrides)
     return argparse.Namespace(**base)
+
+
+def _stub_create_assignee(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@SavinRazvan")
+    monkeypatch.setattr(project_cli, "set_item_assignee", lambda *a, **k: (True, "SavinRazvan"))
 
 
 def _fake_create_gh(item_id: str = "PVTI_lAHOBl46-84A9KZxnew001"):
@@ -257,6 +263,7 @@ def test_create_from_template_size_and_estimate_warn_paths(
         "set_item_number",
         lambda *a, **k: (False, "estimate edit failed"),
     )
+    _stub_create_assignee(monkeypatch)
     args = _create_template_args(size="m", estimate="2")
     assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_OK
     err = capsys.readouterr().err
@@ -286,6 +293,7 @@ def test_create_from_template_size_keyerror_warn(
 
     monkeypatch.setattr(project_cli, "resolve_field_option_id", resolve)
     monkeypatch.setattr(project_cli, "set_item_number", lambda *a, **k: (True, "ok"))
+    _stub_create_assignee(monkeypatch)
     args = _create_template_args(size="m", estimate="2")
     assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_OK
     assert "size skipped" in capsys.readouterr().err
@@ -301,6 +309,7 @@ def test_create_from_template_guessed_notes_with_agent(
         "append_notes_helper",
         lambda *a, **k: (True, "updated", project_cli.EXIT_OK),
     )
+    _stub_create_assignee(monkeypatch)
     args = _create_template_args(agent="implementer")
     assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_OK
     out = capsys.readouterr().out
@@ -317,6 +326,7 @@ def test_create_from_template_guessed_notes_fail_with_agent(
         "append_notes_helper",
         lambda *a, **k: (False, "notes failed", project_cli.EXIT_GH),
     )
+    _stub_create_assignee(monkeypatch)
     args = _create_template_args(agent="implementer")
     assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_OK
     assert "guessed Notes failed" in capsys.readouterr().err

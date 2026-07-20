@@ -1,3 +1,7 @@
+<!--
+  Do not edit ## headings. Fill via create-from-template CLI flags
+  (--acceptance / --rollback / --notes). Brief table may be edited after create.
+-->
 ## Acceptance
 
 - Brief present (`source`, `question`, `lenses`); pack under `_research_results/sources/<slug>/`

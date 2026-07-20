@@ -27,7 +27,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Status drifts from reality | Status column = truth (DRIFT-009 watches dual-write) |
 | Humans cannot see progress | Project UI is the shared dashboard |
 
-**Rule:** Entry = read board. Exit = update Status and **attributed Notes** for the card you touched. Prefer Pattern A recipes: `project claim` / `project handoff` (one command each). Atomics (`append-notes --agent`) remain for power use. **Never** paste Project settings UI text into a shell — humans paste `.ai_infra/templates/project-board/project-readme.md` into Project README settings.
+**Rule:** Entry = read board. Exit = update Status and **attributed Notes** for the card you touched. `validate-item` checks the card body, Tier-1 fields (including Assignee when present on the snapshot), and status-scoped Notes; it is not just a section-presence check. Prefer Pattern A recipes: `project claim` / `project handoff` (one command each). Atomics (`append-notes --agent`) remain for power use. **Never** paste Project settings UI text into a shell — humans **follow** `.ai_infra/templates/project-board/views-setup.md` and paste **contents of** `project-readme.md` into Project README settings.
 
 ## Surfaces — who may write
 
@@ -42,7 +42,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Create cards | Yes | project-board, implementer, integrator | — |
 | Ready prioritization | **Owner** | Consume; create agreed work | — |
 | Views / workflows / Insights / README / status updates | **Owner only** | Never | Insights auto |
-| Assignee / My items | Yes (`set-assignee` / UI) | Claim = In progress; assignee = **human** only | My items view |
+| Assignee / My items | Yes (`set-assignee` / UI) | `create-from-template` assigns `owner.github_user` on Issues (default); claim re-asserts if empty; assignee = **human** only | My items view |
 | Card Notes (`append-notes --agent`) | Yes | Yes — `@user/agent · YYYY-MM-DDTHH:MM:SSZ · …`; `next=@user/agent` | — |
 | PR / audits / secrets | Local | Local | — |
 | Post-merge Status → Done | — | Via `merge.py` (Pattern A); Notes `@user/merge.py` | — |
@@ -91,7 +91,7 @@ All subcommands registered in `.ai_infra/install/cursor_workflow/project_parser.
 | `mention-pr` | Notes with PR URL; auto-promote Draft when configured | implementer |
 | `promote-to-issue` | Convert DraftIssue → Issue (same `PVTI_`) | implementer (before shippable PR) |
 | `handoff` | Pattern A: Notes `next=@user/agent` + optional set-status | Any (Exit) |
-| `validate-item` | Check body sections / attribution / status (exit 5 on fail) | verifier, project-board |
+| `validate-item` | Check body + Tier-1 fields + status-scoped Notes (exit 5 on fail) | verifier, project-board |
 | `last` | Print last saved item_id (after create/claim) | Any (with `--last` recipes) |
 | `guide` | Print safe recipes using `--last` (no placeholder ids) | Any (Entry) |
 | `doctor` | Validate project_ssot config, templates, and gh project access | Maintainer / human |
@@ -121,7 +121,19 @@ GitHub GraphQL quota (~5000/hour) can block board writes. When `project_ssot.out
 6. Explicit enqueue: `project queue --op append-notes|set-status|handoff|claim|set-assignee|set-field …`
 7. Outbox is a **local buffer**, never a second Status SSOT. Prefer Pattern A CLI over raw `gh api graphql` (raw calls bypass the outbox).
 
+Doctor and board-bootstrap already honor the quota cache and live-probe skips; do not wrap them in retry loops or repeated `project list` calls. For audits, prefer a single export / GraphQL dump, then flush outbox once with the configured `max_flush_per_run`.
+
 Who flushes: any agent/human after reset; prefer implementer or project-board at slice close. Pending outbox is **not** a DRIFT failure.
+
+### Assignee backfill (legacy cards)
+
+New Issue creates assign `owner.github_user` automatically. For older cards missing Assignees (after throttle recovery):
+
+```bash
+python3 -m cursor_workflow project set-assignee --id PVTI_… --login <owner>
+# or: gh issue edit N --add-assignee <owner> --repo <default_repo>
+python3 -m cursor_workflow project outbox flush   # remaining queued ops — no retry-loop
+```
 
 ## Exit codes (board Pattern A)
 

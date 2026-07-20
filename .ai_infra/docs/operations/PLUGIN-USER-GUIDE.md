@@ -120,15 +120,15 @@ Install the **MAS Workflow Kit — Project SSOT** plugin, open **your app repo**
 | **Estimate** (number) | numeric field id (points) |
 | **Start date** (date) | date field id |
 
-Discover ids manually: `gh project view <N> --owner <login>` (for `project_id`) and `gh project field-list <N> --owner <login>` — paste into `github.collaboration.yaml`. No bootstrap CLI in this release; agents can walk lazy users through these commands.
+Discover ids manually: `gh project view <N> --owner <login>` (for `project_id`) and `gh project field-list <N> --owner <login>` — paste into `github.collaboration.yaml`. After setup, run `python3 -m cursor_workflow project doctor` → `python3 -m cursor_workflow project board-bootstrap --check` → `python3 -m cursor_workflow project status` (read-only; board views/README stay human-owned).
 
 | Step | Action |
 |------|--------|
 | 1. Install / activate | Agent chat: `/add-plugin …` then **`/workflow-activate`** in **your app repo** — wait for **`VERIFY PASS`**. |
 | 2. Collaboration YAML | Edit `.local/user_settings/github.collaboration.yaml`: set `project_ssot.enabled: true`, `sync_policy: board_only`, and board identity — `name`, `number`, `owner`, `project_id` (from Project URL / `gh project view`). Copy field ids from `gh project field-list <number> --owner <owner>` when wiring `fields.status` / Priority / Size. |
 | 3. GitHub auth | See **§ GitHub CLI auth (Projects)** below — grant `repo` + Project scopes; use the device login link if no browser opens. |
-| 4. Doctor + status | `python3 -m cursor_workflow project doctor` (config + templates + `gh` access) then `python3 -m cursor_workflow project status` (shows enabled board). |
-| 5. First card | `python3 -m cursor_workflow project create-from-template --template slice --title "…" --priority p1 --size s --estimate 1 --agent implementer` → `claim --last --agent implementer` (sets Start date). Prefer `project guide`. |
+| 4. Doctor + board shell | `python3 -m cursor_workflow project doctor` → **humans:** follow `.ai_infra/templates/project-board/views-setup.md` (rename views / add columns) and paste **contents of** `project-readme.md` into the Project README field (do not paste `views-setup.md` into README) → `python3 -m cursor_workflow project board-bootstrap --check` → `python3 -m cursor_workflow project status`. |
+| 5. First card | `python3 -m cursor_workflow project create-from-template --template slice --title "…" --priority p1 --size s --estimate 1 --agent implementer` (assigns `owner.github_user` on Issues) → `claim --last --agent implementer` (sets Start date). Prefer `project guide`. |
 | 6. Rate-limit buffer | Writes may **precheck** GraphQL quota (cached REST) or queue on throttle / Forbidden / 429. If a write returns **EXIT_QUEUED (6)**, do **not** retry-loop — continue local evidence; after quota recovers run `python3 -m cursor_workflow project outbox status` then `project outbox flush`. Configure `project_ssot.outbox` (`precheck_writes`, `dedupe_pending`, …) in collaboration YAML. Outbox is a local buffer, not a second Status SSOT. |
 
 #### GitHub CLI auth (Projects)

@@ -31,9 +31,11 @@ for _candidate in (Path(__file__).resolve(), *Path(__file__).resolve().parents):
 
 from drift_checks import (  # noqa: E402
     CONSUMER_CHECKS,
+    CONSUMER_BOARD_CHECKS,
     KIT_DEV_CHECKS,
     CheckResult,
     Severity,
+    _load_ssot_policy,
     detect_profile,
     drift_paths,
 )
@@ -43,8 +45,15 @@ def run_checks(root: Path | None = None, profile: str | None = None) -> list[Che
     project_root = (root or Path.cwd()).resolve()
     paths = drift_paths(project_root)
     tracker_text = paths.work_tracker.read_text(encoding="utf-8") if paths.work_tracker.is_file() else ""
-    resolved = detect_profile(tracker_text, profile)
-    checks = CONSUMER_CHECKS if resolved == "consumer" else KIT_DEV_CHECKS
+    ssot, _ = _load_ssot_policy(paths)
+    board_only = bool(isinstance(ssot, dict) and str(ssot.get("sync_policy") or "") == "board_only")
+    resolved = detect_profile(tracker_text, profile, board_only=board_only)
+    if resolved == "consumer-board":
+        checks = CONSUMER_BOARD_CHECKS
+    elif resolved == "consumer":
+        checks = CONSUMER_CHECKS
+    else:
+        checks = KIT_DEV_CHECKS
     return [check(paths) for check in checks]
 
 
@@ -74,7 +83,9 @@ def exit_code_for(results: list[CheckResult]) -> int:
 def resolve_profile(root: Path, override: str | None) -> str:
     paths = drift_paths(root)
     tracker_text = paths.work_tracker.read_text(encoding="utf-8") if paths.work_tracker.is_file() else ""
-    return detect_profile(tracker_text, override)
+    ssot, _ = _load_ssot_policy(paths)
+    board_only = bool(isinstance(ssot, dict) and str(ssot.get("sync_policy") or "") == "board_only")
+    return detect_profile(tracker_text, override, board_only=board_only)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -87,7 +98,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--profile",
-        choices=("kit-dev", "consumer"),
+        choices=("kit-dev", "consumer", "consumer-board"),
         default=None,
         help="Override auto-detected profile",
     )

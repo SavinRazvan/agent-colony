@@ -1,3 +1,7 @@
+<!--
+  Do not edit ## headings. Fill via create-from-template CLI flags
+  (--acceptance / --rollback / --notes).
+-->
 ## Acceptance
 
 - Repro steps documented; fix verified; regression covered if high-risk

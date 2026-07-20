@@ -25,6 +25,30 @@ if str(WORKFLOW_DIR) not in sys.path:
 import check_drift as cd  # noqa: E402
 
 
+def _board_only_project(tmp_path: Path) -> None:
+    planning = tmp_path / ".local/index-and-planning/current"
+    planning.mkdir(parents=True)
+    (planning / "plan.md").write_text("# Plan\n\n## Current focus\n\n- ok\n", encoding="utf-8")
+    (planning / "work-tracker.md").write_text("# Tracker\n\n## Active\n\n(none)\n", encoding="utf-8")
+    (planning / "session-pointer.md").write_text("| **Phase** | ok |\n", encoding="utf-8")
+    (planning / "updates-log.md").write_text("# log\n", encoding="utf-8")
+    settings = tmp_path / ".local" / "user_settings"
+    settings.mkdir(parents=True)
+    (settings / "github.collaboration.yaml").write_text(
+        "version: 1\n"
+        "owner:\n"
+        "  display_name: T\n"
+        "  github_user: \"@t\"\n"
+        "project_ssot:\n"
+        "  enabled: true\n"
+        "  sync_policy: board_only\n"
+        "  default_repo: SavinRazvan/mas-workflow-kit-project-ssot\n"
+        "commit_provenance:\n"
+        "  ai_disclosure_mode: none\n",
+        encoding="utf-8",
+    )
+
+
 def test_format_report_counts_all_severities() -> None:
     results = [
         cd.CheckResult(check_id="X-P0", severity=cd.Severity.P0, passed=False, detail="p0"),
@@ -69,6 +93,29 @@ def test_main_auto_detects_profile(tmp_path: Path) -> None:
 def test_resolve_profile_reads_work_tracker(tmp_path: Path) -> None:
     profile = cd.resolve_profile(tmp_path, None)
     assert profile in ("kit-dev", "consumer")
+
+
+def test_run_checks_uses_consumer_board_when_board_only(tmp_path: Path) -> None:
+    _board_only_project(tmp_path)
+    tracker = tmp_path / ".local/index-and-planning/current/work-tracker.md"
+    tracker.write_text(
+        "# Tracker\n\nSTARTER-001\n\n## Active\n\n(none)\n",
+        encoding="utf-8",
+    )
+    assert cd.resolve_profile(tmp_path, None) == "consumer-board"
+    results = cd.run_checks(tmp_path)
+    assert [r.check_id for r in results] == [
+        "DRIFT-005",
+        "DRIFT-008",
+        "DRIFT-009",
+        "DRIFT-010",
+    ]
+
+
+def test_board_only_kit_repo_stays_kit_dev(tmp_path: Path) -> None:
+    """Product kit with board_only must not auto-switch to consumer-board."""
+    _board_only_project(tmp_path)
+    assert cd.resolve_profile(tmp_path, None) == "kit-dev"
 
 
 def test_main_guard_via_runpy(monkeypatch: pytest.MonkeyPatch) -> None:

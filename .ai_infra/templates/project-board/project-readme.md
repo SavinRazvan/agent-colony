@@ -1,13 +1,20 @@
-# AI Project Playground (board SSOT)
+<!--
+  Human paste pack — Project settings → README (GitHub UI only).
+  Edit placeholders below, then paste this file's contents into the Project README field.
+  Do not paste this into a shell. Agents never mutate Project README (ADR-008).
+-->
+
+<!-- PROJECT_TITLE: Your Board Name (board SSOT) -->
+# Your Board Name (board SSOT)
 
 This GitHub Project is the **only writable SSOT** for backlog, Status, and multi-agent continuation when `project_ssot.enabled` and `sync_policy: board_only`.
 
 | | |
 |--|--|
-| **Product repo** | https://github.com/SavinRazvan/mas-workflow-kit-project-ssot |
-| **Handoff (agents)** | https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/blob/main/HANDOFF.md |
-| **Agents guide** | https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/blob/main/AGENTS.md |
-| **Board ops** | https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/blob/main/.ai_infra/docs/operations/project-board-collaboration.md |
+| **App / product repo** | <!-- DEFAULT_REPO: owner/repo --> `owner/repo` |
+| **Agents guide** | `AGENTS.md` in the app repo (after `/workflow-activate`) |
+| **Board ops** | `.ai_infra/docs/operations/project-board-collaboration.md` (kit install) |
+| **Views setup** | Follow `.ai_infra/templates/project-board/views-setup.md` (do not paste that file here) |
 
 ## What this board is for
 
@@ -15,12 +22,13 @@ This GitHub Project is the **only writable SSOT** for backlog, Status, and multi
 - Status path: **Ready → In progress → In review → Done**
 - Card body (Acceptance / Rollback / Notes) = continuation index — not chat alone
 - Notes attributed as `@github_user/agent · UTC timestamp · text`
-- **Tier-1 fields (agents):** Priority/Size/Estimate on create (Size↔Estimate **points** table in kit skill); **Start date** (UTC) on first In progress via `claim` / `set-status` / `handoff --to in_progress`; promote Draft→Issue; open PR → `mention-pr`. Agents do not set Iteration, Labels, Reviewers, or End date by default.
+- **Tier-1 fields (agents):** Priority/Size/Estimate on create (Size↔Estimate **points** table in kit skill); **Assignee** = human owner on Issue create; **Start date** (UTC) on first In progress via `claim` / `set-status` / `handoff --to in_progress`; promote Draft→Issue; open PR → `mention-pr`. Agents do not set Iteration, Labels, Reviewers, or End date by default.
 
 ## Agents (CLI — never paste this README into a shell)
 
 ```bash
 python3 -m cursor_workflow project doctor
+python3 -m cursor_workflow project board-bootstrap --check
 python3 -m cursor_workflow project guide --agent implementer
 python3 -m cursor_workflow project outbox status
 python3 -m cursor_workflow project create-from-template --title "[SLICE] short-name" --template slice --status ready --priority p1 --size s --estimate 1 --agent implementer
@@ -37,8 +45,9 @@ If writes return EXIT_QUEUED (6) / rate-limit: `project outbox flush` after Grap
 ## Humans only (this UI)
 
 - Views, workflows, Insights, **this README**, status updates, Ready prioritization / product roadmap
+- Standard shell first (`views-setup.md` minimum), then customize
 - Paste updates here in the Project settings UI — do not run Project settings text as shell commands
 
 ## Default repo
 
-`SavinRazvan/mas-workflow-kit-project-ssot` — see `project_ssot.default_repo` in collaboration YAML.
+Set `project_ssot.default_repo` in `.local/user_settings/github.collaboration.yaml` to match <!-- DEFAULT_REPO --> above.

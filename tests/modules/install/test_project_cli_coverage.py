@@ -82,6 +82,9 @@ def _board_item(
         "id": item_id,
         "title": title,
         "status": status,
+        "priority": "p1",
+        "size": "s",
+        "estimate": "1",
         "content": {"body": body if body is not None else default_body},
     }
 
@@ -349,6 +352,12 @@ def test_normalize_status_and_item_helpers() -> None:
     assert project_cli._item_body({"content": {"body": 123}}) == ""
     assert project_cli._item_title({"content": {"title": "nested"}}) == "nested"
     assert project_cli._item_title({}) == ""
+    assert project_cli.section_body_content("## A\n\nx\n\n## B\n\ny\n", "A") == "x"
+    assert project_cli.section_body_content("## A\n\nx\n\n## B\n\ny\n", "B") == "y"
+    assert project_cli.is_placeholder_section_content("   ")
+    assert project_cli.is_placeholder_section_content("(TBD)")
+    assert not project_cli.is_placeholder_section_content("ready")
+    assert project_cli.item_field_value({"priority": "", "size": "s"}, "priority", "size") == "s"
 
 
 def test_append_notes_to_body_empty_and_before_heading() -> None:
@@ -683,6 +692,17 @@ def test_cmd_create_plain(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     ssot = _ssot()
+    _patch_ssot(monkeypatch, ssot)
+    args = argparse.Namespace(directory=tmp_path, template=None, title="T", body="")
+    assert project_cli.cmd_create(args) == project_cli.EXIT_USAGE
+    err = capsys.readouterr().err
+    assert "board_only requires create-from-template" in err
+
+
+def test_cmd_create_plain_allowed_when_not_board_only(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    ssot = _ssot(sync_policy="local_trackers")
     _patch_ssot(monkeypatch, ssot)
     monkeypatch.setattr(
         project_cli,
@@ -1648,7 +1668,7 @@ def test_cmd_create_disabled_and_gh_error(
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
     args = argparse.Namespace(directory=tmp_path, template=None, title="T", body="")
     assert project_cli.cmd_create(args) == project_cli.EXIT_USAGE
-    _patch_ssot(monkeypatch)
+    _patch_ssot(monkeypatch, _ssot(sync_policy="local_trackers"))
     monkeypatch.setattr(
         project_cli,
         "create_board_item",

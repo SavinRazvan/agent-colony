@@ -84,6 +84,11 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         default="",
         help="With --template: agent id for guessed Size/Estimate Notes",
     )
+    create_cmd.add_argument(
+        "--no-assignee",
+        action="store_true",
+        help="With --template: skip assigning owner.github_user",
+    )
     create_cmd.set_defaults(func=pc.cmd_create)
 
     cft = project_sub.add_parser(
@@ -116,6 +121,11 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         "--agent",
         default="",
         help="Agent id for Size/Estimate guessed Notes line",
+    )
+    cft.add_argument(
+        "--no-assignee",
+        action="store_true",
+        help="Skip assigning owner.github_user on Issue create (default: assign)",
     )
     cft.set_defaults(func=pc.cmd_create_from_template)
 
@@ -229,7 +239,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
 
     val_cmd = project_sub.add_parser(
         "validate-item",
-        help="Check body sections / attribution / status (exit 5 on fail)",
+        help="Check body sections / Tier-1 fields / placeholders / attribution (exit 5 on fail)",
     )
     val_cmd.add_argument("--directory", type=Path, default=".")
     _add_id_or_last(val_cmd)
@@ -255,6 +265,18 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     )
     doc_cmd.add_argument("--directory", type=Path, default=".")
     doc_cmd.set_defaults(func=pc.cmd_doctor)
+
+    boot_cmd = project_sub.add_parser(
+        "board-bootstrap",
+        help="Read-only Project README/view shell check (human paste pack)",
+    )
+    boot_cmd.add_argument("--directory", type=Path, default=".")
+    boot_cmd.add_argument(
+        "--check",
+        action="store_true",
+        help="Run read-only readiness checks (required)",
+    )
+    boot_cmd.set_defaults(func=pc.cmd_board_bootstrap)
 
     assignee_cmd = project_sub.add_parser(
         "set-assignee",

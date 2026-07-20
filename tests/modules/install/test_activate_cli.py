@@ -17,6 +17,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 _PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
@@ -137,12 +138,36 @@ def test_run_settings_validate_returns_output(tmp_path: Path, monkeypatch: pytes
 # ---------------------------------------------------------------------------
 
 
-def test_print_post_activate_hints(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_print_post_activate_hints_board_first_when_enabled(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    settings = tmp_path / ".local" / "user_settings"
+    settings.mkdir(parents=True)
+    (settings / "github.collaboration.yaml").write_text(
+        yaml.safe_dump({"project_ssot": {"enabled": True}}),
+        encoding="utf-8",
+    )
     activate_cli._print_post_activate_hints(tmp_path)
     out = capsys.readouterr().out
-    assert "github.collaboration.yaml" in out
+    assert "project doctor" in out
+    assert "project board-bootstrap --check" in out
+    assert "project status" in out
+    assert "offline fallback under board_only" in out
+
+
+def test_print_post_activate_hints_tracker_fallback_when_disabled(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    settings = tmp_path / ".local" / "user_settings"
+    settings.mkdir(parents=True)
+    (settings / "github.collaboration.yaml").write_text(
+        yaml.safe_dump({"project_ssot": {"enabled": False}}),
+        encoding="utf-8",
+    )
+    activate_cli._print_post_activate_hints(tmp_path)
+    out = capsys.readouterr().out
+    assert "session-pointer.md" in out
     assert "/implementer" in out
-    assert "/integrator-mas-agent" in out
 
 
 # ---------------------------------------------------------------------------

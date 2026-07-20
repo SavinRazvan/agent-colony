@@ -21,7 +21,9 @@ Notes:
 | `card-body-research.md` | researcher / project-board | `create-from-template --template research --priority p2` |
 | `outbox-entry.schema.json` | Agents / CLI | Validate lines in `.local/generated-data/board-outbox.jsonl` |
 | `outbox-entry.example.json` | Docs | Exemplar outbox line (never paste fake `item_id` as `--id`) |
-| `project-readme.md` | **Humans** | Copy into Project settings → README (GitHub UI). Do **not** paste into a terminal. |
+| `project-readme.md` | **Humans** | Paste **contents** into Project settings → README (edit placeholders). Do **not** paste into a terminal. |
+| `views-setup.md` | **Humans** | **Follow** in GitHub UI (rename views / add columns). Do **not** paste this file into Project README. |
+| `views-checklist.md` | **Humans** | Checkbox checklist for minimum + recommended views. |
 
 Card bodies always include `## Acceptance`, `## Rollback`, and `## Notes` so `validate-item` and Entry/Exit stay consistent.
 
@@ -32,7 +34,8 @@ Card bodies always include `## Acceptance`, `## Rollback`, and `## Notes` so `va
 | slice / feature work | `create-from-template --template slice --priority p1` |
 | bug fix | `create-from-template --template bug --priority p1` |
 | external / corpus research | `create-from-template --template research --priority p2` |
-| Project README | **Humans only** — paste `project-readme.md` in Project settings UI |
+| Project board bootstrap | `project doctor` → follow `views-setup.md` → paste `project-readme.md` → `project board-bootstrap --check` → `project status` |
+| Project README | **Humans only** — paste **contents of** `project-readme.md` in Project settings UI |
 
 **Do not** paste Project settings labels (`Project name`, `Short description`, `README`, …) into bash — use `cursor_workflow project` recipes instead.
 
@@ -47,7 +50,7 @@ python3 -m cursor_workflow project mention-pr --pr <n> --last --agent implemente
 python3 -m cursor_workflow project handoff --last --agent implementer --next verifier --to in_review
 ```
 
-`--priority` is required on `create-from-template`. `--size`/`--estimate` default to `s`/`1` (Notes when guessed). Size↔Estimate points table: `project-board-ssot` skill. `--last` reads `.local/generated-data/project-last-item.json` (machine-local pointer, not a second Status SSOT). Claim does **not** auto-promote; `mention-pr` auto-promotes Draft when `promote_to_issue_on_pr` (default true). Start date sets on claim / first In progress when configured.
+`--priority` is required on `create-from-template`. `--size`/`--estimate` default to `s`/`1` (Notes when guessed). Issue create assigns `owner.github_user` unless `--no-assignee`. Size↔Estimate points table: `project-board-ssot` skill. `--last` reads `.local/generated-data/project-last-item.json` (machine-local pointer, not a second Status SSOT). Claim does **not** auto-promote; `mention-pr` auto-promotes Draft when `promote_to_issue_on_pr` (default true). Start date sets on claim / first In progress when configured.
 
 **Rate-limit outbox (do not hammer GraphQL):**
 

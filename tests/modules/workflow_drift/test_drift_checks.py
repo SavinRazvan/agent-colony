@@ -58,6 +58,23 @@ def _write_planning(tmp: Path) -> None:
     )
 
 
+def _write_board_only_collab(tmp: Path) -> None:
+    settings = tmp / ".local" / "user_settings"
+    settings.mkdir(parents=True, exist_ok=True)
+    (settings / "github.collaboration.yaml").write_text(
+        "version: 1\n"
+        "owner:\n"
+        "  display_name: T\n"
+        "  github_user: \"@t\"\n"
+        "project_ssot:\n"
+        "  enabled: true\n"
+        "  sync_policy: board_only\n"
+        "commit_provenance:\n"
+        "  ai_disclosure_mode: none\n",
+        encoding="utf-8",
+    )
+
+
 def test_drift001_passes_when_planning_dir_exists(tmp_path: Path) -> None:
     _write_planning(tmp_path)
     result = check_drift001(drift_paths(tmp_path))
@@ -74,18 +91,39 @@ def test_drift002_fails_on_multiple_in_progress(tmp_path: Path) -> None:
     _write_planning(tmp_path)
     tracker = tmp_path / ".local/index-and-planning/current/work-tracker.md"
     tracker.write_text(
-        tracker.read_text(encoding="utf-8")
-        + "- [ ] `in_progress` **OTHER**\n",
+        "# Work Tracker\n\n## Active\n\n"
+        "- [ ] `in_progress` **DRIFT-GUARD**\n"
+        "- [ ] `in_progress` **OTHER**\n\n## Completed\n",
         encoding="utf-8",
     )
     result = check_drift002(drift_paths(tmp_path))
     assert not result.passed
 
 
+def test_drift002_ignores_in_progress_outside_active(tmp_path: Path) -> None:
+    _write_planning(tmp_path)
+    tracker = tmp_path / ".local/index-and-planning/current/work-tracker.md"
+    tracker.write_text(
+        "# Work Tracker\n\n## Active\n\n(none)\n\n## Rule\n\n- [ ] `in_progress` **OTHER**\n",
+        encoding="utf-8",
+    )
+    result = check_drift002(drift_paths(tmp_path))
+    assert result.passed
+    assert "count=0" in result.detail
+
+
 def test_drift003_passes_when_active_in_plan(tmp_path: Path) -> None:
     _write_planning(tmp_path)
     result = check_drift003(drift_paths(tmp_path))
     assert result.passed
+
+
+def test_drift003_skips_board_only_tracker(tmp_path: Path) -> None:
+    _write_planning(tmp_path)
+    _write_board_only_collab(tmp_path)
+    result = check_drift003(drift_paths(tmp_path))
+    assert result.passed
+    assert "board_only" in result.detail
 
 
 def test_drift003_fails_when_active_not_in_plan(tmp_path: Path) -> None:
@@ -161,7 +199,9 @@ def test_drift008_requires_scaffold_trackers(tmp_path: Path) -> None:
 
 def test_detect_profile_consumer_on_starter_exemplar() -> None:
     assert detect_profile("STARTER-001 placeholder") == "consumer"
+    assert detect_profile("STARTER-001 placeholder", board_only=True) == "consumer-board"
     assert detect_profile("normal kit work") == "kit-dev"
+    assert detect_profile("normal kit work", board_only=True) == "kit-dev"
 
 
 def test_drift004_reports_next_field_not_builtin(tmp_path: Path) -> None:
@@ -250,6 +290,27 @@ def test_drift007_fails_when_updates_log_missing(tmp_path: Path, monkeypatch) ->
     monkeypatch.setattr("drift_checks.subprocess.run", lambda *a, **k: FakeProc())
     result = check_drift007(drift_paths(tmp_path))
     assert not result.passed
+
+
+def test_drift007_reads_history_updates_log_when_current_missing(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _write_planning(tmp_path)
+    current = tmp_path / ".local/index-and-planning/current/updates-log.md"
+    current.unlink()
+    history = tmp_path / ".local/index-and-planning/history"
+    history.mkdir(parents=True)
+    updates_log = history / "updates-log.md"
+    updates_log.write_text("# Updates\n", encoding="utf-8")
+
+    class FakeProc:
+        stdout = " M some-file.py\n"
+        stderr = ""
+
+    monkeypatch.setattr("drift_checks.subprocess.run", lambda *a, **k: FakeProc())
+    result = check_drift007(drift_paths(tmp_path))
+    assert result.passed
+    assert "touched" in result.detail
 
 
 def test_drift007_passes_when_updates_log_recent(tmp_path: Path, monkeypatch) -> None:

@@ -70,9 +70,13 @@ from project_atomics import (
     fail,
     format_agent_attribution,
     format_note_line,
+    collect_validate_item_problems,
     is_placeholder_item_id,
+    is_placeholder_section_content,
+    item_field_value,
     latest_notes_line,
     load_card_template,
+    section_body_content,
     load_last_item_id,
     load_project_ssot,
     normalize_github_handle,
@@ -204,6 +208,10 @@ def cmd_list(args: argparse.Namespace) -> int:
                 "status": item.get("status"),
                 "priority": item.get("priority"),
                 "size": item.get("size"),
+                "estimate": item.get("estimate") or item.get("Estimate"),
+                "start_date": item.get("start date")
+                or item.get("Start date")
+                or item.get("start_date"),
             }
         )
     if args.json:
@@ -212,7 +220,10 @@ def cmd_list(args: argparse.Namespace) -> int:
         if not out_items:
             print("(no items)")
         for it in out_items:
-            print(f"{it.get('id')}\t{it.get('status')}\t{it.get('title')}")
+            print(
+                f"{it.get('id')}\t{it.get('status')}\t{it.get('priority') or ''}\t"
+                f"{it.get('size') or ''}\t{it.get('estimate') or ''}\t{it.get('title')}"
+            )
     return EXIT_OK
 def cmd_create(args: argparse.Namespace) -> int:
     """Create DraftIssue or Issue per item_kind_default; --template routes to create-from-template."""
@@ -222,6 +233,14 @@ def cmd_create(args: argparse.Namespace) -> int:
     ssot, code = _load_enabled_ssot(root, "create")
     if ssot is None:
         return code
+    sync_policy = str(ssot.get("sync_policy") or "").strip()
+    if sync_policy == "board_only":
+        return fail(
+            "create",
+            EXIT_USAGE,
+            "board_only requires create-from-template "
+            "(use: project create --template slice|bug|research --priority p0|p1|p2 …)",
+        )
     body = args.body or ""
     sections = (ssot.get("conventions") or {}).get("body_sections") or []
     if not body and sections:
@@ -367,6 +386,49 @@ def cmd_create_from_template(args: argparse.Namespace) -> int:
                     "(pass --agent to append Notes)",
                     file=sys.stderr,
                 )
+        skip_assignee = bool(getattr(args, "no_assignee", False))
+        if skip_assignee:
+            print("assignee=skipped:--no-assignee")
+        else:
+            conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
+            kind_default = str(conventions.get("item_kind_default") or "issue").strip().lower()
+            if kind_default == "draft":
+                print("assignee=skipped:draft")
+            else:
+                login = ""
+                try:
+                    login = resolve_human_github_user(root).lstrip("@")
+                except Exception as exc:  # noqa: BLE001
+                    print(
+                        f"create-from-template: WARN — assignee skipped: {exc}",
+                        file=sys.stderr,
+                    )
+                if login:
+                    a_ok, a_detail = set_item_assignee(ssot, item_id, login)
+                    if a_ok:
+                        print(f"assignee=@{a_detail.lstrip('@')}")
+                    elif "DraftIssue" in a_detail or "Draft" in a_detail:
+                        print("assignee=skipped:draft")
+                    else:
+                        print(
+                            f"create-from-template: WARN — assignee skipped: {a_detail}",
+                            file=sys.stderr,
+                        )
+                        queued = _try_queue_rate_limit(
+                            root,
+                            ssot,
+                            cmd="create-from-template",
+                            err_detail=a_detail,
+                            op="set-assignee",
+                            item_id=item_id,
+                            agent=agent or "project-cli",
+                            payload={"login": login},
+                        )
+                        if queued is not None:
+                            print(
+                                "create-from-template: assignee QUEUED due to rate-limit",
+                                file=sys.stderr,
+                            )
     if raw:
         print(raw)
     if item_id:
@@ -376,6 +438,104 @@ def cmd_create_from_template(args: argparse.Namespace) -> int:
             print(f"status={status_to}")
         print("next: python3 -m cursor_workflow project claim --last --agent <agent>")
     return EXIT_OK
+
+
+def read_project_readme(ssot: dict[str, Any]) -> tuple[str | None, str | None]:
+    """Return (README text, error) for the Project board."""
+    owner = str(ssot["owner"])
+    number = int(ssot["number"])
+    proc = run_gh(
+        [
+            "project",
+            "view",
+            str(number),
+            "--owner",
+            owner,
+            "--format",
+            "json",
+        ]
+    )
+    if proc.returncode != 0:
+        return None, (proc.stderr or proc.stdout or "gh project view failed").strip()
+    try:
+        data = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError as exc:
+        return None, f"invalid JSON from gh: {exc}"
+    if not isinstance(data, dict):
+        return None, "project view did not return an object"
+    readme = data.get("readme")
+    if readme is None:
+        readme = ""
+    if not isinstance(readme, str):
+        return None, "project readme is not a string"
+    return readme, None
+
+
+def read_project_views(ssot: dict[str, Any]) -> tuple[list[dict[str, Any]] | None, str | None]:
+    """Return (views, error) using a best-effort GraphQL query."""
+    project_id = str(ssot["project_id"])
+    query = (
+        "query($id:ID!){node(id:$id){...on ProjectV2{views(first:20){nodes{"
+        "name layout fields(first:20){nodes{... on ProjectV2FieldCommon{name}}}"
+        "}}}}}"
+    )
+    proc = run_gh(
+        [
+            "api",
+            "graphql",
+            "-f",
+            f"query={query}",
+            "-f",
+            f"id={project_id}",
+        ]
+    )
+    if proc.returncode != 0:
+        return None, (proc.stderr or proc.stdout or "gh project views query failed").strip()
+    try:
+        data = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError as exc:
+        return None, f"invalid graphql JSON: {exc}"
+    if not isinstance(data, dict):
+        return None, "graphql response was not an object"
+    errors = data.get("errors")
+    if errors:
+        msg: Any = errors
+        if isinstance(errors, list) and errors:
+            first = errors[0]
+            if isinstance(first, dict):
+                msg = first.get("message") or first
+            else:
+                msg = first
+        elif isinstance(errors, dict):
+            msg = errors.get("message") or errors
+        return None, str(msg)
+    node = (data.get("data") or {}).get("node")
+    if not isinstance(node, dict):
+        return None, "project views metadata unavailable"
+    views_block = node.get("views")
+    nodes = views_block.get("nodes") if isinstance(views_block, dict) else None
+    if not isinstance(nodes, list):
+        return None, "project views metadata unavailable"
+    out: list[dict[str, Any]] = []
+    for view in nodes:
+        if not isinstance(view, dict):
+            continue
+        fields_block = view.get("fields")
+        field_nodes = fields_block.get("nodes") if isinstance(fields_block, dict) else None
+        names: list[str] = []
+        if isinstance(field_nodes, list):
+            for fn in field_nodes:
+                if isinstance(fn, dict) and fn.get("name"):
+                    names.append(str(fn["name"]))
+        out.append(
+            {
+                "name": view.get("name"),
+                "layout": view.get("layout"),
+                "fields": names,
+            }
+        )
+    return out, None
+
 def cmd_set_status(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "set-status")
@@ -686,6 +846,11 @@ def cmd_claim(args: argparse.Namespace) -> int:
 def cmd_handoff(args: argparse.Namespace) -> int:
     from project_handlers import run_handoff
     return run_handoff(args)
+
+def cmd_board_bootstrap(args: argparse.Namespace) -> int:
+    from project_handlers import run_board_bootstrap
+
+    return run_board_bootstrap(args)
 def cmd_validate_item(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "validate-item")
@@ -700,21 +865,9 @@ def cmd_validate_item(args: argparse.Namespace) -> int:
     item = find_item_by_id(items, item_id)
     if item is None:
         return fail("validate-item", EXIT_NOT_FOUND, f"item not found: {item_id}")
-    body = _item_body(item)
-    sections = list((ssot.get("conventions") or {}).get("body_sections") or [])
-    missing = validate_card_body(body, sections)
-    problems: list[str] = []
-    if missing:
-        problems.append(f"missing sections: {', '.join(missing)}")
-    status = _normalize_status(str(item.get("status") or ""))
-    options = ((ssot.get("fields") or {}).get("status") or {}).get("options") or {}
-    if status and status not in options and str(item.get("status") or "").strip():
-        if status not in set(options):
-            problems.append(f"unknown status {item.get('status')!r}")
-    if attribution_required(ssot):
-        line = latest_notes_line(body)
-        if line is not None and not notes_line_attributed(line):
-            problems.append(f"latest Notes line not attributed: {line[:80]}")
+    problems, warnings = collect_validate_item_problems(ssot, item)
+    for warning in warnings:
+        print(f"project validate-item: WARN — {warning}", file=sys.stderr)
     if problems:
         return fail("validate-item", EXIT_VALIDATION, "; ".join(problems))
     print(f"validate-item: {item_id} — ok")
@@ -745,13 +898,19 @@ def cmd_guide(args: argparse.Namespace) -> int:
     print("python3 -m cursor_workflow project doctor")
     print("python3 -m cursor_workflow project outbox status")
     print(
+        "python3 -m cursor_workflow project board-bootstrap --check  "
+        "# read-only README/view shell check (human paste pack)"
+    )
+    print(
         'python3 -m cursor_workflow project create-from-template '
         f'--title "[SLICE] short-name" --template slice --status ready '
-        f'--priority p1 --size s --estimate 1 --agent {agent}'
+        f'--priority p1 --size s --estimate 1 --agent {agent}  '
+        "# Issue: Assignee=owner.github_user (use --no-assignee to skip)"
     )
     print(
         f"python3 -m cursor_workflow project claim --last --agent {agent}  "
-        "# In progress + assignee (Issue) + Start date UTC (also set-status/handoff→in_progress)"
+        "# In progress + Start date UTC + re-assert assignee if empty "
+        "(also set-status/handoff→in_progress)"
     )
     print(
         f"python3 -m cursor_workflow project promote-to-issue --last --agent {agent}  "

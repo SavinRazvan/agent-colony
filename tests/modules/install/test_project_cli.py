@@ -154,7 +154,11 @@ def test_set_item_status_uses_pvti_not_di(monkeypatch: pytest.MonkeyPatch) -> No
     assert "DI_" not in " ".join(calls[0])
 
 
-def test_cmd_list_filters_status(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_cmd_list_filters_status(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     payload = {
         "items": [
             {"id": "a", "title": "Hello", "status": "Ready"},
@@ -167,8 +171,10 @@ def test_cmd_list_filters_status(monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
     monkeypatch.setattr(project_cli, "run_gh", fake_gh)
-    args = argparse.Namespace(directory=tmp_path, status="ready", limit=50, json=True)
+    args = argparse.Namespace(directory=tmp_path, status="ready", limit=50, json=False)
     assert project_cli.cmd_list(args) == 0
+    out = capsys.readouterr().out.strip().splitlines()
+    assert out and out[0].count("\t") == 5
 
 
 def test_append_notes_to_body_idempotent() -> None:

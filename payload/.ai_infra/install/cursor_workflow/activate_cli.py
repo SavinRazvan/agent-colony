@@ -19,6 +19,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import yaml
+
 
 def _import_plane_status() -> object:
     install_dir = Path(__file__).resolve().parents[2] / "scripts" / "install"
@@ -80,15 +82,33 @@ def _run_settings_validate(root: Path) -> tuple[int, str]:
 def _print_post_activate_hints(root: Path) -> None:
     settings = root / ".local" / "user_settings"
     yaml_path = settings / "github.collaboration.yaml"
-    print("\nYou're almost done — 3 quick steps:")
-    print(f"  1. Edit {yaml_path}")
-    print('     Set owner.display_name and owner.github_user (replace placeholders).')
-    print("  2. Run: python3 -m cursor_workflow contributors validate")
-    print("  3. In Agent chat: /implementer — read .local/index-and-planning/current/session-pointer.md")
-    print("\nOptional:")
-    print("  python3 -m cursor_workflow integrate validate")
-    print("  python3 -m cursor_workflow health")
-    print("Add agents/skills later: /integrator-mas-agent (subagent, not a shell command).")
+    collab_enabled = False
+    try:
+        raw = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError):
+        raw = None
+    if isinstance(raw, dict):
+        project_ssot = raw.get("project_ssot")
+        collab_enabled = isinstance(project_ssot, dict) and bool(project_ssot.get("enabled"))
+
+    if collab_enabled:
+        print("\nYou're almost done — board-first setup:")
+        print(f"  1. Edit {yaml_path}")
+        print('     Set owner.display_name and owner.github_user (replace placeholders).')
+        print("  2. Run: python3 -m cursor_workflow project doctor")
+        print("  3. Run: python3 -m cursor_workflow project board-bootstrap --check")
+        print("  4. Run: python3 -m cursor_workflow project status")
+        print("  5. In Agent chat: /implementer — local trackers are offline fallback under board_only.")
+    else:
+        print("\nYou're almost done — 3 quick steps:")
+        print(f"  1. Edit {yaml_path}")
+        print('     Set owner.display_name and owner.github_user (replace placeholders).')
+        print("  2. Run: python3 -m cursor_workflow contributors validate")
+        print("  3. In Agent chat: /implementer — read .local/index-and-planning/current/session-pointer.md")
+        print("\nOptional:")
+        print("  python3 -m cursor_workflow integrate validate")
+        print("  python3 -m cursor_workflow health")
+        print("Add agents/skills later: /integrator-mas-agent (subagent, not a shell command).")
 
 
 def _import_scaffold_refresh() -> object:

@@ -311,6 +311,31 @@ def test_drift010_flags_in_review_without_open_pr(
     assert "in_review without open PR" in result.detail
 
 
+def test_drift010_warns_when_no_open_prs(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    _planning(tmp_path)
+    _write_collab(tmp_path)
+    snap = {
+        "schema": "project-board-snapshot/v1",
+        "items": [
+            {
+                "id": "PVTI_lAHOBl46-84A9KZxwarn01",
+                "title": "Review me",
+                "status_normalized": "in_review",
+                "body_excerpt": "working",
+            }
+        ],
+    }
+    gen = tmp_path / ".local" / "generated-data"
+    gen.mkdir(parents=True)
+    (gen / "project-board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
+    monkeypatch.setattr(drift_checks, "_open_pr_bodies", lambda repo: ([], None))
+    result = check_drift010(drift_paths(tmp_path))
+    assert not result.passed
+    assert "0 open PRs" in result.detail
+
+
 def test_drift010_flags_stale_in_progress(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

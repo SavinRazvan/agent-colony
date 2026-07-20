@@ -94,7 +94,7 @@ Priority is **independent** of Size (a P0 can be XS).
 
 | Moment | Status | Priority | Size | Estimate | Start date | Assignee | Linked PR |
 |--------|--------|----------|------|----------|------------|----------|-----------|
-| Create (Ready/Backlog) | ✓ | ✓ required | ✓ | ✓ | — | optional | — |
+| Create (Ready/Backlog) | ✓ | ✓ required | ✓ | ✓ | — | ✓ Issue (owner; `--no-assignee` to skip) | — |
 | First In progress | ✓ | confirm | confirm | confirm | **✓ required** | ✓ (Issue) | — |
 | Open PR | — | — | — | — | — | — | ✓ `mention-pr` |
 | Exit In review / Done | ✓ | Notes | Notes | Notes | already set | — | if PR |
@@ -110,7 +110,7 @@ Priority is **independent** of Size (a P0 can be XS).
 | **Size** | Create / claim / own | `--size` / `set-field --field size --to xs\|s\|m\|l\|xl` | Per Size↔Estimate table; default `s` + Notes if guessed |
 | **Estimate** | Create / claim / own | `--estimate` / `set-field --field estimate --to N` | Points per table; default `1` + Notes if guessed |
 | **Start date** | First In progress | `claim` / `set-status --to in_progress` / `handoff --to in_progress` | Auto when `set_start_date_on_claim` + `fields.start_date.field_id`; if WARN, retry — do not ignore |
-| **Assignee** | Claim / triage (human login) | `claim` or `set-assignee --login …` | **Create as Issue** (`item_kind_default: issue`). Draft is scratch-only |
+| **Assignee** | Create (Issue) / claim re-assert | `create-from-template` auto-assigns `owner.github_user`; `claim` / `set-assignee --login …` | **Create as Issue** (`item_kind_default: issue`). Draft is scratch-only; `--no-assignee` escape hatch |
 | **Linked PR** | When a PR exists | `mention-pr --pr N --last --agent <agent>` | Auto-promotes Draft when `promote_to_issue_on_pr` |
 
 ```bash
@@ -164,7 +164,7 @@ Rules:
 | **Estimate** | Create / claim / own | `project set-field --field estimate --to N` | **Mandatory** — default `1` if unknown |
 | **Size** | Create / claim / own | `project set-field --field size --to xs\|s\|m\|l\|xl` | **Mandatory** — default `s` if unknown |
 | **Priority** | Create / claim / own | `project set-field --field priority --to p0\|p1\|p2` | **Mandatory** — chat P3 → `p2` + Notes `deferred` |
-| **Assignee** | Claim / after create | `claim` / `set-assignee --login` | **Mandatory** — requires Issue-at-create (`item_kind_default: issue`); Draft cannot hold Assignees |
+| **Assignee** | Create Issue (owner) | `create-from-template` (default) / `claim` / `set-assignee` | **Mandatory on Issue create** — `owner.github_user`; Draft cannot hold Assignees |
 | **Linked PR** | PR open | `project mention-pr --pr N --last` | **Mandatory when a PR exists** for the card |
 | **Promote Draft→Issue** | Only if card is still Draft | `project promote-to-issue --last --agent <name>` | Prefer never needing this — create as Issue |
 | **Out of scope (agents default)** | — | — | Iteration, Labels, Reviewers, End date — human / UI only |
@@ -243,7 +243,7 @@ Index: `.ai_infra/templates/project-board/README.md`. After create, always `clai
 3. **Create:** `project create-from-template --title "[SLICE] short-name" --template slice --status ready --priority p1 --size s --estimate 1 --agent <agent>`
 4. **Claim:** `project claim --last --agent <this-agent>`
 5. **Handoff:** `project handoff --last --agent <this-agent> --next <agent> [--to in_review|done]`
-6. **Validate:** `project validate-item --last`
+6. **Validate:** `project validate-item --last` (card body + Tier-1 fields + status-scoped Notes)
 7. **Atomics (power use):** `set-status` · `set-field` (priority · size · estimate) · `promote-to-issue` · `mention-pr` · `append-notes --agent` · `get --last` · `export`
 8. **Verify:** `project list` + handoff line; `project last` prints saved id
 
