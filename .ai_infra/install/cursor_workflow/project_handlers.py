@@ -508,12 +508,6 @@ def run_board_bootstrap(args: argparse.Namespace) -> int:
                 pc.EXIT_GH,
                 "low GraphQL quota — refuse --ensure-fields/--apply-readme; retry after reset",
             )
-        if rem < int(cfg["min_graphql_remaining"]):
-            return pc.fail(
-                "board-bootstrap",
-                pc.EXIT_GH,
-                f"graphql remaining {rem} < min_graphql_remaining",
-            )
 
     if ensure_fields and not skip_live:
         e_code = pc.ensure_board_shell_fields(root, ssot, schema)
