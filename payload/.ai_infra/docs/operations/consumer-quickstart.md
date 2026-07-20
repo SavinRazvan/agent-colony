@@ -32,9 +32,10 @@ Install **MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) 
 | **1. Plugin** | In **Agent chat** (not terminal): `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` — or **Cursor → Marketplace** when listed |
 | **2. Activate** | Open **your app folder** → Agent chat: **`/workflow-activate`** → wait for **`VERIFY PASS`** |
 | **3. Your name** | Edit `.local/user_settings/github.collaboration.yaml` → set `display_name` + `github_user` → `python3 -m cursor_workflow contributors validate` |
+| **3b. GitHub auth** (board SSOT) | `gh auth login` or `gh auth refresh -h github.com -s read:project,project` — grant **repo + Project** permissions. If no browser opens: copy the one-time code → open **https://github.com/login/device** → approve → return to terminal. Details: [PLUGIN-USER-GUIDE § GitHub CLI auth](PLUGIN-USER-GUIDE.md#github-cli-auth-projects). |
 | **4. Build** | **`/implementer`** · when `project_ssot.enabled`, Entry = `python3 -m cursor_workflow project status` (board first); else `session-pointer.md` → `plan.md` → `work-tracker.md` |
 
-**Healthy install?** `python3 -m cursor_workflow health`
+**Healthy install?** `python3 -m cursor_workflow health` · with board on: `gh auth status` then `python3 -m cursor_workflow project doctor`
 
 > **Cheat sheet:** [Agent chat vs terminal](#agent-chat-vs-terminal) · [Dashboards (deprecated)](#control-center-dashboards-deprecated) · [All CLI commands](#terminal-commands-cheat-sheet)
 

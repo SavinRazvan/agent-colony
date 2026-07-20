@@ -68,7 +68,9 @@ python3 -m cursor_workflow project list --status ready
 # claim / create-from-template — see: python3 -m cursor_workflow project guide
 ```
 
-Auth (board write): `gh auth refresh -h github.com -s read:project,project` (keep `repo`).
+Auth (board write): `gh auth refresh -h github.com -s read:project,project` (keep `repo`).  
+No browser (WSL)? Copy the one-time code → **https://github.com/login/device** → approve Project permissions → `gh auth status`.  
+Full walkthrough: [PLUGIN-USER-GUIDE § GitHub CLI auth](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#github-cli-auth-projects).
 
 If the board is unavailable: `fallback: local_trackers` only, then resume board sync. Never invent a second Status SSOT.
 

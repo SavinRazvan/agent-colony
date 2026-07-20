@@ -93,14 +93,27 @@ python3 -m cursor_workflow health
 
 **With Project SSOT on** (kit-shaped board: Status · Priority · Size · Estimate **points** · Start date):
 
+Agents and `cursor_workflow project …` call **`gh`**. You must authorize GitHub **and** grant **Projects** access (read + write).
+
 ```bash
-gh auth refresh -h github.com -s read:project,project   # keep repo
+# First time on this machine (interactive):
+gh auth login -h github.com
+# Or add/refresh Project scopes on an existing login:
+gh auth refresh -h github.com -s read:project,project   # keep existing repo (+ workflow if you use Actions)
+
+# If the terminal cannot open a browser (common on WSL):
+# 1) Copy the one-time code gh prints
+# 2) Open https://github.com/login/device in any browser
+# 3) Paste the code → approve GitHub + Project permissions
+# 4) Return to the terminal (✓ Authentication complete)
+
+gh auth status   # expect scopes including: repo, project (read:project may appear too)
 python3 -m cursor_workflow project doctor
 python3 -m cursor_workflow project status
 python3 -m cursor_workflow project guide                # safe recipes
 ```
 
-Wire field ids with `gh project view` / `gh project field-list` — full checklist: [PLUGIN-USER-GUIDE § Product promise](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
+Wire field ids with `gh project view` / `gh project field-list` — full checklist: [PLUGIN-USER-GUIDE § Consumer project_ssot onboarding](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) (step 3 = GitHub auth).
 
 ### 4. Start building
 

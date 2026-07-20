@@ -126,10 +126,57 @@ Discover ids manually: `gh project view <N> --owner <login>` (for `project_id`) 
 |------|--------|
 | 1. Install / activate | Agent chat: `/add-plugin …` then **`/workflow-activate`** in **your app repo** — wait for **`VERIFY PASS`**. |
 | 2. Collaboration YAML | Edit `.local/user_settings/github.collaboration.yaml`: set `project_ssot.enabled: true`, `sync_policy: board_only`, and board identity — `name`, `number`, `owner`, `project_id` (from Project URL / `gh project view`). Copy field ids from `gh project field-list <number> --owner <owner>` when wiring `fields.status` / Priority / Size. |
-| 3. GitHub auth | Ensure `gh` can reach Projects: `gh auth refresh -h github.com -s read:project,project` (keep existing **`repo`** scopes). |
+| 3. GitHub auth | See **§ GitHub CLI auth (Projects)** below — grant `repo` + Project scopes; use the device login link if no browser opens. |
 | 4. Doctor + status | `python3 -m cursor_workflow project doctor` (config + templates + `gh` access) then `python3 -m cursor_workflow project status` (shows enabled board). |
 | 5. First card | `python3 -m cursor_workflow project create-from-template --template slice --title "…" --priority p1 --size s --estimate 1 --agent implementer` → `claim --last --agent implementer` (sets Start date). Prefer `project guide`. |
 | 6. Rate-limit buffer | Writes may **precheck** GraphQL quota (cached REST) or queue on throttle / Forbidden / 429. If a write returns **EXIT_QUEUED (6)**, do **not** retry-loop — continue local evidence; after quota recovers run `python3 -m cursor_workflow project outbox status` then `project outbox flush`. Configure `project_ssot.outbox` (`precheck_writes`, `dedupe_pending`, …) in collaboration YAML. Outbox is a local buffer, not a second Status SSOT. |
+
+#### GitHub CLI auth (Projects)
+
+Board SSOT needs the **GitHub CLI** (`gh`) with **repository** access **and** **Projects** read/write. Without Project scopes, `project status` / `claim` / `outbox flush` fail with “missing required scopes”.
+
+| Scope | Why |
+|-------|-----|
+| **`repo`** | Issues, PRs, default repo operations |
+| **`read:project`** | Read Project / fields / items |
+| **`project`** | Write Status, Notes, Tier-1 fields, claim/handoff |
+| **`workflow`** (optional) | GitHub Actions / PR checks if you drive CI from `gh` |
+
+**First login** (new machine):
+
+```bash
+gh auth login -h github.com
+```
+
+Choose HTTPS, authenticate via browser **or** device code, and allow access to the repos you use.
+
+**Add Project permissions** to an existing login:
+
+```bash
+gh auth refresh -h github.com -s read:project,project
+# Keep existing repo (and workflow) scopes — refresh adds Project access.
+```
+
+**If the terminal cannot open a browser** (WSL, headless, remote SSH — `xdg-open: no method available`):
+
+1. Leave the terminal running after `gh auth login` / `gh auth refresh`.
+2. Copy the **one-time code** `gh` prints (e.g. `ABCD-1234`).
+3. Open **[https://github.com/login/device](https://github.com/login/device)** in any browser (Windows host browser is fine from WSL).
+4. Paste the code → sign in → **approve** GitHub + **Project** permissions.
+5. Return to the terminal — you should see `✓ Authentication complete.`
+
+**Verify:**
+
+```bash
+gh auth status
+# Logged in · Token scopes should include: repo, project
+# (read:project may show separately or be covered when project is present)
+
+python3 -m cursor_workflow project doctor
+python3 -m cursor_workflow project status
+```
+
+If `gh` reports **missing required scopes `[read:project]` / `[project]`**, re-run `gh auth refresh -h github.com -s read:project,project` and complete the device link again.
 
 Daily Entry after onboarding: `project status` (board first) — see [project-board-collaboration.md](project-board-collaboration.md).
 
