@@ -21,6 +21,7 @@ New or continued `feature/` | `fix/` | `chore/` work; recovery from blocked slic
 
 ## Steps
 
+0. **First-run (board shell) — when `project_ssot.enabled`:** run `python3 -m cursor_workflow project board-bootstrap --check` against `board-shell.schema.yaml` (six Playground views + Tier-1 columns on Status board / Prioritized backlog). On FAIL or primary-view Priority/Start date WARNs: do **not** claim work — hand the human to **`/project-board`** + `.cursor/skills/board-shell-onboard/SKILL.md` + `views-setup.md`. **`/enterprise-auditor`** is not day-0.
 1. **SSOT select:** `python -m cursor_workflow project status`. If operational → list/claim board card (`claim --last` after create, or claim Ready). When creating: `create-from-template --template slice|bug --priority p0|p1|p2 --size … --estimate …` (see skill § Size↔Estimate; defaults `s`/`1` + Notes if guessed), then `claim --last --agent implementer`. Confirm Status + **Start date** from claim (also set on `set-status`/`handoff` → `in_progress` if empty). Else read plan + tracker; one task `in_progress` locally; tag tasks `[P0]`…`[P3]` in the plan note.
 2. Document acceptance + rollback on **card body** (or `plan.md` if fallback). Mid-slice handoffs go in card **Notes** + handoff line (`Priority=p? · Size=? · Estimate=?` + `Tasks: [P…]…`).
 3. Implement: contracts → code → tests. **New Python/sources:** module header per `.cursor/rules/file-docstring-header-relations.mdc`.

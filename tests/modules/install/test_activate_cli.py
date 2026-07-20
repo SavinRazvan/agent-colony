@@ -150,9 +150,13 @@ def test_print_post_activate_hints_board_first_when_enabled(
     activate_cli._print_post_activate_hints(tmp_path)
     out = capsys.readouterr().out
     assert "project doctor" in out
+    assert "/project-board" in out
     assert "project board-bootstrap --check" in out
+    assert "default Playground shell green" in out
+    assert "Status board + Prioritized backlog" in out
     assert "project status" in out
     assert "offline fallback under board_only" in out
+    assert "/implementer" in out
 
 
 def test_print_post_activate_hints_tracker_fallback_when_disabled(

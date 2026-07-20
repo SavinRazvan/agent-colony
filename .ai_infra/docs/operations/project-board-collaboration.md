@@ -17,7 +17,7 @@ Notes:
 
 When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project is the only writable SSOT** for backlog, Status, and continuation. Local trackers are offline fallback only; read-only exports never compete with Status. Canonical skill: `.cursor/skills/project-board-ssot/SKILL.md`.
 
-**First-time consumer setup:** step-by-step checklist in [PLUGIN-USER-GUIDE.md § Consumer project_ssot onboarding](PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) (install → collab YAML → `gh auth` → `project doctor` / `status` → first card → outbox flush).
+**First-time consumer setup:** step-by-step checklist in [PLUGIN-USER-GUIDE.md § Consumer project_ssot onboarding](PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) (install → collab YAML → `gh auth` → `project doctor` → `/project-board` + `board-bootstrap --check` + human views-setup/README → `project status` → first card → outbox flush).
 
 ## Continuation (why agents update the board)
 
@@ -31,10 +31,10 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 
 ### Board shell starter (first-run)
 
-- **Desired state:** `.ai_infra/templates/project-board/board-shell.schema.yaml` (Playground parity).
-- **Customize:** copy/edit `.local/user_settings/board-shell.schema.yaml` — `board-bootstrap --check` prefers the overlay when present. Safe to rename/drop **recommended** views; do **not** remove Status / Priority / Size / Estimate / Start date fields agents write.
+- **Desired state:** `.ai_infra/templates/project-board/board-shell.schema.yaml` — **full Playground default** (six views + Tier-1 columns).
+- **Customize:** copy/edit `.local/user_settings/board-shell.schema.yaml` — `board-bootstrap --check` prefers the overlay when present. Do **not** remove Status / Priority / Size / Estimate / Start date, or hide **Priority** on Prioritized backlog.
 - **Coach:** `/project-board` + `.cursor/skills/board-shell-onboard/SKILL.md`.
-- **Verify:** `python3 -m cursor_workflow project board-bootstrap --check` (FAIL if minimum views missing; WARN on recommended / columns / `View N`).
+- **Verify:** `python3 -m cursor_workflow project board-bootstrap --check` (FAIL if a default Playground view is missing; WARN on missing Tier-1 columns / leftover `View N`).
 - **Optional API:** `--ensure-fields` (create missing field definitions + print suggested YAML ids); `--apply-readme` (push README). Views stay human UI (ADR-008).
 
 ## Surfaces — who may write

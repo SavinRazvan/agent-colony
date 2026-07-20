@@ -52,7 +52,7 @@ mas-workflow-kit-project-ssot/
 ├── cursor_workflow/            SSOT — thin CLI shim (also copied to consumer)
 ├── schemas/                    Legacy gate.json stub (`resolve_gates()` in prepare.py; `GATES` = alias)
 ├── .local/                     Kit-dev runtime (gitignored); CI seed fixture — not consumer exemplars
-├── tests/                      Kit-dev only — full pytest suite (1166; see IMPLEMENTATION-STATUS)
+├── tests/                      Kit-dev only — full pytest suite (1168; see IMPLEMENTATION-STATUS)
 ├── Makefile, pyproject.toml    Kit-dev only
 ├── overlays/                   Optional product rules source (`overlays/rules/project-ssot-precedence.mdc`); this product payload ships **7** rules (6 kit + SSOT precedence)
 ├── project-rules/              Deprecated alias → use overlays/rules/
@@ -102,7 +102,7 @@ my-app/
 └── .local/                         Scaffolded trackers + artifact buckets (gitignored)
 ```
 
-**Not installed:** kit `tests/modules/` (1166; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
+**Not installed:** kit `tests/modules/` (1168; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
 
 Consumer tree detail: [PLUGIN-ARCHITECTURE.md § Installed consumer project](PLUGIN-ARCHITECTURE.md).
 
@@ -143,7 +143,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 
 ## Skills
 
-### Canonical — `.cursor/skills/` (11) → consumer `.cursor/skills/`
+### Canonical — `.cursor/skills/` (12) → consumer `.cursor/skills/`
 
 | Skill | Paired agent |
 |-------|----------------|
@@ -155,6 +155,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `test-module-coverage` | `test-runner` |
 | `mas-infrastructure-integration` | `integrator-mas-agent` |
 | `project-board-ssot` | `project-board` (board Entry/Exit; ADR-008) |
+| `board-shell-onboard` | `project-board` (first-run shell coach) |
 | `workflow-activate` | Install / re-activate |
 | `connect-external-mcp` | MCP setup |
 | `research-corpus-execution` | `researcher` |
@@ -171,9 +172,9 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 
 Also under `.agents/skills/`: `README.md`, `PR_WORKFLOW.md` (legacy redirect), `RESEARCH_WORKFLOW.md` (research hub pointer).
 
-### Repo-root `skills/` (15 folders) — Marketplace only
+### Repo-root `skills/` — Marketplace plugin mirror only
 
-Merged view for Cursor plugin loading from GitHub. **Not** copied as a single tree to consumer disk. Consumers receive `.cursor/skills/` and `.agents/skills/` separately via `payload/`.
+Cursor loads repo-root `agents/`, `rules/`, and `skills/` from the GitHub plugin URL. Those trees are **generated mirrors** of `.cursor/` + `.agents/skills/` (via `sync_plugin_bundle.py`) — **not** a second authoring SSOT. Edit canonical `.cursor/skills/` (12) and `.agents/skills/` (5); then `make sync-plugin`. Consumers receive skills under `.cursor/skills/` and `.agents/skills/` via `payload/` after activate — never as a single root `skills/` tree on disk.
 
 ---
 

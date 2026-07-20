@@ -41,7 +41,7 @@ Gate order: read `.ai_infra/scripts/pr/prepare.py` only — do not duplicate her
 
 ## Anchoring
 
-**When `project_ssot.enabled`** (see `github.collaboration.yaml`, [ADR-008](../decisions/ADR-008-project-board-ssot.md)): session backlog/status is the **GitHub Project** via `python -m cursor_workflow project …` and `.cursor/skills/project-board-ssot/SKILL.md`. Local `session-pointer.md` / `plan.md` / `work-tracker.md` are **offline fallback only** under `sync_policy: board_only` (no dual-write; DRIFT-009).
+**When `project_ssot.enabled`** (see `github.collaboration.yaml`, [ADR-008](../decisions/ADR-008-project-board-ssot.md)): session backlog/status is the **GitHub Project** via `python -m cursor_workflow project …` and `.cursor/skills/project-board-ssot/SKILL.md`. **Day-0:** `/project-board` + `board-shell-onboard` until `board-bootstrap --check` matches `board-shell.schema.yaml` (Playground six-view default) — before `/implementer`; audit is not day-0. Local `session-pointer.md` / `plan.md` / `work-tracker.md` are **offline fallback only** under `sync_policy: board_only` (no dual-write; DRIFT-009).
 
 **Otherwise:** every session → `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
 
@@ -56,7 +56,7 @@ Gate order: read `.ai_infra/scripts/pr/prepare.py` only — do not duplicate her
 | `researcher` | **Shipped/proven** adaptive Brief multi-round packs under `_research_results/` (opt-in after init); chat/agent/card intake; research card Done + `AGENT_BRIEF` paths |
 | `integrator-mas-agent` | Add agents/skills/MCP; integration card Status |
 | `workflow-drift-guard` | Drift + DRIFT-009; **reads board**, closes drift card |
-| `project-board` | Board triage helper (ADR-006); not in default PR pipelines |
+| `project-board` | Board triage + **first-run shell coach** (`board-shell-onboard`; ADR-006); not in default PR pipelines |
 
 Continuation: every agent Entry reads the Project; Exit updates Status/Notes — [project-board-collaboration.md](../operations/project-board-collaboration.md).
 
@@ -67,7 +67,7 @@ Drift validation: `make drift-validate` — see [gate-matrix.md](../operations/g
 
 | Root | Contents |
 |------|----------|
-| `.cursor/skills/` | Canonical protocols: `enterprise-architecture-audit`, `workflow-drift-audit`, `implementation-execution-loop`, `workflow-activate`, … |
+| `.cursor/skills/` | Canonical protocols (**12**): `workflow-activate`, `project-board-ssot`, `board-shell-onboard`, `implementation-execution-loop`, `enterprise-architecture-audit`, `workflow-drift-audit`, … — full list in [repository-map.md](../handoff/repository-map.md) |
 | `.agents/skills/` | Maintainer slash skills: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `audit-alignment` (redirect) |
 
 Plugin bundle copies `.cursor/skills/` first; maintainer skills are **additive only** (no overwrite).

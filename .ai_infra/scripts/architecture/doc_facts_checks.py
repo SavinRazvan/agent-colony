@@ -434,6 +434,7 @@ _CANVAS_NON_AGENT_TOKENS = frozenset(
         "artifacts",
         "boundaries",
         "brief",
+        "bootstrap",
         "checks",
         "coverage",
         "evidence",

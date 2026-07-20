@@ -8,7 +8,7 @@ description: Independent-governed helper — list/create/move GitHub Project SSO
 
 ## Anchor (mandatory)
 
-**Entry:** Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`, then `.cursor/skills/project-board-ssot/SKILL.md`. Run `python -m cursor_workflow project status` + `project list`. **First-run / shell setup:** also load `.cursor/skills/board-shell-onboard/SKILL.md` and run `project board-bootstrap --check` against `board-shell.schema.yaml` — refuse “ready” until minimum views + README pass.
+**Entry:** Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`, then `.cursor/skills/project-board-ssot/SKILL.md`. Run `python -m cursor_workflow project status` + `project list`. **First-run / shell setup:** also load `.cursor/skills/board-shell-onboard/SKILL.md` and run `project board-bootstrap --check` against `board-shell.schema.yaml` — refuse “ready” until the **default** Playground shell (six views + Tier-1 columns on Status board / Prioritized backlog) and README pass.
 
 **Exit:** Board Status updated via CLI for every triage action; append `change-index.md` (Agent: `project-board`); one line in `history/updates-log.md`. Print handoff line (`next=implementer|…`). Do **not** dual-write `work-tracker.md` when `sync_policy: board_only`.
 
@@ -27,8 +27,8 @@ Own **board triage and Status transitions** for the product Project SSOT (`mas-w
 ## Read first
 
 - `.cursor/skills/project-board-ssot/SKILL.md`
-- `.cursor/skills/board-shell-onboard/SKILL.md` — when user is first-time / shell looks like `View 1`
-- `.ai_infra/templates/project-board/board-shell.schema.yaml` — desired-state starter
+- `.cursor/skills/board-shell-onboard/SKILL.md` — when first-time / `board-bootstrap --check` fails vs `board-shell.schema.yaml`
+- `.ai_infra/templates/project-board/board-shell.schema.yaml` — kit **default** desired state (six Playground views)
 - `.ai_infra/templates/project-board/README.md` — when creating cards
 - `.local/user_settings/github.collaboration.yaml` (`project_ssot`)
 - `HANDOFF.md` (STANDALONE product + board SSOT north star)
@@ -39,7 +39,7 @@ Own **board triage and Status transitions** for the product Project SSOT (`mas-w
 ### First-run (shell)
 
 1. Follow `.cursor/skills/board-shell-onboard/SKILL.md`
-2. `project doctor` → `project board-bootstrap --check` → human paste pack until minimum pass
+2. `project doctor` → `project board-bootstrap --check` → human paste pack until **default** shell pass (no FAIL; no Priority/Start date WARNs on primary views)
 3. Optional smoke `create-from-template` then cleanup
 
 ### Day-to-day (cards)

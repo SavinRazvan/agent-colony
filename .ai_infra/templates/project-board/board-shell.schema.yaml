@@ -1,4 +1,4 @@
-# Board shell desired-state schema (Playground parity starter)
+# Board shell desired-state schema (Playground = kit default minimum)
 #
 # File: board-shell.schema.yaml
 # Path: .ai_infra/templates/project-board/board-shell.schema.yaml
@@ -11,7 +11,8 @@
 # Notes:
 #  - Overlay: .local/user_settings/board-shell.schema.yaml (optional; wins when present).
 #  - Views are human UI only (ADR-008). Schema encodes desired names for check/coach — not API mutation.
-#  - Agents write Tier-1 fields via CLI; custom recommended views are cosmetic.
+#  - Default minimum = full Playground view set (not “2 views + recommended later”).
+#  - Agents write Tier-1 fields via CLI; Iteration / End date / Labels / Reviewers stay human/cosmetic.
 
 version: 1
 name: playground-parity-starter
@@ -50,7 +51,8 @@ fields:
       data_type: date
 
 views:
-  # Visible columns for board/table layouts (Tier-1)
+  # Tier-1 visible columns agents need on board/table shells (Prioritized backlog + Status board).
+  # Title / Assignees / Status / Linked pull requests are assumed; these four are checked.
   visible_columns:
     - Title
     - Assignees
@@ -61,26 +63,31 @@ views:
     - Start date
     - Linked pull requests
 
+  # Kit default = full Playground set (FAIL if any missing).
+  # Tier-1 column checks (Priority/Size/Estimate/Start date) only on views with check_columns: true.
   minimum:
     - name: Status board
       layout: BOARD_LAYOUT
       group_by: Status
+      check_columns: true
     - name: Prioritized backlog
       layout: TABLE_LAYOUT
-
-  recommended:
+      check_columns: true
     - name: Roadmap
-      layout: BOARD_LAYOUT
-      purpose: Status + Priority overview
+      layout: ROADMAP_LAYOUT
+      purpose: Timeline / Status overview
     - name: Bugs
       layout: TABLE_LAYOUT
       filter_hint: "title contains [BUG] / bug template"
     - name: In review
-      layout: BOARD_LAYOUT
+      layout: TABLE_LAYOUT
       filter_hint: "Status = In review"
     - name: My items
       layout: TABLE_LAYOUT
       filter_hint: "Assignees = @me"
+
+  # Empty by default — customize via overlay if you want extra views beyond Playground.
+  recommended: []
 
 readme:
   template: project-readme.md
@@ -99,7 +106,9 @@ card_create:
 customization:
   overlay_path: .local/user_settings/board-shell.schema.yaml
   safe: |
-    Rename or delete recommended views; add Insights/filters.
+    Add Insights/filters; keep or drop cosmetic columns (Iteration, End date, Labels, Reviewers).
     Keep required field names (Status, Priority, Size, Estimate, Start date).
+    Overlay may move a view from minimum → recommended only if your team accepts FAIL→WARN.
   unsafe: |
-    Removing Tier-1 fields breaks agents. Do not rely on undocumented view APIs.
+    Removing Tier-1 fields or Priority from Prioritized backlog / Status board breaks agents.
+    Do not rely on undocumented view APIs.

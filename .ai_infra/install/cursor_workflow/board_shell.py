@@ -142,7 +142,7 @@ def compare_views_to_schema(
         if VIEW_N.match(name):
             warnings.append(
                 f"rename default view {name!r} "
-                "(schema minimum: Status board / Prioritized backlog)"
+                "(schema default: Status board / Prioritized backlog / Roadmap / …)"
             )
 
     for spec in minimum_views(schema):
@@ -158,7 +158,8 @@ def compare_views_to_schema(
                 f"view {want_name!r} layout={got_layout} expected={want_layout}"
             )
         layout = got_layout or want_layout
-        if layout in {"BOARD_LAYOUT", "TABLE_LAYOUT"}:
+        check_cols = bool(spec.get("check_columns"))
+        if check_cols and layout in {"BOARD_LAYOUT", "TABLE_LAYOUT"}:
             raw_fields = found.get("fields")
             field_list: list[Any] = raw_fields if isinstance(raw_fields, list) else []
             fields = {

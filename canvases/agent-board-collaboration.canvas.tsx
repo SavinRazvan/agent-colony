@@ -23,9 +23,9 @@ import {
 
 type FlowMode = "slice" | "side";
 
-const VERIFIED = "2026-07-19";
+const VERIFIED = "2026-07-20";
 const SOURCES =
-  "project-board-collaboration.md · project-board-ssot/SKILL.md · .cursor/agents/*.md · agent-roster edges";
+  "project-board-collaboration.md · project-board-ssot/SKILL.md · board-shell-onboard/SKILL.md · .cursor/agents/*.md · agent-roster edges";
 
 const STATUS_STEPS = ["Ready", "In progress", "In review", "Done"];
 
@@ -368,6 +368,19 @@ export default function AgentBoardCollaborationCanvas() {
           <Text>
             .local/generated-data/board-outbox.jsonl = EXIT_QUEUED buffer on
             rate-limit — flush later; not a second Status SSOT.
+          </Text>
+        </Stack>
+      </Callout>
+
+      <Callout tone="warning" title="Day-0 board shell (before day-to-day cards)">
+        <Stack gap={6}>
+          <Text>
+            /project-board + board-shell-onboard until board-bootstrap --check
+            matches the Playground six-view default (Priority/Size/Estimate/Start
+            date on Status board + Prioritized backlog).
+          </Text>
+          <Text>
+            /enterprise-auditor is architecture-impacting / pre-merge — not day-0.
           </Text>
         </Stack>
       </Callout>

@@ -79,7 +79,7 @@ This loads agents, skills, and rules into Cursor. Your project may only get `.cu
 
 ---
 
-## 2. Quick start (4 steps)
+## 2. Quick start (5 steps)
 
 **Need:** Cursor · Python 3.11+ · **your project** open (not the kit product repo `mas-workflow-kit-project-ssot`).
 
@@ -88,7 +88,8 @@ This loads agents, skills, and rules into Cursor. Your project may only get `.cu
 | 1. Plugin | Agent chat: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` *(or Marketplace when listed)* |
 | 2. Activate | Open **your app** → Agent chat → **`/workflow-activate`** → wait for **`VERIFY PASS`** and all planes **ready** |
 | 3. Your name | Edit `.local/user_settings/github.collaboration.yaml` → `python3 -m cursor_workflow contributors validate` |
-| 4. Build | **`/implementer`** · when `project_ssot.enabled`, Entry = `python3 -m cursor_workflow project status` (board first); else `session-pointer.md` → `plan.md` → `work-tracker.md` |
+| 4. Board shell *(when `project_ssot.enabled`)* | `gh` Project scopes → `project doctor` → **`/project-board`** + [board-shell-onboard](../../.cursor/skills/board-shell-onboard/SKILL.md) → human [views-setup.md](../../templates/project-board/views-setup.md) + README paste (or `--apply-readme`) → `project board-bootstrap --check` → `project status`. **Do not** start with `/enterprise-auditor`. Full order: [checklist below](#consumer-project_ssot-onboarding-checklist). |
+| 5. Build | **`/implementer`** · when board SSOT on, Entry = `python3 -m cursor_workflow project status`; else `session-pointer.md` → `plan.md` → `work-tracker.md` |
 
 **Step 2 — in Agent chat (not the terminal):**
 
@@ -120,7 +121,7 @@ Install the **MAS Workflow Kit — Project SSOT** plugin, open **your app repo**
 | **Estimate** (number) | numeric field id (points) |
 | **Start date** (date) | date field id |
 
-Discover ids manually: `gh project view <N> --owner <login>` (for `project_id`) and `gh project field-list <N> --owner <login>` — paste into `github.collaboration.yaml`. After setup, run `python3 -m cursor_workflow project doctor` → `python3 -m cursor_workflow project board-bootstrap --check` → `python3 -m cursor_workflow project status` (read-only; board views/README stay human-owned).
+Discover ids manually: `gh project view <N> --owner <login>` (for `project_id`) and `gh project field-list <N> --owner <login>` — paste into `github.collaboration.yaml`. Optional field create: `python3 -m cursor_workflow project board-bootstrap --check --ensure-fields` (prints suggested YAML ids — human confirms before paste). After setup, run `python3 -m cursor_workflow project doctor` → `python3 -m cursor_workflow project board-bootstrap --check` → `python3 -m cursor_workflow project status` (views/README stay human-owned unless `--apply-readme`).
 
 | Step | Action |
 |------|--------|
@@ -301,10 +302,11 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | I want to… | Type in chat | Or run | Deep dive |
 |------------|--------------|--------|-----------|
 | **First-time setup** | `/workflow-activate` | `python3 -m cursor_workflow activate --directory .` | §2 above · [workflow-activate skill](../../.cursor/skills/workflow-activate/SKILL.md) |
+| **First-run board shell** *(SSOT on)* | `/project-board` | `project doctor` → `board-bootstrap --check` | [board-shell-onboard](../../.cursor/skills/board-shell-onboard/SKILL.md) · checklist §2 |
 | **Implement a feature slice** | `/implementer` | — | [implementation-execution-loop](../../.cursor/skills/implementation-execution-loop/SKILL.md) |
 | **Run tests / coverage** | `/test-runner` | `pytest -q` | [workflow-complete.md](workflow-complete.md) §C |
 | **Verify a claim** | `/verifier` | — | Evidence-only checks |
-| **Architecture audit** | `/enterprise-auditor` | — (subagent only; no dedicated MCP tool) | [agent-workflow-procedures.md](agent-workflow-procedures.md) §1 |
+| **Architecture audit** *(not day-0)* | `/enterprise-auditor` | — (subagent only; no dedicated MCP tool) | [agent-workflow-procedures.md](agent-workflow-procedures.md) §1 — after board shell |
 | **Operational drift** (plan ↔ tracker) | `/workflow-drift-guard` (optional) | `python3 -m cursor_workflow drift validate --profile consumer` on app projects | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) · [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
 | **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` `resolve_gates()` | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
 | **Add agents / skills / MCP** | `/integrator-mas-agent` + `/mas-infrastructure-integration` | `integrate validate` | [mas-infrastructure-integration.md](mas-infrastructure-integration.md) |
@@ -326,6 +328,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | `/researcher` | `.cursor/agents/researcher.md` — **shipped/proven**; adaptive Brief; public/private GitHub (private needs `gh`/git auth); anti-loop ≤6 rounds; `research init\|fetch\|validate`; corpus opt-in after init |
 | `/integrator-mas-agent` | `.cursor/agents/integrator-mas-agent.md` |
 | `/project-board` | `.cursor/agents/project-board.md` + `project-board-ssot` + first-run `board-shell-onboard` |
+| `/board-shell-onboard` | `.cursor/skills/board-shell-onboard/` — first-run coach (also via `/project-board`) |
 | `/review-pr`, `/prepare-pr`, `/merge-pr` | `.agents/skills/` |
 | `/mas-infrastructure-integration` | `.cursor/skills/mas-infrastructure-integration/` |
 | `/connect-external-mcp` | `.cursor/skills/connect-external-mcp/` |

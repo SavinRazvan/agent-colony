@@ -68,6 +68,8 @@ python3 -m cursor_workflow project list --status ready
 # claim / create-from-template — see: python3 -m cursor_workflow project guide
 ```
 
+**First-run / shell gate (when `project_ssot.enabled`):** if `python3 -m cursor_workflow project board-bootstrap --check` FAILs the kit default Playground shell (`board-shell.schema.yaml`: six views + Tier-1 columns) or WARNs on Priority/Start date for primary views → **`/project-board`** + [board-shell-onboard](.cursor/skills/board-shell-onboard/SKILL.md) before claim/`/implementer`. **`/enterprise-auditor`** is not day-0.
+
 Auth (board write): `gh auth refresh -h github.com -s read:project,project` (keep `repo`).  
 No browser (WSL)? Copy the one-time code → **https://github.com/login/device** → approve Project permissions → `gh auth status`.  
 Full walkthrough: [PLUGIN-USER-GUIDE § GitHub CLI auth](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#github-cli-auth-projects).
@@ -93,7 +95,7 @@ If the board is unavailable: `fallback: local_trackers` only, then resume board 
 
 | Agent | Role |
 |-------|------|
-| `project-board` | Board triage / recipes (independent-governed) |
+| `project-board` | Board triage / recipes + first-run shell coach (`board-shell-onboard`; independent-governed) |
 | `implementer` | Product slices; board-first Entry/Exit |
 | `test-runner` / `verifier` | Tests and claim verification |
 | `enterprise-auditor` | Alignment / scorecard → `.local/workflow-artifacts/` |

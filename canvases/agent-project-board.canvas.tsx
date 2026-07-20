@@ -23,18 +23,20 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-07-19";
+const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/project-board.md · project-board-ssot/SKILL.md · ADR-006";
+  ".cursor/agents/project-board.md · project-board-ssot/SKILL.md · board-shell-onboard/SKILL.md · ADR-006";
 
 const GOALS = [
   "Independent-governed helper for GitHub Project SSOT",
+  "First-run: coach default Playground shell (board-shell-onboard)",
   "List/create/move cards via project_ssot CLI",
   "Triage Ready cards and hand off to implementer",
 ];
 
 const BOARD_NODES = [
   { id: "yaml" },
+  { id: "bootstrap" },
   { id: "status" },
   { id: "list" },
   { id: "triage" },
@@ -44,7 +46,8 @@ const BOARD_NODES = [
 ];
 
 const BOARD_EDGES = [
-  { from: "yaml", to: "status" },
+  { from: "yaml", to: "bootstrap" },
+  { from: "bootstrap", to: "status" },
   { from: "status", to: "list" },
   { from: "list", to: "triage" },
   { from: "triage", to: "create" },
@@ -65,6 +68,7 @@ const FALLBACK_EDGES = [
 
 const BOARD_LABELS: Record<string, string> = {
   yaml: "project_ssot YAML",
+  bootstrap: "board-bootstrap --check",
   status: "project status",
   list: "list ready",
   triage: "move Status",
@@ -81,6 +85,8 @@ const FALLBACK_LABELS: Record<string, string> = {
 
 const READ_FIRST = [
   [".cursor/skills/project-board-ssot/SKILL.md", "Board SSOT canon"],
+  [".cursor/skills/board-shell-onboard/SKILL.md", "First-run Playground shell coach"],
+  [".ai_infra/templates/project-board/board-shell.schema.yaml", "Kit default desired state"],
   [".local/user_settings/github.collaboration.yaml", "project_ssot block"],
   [".ai_infra/templates/project-board/README.md", "Card templates"],
   ["ADR-006", "Independent-governed agent"],
@@ -88,6 +94,7 @@ const READ_FIRST = [
 
 const PATTERNS = [
   ["Independent-governed", "Not in default PR pipelines"],
+  ["First-run shell", "board-bootstrap --check → views-setup until Playground six-view green"],
   ["Loop", "status → list ready → create-from-template + claim --last → handoff"],
   ["Triage Tier-1", "set-field Priority/Size/Estimate (skill Size↔Estimate table)"],
   ["Promote", "promote-to-issue OR mention-pr auto (promote_to_issue_on_pr) before shippable PR"],

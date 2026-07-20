@@ -25,7 +25,7 @@ Notes:
 | `outbox-entry.example.json` | Docs | Exemplar outbox line (never paste fake `item_id` as `--id`) |
 | `project-readme.md` | **Humans** (or `--apply-readme`) | Paste **contents** into Project settings → README (edit placeholders). Do **not** paste into a terminal. |
 | `views-setup.md` | **Humans** | **Follow** in GitHub UI (rename views / add columns). Do **not** paste this file into Project README. |
-| `views-checklist.md` | **Humans** | Checkbox checklist for minimum + recommended views. |
+| `views-checklist.md` | **Humans** | Checkbox checklist for the Playground default shell + Tier-1 columns. |
 
 Card bodies always include `## Acceptance`, `## Rollback`, and `## Notes` so `validate-item` and Entry/Exit stay consistent.
 

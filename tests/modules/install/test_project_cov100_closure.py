@@ -39,12 +39,34 @@ import project_atomics as pa  # noqa: E402
 import project_cli  # noqa: E402
 import project_handlers  # noqa: E402
 import project_outbox  # noqa: E402
-from test_project_board_bootstrap import _bootstrap_args, _patch_common, _ssot, _template_root  # noqa: E402
+from test_project_board_bootstrap import (  # noqa: E402
+    _bootstrap_args,
+    _full_playground_views,
+    _patch_common,
+    _ssot,
+    _template_root,
+)
 from test_project_cli import SAMPLE_SSOT, VALID_PVTI, _write_collab  # noqa: E402
 
 
 def _gh_ok(stdout: str = "{}") -> SimpleNamespace:
     return SimpleNamespace(returncode=0, stdout=stdout, stderr="")
+
+
+def _views_graphql_nodes(views: list[dict] | None = None) -> list[dict]:
+    """Shape for gh api graphql project views probe (Playground six-view default)."""
+    src = views if views is not None else _full_playground_views()
+    nodes: list[dict] = []
+    for view in src:
+        field_names = view.get("fields") or []
+        nodes.append(
+            {
+                "name": view["name"],
+                "layout": view.get("layout") or "TABLE_LAYOUT",
+                "fields": {"nodes": [{"name": n} for n in field_names]},
+            }
+        )
+    return nodes
 
 
 def _gh_fail(msg: str = "gh failed") -> SimpleNamespace:
@@ -761,13 +783,7 @@ def test_run_board_bootstrap_handler_errors(
     monkeypatch.setattr(
         project_cli,
         "read_project_views",
-        lambda s: (
-            [
-                {"name": "Status board", "layout": "BOARD_LAYOUT", "fields": ["Priority", "Size", "Estimate", "Start date"]},
-                {"name": "Prioritized backlog", "layout": "TABLE_LAYOUT", "fields": ["Priority", "Size", "Estimate", "Start date"]},
-            ],
-            None,
-        ),
+        lambda s: (_full_playground_views(), None),
     )
     assert project_handlers.run_board_bootstrap(_bootstrap_args(tmp_path)) == project_cli.EXIT_OK
     err = capsys.readouterr().err
@@ -805,43 +821,19 @@ def test_run_board_bootstrap_live_with_real_probes(
         if args[:2] == ["project", "view"]:
             return _gh_ok(json.dumps({"readme": "# README\n"}))
         if args[:2] == ["api", "graphql"] and "views(first" in " ".join(args):
-            return _gh_ok(
-                json.dumps(
+            nodes = []
+            for view in _full_playground_views():
+                nodes.append(
                     {
-                        "data": {
-                            "node": {
-                                "views": {
-                                    "nodes": [
-                                        {
-                                            "name": "Status board",
-                                            "layout": "BOARD_LAYOUT",
-                                            "fields": {
-                                                "nodes": [
-                                                    {"name": "Priority"},
-                                                    {"name": "Size"},
-                                                    {"name": "Estimate"},
-                                                    {"name": "Start date"},
-                                                ]
-                                            },
-                                        },
-                                        {
-                                            "name": "Prioritized backlog",
-                                            "layout": "TABLE_LAYOUT",
-                                            "fields": {
-                                                "nodes": [
-                                                    {"name": "Priority"},
-                                                    {"name": "Size"},
-                                                    {"name": "Estimate"},
-                                                    {"name": "Start date"},
-                                                ]
-                                            },
-                                        },
-                                    ]
-                                }
-                            }
-                        }
+                        "name": view["name"],
+                        "layout": view["layout"],
+                        "fields": {
+                            "nodes": [{"name": n} for n in view["fields"]],
+                        },
                     }
                 )
+            return _gh_ok(
+                json.dumps({"data": {"node": {"views": {"nodes": nodes}}}})
             )
         if args[:2] == ["api", "graphql"] and "fields(first" in " ".join(args):
             return _gh_ok(
