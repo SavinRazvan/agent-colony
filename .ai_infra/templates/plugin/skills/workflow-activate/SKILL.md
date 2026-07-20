@@ -7,14 +7,25 @@ description: Install MAS Workflow Kit — Project SSOT infrastructure into the c
 
 ## When
 
-First use after enabling the **MAS Workflow Kit — Project SSOT** plugin (`mas-workflow-kit-project-ssot`) in a project workspace — or when any of the three planes is missing on disk.
+User enabled the **MAS Workflow Kit — Project SSOT** plugin (`mas-workflow-kit-project-ssot`) and opened **their app** (not the kit product repo). Run on first use or when planes are missing.
+
+## Guide the user (keep it simple)
+
+**Product promise:** Plugin install loads agents/skills in Cursor only. **`/workflow-activate`** in **their app repo** installs the **full kit**. They then edit `.local/user_settings/github.collaboration.yaml` for **their** name, **their** GitHub Project ids, and `default_repo`. After validate + doctor + board shell + status pass, usage matches kit-dev. Board must be kit-shaped — see [PLUGIN-USER-GUIDE § Product promise](../../../docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
+
+1. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` (chat only — not terminal).
+2. Confirm the open folder is **their app**, not the kit product repo.
+3. Run activate (below) — or **`/workflow-activate`** from the **`/`** menu.
+4. Wire collaboration YAML — name/@handle, Project ids, `default_repo` → `contributors validate` → `project doctor`. Grant `gh` scopes `read:project,project` (+ `repo`).
+5. When `project_ssot.enabled`: first-run board shell — **`/project-board`** + `board-shell-onboard` → human `views-setup.md` → `project board-bootstrap --check` (optional `--ensure-fields` / `--apply-readme`) → `project status`. **Do not** start with `/enterprise-auditor`.
+6. Point them to **`/implementer`**. When board SSOT on, Entry is `python -m cursor_workflow project status`; else read `session-pointer.md` first.
 
 ## One command (agent or human)
 
 From the **open workspace** (Pattern A — one script command):
 
 ```bash
-python -m cursor_workflow activate --directory .
+python3 -m cursor_workflow activate --directory .
 ```
 
 **Auto source resolution:** `WORKFLOW_KIT_PAYLOAD` env → `./payload/` → kit `payload/` (plugin bundle). Override with `--source /path/to/payload`.
@@ -39,12 +50,14 @@ Re-activate does not overwrite trackers, `user_settings/`, or `AGENTS.md`. Kit-m
 skills, and rules only. MCP examples install under `.cursor/` from **payload** when `activate`
 runs — not before. Use **`/connect-external-mcp`** after activate.
 
-## Post-activate (user focus — not automated)
+## Post-activate (tell the user)
 
-1. Edit `.local/user_settings/github.collaboration.yaml` (owner, pipelines, provenance)
-2. Optional: `.local/user_settings/mcp.agents.yaml`
-3. `python -m cursor_workflow contributors validate`
-4. `python -m cursor_workflow integrate validate`
+1. Open `.local/user_settings/github.collaboration.yaml` — set **display_name**, **github_user**, then **project_ssot** (enable + board ids + `default_repo`). Optional: `project board-bootstrap --check --ensure-fields`.
+2. Terminal: `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` (must PASS)
+3. When board SSOT enabled: `python3 -m cursor_workflow project doctor` → **`/project-board`** + `board-shell-onboard` → `python3 -m cursor_workflow project board-bootstrap --check` until **default Playground shell** green → `python3 -m cursor_workflow project status`
+4. **`/implementer`** to start · audit (`/enterprise-auditor`) is later / architecture-impacting — not day-0.
+
+Optional: `integrate validate`, `health`. Add infrastructure later: **`/integrator-mas-agent`**.
 
 ## Adding agents/skills/MCP later
 
@@ -54,16 +67,18 @@ Invoke subagent **`/integrator-mas-agent`** with skill **`/mas-infrastructure-in
 
 After plugin enable, parent agent or user should:
 
-0. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` (chat only — not terminal). Show [install screenshot](https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit-project-ssot/main/assets/mas-workflow-kit-install.png) — user clicks the **MAS Workflow Kit** card in the preview.
+0. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` (chat only — not terminal).
 1. Run **`workflow_activate`** or `cursor_workflow activate`
-2. Hand user to personalize `user_settings/`
-3. Optionally delegate **`/integrator-mas-agent`** for extensions
+2. Hand user to personalize `user_settings/` + `gh` Project scopes
+3. When SSOT on: **`/project-board`** (board-shell-onboard) until `board-bootstrap --check` green
+4. Point to **`/implementer`**; optionally delegate **`/integrator-mas-agent`** for extensions
 
 ## Success
 
 - All three planes `ready` in activate output
 - `contributors validate` exit 0 (after user edits placeholders)
-- `integrate validate` exit 0
+- When SSOT on: `project board-bootstrap --check` green (default Playground shell)
+- `integrate validate` exit 0 (optional)
 
 ## Reference
 

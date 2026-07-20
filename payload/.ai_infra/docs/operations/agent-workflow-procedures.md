@@ -15,7 +15,7 @@ Notes:
 
 ## 1) Architecture-impacting advisory audit (alignment artifacts)
 
-**When:** Module boundaries, workflow policy, test layout, or maintainer calls for alignment before prepare/merge.
+**When:** Module boundaries, workflow policy, test layout, or maintainer calls for alignment before prepare/merge. **Not** consumer day-0 onboarding — complete board shell (`/project-board` + `board-bootstrap --check`) first; use this for architecture-impacting / pre-merge work.
 
 **Canonical agent:** **`enterprise-auditor`** with **`.cursor/skills/enterprise-architecture-audit/SKILL.md`**.
 

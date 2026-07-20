@@ -98,7 +98,7 @@ def _print_post_activate_hints(root: Path) -> None:
         print("  2. Run: python3 -m cursor_workflow project doctor")
         print("  3. Agent chat: /project-board — apply default shell (board-shell-onboard + views-setup.md)")
         print("  4. Run: python3 -m cursor_workflow project board-bootstrap --check")
-        print("     Until default Playground shell green (six views; Priority on Prioritized backlog).")
+        print("     Until default Playground shell green (six views; Priority/Size/Estimate/Start date on Status board + Prioritized backlog).")
         print("  5. Run: python3 -m cursor_workflow project status")
         print("  6. In Agent chat: /implementer — local trackers are offline fallback under board_only.")
     else:

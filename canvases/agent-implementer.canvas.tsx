@@ -23,18 +23,20 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-07-19";
+const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/implementer.md · implementation-execution-loop/SKILL.md · project-board-ssot/SKILL.md § Continuation";
+  ".cursor/agents/implementer.md · implementation-execution-loop/SKILL.md · board-shell-onboard · project-board-ssot § Continuation";
 
 const GOALS = [
-  "Disciplined implementation slices with trackers and Pattern A gates",
+  "Day-0: refuse claim until default Playground board shell is green",
+  "Disciplined implementation slices with board Status and Pattern A gates",
   "Small, reversible slices with production quality",
   "Clear module boundaries, tests, and board Status (or fallback trackers)",
 ];
 
 const BOARD_NODES = [
   { id: "yaml" },
+  { id: "bootstrap" },
   { id: "status" },
   { id: "claim" },
   { id: "code" },
@@ -46,7 +48,8 @@ const BOARD_NODES = [
 ];
 
 const BOARD_EDGES = [
-  { from: "yaml", to: "status" },
+  { from: "yaml", to: "bootstrap" },
+  { from: "bootstrap", to: "status" },
   { from: "status", to: "claim" },
   { from: "claim", to: "code" },
   { from: "code", to: "gates" },
@@ -77,6 +80,7 @@ const FALLBACK_EDGES = [
 
 const BOARD_LABELS: Record<string, string> = {
   yaml: "project_ssot YAML",
+  bootstrap: "board-bootstrap --check",
   status: "project status",
   claim: "claim (+ Start date if empty)",
   code: "contracts → code → tests",
@@ -99,7 +103,9 @@ const FALLBACK_LABELS: Record<string, string> = {
 
 const READ_FIRST = [
   [".cursor/skills/implementation-execution-loop/SKILL.md", "Slice lifecycle"],
+  [".cursor/skills/board-shell-onboard/SKILL.md", "Day-0 Playground shell (before claim)"],
   [".cursor/skills/project-board-ssot/SKILL.md", "When project_ssot.enabled"],
+  [".ai_infra/templates/project-board/board-shell.schema.yaml", "Kit default desired state"],
   [".ai_infra/templates/project-board/README.md", "When creating cards"],
   [".local/user_settings/github.collaboration.yaml", "project_ssot block"],
   [".local/index-and-planning/current/architecture.md", "Architecture stub"],
@@ -141,6 +147,7 @@ const ARTIFACTS = [
 ];
 
 const PATTERNS = [
+  ["Day-0 shell", "board-bootstrap --check green before claim; /project-board on FAIL"],
   ["Pattern A recipes", "claim --last / handoff --last / create-from-template"],
   ["Tier-1", "claim/set-status→In progress Start date; Size/Estimate per skill table"],
   ["Promote before PR", "promote-to-issue OR mention-pr (auto when promote_to_issue_on_pr)"],

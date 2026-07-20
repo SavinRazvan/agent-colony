@@ -21,9 +21,10 @@
 1. Edit `.local/user_settings/github.collaboration.yaml` → your name + `@handle`
 2. `source .venv/bin/activate && python3 -m cursor_workflow contributors validate`
 3. If `project_ssot.enabled: true`:
+   - `gh auth refresh -h github.com -s read:project,project` (keep `repo`) — see [PLUGIN-USER-GUIDE § GitHub CLI auth](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#github-cli-auth-projects)
    - `python3 -m cursor_workflow project doctor`
    - **`/project-board`** (first-run coach: `.cursor/skills/board-shell-onboard/SKILL.md`) → follow views-setup + Project README
-   - `python3 -m cursor_workflow project board-bootstrap --check`
+   - `python3 -m cursor_workflow project board-bootstrap --check` until default Playground shell green
    - `python3 -m cursor_workflow project status`
    - Local trackers are offline fallback when `sync_policy: board_only`
 4. If Project SSOT is disabled or unavailable:
@@ -52,7 +53,7 @@ Full walkthrough: [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-G
 2. [`.ai_infra/docs/operations/consumer-quickstart.md`](.ai_infra/docs/operations/consumer-quickstart.md)
 3. [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md) — artifact tiers
 4. [`.ai_infra/docs/operations/token-efficiency.md`](.ai_infra/docs/operations/token-efficiency.md)
-5. `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
+5. When `project_ssot.enabled` + `board_only`: `python3 -m cursor_workflow project status` (board-first). Else / offline: `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 
 ## Rules (always applied in Cursor)
 

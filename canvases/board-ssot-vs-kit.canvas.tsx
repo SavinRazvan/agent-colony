@@ -26,7 +26,7 @@ import {
 
 type Mode = "classic" | "shipped" | "compare";
 
-const VERIFIED = "2026-07-19";
+const VERIFIED = "2026-07-20";
 
 const CLASSIC_NODES = [
   { id: "agent" },
@@ -143,7 +143,7 @@ const FOLLOWUP_SLICES = [
     items: [
       "Issue body, GraphQL errors, merge Notes warn",
       "set_item_status PVTI-only paths; outbox queue/flush",
-      "1166 tests collected; COV-100 7089 stmts / 100%; drift validate green",
+      "1168 tests collected; COV-100 7089 stmts / 100%; drift validate green",
     ],
   },
   {
@@ -331,7 +331,7 @@ export default function BoardSsotVsKitCanvas() {
         <Text tone="secondary">
           Before/after comparison for mas-workflow-kit-project-ssot as of {VERIFIED}.
           PR #2 merged A→B→C on main; FIX-NOTES-DI, doc-drift residuals, EA-001/004,
-          and expanded tests (1166 collected) are shipped on main.
+          and expanded tests (1168 collected) are shipped on main.
         </Text>
       </Stack>
 
@@ -622,7 +622,7 @@ export default function BoardSsotVsKitCanvas() {
               <Text size="small">ADR-008 + project-ssot-precedence overlay</Text>
               <Text size="small">A→B→C merged (PR #2); FIX-NOTES-DI on main (PR #3)</Text>
               <Text size="small">
-                1166 tests collected; COV-100 7089 stmts / 100%; DRIFT validate
+                1168 tests collected; COV-100 7089 stmts / 100%; DRIFT validate
                 P0=0 P1=0 P2=0
               </Text>
               <Text size="small">STANDALONE decided — this repo is the product</Text>
@@ -660,7 +660,7 @@ export default function BoardSsotVsKitCanvas() {
 
       <Text size="small" tone="tertiary">
         Source: HANDOFF §1 · ADR-008 · STANDALONE 2026-07-18 · PR #2/#3 merged ·
-        drift validate green · verified {VERIFIED} · 1166 tests · COV-100 7089 stmts
+        drift validate green · verified {VERIFIED} · 1168 tests · COV-100 7089 stmts
       </Text>
     </Stack>
   );

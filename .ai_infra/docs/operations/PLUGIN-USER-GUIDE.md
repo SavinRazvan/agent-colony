@@ -121,7 +121,7 @@ Install the **MAS Workflow Kit — Project SSOT** plugin, open **your app repo**
 | **Estimate** (number) | numeric field id (points) |
 | **Start date** (date) | date field id |
 
-Discover ids manually: `gh project view <N> --owner <login>` (for `project_id`) and `gh project field-list <N> --owner <login>` — paste into `github.collaboration.yaml`. After setup, run `python3 -m cursor_workflow project doctor` → `python3 -m cursor_workflow project board-bootstrap --check` → `python3 -m cursor_workflow project status` (read-only; board views/README stay human-owned).
+Discover ids manually: `gh project view <N> --owner <login>` (for `project_id`) and `gh project field-list <N> --owner <login>` — paste into `github.collaboration.yaml`. Optional field create: `python3 -m cursor_workflow project board-bootstrap --check --ensure-fields` (prints suggested YAML ids — human confirms before paste). After setup, run `python3 -m cursor_workflow project doctor` → `python3 -m cursor_workflow project board-bootstrap --check` → `python3 -m cursor_workflow project status` (views/README stay human-owned unless `--apply-readme`).
 
 | Step | Action |
 |------|--------|
