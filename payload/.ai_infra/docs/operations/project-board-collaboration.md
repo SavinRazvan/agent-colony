@@ -142,7 +142,7 @@ Optional end-to-end check against the real Project (skipped in default CI).
 
 **Last PASS:** 2026-07-19 — `make live-board-smoke` (evidence: `.local/workflow-artifacts/release/live-board-smoke-2026-07-19.md`).
 
-1. Auth with Project scopes: `gh auth refresh -h github.com -s read:project,project` (plus existing `repo` scopes).
+1. Auth with Project scopes: `gh auth refresh -h github.com -s read:project,project` (plus existing `repo` scopes). If `xdg-open` fails, open **https://github.com/login/device**, paste the one-time code, and approve **Project** permissions — see [PLUGIN-USER-GUIDE § GitHub CLI auth](PLUGIN-USER-GUIDE.md#github-cli-auth-projects).
 2. Confirm: `python3 -m cursor_workflow project doctor` and `project status`.
 3. Clear any other card **In progress** for the same assignee (claim enforces `one_in_progress_per_assignee`).
 4. Run: `make live-board-smoke`  
