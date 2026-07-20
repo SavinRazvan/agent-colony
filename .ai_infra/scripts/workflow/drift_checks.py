@@ -47,6 +47,12 @@ class DriftPaths:
     implementation_status: Path
 
 
+def _resolve_updates_log(root: Path) -> Path:
+    current = root / ".local" / "index-and-planning" / "current" / "updates-log.md"
+    history = root / ".local" / "index-and-planning" / "history" / "updates-log.md"
+    return current if current.is_file() else history if history.is_file() else current
+
+
 def drift_paths(root: Path) -> DriftPaths:
     planning = root / ".local" / "index-and-planning" / "current"
     return DriftPaths(
@@ -55,17 +61,26 @@ def drift_paths(root: Path) -> DriftPaths:
         plan=planning / "plan.md",
         work_tracker=planning / "work-tracker.md",
         session_pointer=planning / "session-pointer.md",
-        updates_log=planning / "updates-log.md",
+        updates_log=_resolve_updates_log(root),
         test_index=planning / "test-index.md",
         implementation_status=root / ".ai_infra" / "docs" / "handoff" / "IMPLEMENTATION-STATUS.md",
     )
 
 
-def detect_profile(work_tracker_text: str, override: str | None = None) -> str:
-    if override in ("kit-dev", "consumer"):
+def detect_profile(
+    work_tracker_text: str, override: str | None = None, *, board_only: bool = False
+) -> str:
+    """
+    Resolve drift profile.
+
+    - Explicit override wins.
+    - Consumer installs (STARTER-001): `consumer-board` when board_only, else `consumer`.
+    - Kit product repo stays `kit-dev` even when board_only is enabled.
+    """
+    if override in ("kit-dev", "consumer", "consumer-board"):
         return override
     if "STARTER-001" in work_tracker_text:
-        return "consumer"
+        return "consumer-board" if board_only else "consumer"
     return "kit-dev"
 
 
@@ -81,8 +96,17 @@ def _extract_table_field(text: str, field: str) -> str:
     return match.group(1).strip() if match else ""
 
 
+def _section_block(text: str, heading: str) -> str:
+    marker = f"## {heading}"
+    if marker not in text:
+        return text
+    section = text.split(marker, 1)[1]
+    next_heading = re.search(r"\n## [^\n]+", section)
+    return section[: next_heading.start()] if next_heading else section
+
+
 def _extract_active_task(text: str) -> str | None:
-    for line in text.splitlines():
+    for line in _section_block(text, "Active").splitlines():
         if "`in_progress`" in line:
             match = re.search(r"\*\*([^*]+)\*\*", line)
             if match:
@@ -91,7 +115,7 @@ def _extract_active_task(text: str) -> str | None:
 
 
 def _count_in_progress(text: str) -> int:
-    return text.count("`in_progress`")
+    return _section_block(text, "Active").count("`in_progress`")
 
 
 def _extract_plan_focus(text: str) -> str:
@@ -135,7 +159,7 @@ def _parse_owned_test_paths(text: str) -> list[str]:
         candidates = quoted if quoted else [p.strip() for p in raw.split(",") if p.strip()]
         for part in candidates:
             part = part.strip().strip("`")
-            if not part or "..." in part or part.startswith("<"):
+            if not part or "..." in part or any(ch in part for ch in "<>{}"):
                 continue
             paths.append(part)
     return paths
@@ -190,6 +214,14 @@ def check_drift002(paths: DriftPaths) -> CheckResult:
 def check_drift003(paths: DriftPaths) -> CheckResult:
     tracker = _read(paths.work_tracker)
     plan = _read(paths.plan)
+    ssot, _ = _load_ssot_policy(paths)
+    if isinstance(ssot, dict) and str(ssot.get("sync_policy") or "") == "board_only":
+        return CheckResult(
+            check_id="DRIFT-003",
+            severity=Severity.P1,
+            passed=True,
+            detail="board_only — tracker Active skipped",
+        )
     active = _extract_active_task(tracker)
     focus = _extract_plan_focus(plan)
     if active is None:
@@ -551,15 +583,7 @@ def check_drift009(paths: DriftPaths) -> CheckResult:
             detail=f"sync_policy={policy!r} — dual-write check skipped",
         )
     tracker = _read(paths.work_tracker)
-    # Count in_progress only under ## Active (same idea as DRIFT-002)
-    active = ""
-    if "## Active" in tracker:
-        active = tracker.split("## Active", 1)[1]
-        for stop in ("## Completed", "## Deferred", "## Queued", "## Blocked"):
-            if stop in active:
-                active = active.split(stop, 1)[0]
-                break
-    count = len(re.findall(r"`in_progress`", active))
+    count = len(re.findall(r"`in_progress`", _section_block(tracker, "Active")))
     passed = count == 0
     return CheckResult(
         check_id="DRIFT-009",
@@ -725,6 +749,9 @@ def check_drift010(paths: DriftPaths) -> CheckResult:
         excerpt = str(item.get("body_excerpt") or "")
 
         if status == "in_review":
+            if repo and not pr_err and not open_prs:
+                findings.append(f"WARN in_review with 0 open PRs: {title} ({item_id})")
+                continue
             # In review should have an open PR referencing this item or mentioning the card
             linked = item_id in open_item_ids
             mentioned = any(
@@ -799,4 +826,11 @@ KIT_DEV_CHECKS = (
 CONSUMER_CHECKS = (
     check_drift005,
     check_drift008,
+)
+
+CONSUMER_BOARD_CHECKS = (
+    check_drift005,
+    check_drift008,
+    check_drift009,
+    check_drift010,
 )

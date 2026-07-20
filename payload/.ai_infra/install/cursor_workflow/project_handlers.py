@@ -1,7 +1,7 @@
 """
 File: project_handlers.py
 Path: .ai_infra/install/cursor_workflow/project_handlers.py
-Role: Heavy project CLI command implementations (claim/handoff/PR/doctor/outbox).
+Role: Heavy project CLI command implementations (claim/handoff/PR/doctor/board-bootstrap/outbox).
 Used By:
  - .ai_infra/install/cursor_workflow/project_cli.py (thin cmd_* delegates)
 Depends On:
@@ -434,6 +434,105 @@ def run_doctor(args: argparse.Namespace) -> int:
             print(f'doctor: WARN — GraphQL remaining {rem_i} < min_graphql_remaining {cfg['min_graphql_remaining']}; prefer outbox queue; flush after {reset}', file=sys.stderr)
     if counts['pending'] > 0:
         print(f'doctor: WARN — {counts['pending']} pending outbox ops; run: python3 -m cursor_workflow project outbox flush', file=sys.stderr)
+    return pc.EXIT_OK
+
+
+def run_board_bootstrap(args: argparse.Namespace) -> int:
+    """Read-only bootstrap check for board README and view readiness."""
+    import project_cli as pc
+    import project_outbox as _outbox
+
+    root = Path(args.directory).resolve()
+    if not getattr(args, "check", False):
+        return pc.fail("board-bootstrap", pc.EXIT_USAGE, "--check is required")
+
+    ssot, code = pc._load_enabled_ssot(root, "board-bootstrap")
+    if ssot is None:
+        return code
+
+    try:
+        pc.status_field_id(ssot)
+        pc.resolve_status_option_id(ssot, "ready")
+    except KeyError as exc:
+        return pc.fail("board-bootstrap", pc.EXIT_USAGE, str(exc))
+
+    user = pc.resolve_human_github_user(root)
+    if not user:
+        return pc.fail("board-bootstrap", pc.EXIT_USAGE, "owner.github_user missing")
+
+    tpl_dir = pc.project_templates_dir(root)
+    required_files = [f"card-body-{name}.md" for name in pc._TEMPLATE_NAMES]
+    required_files.extend(["project-readme.md", "views-setup.md", "views-checklist.md"])
+    for name in required_files:
+        path = tpl_dir / name
+        if not path.is_file():
+            return pc.fail("board-bootstrap", pc.EXIT_USAGE, f"missing template {path}")
+
+    cfg = _outbox.load_outbox_config(ssot)
+    rl = _outbox.graphql_rate_limit()
+    skip_live = False
+    if not rl.get("error"):
+        try:
+            rem = int(rl.get("remaining")) if rl.get("remaining") is not None else 9999
+        except (TypeError, ValueError):
+            rem = 9999
+        if rem < int(cfg["min_graphql_remaining"]):
+            skip_live = True
+            print(
+                "board-bootstrap: WARN — skipping live README/view probe (low GraphQL quota)",
+                file=sys.stderr,
+            )
+
+    if not skip_live:
+        readme, err = pc.read_project_readme(ssot)
+        if err:
+            return pc.fail("board-bootstrap", pc.EXIT_GH, err)
+        if not str(readme or "").strip():
+            return pc.fail(
+                "board-bootstrap",
+                pc.EXIT_VALIDATION,
+                "project README is empty/whitespace; paste .ai_infra/templates/project-board/project-readme.md",
+            )
+
+        views, v_err = pc.read_project_views(ssot)
+        if v_err:
+            print(
+                "board-bootstrap: WARN — view layout metadata opaque; use views-setup.md and views-checklist.md",
+                file=sys.stderr,
+            )
+        else:
+            import re
+
+            required_cols = {"Priority", "Size", "Estimate", "Start date"}
+            view_n = re.compile(r"^View\s*\d+$", re.IGNORECASE)
+            for view in views or []:
+                name = str(view.get("name") or "view").strip() or "view"
+                if view_n.match(name):
+                    print(
+                        f"board-bootstrap: WARN — rename default view {name!r} "
+                        "(follow views-setup.md minimum: Status board / Prioritized backlog)",
+                        file=sys.stderr,
+                    )
+                layout = str(view.get("layout") or "")
+                if layout not in {"BOARD_LAYOUT", "TABLE_LAYOUT"}:
+                    continue
+                fields = {
+                    str(fname).strip()
+                    for fname in (view.get("fields") if isinstance(view.get("fields"), list) else [])
+                    if str(fname).strip()
+                }
+                missing = sorted(required_cols - fields)
+                if missing:
+                    print(
+                        f"board-bootstrap: WARN — {name} ({layout}) missing columns: {', '.join(missing)}",
+                        file=sys.stderr,
+                    )
+
+    print("board-bootstrap: ok")
+    print(f"project: {ssot.get('name')} ({ssot.get('url')})")
+    print("next: follow .ai_infra/templates/project-board/views-setup.md (GitHub UI)")
+    print("next: paste contents of project-readme.md into Project README")
+    print("next: .ai_infra/templates/project-board/views-checklist.md")
     return pc.EXIT_OK
 
 def run_queue(args: argparse.Namespace) -> int:

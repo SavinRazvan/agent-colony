@@ -58,6 +58,33 @@ def _ssot(**overrides):
     return data
 
 
+def _validate_item(
+    *,
+    status: str,
+    body: str,
+    item_id: str,
+    priority: str | None = "p1",
+    size: str | None = "s",
+    estimate: str | None = "1",
+    start_date: str | None = None,
+) -> dict:
+    item = {
+        "id": item_id,
+        "title": "Validate item",
+        "status": status,
+        "content": {"body": body},
+    }
+    if priority is not None:
+        item["priority"] = priority
+    if size is not None:
+        item["size"] = size
+    if estimate is not None:
+        item["estimate"] = estimate
+    if start_date is not None:
+        item["start date"] = start_date
+    return item
+
+
 def test_validate_card_body_missing() -> None:
     missing = project_cli.validate_card_body("# x\n", ["Acceptance", "Notes"])
     assert missing == ["Acceptance", "Notes"]
@@ -90,6 +117,7 @@ def test_cmd_create_from_template(
 ) -> None:
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
     calls: list[list[str]] = []
+    assignee_calls: list[tuple] = []
 
     def fake_gh(args: list[str], *, timeout_s: float = 60.0):
         calls.append(args)
@@ -110,6 +138,17 @@ def test_cmd_create_from_template(
         return SimpleNamespace(returncode=1, stdout="", stderr="unexpected")
 
     monkeypatch.setattr(project_cli, "run_gh", fake_gh)
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_human_github_user",
+        lambda root: "@SavinRazvan",
+    )
+
+    def fake_assignee(ssot, item_id, login):
+        assignee_calls.append((item_id, login))
+        return True, login
+
+    monkeypatch.setattr(project_cli, "set_item_assignee", fake_assignee)
     # Templates load from real repo root via args.directory — point at REPO_ROOT
     args = argparse.Namespace(
         directory=REPO_ROOT,
@@ -123,10 +162,13 @@ def test_cmd_create_from_template(
         size=None,
         estimate=None,
         agent="",
+        no_assignee=False,
     )
     assert project_cli.cmd_create_from_template(args) == 0
     captured = capsys.readouterr()
     out = captured.out
+    assert "assignee=@SavinRazvan" in out
+    assert assignee_calls and assignee_calls[0][1] == "SavinRazvan"
     assert "item_id=PVTI_lAHOBl46-84A9KZxnew001" in out
     assert "priority=p1" in out
     assert "size=s" in out
@@ -135,6 +177,72 @@ def test_cmd_create_from_template(
     assert any(c[:2] == ["issue", "create"] for c in calls)
     assert any(c[:2] == ["project", "item-add"] for c in calls)
     assert any("--single-select-option-id" in c for c in calls)
+
+
+def test_cmd_create_from_template_no_assignee(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
+
+    def fake_gh(args: list[str], *, timeout_s: float = 60.0):
+        if args[:2] == ["issue", "create"]:
+            return SimpleNamespace(
+                returncode=0,
+                stdout="https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/issues/99\n",
+                stderr="",
+            )
+        if args[:2] == ["project", "item-add"]:
+            return SimpleNamespace(
+                returncode=0,
+                stdout=json.dumps({"id": "PVTI_lAHOBl46-84A9KZxnew002"}),
+                stderr="",
+            )
+        if args[:2] == ["project", "item-edit"]:
+            return SimpleNamespace(returncode=0, stdout="", stderr="")
+        return SimpleNamespace(returncode=1, stdout="", stderr="unexpected")
+
+    monkeypatch.setattr(project_cli, "run_gh", fake_gh)
+    monkeypatch.setattr(
+        project_cli,
+        "set_item_assignee",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("should skip assignee")),
+    )
+    args = argparse.Namespace(
+        directory=REPO_ROOT,
+        title="[T] slice",
+        template="slice",
+        acceptance="do X",
+        rollback="revert",
+        notes="",
+        status="ready",
+        priority="p1",
+        size="s",
+        estimate="1",
+        agent="",
+        no_assignee=True,
+    )
+    assert project_cli.cmd_create_from_template(args) == 0
+    assert "assignee=skipped:--no-assignee" in capsys.readouterr().out
+
+
+def test_cmd_validate_item_ready_empty_assignees(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    body = "## Acceptance\n- ok\n## Rollback\n- ok\n## Notes\n"
+    item = _validate_item(
+        status="Ready",
+        body=body,
+        item_id="PVTI_lAHOBl46-84A9KZxvaldAsn",
+    )
+    item["assignees"] = []
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: ([item], None),
+    )
+    args = argparse.Namespace(directory=REPO_ROOT, id=item["id"], last=False, limit=100)
+    assert project_cli.cmd_validate_item(args) == project_cli.EXIT_VALIDATION
 
 
 def test_cmd_create_from_template_requires_priority(
@@ -153,6 +261,7 @@ def test_cmd_create_from_template_requires_priority(
         size=None,
         estimate=None,
         agent="",
+        no_assignee=False,
     )
     assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_USAGE
 
@@ -180,6 +289,8 @@ def test_cmd_create_from_template_explicit_size_estimate_no_guess_warn(
         return SimpleNamespace(returncode=1, stdout="", stderr="unexpected")
 
     monkeypatch.setattr(project_cli, "run_gh", fake_gh)
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@SavinRazvan")
+    monkeypatch.setattr(project_cli, "set_item_assignee", lambda *a, **k: (True, "SavinRazvan"))
     args = argparse.Namespace(
         directory=REPO_ROOT,
         title="[T] slice",
@@ -192,6 +303,7 @@ def test_cmd_create_from_template_explicit_size_estimate_no_guess_warn(
         size="m",
         estimate="3",
         agent="implementer",
+        no_assignee=False,
     )
     assert project_cli.cmd_create_from_template(args) == 0
     captured = capsys.readouterr()
@@ -343,6 +455,9 @@ def test_cmd_validate_item_ok(monkeypatch: pytest.MonkeyPatch) -> None:
                     "id": "PVTI_lAHOBl46-84A9KZxok0001",
                     "title": "OK",
                     "status": "Ready",
+                    "priority": "p1",
+                    "size": "s",
+                    "estimate": "1",
                     "content": {
                         "body": (
                             "## Acceptance\n\nx\n\n## Rollback\n\ny\n\n"
@@ -356,6 +471,150 @@ def test_cmd_validate_item_ok(monkeypatch: pytest.MonkeyPatch) -> None:
     )
     args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_lAHOBl46-84A9KZxok0001", limit=100)
     assert project_cli.cmd_validate_item(args) == 0
+
+
+def test_cmd_validate_item_ready_tbd_warns(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    ssot = _ssot()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    body = "## Acceptance\n\n(TBD)\n\n## Rollback\n\nfixed\n\n## Notes\n\n"
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: (
+            [
+                _validate_item(
+                    status="Ready",
+                    body=body,
+                    item_id="PVTI_lAHOBl46-84A9KZxvalwarn1",
+                )
+            ],
+            None,
+        ),
+    )
+    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_lAHOBl46-84A9KZxvalwarn1", limit=100)
+    assert project_cli.cmd_validate_item(args) == 0
+    err = capsys.readouterr().err
+    assert "WARN" in err
+
+
+def test_cmd_validate_item_ready_missing_priority(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ssot = _ssot()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: (
+            [
+                _validate_item(
+                    status="Ready",
+                    body="## Acceptance\n\nx\n\n## Rollback\n\ny\n\n## Notes\n\n",
+                    item_id="PVTI_lAHOBl46-84A9KZxvalready1",
+                    priority=None,
+                )
+            ],
+            None,
+        ),
+    )
+    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_lAHOBl46-84A9KZxvalready1", limit=100)
+    assert project_cli.cmd_validate_item(args) == project_cli.EXIT_VALIDATION
+
+
+def test_cmd_validate_item_done_tbd_and_start_date_and_notes(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ssot = _ssot()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    body = "## Acceptance\n\n(TBD)\n\n## Rollback\n\nfixed\n\n## Notes\n\n- @test/implementer · claimed\n"
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: (
+            [
+                _validate_item(
+                    status="Done",
+                    body=body,
+                    item_id="PVTI_lAHOBl46-84A9KZxvaldone1",
+                    start_date="2026-07-20",
+                )
+            ],
+            None,
+        ),
+    )
+    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_lAHOBl46-84A9KZxvaldone1", limit=100)
+    assert project_cli.cmd_validate_item(args) == project_cli.EXIT_VALIDATION
+
+
+def test_cmd_validate_item_done_missing_start_date(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ssot = _ssot()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    body = "## Acceptance\n\nx\n\n## Rollback\n\ny\n\n## Notes\n\n- @test/implementer · claimed\n"
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: (
+            [_validate_item(status="Done", body=body, item_id="PVTI_lAHOBl46-84A9KZxvald2")],
+            None,
+        ),
+    )
+    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_lAHOBl46-84A9KZxvald2", limit=100)
+    assert project_cli.cmd_validate_item(args) == project_cli.EXIT_VALIDATION
+
+
+def test_cmd_validate_item_done_empty_notes_requires_attribution(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ssot = _ssot()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    body = "## Acceptance\n\nx\n\n## Rollback\n\ny\n\n## Notes\n\n"
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: (
+            [
+                _validate_item(
+                    status="Done",
+                    body=body,
+                    item_id="PVTI_lAHOBl46-84A9KZxvaldone2",
+                    start_date="2026-07-20",
+                )
+            ],
+            None,
+        ),
+    )
+    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_lAHOBl46-84A9KZxvaldone2", limit=100)
+    assert project_cli.cmd_validate_item(args) == project_cli.EXIT_VALIDATION
+
+
+def test_cmd_validate_item_in_progress_missing_size(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ssot = _ssot()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    body = "## Acceptance\n\nx\n\n## Rollback\n\ny\n\n## Notes\n\n- @test/implementer · claimed\n"
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: (
+            [
+                _validate_item(
+                    status="In Progress",
+                    body=body,
+                    item_id="PVTI_lAHOBl46-84A9KZxvalip01",
+                    size=None,
+                    start_date="2026-07-20",
+                )
+            ],
+            None,
+        ),
+    )
+    args = argparse.Namespace(directory=REPO_ROOT, id="PVTI_lAHOBl46-84A9KZxvalip01", limit=100)
+    assert project_cli.cmd_validate_item(args) == project_cli.EXIT_VALIDATION
 
 
 def test_cmd_doctor_ok(monkeypatch: pytest.MonkeyPatch) -> None:

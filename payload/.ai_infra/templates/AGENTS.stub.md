@@ -5,7 +5,7 @@
 1. Agent chat:
 
 ```text
-/add-plugin https://github.com/SavinRazvan/mas-workflow-kit
+/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot
 ```
 
 [screenshot](.ai_infra/docs/operations/assets/mas-workflow-kit-install.png) · [step-by-step](.ai_infra/docs/operations/consumer-quickstart.md#step-1-detail--install-plugin-from-github)
@@ -20,8 +20,14 @@
 
 1. Edit `.local/user_settings/github.collaboration.yaml` → your name + `@handle`
 2. `source .venv/bin/activate && python3 -m cursor_workflow contributors validate`
-3. Read `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
-4. **`/implementer`** (or pick `/test-runner`, `/verifier`, `/enterprise-auditor` from the **`/`** menu)
+3. If `project_ssot.enabled: true`:
+   - `python3 -m cursor_workflow project doctor`
+   - `python3 -m cursor_workflow project board-bootstrap --check`
+   - `python3 -m cursor_workflow project status`
+   - Local trackers are offline fallback when `sync_policy: board_only`
+4. If Project SSOT is disabled or unavailable:
+   - Read `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
+5. **`/implementer`** (or pick `/test-runner`, `/verifier`, `/enterprise-auditor` from the **`/`** menu)
 
 **Dashboards (optional):** from project root:
 

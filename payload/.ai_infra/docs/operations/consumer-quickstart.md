@@ -337,7 +337,14 @@ Run from your project root. **No agent is required** before this command — `/w
 python3 -m cursor_workflow drift validate --directory . --profile consumer
 ```
 
-Always pass **`--profile consumer`** on app projects. Auto-detect defaults to **`kit-dev`** unless `work-tracker.md` contains `STARTER-001`; without the flag you may see kit-dev-only checks (DRIFT-003, DRIFT-006) that do not apply to your app.
+Use **`--profile consumer`** for the minimal consumer set. When the tracker contains `STARTER-001` **and** `sync_policy: board_only`, auto-detect upgrades to **`consumer-board`** (or pass `--profile consumer-board` explicitly). Kit-dev repos stay on `--profile kit-dev` even when board_only is enabled.
+
+| Profile | Checks |
+|---------|--------|
+| `consumer` | DRIFT-005 + DRIFT-008 |
+| `consumer-board` | DRIFT-005 + DRIFT-008 + DRIFT-009 + DRIFT-010 |
+
+Auto-detect defaults to **`kit-dev`** unless `work-tracker.md` contains `STARTER-001`; without the flag you may see kit-dev-only checks (DRIFT-003, DRIFT-006) that do not apply to your app.
 
 | Check (consumer profile) | Meaning |
 |--------------------------|---------|

@@ -94,3 +94,30 @@ def test_cursor_workflow_drift_validate_consumer_profile_skips_drift005(tmp_path
     assert "DRIFT-005" in proc.stdout
     assert "PASS" in proc.stdout
     assert "skipped" in proc.stdout.lower()
+
+
+def test_cursor_workflow_drift_validate_accepts_consumer_board_profile(
+    tmp_path: Path,
+) -> None:
+    planning = tmp_path / ".local/index-and-planning/current"
+    planning.mkdir(parents=True)
+    (planning / "plan.md").write_text("# Plan\n", encoding="utf-8")
+    (planning / "work-tracker.md").write_text("# Tracker\n", encoding="utf-8")
+    (planning / "session-pointer.md").write_text("# Pointer\n", encoding="utf-8")
+
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(WORKFLOW_DIR / "check_drift.py"),
+            "--directory",
+            str(tmp_path),
+            "--profile",
+            "consumer-board",
+        ],
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
+    )
+    assert proc.returncode == 0
+    assert "profile: consumer-board" in proc.stdout
+    assert "DRIFT-009" in proc.stdout

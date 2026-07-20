@@ -56,6 +56,47 @@ def validate_card_body(text: str, sections: list[str]) -> list[str]:
         if f"## {name}" not in body:
             missing.append(name)
     return missing
+
+def section_body_content(body: str, section_name: str) -> str:
+    """Return text under ## section_name until the next top-level ## heading."""
+    target = f"## {str(section_name or '').strip()}".casefold()
+    if target == "##":
+        return ""
+    lines = (body or "").splitlines()
+    start_idx: int | None = None
+    for idx, line in enumerate(lines):
+        if line.strip().casefold() == target:
+            start_idx = idx + 1
+            break
+    if start_idx is None:
+        return ""
+    end_idx = len(lines)
+    for idx in range(start_idx, len(lines)):
+        if lines[idx].strip().startswith("## "):
+            end_idx = idx
+            break
+    return "\n".join(lines[start_idx:end_idx]).strip()
+
+
+def is_placeholder_section_content(text: str) -> bool:
+    """True for empty/whitespace/(TBD) section content."""
+    stripped = str(text or "").strip()
+    return not stripped or stripped.casefold() == "(tbd)"
+
+
+def item_field_value(item: dict[str, Any] | None, *keys: str) -> str:
+    """Return the first non-empty string value among the provided item keys."""
+    if not isinstance(item, dict):
+        return ""
+    for key in keys:
+        value = item.get(key)
+        if value is None:
+            continue
+        text_val = value.strip() if isinstance(value, str) else str(value).strip()
+        if text_val:
+            return text_val
+    return ""
+
 def project_templates_dir(root: Path) -> Path:
     return root / ".ai_infra" / "templates" / "project-board"
 def load_card_template(root: Path, name: str) -> str:
@@ -310,6 +351,128 @@ def item_start_date_value(item: dict[str, Any] | None) -> str:
         or ""
     )
     return str(raw).strip()
+
+
+ACTIVE_STATUSES = {"in_progress", "in_review", "done"}
+TRIAGE_STATUSES = {"ready", "backlog", "todo"}
+
+
+def item_assignees_present(item: dict[str, Any]) -> bool:
+    """True when the item snapshot includes an assignees-related key."""
+    return any(k in item for k in ("assignees", "assignees.login", "Assignees"))
+
+
+def item_has_assignee(item: dict[str, Any]) -> bool:
+    """True when at least one non-empty assignee login/name is present."""
+    raw = item.get("assignees")
+    if raw is None:
+        raw = item.get("assignees.login")
+    if raw is None:
+        raw = item.get("Assignees")
+    if raw is None:
+        return False
+    if isinstance(raw, list):
+        for entry in raw:
+            if isinstance(entry, dict):
+                login = str(entry.get("login") or entry.get("name") or "").strip()
+                if login:
+                    return True
+            elif str(entry or "").strip():
+                return True
+        return False
+    return bool(str(raw).strip())
+
+
+def item_content_kind(item: dict[str, Any]) -> str:
+    """Best-effort content kind: issue | draft | unknown."""
+    content = item.get("content")
+    if isinstance(content, dict):
+        type_name = str(content.get("type") or content.get("kind") or "").strip().lower()
+        if "draft" in type_name:
+            return "draft"
+        if type_name in {"issue", "pullrequest"} or content.get("number") is not None:
+            return "issue"
+        if content.get("body") is not None and content.get("number") is None:
+            # body-only snapshots are common for Issues too — treat as unknown
+            pass
+    title = str(item.get("title") or "")
+    if "draft" in title.casefold():
+        return "draft"
+    return "unknown"
+
+
+def collect_validate_item_problems(
+    ssot: dict[str, Any], item: dict[str, Any] | None
+) -> tuple[list[str], list[str]]:
+    """Collect validate-item problems and warnings for an item snapshot."""
+    problems: list[str] = []
+    warnings: list[str] = []
+    if not isinstance(item, dict):
+        return ["item snapshot is not a mapping"], warnings
+
+    body = _item_body(item)
+    sections = list((ssot.get("conventions") or {}).get("body_sections") or [])
+    missing_section_list = validate_card_body(body, sections)
+    missing_sections = set(missing_section_list)
+    if missing_section_list:
+        problems.append(f"missing sections: {', '.join(missing_section_list)}")
+    status = _normalize_status(str(item.get("status") or ""))
+    raw_status = str(item.get("status") or "").strip()
+
+    options = ((ssot.get("fields") or {}).get("status") or {}).get("options") or {}
+    if raw_status and status not in set(options):
+        problems.append(f"unknown status {item.get('status')!r}")
+
+    if status not in ACTIVE_STATUSES | TRIAGE_STATUSES:
+        return problems, warnings
+
+    for field_name, label in (("priority", "Priority"), ("size", "Size"), ("estimate", "Estimate")):
+        if not item_field_value(item, field_name, label):
+            problems.append(f"missing {label}")
+
+    start_cfg = (ssot.get("fields") or {}).get("start_date")
+    start_field_id = ""
+    if isinstance(start_cfg, dict):
+        start_field_id = str(start_cfg.get("field_id") or "").strip()
+    if start_field_id and status in ACTIVE_STATUSES:
+        if not item_start_date_value(item):
+            problems.append("missing Start date")
+    elif status in ACTIVE_STATUSES:
+        warnings.append("start_date.field_id missing; skipping Start date validation")
+
+    kind = item_content_kind(item)
+    conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
+    kind_default = str(conventions.get("item_kind_default") or "issue").strip().lower()
+    if kind == "draft" or kind_default == "draft":
+        warnings.append("assignee N/A until promote (Draft)")
+    elif status in ACTIVE_STATUSES | TRIAGE_STATUSES:
+        if item_assignees_present(item):
+            if not item_has_assignee(item):
+                problems.append("missing Assignee")
+        else:
+            warnings.append("assignees field absent in snapshot; skipping Assignee validation")
+
+    for section_name in ("Acceptance", "Rollback"):
+        if section_name in missing_sections:
+            continue
+        section_text = section_body_content(body, section_name)
+        if status in ACTIVE_STATUSES:
+            if is_placeholder_section_content(section_text):
+                problems.append(f"{section_name} section is empty or placeholder")
+        elif section_text.strip().casefold() == "(tbd)":
+            warnings.append(f"{section_name} section is placeholder (TBD)")
+
+    if "Notes" not in missing_sections and attribution_required(ssot):
+        latest = latest_notes_line(body)
+        if status in ACTIVE_STATUSES:
+            if latest is None:
+                problems.append("Notes require an attributed bullet on active/done work")
+            elif not notes_line_attributed(latest):
+                problems.append(f"latest Notes line not attributed: {latest[:80]}")
+        elif latest is not None and not notes_line_attributed(latest):
+            problems.append(f"latest Notes line not attributed: {latest[:80]}")
+
+    return problems, warnings
 
 
 def ensure_start_date_if_starting(
