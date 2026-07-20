@@ -83,7 +83,9 @@ project_ssot:
   # + name, number, owner, project_id, fields.* option ids
 ```
 
-Validate:
+Set **identity** now (`display_name` / `github_user`). For Project SSOT, leave board ids incomplete if you want help — finish **GitHub auth** below, then paste your **Project URL + repo URL** in Agent chat (next block) so **`/project-board`** can wire the rest.
+
+Validate identity:
 
 ```bash
 source .venv/bin/activate
@@ -108,17 +110,82 @@ gh auth refresh -h github.com -s read:project,project   # keep existing repo (+ 
 # 4) Return to the terminal (✓ Authentication complete)
 
 gh auth status   # expect scopes including: repo, project (read:project may appear too)
-python3 -m cursor_workflow project doctor
-python3 -m cursor_workflow project board-bootstrap --check   # first-run: /project-board + views-setup if FAIL/WARN
-python3 -m cursor_workflow project status
-python3 -m cursor_workflow project guide                # safe recipes
 ```
 
-Wire field ids with `gh project view` / `gh project field-list` — full checklist: [PLUGIN-USER-GUIDE § Consumer project_ssot onboarding](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) (step 3 = GitHub auth · step 4 = board shell).
+**Need help filling `project_ssot`?** After `gh auth status` looks good, paste both links in Agent chat and ask **`/project-board`**:
 
-### 4. Board shell (first-run, when `project_ssot.enabled`)
+```text
+Project: https://github.com/users/YOU/projects/N
+# or org: https://github.com/orgs/ORG/projects/N
+Repo:    https://github.com/YOU/your-app
+```
 
-Before day-to-day agents: **`/project-board`** + [board-shell-onboard](.cursor/skills/board-shell-onboard/SKILL.md) → follow [views-setup.md](.ai_infra/templates/project-board/views-setup.md) → paste [project-readme.md](.ai_infra/templates/project-board/project-readme.md) (or `board-bootstrap --check --apply-readme`) → re-run `board-bootstrap --check` until **default Playground shell** green (no FAIL; no Priority/Start date WARNs on primary views). **Do not** start with `/enterprise-auditor`.
+The agent uses `gh project view` / `field-list` (and optional `board-bootstrap --check --ensure-fields`) to propose `owner` / `number` / `project_id` / field ids and `default_repo` — you confirm before saving. You still own view/column setup in the GitHub UI (§4).
+
+Then:
+
+```bash
+python3 -m cursor_workflow project doctor
+python3 -m cursor_workflow project board-bootstrap --check
+python3 -m cursor_workflow project status
+```
+
+**Expected on a brand-new Project:** `doctor: ok` and `status` enabled, but `board-bootstrap --check` **FAIL** (still on GitHub’s blank `View 1` — missing Status board / Prioritized backlog / …). That is normal. **Do not** jump to `/implementer` yet — continue with **step 4** below.
+
+Full checklist: [PLUGIN-USER-GUIDE § Consumer project_ssot onboarding](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist).
+
+---
+
+### 4. Prepare the board with `/project-board` (required when SSOT is on)
+
+> **This is the step after §3.** Skip it and `/implementer` will fight a blank `View 1` board.
+
+**You are here** when `project doctor` is ok but `board-bootstrap --check` prints `FAIL — missing minimum view '…'` and/or `WARN — rename default view 'View 1'`.
+
+**Ask the agent now** (Agent chat in **your app** repo, e.g. Smart-Notes):
+
+```text
+/project-board
+
+board-bootstrap --check FAILed with missing minimum views (still on View 1).
+Coach me through board-shell-onboard + views-setup.md for the default Playground shell
+(six views + Tier-1 columns on Status board and Prioritized backlog).
+Project URL: https://github.com/users/YOU/projects/N
+Repo: https://github.com/YOU/your-app
+```
+
+GitHub does **not** allow agents to create/rename Project views via API. The agent coaches; **you** click in the Project UI:
+
+- Open the Project in the browser (`project status` → `url`).
+- Follow [views-setup.md](.ai_infra/templates/project-board/views-setup.md) — rename `View 1` / create until you have all **six** default views:
+
+| View | Layout (short) |
+|------|----------------|
+| **Status board** | Board · group by Status |
+| **Prioritized backlog** | Table · show Priority, Size, Estimate, Start date |
+| **Roadmap** | Roadmap |
+| **Bugs** | Table · filter title contains `[BUG]` |
+| **In review** | Table · Status = In review |
+| **My items** | Table · Assignees = `@me` |
+
+- On **Status board** and **Prioritized backlog**, show Tier-1 columns: **Priority**, **Size**, **Estimate**, **Start date**.
+- Project README: paste [project-readme.md](.ai_infra/templates/project-board/project-readme.md) in the GitHub UI, **or** run:
+
+```bash
+python3 -m cursor_workflow project board-bootstrap --check --apply-readme
+```
+
+- Re-check until green (exit 0, no FAIL; no Priority/Start date WARNs on primary views):
+
+```bash
+python3 -m cursor_workflow project board-bootstrap --check
+```
+
+**Misread trap:** a `CODE=5` FAIL that lists `missing minimum view 'Status board'` (etc.) is **views**, not README. Empty README is usually a separate WARN/`--apply-readme` fix. Read the FAIL lines literally.
+
+**Do not** start with `/enterprise-auditor`. When bootstrap is green → **step 5** `/implementer`.
+
+---
 
 ### 5. Start building
 
@@ -135,6 +202,42 @@ Before day-to-day agents: **`/project-board`** + [board-shell-onboard](.cursor/s
 **Every session Entry:** if `project_ssot.enabled` → `python3 -m cursor_workflow project status`; else → `.local/index-and-planning/current/session-pointer.md`.
 
 Shorter path: [consumer-quickstart.md](.ai_infra/docs/operations/consumer-quickstart.md).
+
+### Optional — Update the kit / plugin later
+
+Docs and agents in **your app** come from the plugin payload + `/workflow-activate`. Re-reading the kit README on GitHub does **not** change Smart-Notes until you refresh.
+
+1. **Ship on the kit repo first** (maintainer): merge the change to `main` (PR workflow).
+2. **In your app** (e.g. Smart-Notes), Agent chat — refresh the plugin from GitHub:
+
+```text
+/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot
+```
+
+3. Re-activate (safe / idempotent — keeps `.local/user_settings/` and existing `AGENTS.md`):
+
+```text
+/workflow-activate
+```
+
+Or terminal:
+
+```bash
+source .venv/bin/activate
+python3 -m cursor_workflow activate --directory .
+```
+
+4. Sanity check:
+
+```bash
+python3 -m cursor_workflow health
+python3 -m cursor_workflow project board-bootstrap --check   # still FAIL until you finish step 4 views in GitHub UI
+```
+
+**Force** full overwrite of agents/skills/scripts (review diffs): `python3 -m cursor_workflow activate --directory . --force`  
+Details: [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md).
+
+**Board views are not fixed by a plugin update.** `board-bootstrap --check` FAIL on missing views only clears after you complete **step 4** (`/project-board` + human UI). Updating the plugin only refreshes docs/coaching text.
 
 ---
 

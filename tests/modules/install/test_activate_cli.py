@@ -151,6 +151,8 @@ def test_print_post_activate_hints_board_first_when_enabled(
     out = capsys.readouterr().out
     assert "project doctor" in out
     assert "/project-board" in out
+    assert "Project URL" in out
+    assert "gh auth refresh" in out
     assert "project board-bootstrap --check" in out
     assert "default Playground shell green" in out
     assert "Status board + Prioritized backlog" in out

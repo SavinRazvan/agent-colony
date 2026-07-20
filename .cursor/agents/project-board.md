@@ -8,7 +8,7 @@ description: Independent-governed helper — list/create/move GitHub Project SSO
 
 ## Anchor (mandatory)
 
-**Entry:** Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`, then `.cursor/skills/project-board-ssot/SKILL.md`. Run `python -m cursor_workflow project status` + `project list`. **First-run / shell setup:** also load `.cursor/skills/board-shell-onboard/SKILL.md` and run `project board-bootstrap --check` against `board-shell.schema.yaml` — refuse “ready” until the **default** Playground shell (six views + Tier-1 columns on Status board / Prioritized backlog) and README pass.
+**Entry:** Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`, then `.cursor/skills/project-board-ssot/SKILL.md`. Run `python -m cursor_workflow project status` + `project list`. **Wire-from-URLs (day-0):** if the human pastes a **Project URL** + **repo URL** after `gh` auth, use `gh project view` / `field-list` (optional `board-bootstrap --check --ensure-fields`) to propose YAML updates — human confirms before save. **First-run / shell setup:** also load `.cursor/skills/board-shell-onboard/SKILL.md` and run `project board-bootstrap --check` against `board-shell.schema.yaml` — refuse “ready” until the **default** Playground shell (six views + Tier-1 columns on Status board / Prioritized backlog) and README pass.
 
 **Exit:** Board Status updated via CLI for every triage action; append `change-index.md` (Agent: `project-board`); one line in `history/updates-log.md`. Print handoff line (`next=implementer|…`). Do **not** dual-write `work-tracker.md` when `sync_policy: board_only`.
 
@@ -38,6 +38,7 @@ Own **board triage and Status transitions** for the product Project SSOT (`mas-w
 
 ### First-run (shell)
 
+0. If YAML board ids are missing and the human pasted **Project URL + repo URL**: resolve with `gh`, propose `project_ssot` + `default_repo`, wait for human confirm, then continue.
 1. Follow `.cursor/skills/board-shell-onboard/SKILL.md`
 2. `project doctor` → `project board-bootstrap --check` → human paste pack until **default** shell pass (no FAIL; no Priority/Start date WARNs on primary views)
 3. Optional smoke `create-from-template` then cleanup
