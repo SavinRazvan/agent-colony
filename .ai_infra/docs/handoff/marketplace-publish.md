@@ -195,7 +195,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 | Organization handle | `savin-razvan` (or `mas-workflow-kit-project-ssot`) |
 | Contact email | razvan.i.savin@gmail.com |
 | Logotype URL | `https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit-project-ssot/main/assets/logo.png` |
-| Description | MAS Workflow Kit installs multi-agent workflow infrastructure into any Cursor project: agents, skills, rules, PR lifecycle scripts, `.local/` trackers, and optional MCP. Run **`/workflow-activate`** once to scaffold three planes. Pattern A: one script per maintainer action. For teams using agents, audits, and PR-first governance. |
+| Description | MAS Workflow Kit — Project SSOT installs multi-agent workflow into any Cursor project (8 agents, 12 skills, 7 rules): GitHub Project as writable backlog/status SSOT, PR lifecycle scripts, `.local/` evidence, optional MCP. Run **`/workflow-activate`**, then first-run **`/project-board`** (Playground board shell) before **`/implementer`**. Pattern A: one script per maintainer action. |
 | GitHub repository | https://github.com/SavinRazvan/mas-workflow-kit-project-ssot |
 | Owner | Individual · razvan.i.savin@gmail.com |
 | Website URL | https://razvansavin.com/ |
@@ -215,6 +215,8 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 **Listing copy refresh (2026-07-20 DOC-ONBOARD / board-shell, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` + `ls .cursor/skills/` — **1166** tests collected, **7089** stmts / **100%** coverage; agent/skill/rule counts (**8** / **12** / **7**) including `board-shell-onboard`; kit version **0.4.0**. Superseded by completeness refresh below.
 
 **Listing copy refresh (2026-07-20 board-shell completeness):** Re-verified — **1168** tests collected (Playground-default schema + template-first agent voice); agent/skill/rule counts (**8** / **12** / **7**); kit version **0.4.0**. Prior DOC-ONBOARD line superseded.
+
+**Listing copy refresh (2026-07-20 DOC-ALIGN secondary + marketplace description):** Description row + `plugin.json` now mention Project SSOT / Playground board shell / **8 / 12 / 7**; archival stamps above remain historical.
 
 **Consumer smoke (2026-07-08):** Real app **Smart-Notes** — `/add-plugin` + chat **`/workflow-activate`**, `health`/`gates`/`integrate`/`mcp validate` PASS, kit smoke **1** of **120** pytest during gates. Local evidence file was not retained in this workspace; recreate with `make smoke-consumer` and write under `.local/workflow-artifacts/release/smoke-consumer-<app>-<date>.md` on the next consumer run.
 
