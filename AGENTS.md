@@ -98,7 +98,7 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 | Root | Role |
 |------|------|
 | `.cursor/agents/` | Subagent cards (8) — Task delegation; **`model: auto`**; audit agents write `.local/` artifacts only |
-| `.cursor/skills/` | **Canonical protocols** (11 folders: audit, drift, implement loop, activate, project-board, …) |
+| `.cursor/skills/` | **Canonical protocols** (12 folders: audit, drift, implement loop, activate, project-board, board-shell-onboard, …) |
 | `.agents/skills/` | **Maintainer slash skills** (5 folders: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `audit-alignment` stub → `enterprise-auditor`) — additive in plugin sync |
 | `.cursor/rules/` | **7** `alwaysApply` rules in this product repo (6 kit + `project-ssot-precedence`) — high context cost by design |
 
@@ -117,6 +117,7 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 | Plugin activation | [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) or `workflow-activate` skill / `python3 -m cursor_workflow activate --directory .` |
 | Implement | `.cursor/agents/implementer.md` + `.cursor/skills/implementation-execution-loop/SKILL.md` |
 | Project board SSOT | `.cursor/agents/project-board.md` + `.cursor/skills/project-board-ssot/SKILL.md` — `python -m cursor_workflow project …` |
+| Board shell first-run | `/project-board` + `.cursor/skills/board-shell-onboard/SKILL.md` + `board-shell.schema.yaml` |
 | Integrate infrastructure | `.cursor/agents/integrator-mas-agent.md` + `.cursor/skills/mas-infrastructure-integration/SKILL.md` — validate with `python3 -m cursor_workflow integrate validate` |
 | Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-module-coverage/SKILL.md` |
 | Verify claims | `.cursor/agents/verifier.md` |

@@ -8,7 +8,7 @@ description: Independent-governed helper — list/create/move GitHub Project SSO
 
 ## Anchor (mandatory)
 
-**Entry:** Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`, then `.cursor/skills/project-board-ssot/SKILL.md`. Run `python -m cursor_workflow project status` + `project list`.
+**Entry:** Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`, then `.cursor/skills/project-board-ssot/SKILL.md`. Run `python -m cursor_workflow project status` + `project list`. **First-run / shell setup:** also load `.cursor/skills/board-shell-onboard/SKILL.md` and run `project board-bootstrap --check` against `board-shell.schema.yaml` — refuse “ready” until minimum views + README pass.
 
 **Exit:** Board Status updated via CLI for every triage action; append `change-index.md` (Agent: `project-board`); one line in `history/updates-log.md`. Print handoff line (`next=implementer|…`). Do **not** dual-write `work-tracker.md` when `sync_policy: board_only`.
 
@@ -18,21 +18,31 @@ description: Independent-governed helper — list/create/move GitHub Project SSO
 
 **Board lifecycle (role):** Triage Ready (human owns Ready *ordering*). On new/moved cards **must** set Priority/Size/Estimate via `set-field` (Tier-1 contract). Pattern A: `create-from-template` → `claim --last` → hand off to **implementer** with real `item_id`.
 
-**Templates:** feature/`chore/` → `--template slice`; defect/`fix/` → `--template bug`; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
+**Templates:** feature/`chore/` → `--template slice`; defect/`fix/` → `--template bug`. **Board shell:** first-run uses `board-shell-onboard` + human `views-setup.md` (views stay human UI); optional `board-bootstrap --apply-readme` / `--ensure-fields`. Notes timestamps via CLI; do not hand-forge times.
 
 ## Role
 
-Own **board triage and Status transitions** for the product Project SSOT (`mas-workflow-kit-project-ssot`). Hand off implementation to **implementer**. Independent-governed (ADR-006) — not in default PR pipelines.
+Own **board triage and Status transitions** for the product Project SSOT (`mas-workflow-kit-project-ssot`). Hand off implementation to **implementer**. Independent-governed (ADR-006) — not in default PR pipelines. **Also** coach first-run board shell (schema check + human views) via `board-shell-onboard`.
 
 ## Read first
 
 - `.cursor/skills/project-board-ssot/SKILL.md`
+- `.cursor/skills/board-shell-onboard/SKILL.md` — when user is first-time / shell looks like `View 1`
+- `.ai_infra/templates/project-board/board-shell.schema.yaml` — desired-state starter
 - `.ai_infra/templates/project-board/README.md` — when creating cards
 - `.local/user_settings/github.collaboration.yaml` (`project_ssot`)
 - `HANDOFF.md` (STANDALONE product + board SSOT north star)
 - `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`
 
 ## Loop
+
+### First-run (shell)
+
+1. Follow `.cursor/skills/board-shell-onboard/SKILL.md`
+2. `project doctor` → `project board-bootstrap --check` → human paste pack until minimum pass
+3. Optional smoke `create-from-template` then cleanup
+
+### Day-to-day (cards)
 
 1. `python -m cursor_workflow project status --directory .`
 2. `python -m cursor_workflow project list --status ready --directory .` (or backlog)
@@ -45,6 +55,7 @@ Own **board triage and Status transitions** for the product Project SSOT (`mas-w
 | Do | Do not |
 |----|--------|
 | Drive board via `cursor_workflow project` | Bypass `prepare.py` gates |
+| Coach shell via schema + human UI | Create/rename Project **views** via API |
 | Use YAML field/option ids | Dual-write board + tracker SSOT |
 | Hand off code slices to implementer | Mutate upstream `mas-workflow-kit` |
 | Fall back to local trackers when disabled | Invent MCP tools |

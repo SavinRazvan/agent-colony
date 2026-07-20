@@ -127,7 +127,7 @@ Discover ids manually: `gh project view <N> --owner <login>` (for `project_id`) 
 | 1. Install / activate | Agent chat: `/add-plugin …` then **`/workflow-activate`** in **your app repo** — wait for **`VERIFY PASS`**. |
 | 2. Collaboration YAML | Edit `.local/user_settings/github.collaboration.yaml`: set `project_ssot.enabled: true`, `sync_policy: board_only`, and board identity — `name`, `number`, `owner`, `project_id` (from Project URL / `gh project view`). Copy field ids from `gh project field-list <number> --owner <owner>` when wiring `fields.status` / Priority / Size. |
 | 3. GitHub auth | See **§ GitHub CLI auth (Projects)** below — grant `repo` + Project scopes; use the device login link if no browser opens. |
-| 4. Doctor + board shell | `python3 -m cursor_workflow project doctor` → **humans:** follow `.ai_infra/templates/project-board/views-setup.md` (rename views / add columns) and paste **contents of** `project-readme.md` into the Project README field (do not paste `views-setup.md` into README) → `python3 -m cursor_workflow project board-bootstrap --check` → `python3 -m cursor_workflow project status`. |
+| 4. Doctor + board shell | `python3 -m cursor_workflow project doctor` → **first-run:** `/project-board` + `.cursor/skills/board-shell-onboard/SKILL.md` (schema: `board-shell.schema.yaml`) → **humans:** follow `.ai_infra/templates/project-board/views-setup.md` (rename views / add columns) and paste **contents of** `project-readme.md` into the Project README field (or opt-in `board-bootstrap --check --apply-readme`) → `python3 -m cursor_workflow project board-bootstrap --check` → `python3 -m cursor_workflow project status`. |
 | 5. First card | `python3 -m cursor_workflow project create-from-template --template slice --title "…" --priority p1 --size s --estimate 1 --agent implementer` (assigns `owner.github_user` on Issues) → `claim --last --agent implementer` (sets Start date). Prefer `project guide`. |
 | 6. Rate-limit buffer | Writes may **precheck** GraphQL quota (cached REST) or queue on throttle / Forbidden / 429. If a write returns **EXIT_QUEUED (6)**, do **not** retry-loop — continue local evidence; after quota recovers run `python3 -m cursor_workflow project outbox status` then `project outbox flush`. Configure `project_ssot.outbox` (`precheck_writes`, `dedupe_pending`, …) in collaboration YAML. Outbox is a local buffer, not a second Status SSOT. |
 
@@ -325,7 +325,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | `/workflow-drift-guard` | `.cursor/agents/workflow-drift-guard.md` |
 | `/researcher` | `.cursor/agents/researcher.md` — **shipped/proven**; adaptive Brief; public/private GitHub (private needs `gh`/git auth); anti-loop ≤6 rounds; `research init\|fetch\|validate`; corpus opt-in after init |
 | `/integrator-mas-agent` | `.cursor/agents/integrator-mas-agent.md` |
-| `/project-board` | `.cursor/agents/project-board.md` + `.cursor/skills/project-board-ssot/` |
+| `/project-board` | `.cursor/agents/project-board.md` + `project-board-ssot` + first-run `board-shell-onboard` |
 | `/review-pr`, `/prepare-pr`, `/merge-pr` | `.agents/skills/` |
 | `/mas-infrastructure-integration` | `.cursor/skills/mas-infrastructure-integration/` |
 | `/connect-external-mcp` | `.cursor/skills/connect-external-mcp/` |

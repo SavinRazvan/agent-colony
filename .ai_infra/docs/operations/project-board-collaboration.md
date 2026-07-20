@@ -27,7 +27,15 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Status drifts from reality | Status column = truth (DRIFT-009 watches dual-write) |
 | Humans cannot see progress | Project UI is the shared dashboard |
 
-**Rule:** Entry = read board. Exit = update Status and **attributed Notes** for the card you touched. `validate-item` checks the card body, Tier-1 fields (including Assignee when present on the snapshot), and status-scoped Notes; it is not just a section-presence check. Prefer Pattern A recipes: `project claim` / `project handoff` (one command each). Atomics (`append-notes --agent`) remain for power use. **Never** paste Project settings UI text into a shell — humans **follow** `.ai_infra/templates/project-board/views-setup.md` and paste **contents of** `project-readme.md` into Project README settings.
+**Rule:** Entry = read board. Exit = update Status and **attributed Notes** for the card you touched. `validate-item` checks the card body, Tier-1 fields (including Assignee when present on the snapshot), and status-scoped Notes; it is not just a section-presence check. Prefer Pattern A recipes: `project claim` / `project handoff` (one command each). Atomics (`append-notes --agent`) remain for power use. **Never** paste Project settings UI text into a shell — humans **follow** `.ai_infra/templates/project-board/views-setup.md` and paste **contents of** `project-readme.md` into Project README settings (or opt-in `board-bootstrap --check --apply-readme`).
+
+### Board shell starter (first-run)
+
+- **Desired state:** `.ai_infra/templates/project-board/board-shell.schema.yaml` (Playground parity).
+- **Customize:** copy/edit `.local/user_settings/board-shell.schema.yaml` — `board-bootstrap --check` prefers the overlay when present. Safe to rename/drop **recommended** views; do **not** remove Status / Priority / Size / Estimate / Start date fields agents write.
+- **Coach:** `/project-board` + `.cursor/skills/board-shell-onboard/SKILL.md`.
+- **Verify:** `python3 -m cursor_workflow project board-bootstrap --check` (FAIL if minimum views missing; WARN on recommended / columns / `View N`).
+- **Optional API:** `--ensure-fields` (create missing field definitions + print suggested YAML ids); `--apply-readme` (push README). Views stay human UI (ADR-008).
 
 ## Surfaces — who may write
 
@@ -41,7 +49,8 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Linked PRs | Yes (UI link) | `mention-pr --pr N` → Notes with PR URL; auto-promotes Draft when `promote_to_issue_on_pr` (default true) — FAIL if promote fails; WARN-only if false | GitHub **Linked pull requests** column derived from Issue↔PR (works after Issue) |
 | Create cards | Yes | project-board, implementer, integrator | — |
 | Ready prioritization | **Owner** | Consume; create agreed work | — |
-| Views / workflows / Insights / README / status updates | **Owner only** | Never | Insights auto |
+| Views / workflows / Insights / status updates | **Owner only** | Never mutate views | Insights auto |
+| Project README | **Owner** (paste) | Opt-in `board-bootstrap --apply-readme` only | — |
 | Assignee / My items | Yes (`set-assignee` / UI) | `create-from-template` assigns `owner.github_user` on Issues (default); claim re-asserts if empty; assignee = **human** only | My items view |
 | Card Notes (`append-notes --agent`) | Yes | Yes — `@user/agent · YYYY-MM-DDTHH:MM:SSZ · …`; `next=@user/agent` | — |
 | PR / audits / secrets | Local | Local | — |
@@ -95,6 +104,7 @@ All subcommands registered in `.ai_infra/install/cursor_workflow/project_parser.
 | `last` | Print last saved item_id (after create/claim) | Any (with `--last` recipes) |
 | `guide` | Print safe recipes using `--last` (no placeholder ids) | Any (Entry) |
 | `doctor` | Validate project_ssot config, templates, and gh project access | Maintainer / human |
+| `board-bootstrap` | Schema-aware shell check (`--check`); opt-in `--ensure-fields` / `--apply-readme` | project-board first-run / human |
 | `set-assignee` | Assign GitHub human user (Issue-backed items) | project-board, implementer |
 | `find-by-pr` | Resolve project item id from PR number or URL | verifier, merge.py |
 | `export` | Read-only board snapshot (never mutates Status) | workflow-drift-guard, ICC |
