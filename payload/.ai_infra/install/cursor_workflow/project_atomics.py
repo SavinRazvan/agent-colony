@@ -59,9 +59,10 @@ def validate_card_body(text: str, sections: list[str]) -> list[str]:
 
 def section_body_content(body: str, section_name: str) -> str:
     """Return text under ## section_name until the next top-level ## heading."""
-    target = f"## {str(section_name or '').strip()}".casefold()
-    if target == "##":
+    name = str(section_name or "").strip()
+    if not name:
         return ""
+    target = f"## {name}".casefold()
     lines = (body or "").splitlines()
     start_idx: int | None = None
     for idx, line in enumerate(lines):

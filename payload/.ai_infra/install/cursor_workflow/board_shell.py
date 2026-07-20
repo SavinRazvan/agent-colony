@@ -147,8 +147,6 @@ def compare_views_to_schema(
 
     for spec in minimum_views(schema):
         want_name = str(spec.get("name") or "").strip()
-        if not want_name:
-            continue
         found = _view_by_name(live_views, want_name)
         if found is None:
             problems.append(f"missing minimum view {want_name!r}")
@@ -176,8 +174,6 @@ def compare_views_to_schema(
 
     for spec in recommended_views(schema):
         want_name = str(spec.get("name") or "").strip()
-        if not want_name:
-            continue
         if _view_by_name(live_views, want_name) is None:
             warnings.append(f"recommended view missing: {want_name!r}")
 
