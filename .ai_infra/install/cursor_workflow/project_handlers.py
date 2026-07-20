@@ -568,7 +568,8 @@ def run_board_bootstrap(args: argparse.Namespace) -> int:
                 return pc.fail(
                     "board-bootstrap",
                     pc.EXIT_VALIDATION,
-                    "minimum views from board-shell schema missing; follow views-setup.md",
+                    "minimum views from board-shell schema missing; follow views-setup.md "
+                    "(kit default = Playground six-view shell)",
                 )
 
     print("board-bootstrap: ok")

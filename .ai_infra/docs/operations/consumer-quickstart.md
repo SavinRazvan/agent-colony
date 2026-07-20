@@ -23,7 +23,7 @@ Install **MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) 
 
 ---
 
-## First run (4 steps)
+## First run (5 steps)
 
 **Need:** Cursor · Python 3.11+ · **your project folder open in Cursor** (not the kit product repo `mas-workflow-kit-project-ssot`).
 
@@ -33,9 +33,10 @@ Install **MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) 
 | **2. Activate** | Open **your app folder** → Agent chat: **`/workflow-activate`** → wait for **`VERIFY PASS`** |
 | **3. Your name** | Edit `.local/user_settings/github.collaboration.yaml` → set `display_name` + `github_user` → `python3 -m cursor_workflow contributors validate` |
 | **3b. GitHub auth** (board SSOT) | `gh auth login` or `gh auth refresh -h github.com -s read:project,project` — grant **repo + Project** permissions. If no browser opens: copy the one-time code → open **https://github.com/login/device** → approve → return to terminal. Details: [PLUGIN-USER-GUIDE § GitHub CLI auth](PLUGIN-USER-GUIDE.md#github-cli-auth-projects). |
-| **4. Build** | **`/implementer`** · when `project_ssot.enabled`, Entry = `python3 -m cursor_workflow project status` (board first); else `session-pointer.md` → `plan.md` → `work-tracker.md` |
+| **4. Board shell** *(when `project_ssot.enabled`)* | `project doctor` → **`/project-board`** (skill `board-shell-onboard`) → follow [views-setup.md](../../templates/project-board/views-setup.md) + paste [project-readme.md](../../templates/project-board/project-readme.md) (or `board-bootstrap --check --apply-readme`) → `python3 -m cursor_workflow project board-bootstrap --check` → `project status`. **Not** first-run: `/enterprise-auditor`. Full checklist: [PLUGIN-USER-GUIDE § Consumer onboarding](PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist). |
+| **5. Build** | **`/implementer`** · when board SSOT on, Entry = `python3 -m cursor_workflow project status`; else `session-pointer.md` → `plan.md` → `work-tracker.md` |
 
-**Healthy install?** `python3 -m cursor_workflow health` · with board on: `gh auth status` then `python3 -m cursor_workflow project doctor`
+**Healthy install?** `python3 -m cursor_workflow health` · with board on: `gh auth status` → `project doctor` → `project board-bootstrap --check`
 
 > **Cheat sheet:** [Agent chat vs terminal](#agent-chat-vs-terminal) · [Dashboards (deprecated)](#control-center-dashboards-deprecated) · [All CLI commands](#terminal-commands-cheat-sheet)
 
@@ -66,6 +67,7 @@ Cursor lists **subagents**, **skills**, and **commands** in the same **`/`** men
 | What you want | Type in chat | Lives on disk |
 |---------------|--------------|---------------|
 | Activate the kit | **`/workflow-activate`** | `.cursor/skills/workflow-activate/` |
+| First-run board shell | **`/project-board`** | `.cursor/agents/project-board.md` + `board-shell-onboard` |
 | Implement a slice | **`/implementer`** | `.cursor/agents/implementer.md` |
 | Run tests | **`/test-runner`** | `.cursor/agents/test-runner.md` |
 | PR review / prepare / merge | **`/review-pr`**, `/prepare-pr`, `/merge-pr` | `.agents/skills/` (loaded as skills) |
@@ -154,12 +156,14 @@ Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → **`/connect
 
 ---
 
-## Step 4 detail — daily workflow
+## Step 5 detail — daily workflow
+
+*(After first-run board shell in step 4 when SSOT is on.)*
 
 1. When `project_ssot.enabled`: `python3 -m cursor_workflow project status` (board first); else open `.local/index-and-planning/current/session-pointer.md`
 2. Claim/update the board card (Status + Notes `@user/agent · <ISO-8601-UTC> · …`); local `plan.md` / `work-tracker.md` only as offline fallback under `board_only`; optional `history/continuity-index.md` (≥3-day local rollup)
 3. If board writes hit GraphQL rate-limit (EXIT_QUEUED): `project outbox status` / later `outbox flush` — enable `project_ssot.outbox` defaults after activate
-4. **`/implementer`** (or `/test-runner`, `/verifier`, `/enterprise-auditor`)
+4. **`/implementer`** (or `/test-runner`, `/verifier`; `/enterprise-auditor` only for architecture-impacting / pre-merge audits — not day-0 onboarding)
 5. Dashboard (optional, **deprecated**): see [Control Center dashboards](#control-center-dashboards-deprecated) below
 
 **Add your own agent/skill/MCP:** **`/integrator-mas-agent`** + **`/mas-infrastructure-integration`**

@@ -9,7 +9,7 @@
 | | |
 |--|--|
 | **Product repo** | [mas-workflow-kit-project-ssot](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot) |
-| **Version** | `0.4.0` · **Tests** · 1166 · **Agents** · 8 · **Rules** · **7 universal** |
+| **Version** | `0.4.0` · **Tests** · 1168 · **Agents** · 8 · **Rules** · **7 universal** |
 | **Board (kit-dev)** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
 | **Standing** | **STANDALONE** — permanent product; lineage only from [mas-workflow-kit](https://github.com/SavinRazvan/mas-workflow-kit) (`v0.4.0` / `8a779fa`) |
 
@@ -109,13 +109,18 @@ gh auth refresh -h github.com -s read:project,project   # keep existing repo (+ 
 
 gh auth status   # expect scopes including: repo, project (read:project may appear too)
 python3 -m cursor_workflow project doctor
+python3 -m cursor_workflow project board-bootstrap --check   # first-run: /project-board + views-setup if FAIL/WARN
 python3 -m cursor_workflow project status
 python3 -m cursor_workflow project guide                # safe recipes
 ```
 
-Wire field ids with `gh project view` / `gh project field-list` — full checklist: [PLUGIN-USER-GUIDE § Consumer project_ssot onboarding](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) (step 3 = GitHub auth).
+Wire field ids with `gh project view` / `gh project field-list` — full checklist: [PLUGIN-USER-GUIDE § Consumer project_ssot onboarding](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) (step 3 = GitHub auth · step 4 = board shell).
 
-### 4. Start building
+### 4. Board shell (first-run, when `project_ssot.enabled`)
+
+Before day-to-day agents: **`/project-board`** + [board-shell-onboard](.cursor/skills/board-shell-onboard/SKILL.md) → follow [views-setup.md](.ai_infra/templates/project-board/views-setup.md) → paste [project-readme.md](.ai_infra/templates/project-board/project-readme.md) (or `board-bootstrap --check --apply-readme`) → re-run `board-bootstrap --check` until **default Playground shell** green (no FAIL; no Priority/Start date WARNs on primary views). **Do not** start with `/enterprise-auditor`.
+
+### 5. Start building
 
 | Goal | In Agent chat |
 |------|----------------|
@@ -125,6 +130,7 @@ Wire field ids with `gh project view` / `gh project field-list` — full checkli
 | PR lifecycle | `/review-pr` → `/prepare-pr` → `/merge-pr` |
 | Research a repo | `/researcher` + a GitHub URL |
 | Extend agents/skills/MCP | `/integrator-mas-agent` |
+| Architecture audit *(later)* | `/enterprise-auditor` — not day-0 onboarding |
 
 **Every session Entry:** if `project_ssot.enabled` → `python3 -m cursor_workflow project status`; else → `.local/index-and-planning/current/session-pointer.md`.
 

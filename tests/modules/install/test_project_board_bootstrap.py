@@ -68,6 +68,32 @@ def _bootstrap_args(
     )
 
 
+def _tier1_fields() -> list[str]:
+    return [
+        "Title",
+        "Assignees",
+        "Status",
+        "Priority",
+        "Size",
+        "Estimate",
+        "Start date",
+        "Linked pull requests",
+    ]
+
+
+def _full_playground_views(*, backlog_fields: list[str] | None = None) -> list[dict]:
+    tier = _tier1_fields()
+    backlog = backlog_fields if backlog_fields is not None else tier
+    return [
+        {"name": "Status board", "layout": "BOARD_LAYOUT", "fields": tier},
+        {"name": "Prioritized backlog", "layout": "TABLE_LAYOUT", "fields": backlog},
+        {"name": "Roadmap", "layout": "ROADMAP_LAYOUT", "fields": ["Title", "Status"]},
+        {"name": "Bugs 🐛", "layout": "TABLE_LAYOUT", "fields": ["Title", "Status"]},
+        {"name": "In review", "layout": "TABLE_LAYOUT", "fields": ["Title", "Status"]},
+        {"name": "My items", "layout": "TABLE_LAYOUT", "fields": ["Title", "Priority"]},
+    ]
+
+
 def _patch_common(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, ssot: dict) -> None:
     monkeypatch.setattr(project_cli, "_load_enabled_ssot", lambda root, cmd: (ssot, 0))
     monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
@@ -78,6 +104,7 @@ def _patch_common(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, ssot: dict) -
     )
     monkeypatch.setattr(
         project_outbox,
+
         "graphql_rate_limit",
         lambda: {"remaining": 5000, "limit": 5000, "reset_epoch": 0, "error": None},
     )
@@ -123,32 +150,20 @@ def test_board_bootstrap_ok_readme_reports_next_steps(
     ssot = _ssot()
     _patch_common(monkeypatch, tmp_path, ssot)
     monkeypatch.setattr(project_cli, "read_project_readme", lambda ssot_arg: ("# README\n", None))
+    # Full Playground views, but Prioritized backlog missing Priority (live regression).
+    incomplete_backlog = [
+        "Title",
+        "Assignees",
+        "Status",
+        "Linked pull requests",
+        "Size",
+        "Estimate",
+        "Start date",
+    ]
     monkeypatch.setattr(
         project_cli,
         "read_project_views",
-        lambda ssot_arg: (
-            [
-                {
-                    "name": "Status board",
-                    "layout": "BOARD_LAYOUT",
-                    "fields": ["Title", "Status", "Size"],
-                },
-                {
-                    "name": "Prioritized backlog",
-                    "layout": "TABLE_LAYOUT",
-                    "fields": [
-                        "Title",
-                        "Assignees",
-                        "Status",
-                        "Linked pull requests",
-                        "Size",
-                        "Estimate",
-                        "Start date",
-                    ],
-                },
-            ],
-            None,
-        ),
+        lambda ssot_arg: (_full_playground_views(backlog_fields=incomplete_backlog), None),
     )
 
     code = project_handlers.run_board_bootstrap(_bootstrap_args(tmp_path))
@@ -160,6 +175,7 @@ def test_board_bootstrap_ok_readme_reports_next_steps(
     assert "views-checklist.md" in out
     assert "board-shell-onboard" in out
     assert "missing columns" in err
+    assert "Priority" in err
 
 
 def test_board_bootstrap_low_quota_skips_live_probe(
@@ -196,6 +212,82 @@ def test_board_bootstrap_low_quota_skips_live_probe(
     assert "low GraphQL quota" in err
 
 
+def test_board_bootstrap_fails_when_default_playground_views_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Only Status board + Prioritized backlog is not enough — Playground set is default minimum."""
+    _template_root(tmp_path)
+    ssot = _ssot()
+    _patch_common(monkeypatch, tmp_path, ssot)
+    monkeypatch.setattr(project_cli, "read_project_readme", lambda ssot_arg: ("# README\n", None))
+    monkeypatch.setattr(
+        project_cli,
+        "read_project_views",
+        lambda ssot_arg: (
+            [
+                {
+                    "name": "Status board",
+                    "layout": "BOARD_LAYOUT",
+                    "fields": ["Title", "Status", "Priority", "Size", "Estimate", "Start date"],
+                },
+                {
+                    "name": "Prioritized backlog",
+                    "layout": "TABLE_LAYOUT",
+                    "fields": ["Title", "Status", "Priority", "Size", "Estimate", "Start date"],
+                },
+            ],
+            None,
+        ),
+    )
+
+    code = project_handlers.run_board_bootstrap(_bootstrap_args(tmp_path))
+    assert code == project_cli.EXIT_VALIDATION
+    err = capsys.readouterr().err
+    assert "missing minimum view" in err
+    assert "Roadmap" in err
+
+
+def test_board_bootstrap_warns_when_prioritized_backlog_missing_priority(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _template_root(tmp_path)
+    ssot = _ssot()
+    _patch_common(monkeypatch, tmp_path, ssot)
+    monkeypatch.setattr(project_cli, "read_project_readme", lambda ssot_arg: ("# README\n", None))
+    tier = ["Title", "Assignees", "Status", "Size", "Estimate", "Start date", "Linked pull requests"]
+    monkeypatch.setattr(
+        project_cli,
+        "read_project_views",
+        lambda ssot_arg: (
+            [
+                {
+                    "name": "Status board",
+                    "layout": "BOARD_LAYOUT",
+                    "fields": ["Title", "Status", "Priority", "Size", "Estimate", "Start date"],
+                },
+                {
+                    "name": "Prioritized backlog",
+                    "layout": "TABLE_LAYOUT",
+                    # Live Playground regression: Size/Estimate without Priority
+                    "fields": tier,
+                },
+                {"name": "Roadmap", "layout": "ROADMAP_LAYOUT", "fields": ["Title", "Status"]},
+                {"name": "Bugs", "layout": "TABLE_LAYOUT", "fields": ["Title", "Status"]},
+                {"name": "In review", "layout": "TABLE_LAYOUT", "fields": ["Title", "Status"]},
+                {"name": "My items", "layout": "TABLE_LAYOUT", "fields": ["Title", "Priority"]},
+            ],
+            None,
+        ),
+    )
+
+    code = project_handlers.run_board_bootstrap(_bootstrap_args(tmp_path))
+    assert code == project_cli.EXIT_OK
+    err = capsys.readouterr().err
+    assert "Prioritized backlog" in err
+    assert "Priority" in err
+    assert "missing columns" in err
+
+
 def test_board_bootstrap_fails_when_minimum_views_missing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -225,28 +317,25 @@ def test_board_bootstrap_fails_when_minimum_views_missing(
     assert "missing minimum view" in err
 
 
-def test_board_bootstrap_warns_recommended_views(
+def test_board_bootstrap_ok_with_full_playground_views(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     _template_root(tmp_path)
     ssot = _ssot()
     _patch_common(monkeypatch, tmp_path, ssot)
     monkeypatch.setattr(project_cli, "read_project_readme", lambda ssot_arg: ("# README\n", None))
+    tier = ["Title", "Assignees", "Status", "Priority", "Size", "Estimate", "Start date", "Linked pull requests"]
     monkeypatch.setattr(
         project_cli,
         "read_project_views",
         lambda ssot_arg: (
             [
-                {
-                    "name": "Status board",
-                    "layout": "BOARD_LAYOUT",
-                    "fields": ["Title", "Status", "Priority", "Size", "Estimate", "Start date"],
-                },
-                {
-                    "name": "Prioritized backlog",
-                    "layout": "TABLE_LAYOUT",
-                    "fields": ["Title", "Status", "Priority", "Size", "Estimate", "Start date"],
-                },
+                {"name": "Status board", "layout": "BOARD_LAYOUT", "fields": tier},
+                {"name": "Prioritized backlog", "layout": "TABLE_LAYOUT", "fields": tier},
+                {"name": "Roadmap", "layout": "ROADMAP_LAYOUT", "fields": ["Title", "Status"]},
+                {"name": "Bugs 🐛", "layout": "TABLE_LAYOUT", "fields": ["Title", "Status"]},
+                {"name": "In review", "layout": "TABLE_LAYOUT", "fields": ["Title", "Status"]},
+                {"name": "My items", "layout": "TABLE_LAYOUT", "fields": ["Title", "Priority"]},
             ],
             None,
         ),
@@ -255,8 +344,9 @@ def test_board_bootstrap_warns_recommended_views(
     code = project_handlers.run_board_bootstrap(_bootstrap_args(tmp_path))
     assert code == project_cli.EXIT_OK
     err = capsys.readouterr().err
-    assert "recommended view missing" in err
-    assert "Roadmap" in err
+    assert "missing minimum view" not in err
+    assert "recommended view missing" not in err
+    assert "missing columns" not in err
 
 
 def test_board_bootstrap_ensure_fields_prints_yaml(
@@ -269,21 +359,7 @@ def test_board_bootstrap_ensure_fields_prints_yaml(
     monkeypatch.setattr(
         project_cli,
         "read_project_views",
-        lambda ssot_arg: (
-            [
-                {
-                    "name": "Status board",
-                    "layout": "BOARD_LAYOUT",
-                    "fields": ["Priority", "Size", "Estimate", "Start date"],
-                },
-                {
-                    "name": "Prioritized backlog",
-                    "layout": "TABLE_LAYOUT",
-                    "fields": ["Priority", "Size", "Estimate", "Start date"],
-                },
-            ],
-            None,
-        ),
+        lambda ssot_arg: (_full_playground_views(), None),
     )
     calls: list[str] = []
 
@@ -317,21 +393,7 @@ def test_board_bootstrap_apply_readme_flag(
     monkeypatch.setattr(
         project_cli,
         "read_project_views",
-        lambda ssot_arg: (
-            [
-                {
-                    "name": "Status board",
-                    "layout": "BOARD_LAYOUT",
-                    "fields": ["Priority", "Size", "Estimate", "Start date"],
-                },
-                {
-                    "name": "Prioritized backlog",
-                    "layout": "TABLE_LAYOUT",
-                    "fields": ["Priority", "Size", "Estimate", "Start date"],
-                },
-            ],
-            None,
-        ),
+        lambda ssot_arg: (_full_playground_views(), None),
     )
     calls: list[str] = []
 
@@ -375,11 +437,13 @@ def test_agents_stub_and_view_pack_text() -> None:
     assert "project board-bootstrap --check" in project_board_readme
     assert "views-setup.md" in project_board_readme
     assert "views-checklist.md" in project_board_readme
-    assert "Minimum (required)" in views_setup
-    assert "Recommended (Playground parity)" in views_setup
+    assert "Default minimum (required)" in views_setup or "Default views (Playground)" in views_setup
+    assert "Priority" in views_setup
     assert "My items" in views_setup
     assert "Status board" in schema_text
     assert "Prioritized backlog" in schema_text
+    assert "Roadmap" in schema_text
+    assert "recommended: []" in schema_text or "recommended:\n  []" in schema_text
     assert "board-shell.schema.yaml" in views_setup or "board-shell" in views_setup
     readme = (
         REPO_ROOT / ".ai_infra" / "templates" / "project-board" / "project-readme.md"

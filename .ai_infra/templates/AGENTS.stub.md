@@ -22,12 +22,13 @@
 2. `source .venv/bin/activate && python3 -m cursor_workflow contributors validate`
 3. If `project_ssot.enabled: true`:
    - `python3 -m cursor_workflow project doctor`
+   - **`/project-board`** (first-run coach: `.cursor/skills/board-shell-onboard/SKILL.md`) → follow views-setup + Project README
    - `python3 -m cursor_workflow project board-bootstrap --check`
    - `python3 -m cursor_workflow project status`
    - Local trackers are offline fallback when `sync_policy: board_only`
 4. If Project SSOT is disabled or unavailable:
    - Read `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
-5. **`/implementer`** (or pick `/test-runner`, `/verifier`, `/enterprise-auditor` from the **`/`** menu)
+5. **`/implementer`** (or `/test-runner`, `/verifier` from the **`/`** menu). Use **`/enterprise-auditor`** later for architecture-impacting / pre-merge audits — not day-0 onboarding.
 
 **Dashboards (optional):** from project root:
 

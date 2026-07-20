@@ -210,7 +210,11 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-07-19 EA-019 / PR #70, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` on `main` post Tier-1 Size/Estimate + Start date — **1072** tests collected (1070 passed + 2 skipped), **6208** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts unchanged (**8** / **11** / **7**); kit version **0.4.0**. Superseded by COV-100 doc-align refresh below.
 
-**Listing copy refresh (2026-07-19 COV-100 doc-align):** Re-verified against `IMPLEMENTATION-STATUS.md` on `main` post G1–G5 github-api-safety + `test_project_cov100_gaps.py` — **1166** tests collected, **7089** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts unchanged (**8** / **11** / **7**); kit version **0.4.0**. Prior EA-019 line superseded.
+**Listing copy refresh (2026-07-19 COV-100 doc-align, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` on `main` post G1–G5 github-api-safety + `test_project_cov100_gaps.py` — **1166** tests collected, **7089** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts at that date (**8** / **11** / **7**); kit version **0.4.0**. Superseded by board-shell / DOC-ONBOARD refresh below.
+
+**Listing copy refresh (2026-07-20 DOC-ONBOARD / board-shell, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` + `ls .cursor/skills/` — **1166** tests collected, **7089** stmts / **100%** coverage; agent/skill/rule counts (**8** / **12** / **7**) including `board-shell-onboard`; kit version **0.4.0**. Superseded by completeness refresh below.
+
+**Listing copy refresh (2026-07-20 board-shell completeness):** Re-verified — **1168** tests collected (Playground-default schema + template-first agent voice); agent/skill/rule counts (**8** / **12** / **7**); kit version **0.4.0**. Prior DOC-ONBOARD line superseded.
 
 **Consumer smoke (2026-07-08):** Real app **Smart-Notes** — `/add-plugin` + chat **`/workflow-activate`**, `health`/`gates`/`integrate`/`mcp validate` PASS, kit smoke **1** of **120** pytest during gates. Local evidence file was not retained in this workspace; recreate with `make smoke-consumer` and write under `.local/workflow-artifacts/release/smoke-consumer-<app>-<date>.md` on the next consumer run.
 
