@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (MAS Workflow Kit — Project SSOT)
 
-**Last updated:** 2026-07-20 (consumer board shell + assignee-at-create — 1143 tests)  
-**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1143
+**Last updated:** 2026-07-20 (board-shell schema + first-run coach — 1147 tests)  
+**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1147
 
 ## Shipped (confirmed in repo)
 
@@ -24,7 +24,7 @@ Notes:
 |------|--------|----------|
 | Universal rules | 7 `.mdc` | `.cursor/rules/` **and** `payload/.cursor/rules/` (6 kit + `project-ssot-precedence`) |
 | Agents | 8 core; `model: auto`; audit agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` |
-| Canonical skills | 11 folders | `.cursor/skills/` |
+| Canonical skills | 12 folders | `.cursor/skills/` |
 | Maintainer skills | 5 folders (additive plugin merge) | `.agents/skills/` |
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
@@ -34,7 +34,8 @@ Notes:
 | Timestamped board Notes (CONT-TS) | `@user/agent · <ISO-8601-UTC> · …` via CLI (`claim`/`handoff`/`append-notes`) | `project_recipes.py` / `project_cli.py` + skill § Notes |
 | Tier-1 Size/Estimate + Start date | Size↔Estimate **points** table in skill; Start date on claim / `set-status` / `handoff` → `in_progress`; `create-from-template --priority` required | `project-board-ssot` skill · `project_atomics.ensure_start_date_if_starting` · PR #70 |
 | Local continuity-index | Rolling ≥3-day UTC rows; board Notes = full card lifetime | `history/continuity-index.md` (+ exemplar) |
-| Board outbox (rate-limit) | `project queue` / `outbox status|flush`; EXIT_QUEUED=6; precheck + Forbidden/429 queue + dedupe; **88 mocked unit tests** | `project_outbox.py` + `project_atomics.py` / `project_cli.py` + `tests/modules/install/test_project_outbox.py` |
+| Board outbox (rate-limit) | `project queue` / `outbox status|flush`; EXIT_QUEUED=6; precheck + Forbidden/429 queue + dedupe; **77 mocked unit tests** | `project_outbox.py` + `project_atomics.py` / `project_cli.py` + `tests/modules/install/test_project_outbox.py` |
+| Board shell schema + coach | `board-shell.schema.yaml` + `board-shell-onboard` skill; schema-aware `board-bootstrap --check`; opt-in `--ensure-fields` / `--apply-readme` | templates/project-board · project_handlers · board_shell.py |
 | Board CLI subcommands | **22** leaf commands — full table in ops doc | [project-board-collaboration.md](../operations/project-board-collaboration.md) § Project CLI subcommands |
 | EA-001 residual thin CLI | `project_cli.py` facade (~660 LOC) + parser/handlers split; board CLI modules under `.ai_infra/install/cursor_workflow/`: `project_cli.py`, `project_parser.py`, `project_handlers.py`, `project_atomics.py`, `gh_project_adapter.py`, `project_recipes.py`, `project_outbox.py` | PR #36 |
 | Doc facts validate | DOC-001…008 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
@@ -52,14 +53,14 @@ Notes:
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Researcher agent (corpus) | **Shipped / proven** — adaptive Brief; anti-loop ≤6; CLI `research init\|fetch\|validate`; live E2E flexiai-toolsmith (18 curated, validate PASS) + verifier Claim A+B VERIFIED 2026-07-19; corpus **opt-in** after first `research init` | `.cursor/agents/researcher.md` · `research-corpus-execution` · `canvases/agent-researcher.canvas.tsx` · Issue #74 |
 | Kit version on install | `kit_version` 0.4.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 1143 collected | `tests/modules/` |
+| Tests | 1147 collected | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 
 `pytest --cov=.ai_infra --cov=cursor_workflow` measures the **import surface** of the
 installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-19
 (COV-100 verify): **6503 statements, 100.00%** on a full suite pass. Test count as of
-2026-07-20 consumer board shell + assignee-at-create: **1143 collected**. One import-order `sys.path` bootstrap in
+2026-07-20 board-shell schema + first-run coach: **1147 collected**. One import-order `sys.path` bootstrap in
 `merge.py` is `# pragma: no cover` (justified — import-order bootstrap only).
 Subprocess-only maintainer scanners (`check_governance_consistency.py`,
 `check_debrand.py`, `check_consumer_purity.py`, `check_file_headers.py`) have

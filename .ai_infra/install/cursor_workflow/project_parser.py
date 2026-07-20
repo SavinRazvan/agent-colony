@@ -268,13 +268,23 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
 
     boot_cmd = project_sub.add_parser(
         "board-bootstrap",
-        help="Read-only Project README/view shell check (human paste pack)",
+        help="Schema-aware Project shell check (optional ensure-fields / apply-readme)",
     )
     boot_cmd.add_argument("--directory", type=Path, default=".")
     boot_cmd.add_argument(
         "--check",
         action="store_true",
-        help="Run read-only readiness checks (required)",
+        help="Run readiness checks against board-shell.schema.yaml (required)",
+    )
+    boot_cmd.add_argument(
+        "--ensure-fields",
+        action="store_true",
+        help="Create missing schema field definitions via createProjectV2Field; print suggested YAML ids",
+    )
+    boot_cmd.add_argument(
+        "--apply-readme",
+        action="store_true",
+        help="Push project-readme.md to Project via updateProjectV2 (opt-in)",
     )
     boot_cmd.set_defaults(func=pc.cmd_board_bootstrap)
 

@@ -126,7 +126,12 @@ def set_item_number(
     if proc.returncode != 0:
         return False, (proc.stderr or proc.stdout or "gh project item-edit --number failed").strip()
     return True, str(value)
-def run_gh(args: list[str], *, timeout_s: float = 60.0) -> subprocess.CompletedProcess[str]:
+def run_gh(
+    args: list[str],
+    *,
+    timeout_s: float = 60.0,
+    input_text: str | None = None,
+) -> subprocess.CompletedProcess[str]:
     cmd = ["gh", *args]
     return subprocess.run(
         cmd,
@@ -134,6 +139,7 @@ def run_gh(args: list[str], *, timeout_s: float = 60.0) -> subprocess.CompletedP
         text=True,
         timeout=timeout_s,
         check=False,
+        input=input_text,
     )
 def _parse_pvti_from_gh_json(raw: str) -> str | None:
     try:

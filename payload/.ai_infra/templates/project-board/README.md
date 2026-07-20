@@ -9,7 +9,8 @@ Depends On:
  - conventions.body_sections in github.collaboration.yaml
 Notes:
  - Never paste GitHub Project *settings UI* text into a shell — that is not a CLI.
- - Project README / views / Insights are human-only (ADR-008); paste project-readme.md in the UI.
+ - Views stay human UI (ADR-008). Schema + board-bootstrap --check coach the shell;
+   opt-in --ensure-fields / --apply-readme only.
 -->
 
 # Project board templates
@@ -19,9 +20,10 @@ Notes:
 | `card-body-slice.md` | Agents | `create-from-template --template slice --title "…" --priority p1` (size/estimate default s/1) |
 | `card-body-bug.md` | Agents | `create-from-template --template bug --priority p1` |
 | `card-body-research.md` | researcher / project-board | `create-from-template --template research --priority p2` |
+| `board-shell.schema.yaml` | Coach / CLI | Desired-state Playground parity; overlay `.local/user_settings/board-shell.schema.yaml` |
 | `outbox-entry.schema.json` | Agents / CLI | Validate lines in `.local/generated-data/board-outbox.jsonl` |
 | `outbox-entry.example.json` | Docs | Exemplar outbox line (never paste fake `item_id` as `--id`) |
-| `project-readme.md` | **Humans** | Paste **contents** into Project settings → README (edit placeholders). Do **not** paste into a terminal. |
+| `project-readme.md` | **Humans** (or `--apply-readme`) | Paste **contents** into Project settings → README (edit placeholders). Do **not** paste into a terminal. |
 | `views-setup.md` | **Humans** | **Follow** in GitHub UI (rename views / add columns). Do **not** paste this file into Project README. |
 | `views-checklist.md` | **Humans** | Checkbox checklist for minimum + recommended views. |
 
@@ -34,8 +36,8 @@ Card bodies always include `## Acceptance`, `## Rollback`, and `## Notes` so `va
 | slice / feature work | `create-from-template --template slice --priority p1` |
 | bug fix | `create-from-template --template bug --priority p1` |
 | external / corpus research | `create-from-template --template research --priority p2` |
-| Project board bootstrap | `project doctor` → follow `views-setup.md` → paste `project-readme.md` → `project board-bootstrap --check` → `project status` |
-| Project README | **Humans only** — paste **contents of** `project-readme.md` in Project settings UI |
+| Project board bootstrap | `project doctor` → `/project-board` first-run (`board-shell-onboard`) → follow `views-setup.md` → paste `project-readme.md` → `project board-bootstrap --check` → `project status` |
+| Project README | **Humans** paste **contents of** `project-readme.md`, or opt-in `board-bootstrap --check --apply-readme` |
 
 **Do not** paste Project settings labels (`Project name`, `Short description`, `README`, …) into bash — use `cursor_workflow project` recipes instead.
 

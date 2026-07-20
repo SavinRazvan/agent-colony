@@ -1,0 +1,105 @@
+# Board shell desired-state schema (Playground parity starter)
+#
+# File: board-shell.schema.yaml
+# Path: .ai_infra/templates/project-board/board-shell.schema.yaml
+# Role: Machine-readable starter format for board-bootstrap --check and first-run coach.
+# Used By:
+#  - project board-bootstrap --check
+#  - .cursor/skills/board-shell-onboard/SKILL.md
+# Depends On:
+#  - views-setup.md / views-checklist.md (human prose must match)
+# Notes:
+#  - Overlay: .local/user_settings/board-shell.schema.yaml (optional; wins when present).
+#  - Views are human UI only (ADR-008). Schema encodes desired names for check/coach — not API mutation.
+#  - Agents write Tier-1 fields via CLI; custom recommended views are cosmetic.
+
+version: 1
+name: playground-parity-starter
+
+fields:
+  required:
+    - name: Status
+      data_type: single_select
+      # Option names must exist on the Project; ids live in github.collaboration.yaml
+      options:
+        - Backlog
+        - Ready
+        - In progress
+        - In review
+        - Done
+    - name: Priority
+      data_type: single_select
+      options:
+        - p0
+        - p1
+        - p2
+    - name: Size
+      data_type: single_select
+      options:
+        - xs
+        - s
+        - m
+        - l
+        - xl
+    - name: Estimate
+      data_type: number
+    - name: Start date
+      data_type: date
+  optional:
+    - name: End date
+      data_type: date
+
+views:
+  # Visible columns for board/table layouts (Tier-1)
+  visible_columns:
+    - Title
+    - Assignees
+    - Status
+    - Priority
+    - Size
+    - Estimate
+    - Start date
+    - Linked pull requests
+
+  minimum:
+    - name: Status board
+      layout: BOARD_LAYOUT
+      group_by: Status
+    - name: Prioritized backlog
+      layout: TABLE_LAYOUT
+
+  recommended:
+    - name: Roadmap
+      layout: BOARD_LAYOUT
+      purpose: Status + Priority overview
+    - name: Bugs
+      layout: TABLE_LAYOUT
+      filter_hint: "title contains [BUG] / bug template"
+    - name: In review
+      layout: BOARD_LAYOUT
+      filter_hint: "Status = In review"
+    - name: My items
+      layout: TABLE_LAYOUT
+      filter_hint: "Assignees = @me"
+
+readme:
+  template: project-readme.md
+  # board-bootstrap --check fails when Project README is empty/whitespace
+
+card_create:
+  pattern: create-from-template
+  templates:
+    - slice
+    - bug
+    - research
+  notes: >
+    Tier-1 timing in project-board-ssot skill. Agents never mutate views.
+    First-run coach: board-shell-onboard skill via /project-board.
+
+customization:
+  overlay_path: .local/user_settings/board-shell.schema.yaml
+  safe: |
+    Rename or delete recommended views; add Insights/filters.
+    Keep required field names (Status, Priority, Size, Estimate, Start date).
+  unsafe: |
+    Removing Tier-1 fields breaks agents. Do not rely on undocumented view APIs.

@@ -1,6 +1,8 @@
 # Project board views setup
 
-Human-only paste guide for GitHub Project settings UI (ADR-008). Agents never mutate views, workflows, Insights, or README.
+Human-only paste guide for GitHub Project settings UI (ADR-008). Agents never mutate views, workflows, Insights, or README via undocumented APIs.
+
+**Desired state:** `.ai_infra/templates/project-board/board-shell.schema.yaml` (optional overlay: `.local/user_settings/board-shell.schema.yaml`). First-run coach: `/project-board` + `.cursor/skills/board-shell-onboard/SKILL.md`.
 
 **Product rule:** apply the **minimum** shell first so the board looks like a product (not `View 1` / `View 3`). Customize later. Verify with:
 

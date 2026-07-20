@@ -536,6 +536,251 @@ def read_project_views(ssot: dict[str, Any]) -> tuple[list[dict[str, Any]] | Non
         )
     return out, None
 
+
+def list_project_fields(ssot: dict[str, Any]) -> tuple[list[dict[str, Any]] | None, str | None]:
+    """Return (fields, error) — id, name, dataType, options for single-select."""
+    project_id = str(ssot["project_id"])
+    query = (
+        "query($id:ID!){node(id:$id){...on ProjectV2{fields(first:50){nodes{"
+        "...on ProjectV2FieldCommon{id name dataType}"
+        "...on ProjectV2SingleSelectField{id name dataType options{id name}}"
+        "}}}}}"
+    )
+    proc = run_gh(
+        [
+            "api",
+            "graphql",
+            "-f",
+            f"query={query}",
+            "-f",
+            f"id={project_id}",
+        ]
+    )
+    if proc.returncode != 0:
+        return None, (proc.stderr or proc.stdout or "gh project fields query failed").strip()
+    try:
+        data = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError as exc:
+        return None, f"invalid graphql JSON: {exc}"
+    if not isinstance(data, dict):
+        return None, "graphql response was not an object"
+    errors = data.get("errors")
+    if errors:
+        msg: Any = errors
+        if isinstance(errors, list) and errors:
+            first = errors[0]
+            if isinstance(first, dict):
+                msg = first.get("message") or first
+            else:
+                msg = first
+        return None, str(msg)
+    node = (data.get("data") or {}).get("node")
+    if not isinstance(node, dict):
+        return None, "project fields metadata unavailable"
+    fields_block = node.get("fields")
+    nodes = fields_block.get("nodes") if isinstance(fields_block, dict) else None
+    if not isinstance(nodes, list):
+        return None, "project fields metadata unavailable"
+    out: list[dict[str, Any]] = []
+    for field in nodes:
+        if not isinstance(field, dict) or not field.get("name"):
+            continue
+        entry: dict[str, Any] = {
+            "id": field.get("id"),
+            "name": field.get("name"),
+            "dataType": field.get("dataType"),
+        }
+        opts = field.get("options")
+        if isinstance(opts, list):
+            entry["options"] = [
+                {"id": o.get("id"), "name": o.get("name")}
+                for o in opts
+                if isinstance(o, dict)
+            ]
+        out.append(entry)
+    return out, None
+
+
+_DATA_TYPE_MAP = {
+    "single_select": "SINGLE_SELECT",
+    "SINGLE_SELECT": "SINGLE_SELECT",
+    "number": "NUMBER",
+    "NUMBER": "NUMBER",
+    "date": "DATE",
+    "DATE": "DATE",
+    "text": "TEXT",
+    "TEXT": "TEXT",
+}
+
+
+def ensure_board_shell_fields(
+    root: Path,
+    ssot: dict[str, Any],
+    schema: dict[str, Any],
+) -> int:
+    """Create missing project fields from schema; print suggested YAML ids. Never invent option ids blindly."""
+    live, err = list_project_fields(ssot)
+    if err:
+        return fail("board-bootstrap", EXIT_GH, err)
+    live_by_name = {
+        str(f.get("name") or "").strip(): f for f in (live or []) if f.get("name")
+    }
+    fields_block = schema.get("fields") if isinstance(schema.get("fields"), dict) else {}
+    required = fields_block.get("required") if isinstance(fields_block, dict) else []
+    if not isinstance(required, list):
+        required = []
+
+    project_id = str(ssot["project_id"])
+    created: list[str] = []
+    for spec in required:
+        if not isinstance(spec, dict):
+            continue
+        name = str(spec.get("name") or "").strip()
+        if not name or name == "Status":
+            # Status is a built-in / already required by doctor — do not recreate
+            continue
+        if name in live_by_name:
+            continue
+        dtype_raw = str(spec.get("data_type") or "text").strip()
+        dtype = _DATA_TYPE_MAP.get(dtype_raw, dtype_raw.upper())
+        mutation = (
+            "mutation($input:CreateProjectV2FieldInput!){"
+            "createProjectV2Field(input:$input){projectV2Field{"
+            "...on ProjectV2FieldCommon{id name dataType}"
+            "...on ProjectV2SingleSelectField{id name dataType options{id name}}"
+            "}}}"
+        )
+        input_obj: dict[str, Any] = {
+            "projectId": project_id,
+            "dataType": dtype,
+            "name": name,
+        }
+        if dtype == "SINGLE_SELECT":
+            opts = spec.get("options") if isinstance(spec.get("options"), list) else []
+            input_obj["singleSelectOptions"] = [
+                {"name": str(o), "color": "GRAY", "description": ""}
+                for o in opts
+                if str(o).strip()
+            ]
+        payload = {"query": mutation, "variables": {"input": input_obj}}
+        proc = run_gh(
+            ["api", "graphql", "--input", "-"],
+            input_text=json.dumps(payload),
+        )
+        if proc.returncode != 0:
+            print(
+                f"board-bootstrap: WARN — create field {name!r} failed: "
+                f"{(proc.stderr or proc.stdout or '').strip()}",
+                file=sys.stderr,
+            )
+            continue
+        try:
+            resp = json.loads(proc.stdout or "{}")
+        except json.JSONDecodeError:
+            resp = {}
+        if isinstance(resp, dict) and resp.get("errors"):
+            print(
+                f"board-bootstrap: WARN — create field {name!r} graphql errors: {resp.get('errors')}",
+                file=sys.stderr,
+            )
+            continue
+        created.append(name)
+        print(f"board-bootstrap: created field {name!r} ({dtype})")
+
+    # Re-list and print suggested YAML snippet
+    live2, err2 = list_project_fields(ssot)
+    if err2:
+        print(f"board-bootstrap: WARN — re-list fields failed: {err2}", file=sys.stderr)
+        return EXIT_OK
+    print("board-bootstrap: suggested fields: (copy ids into github.collaboration.yaml)")
+    key_map = {
+        "Priority": "priority",
+        "Size": "size",
+        "Estimate": "estimate",
+        "Start date": "start_date",
+        "End date": "end_date",
+        "Status": "status",
+    }
+    for f in live2 or []:
+        fname = str(f.get("name") or "").strip()
+        key = key_map.get(fname)
+        if not key:
+            continue
+        print(f"  {key}:")
+        print(f"    field_id: {f.get('id')}")
+        opts = f.get("options")
+        if isinstance(opts, list) and opts:
+            print("    options:")
+            for o in opts:
+                oname = str(o.get("name") or "").strip()
+                oid = o.get("id")
+                if oname and oid:
+                    okey = oname.lower().replace(" ", "_")
+                    if key == "status":
+                        status_map = {
+                            "backlog": "backlog",
+                            "ready": "ready",
+                            "in_progress": "in_progress",
+                            "in progress": "in_progress",
+                            "in_review": "in_review",
+                            "in review": "in_review",
+                            "done": "done",
+                        }
+                        okey = status_map.get(oname.casefold(), okey)
+                    print(f"      {okey}: {oid}")
+    if created:
+        print(f"board-bootstrap: ensure-fields created={','.join(created)}")
+    else:
+        print("board-bootstrap: ensure-fields created=(none — already present)")
+    return EXIT_OK
+
+
+def apply_board_shell_readme(
+    root: Path,
+    ssot: dict[str, Any],
+    schema: dict[str, Any],
+) -> int:
+    """Push project-readme.md (placeholders filled) via updateProjectV2."""
+    tpl_dir = project_templates_dir(root)
+    readme_name = "project-readme.md"
+    readme_cfg = schema.get("readme") if isinstance(schema.get("readme"), dict) else {}
+    if isinstance(readme_cfg, dict) and readme_cfg.get("template"):
+        readme_name = str(readme_cfg["template"])
+    path = tpl_dir / readme_name
+    if not path.is_file():
+        return fail("board-bootstrap", EXIT_USAGE, f"missing README template {path}")
+    body = path.read_text(encoding="utf-8")
+    title = str(ssot.get("name") or "Board SSOT").strip()
+    repo = str(ssot.get("default_repo") or "owner/repo").strip()
+    body = body.replace("Your Board Name (board SSOT)", f"{title} (board SSOT)")
+    body = body.replace("`owner/repo`", f"`{repo}`")
+    # Strip HTML comment guide lines at top for cleaner Project README (keep placeholders notes)
+    mutation = (
+        "mutation($input:UpdateProjectV2Input!){"
+        "updateProjectV2(input:$input){projectV2{id}}}"
+    )
+    input_obj = {"projectId": str(ssot["project_id"]), "readme": body}
+    payload = {"query": mutation, "variables": {"input": input_obj}}
+    proc = run_gh(
+        ["api", "graphql", "--input", "-"],
+        input_text=json.dumps(payload),
+    )
+    if proc.returncode != 0:
+        return fail(
+            "board-bootstrap",
+            EXIT_GH,
+            (proc.stderr or proc.stdout or "updateProjectV2 readme failed").strip(),
+        )
+    try:
+        data = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError as exc:
+        return fail("board-bootstrap", EXIT_GH, f"invalid graphql JSON: {exc}")
+    if isinstance(data, dict) and data.get("errors"):
+        return fail("board-bootstrap", EXIT_GH, str(data.get("errors")))
+    print("board-bootstrap: apply-readme ok")
+    return EXIT_OK
+
+
 def cmd_set_status(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "set-status")

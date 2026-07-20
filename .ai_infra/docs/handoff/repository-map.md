@@ -52,7 +52,7 @@ mas-workflow-kit-project-ssot/
 ├── cursor_workflow/            SSOT — thin CLI shim (also copied to consumer)
 ├── schemas/                    Legacy gate.json stub (`resolve_gates()` in prepare.py; `GATES` = alias)
 ├── .local/                     Kit-dev runtime (gitignored); CI seed fixture — not consumer exemplars
-├── tests/                      Kit-dev only — full pytest suite (1143; see IMPLEMENTATION-STATUS)
+├── tests/                      Kit-dev only — full pytest suite (1147; see IMPLEMENTATION-STATUS)
 ├── Makefile, pyproject.toml    Kit-dev only
 ├── overlays/                   Optional product rules source (`overlays/rules/project-ssot-precedence.mdc`); this product payload ships **7** rules (6 kit + SSOT precedence)
 ├── project-rules/              Deprecated alias → use overlays/rules/
@@ -71,9 +71,9 @@ Deep dive: [PLUGIN-ARCHITECTURE.md](PLUGIN-ARCHITECTURE.md).
 |------|------|------------|
 | `.cursor/agents/*.md` | 8 agent cards | **Here** |
 | `.cursor/rules/*.mdc` | 7 kit-dev rules | **Here** |
-| `.cursor/skills/*/` | 11 canonical protocols | **Here** |
+| `.cursor/skills/*/` | 12 canonical protocols | **Here** |
 | `.agents/skills/*/` | Maintainer slash skills | **Here** |
-| `agents/`, `rules/`, `skills/` (repo root) | Marketplace discovery (16 skill folders = 11 canonical + 5 maintainer PR slash skills) | `make sync-plugin` from `.cursor/` + `.agents/skills/` |
+| `agents/`, `rules/`, `skills/` (repo root) | Marketplace discovery (17 skill folders = 12 canonical + 5 maintainer PR slash skills) | `make sync-plugin` from `.cursor/` + `.agents/skills/` |
 | `payload/` | Consumer install bundle | `make sync-plugin` from above + manifest |
 | `skills/audit-alignment/` | Deprecated stub in merged `skills/` | `.agents/skills/audit-alignment/` |
 
@@ -89,7 +89,7 @@ my-app/
 ├── .cursor/
 │   ├── agents/                     8 agents (from payload; incl. project-board)
 │   ├── rules/                      7 rules (6 kit + project-ssot-precedence)
-│   └── skills/                     11 canonical skills only (no repo-root skills/ merge)
+│   └── skills/                     12 canonical skills only (no repo-root skills/ merge)
 ├── .agents/skills/                 5 maintainer slash folders (+ audit-alignment stub)
 ├── .ai_infra/                      Slim bundle (manifest copy_ai_infra only)
 │   ├── scripts/pr|architecture|integration|workflow|install/
@@ -102,7 +102,7 @@ my-app/
 └── .local/                         Scaffolded trackers + artifact buckets (gitignored)
 ```
 
-**Not installed:** kit `tests/modules/` (1143; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
+**Not installed:** kit `tests/modules/` (1147; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
 
 Consumer tree detail: [PLUGIN-ARCHITECTURE.md § Installed consumer project](PLUGIN-ARCHITECTURE.md).
 

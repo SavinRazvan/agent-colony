@@ -438,13 +438,17 @@ def run_doctor(args: argparse.Namespace) -> int:
 
 
 def run_board_bootstrap(args: argparse.Namespace) -> int:
-    """Read-only bootstrap check for board README and view readiness."""
+    """Schema-aware board shell check; optional ensure-fields / apply-readme."""
+    import board_shell as bs
     import project_cli as pc
     import project_outbox as _outbox
 
     root = Path(args.directory).resolve()
     if not getattr(args, "check", False):
         return pc.fail("board-bootstrap", pc.EXIT_USAGE, "--check is required")
+
+    ensure_fields = bool(getattr(args, "ensure_fields", False))
+    apply_readme = bool(getattr(args, "apply_readme", False))
 
     ssot, code = pc._load_enabled_ssot(root, "board-bootstrap")
     if ssot is None:
@@ -462,15 +466,29 @@ def run_board_bootstrap(args: argparse.Namespace) -> int:
 
     tpl_dir = pc.project_templates_dir(root)
     required_files = [f"card-body-{name}.md" for name in pc._TEMPLATE_NAMES]
-    required_files.extend(["project-readme.md", "views-setup.md", "views-checklist.md"])
+    required_files.extend(
+        [
+            "project-readme.md",
+            "views-setup.md",
+            "views-checklist.md",
+            "board-shell.schema.yaml",
+        ]
+    )
     for name in required_files:
         path = tpl_dir / name
         if not path.is_file():
             return pc.fail("board-bootstrap", pc.EXIT_USAGE, f"missing template {path}")
 
+    schema, schema_err = bs.load_board_shell_schema(root)
+    if schema is None:
+        return pc.fail("board-bootstrap", pc.EXIT_USAGE, schema_err or "schema load failed")
+    schema_path = bs.resolve_board_shell_schema_path(root)
+    print(f"board-bootstrap: schema={schema_path}")
+
     cfg = _outbox.load_outbox_config(ssot)
     rl = _outbox.graphql_rate_limit()
     skip_live = False
+    rem = 9999
     if not rl.get("error"):
         try:
             rem = int(rl.get("remaining")) if rl.get("remaining") is not None else 9999
@@ -483,6 +501,30 @@ def run_board_bootstrap(args: argparse.Namespace) -> int:
                 file=sys.stderr,
             )
 
+    if ensure_fields or apply_readme:
+        if skip_live:
+            return pc.fail(
+                "board-bootstrap",
+                pc.EXIT_GH,
+                "low GraphQL quota — refuse --ensure-fields/--apply-readme; retry after reset",
+            )
+        if rem < int(cfg["min_graphql_remaining"]):
+            return pc.fail(
+                "board-bootstrap",
+                pc.EXIT_GH,
+                f"graphql remaining {rem} < min_graphql_remaining",
+            )
+
+    if ensure_fields and not skip_live:
+        e_code = pc.ensure_board_shell_fields(root, ssot, schema)
+        if e_code != pc.EXIT_OK:
+            return e_code
+
+    if apply_readme and not skip_live:
+        a_code = pc.apply_board_shell_readme(root, ssot, schema)
+        if a_code != pc.EXIT_OK:
+            return a_code
+
     if not skip_live:
         readme, err = pc.read_project_readme(ssot)
         if err:
@@ -491,8 +533,30 @@ def run_board_bootstrap(args: argparse.Namespace) -> int:
             return pc.fail(
                 "board-bootstrap",
                 pc.EXIT_VALIDATION,
-                "project README is empty/whitespace; paste .ai_infra/templates/project-board/project-readme.md",
+                "project README is empty/whitespace; paste .ai_infra/templates/project-board/project-readme.md "
+                "or re-run with --apply-readme",
             )
+
+        # Project-level field presence (names) vs schema
+        live_fields, f_err = pc.list_project_fields(ssot)
+        if f_err:
+            print(
+                f"board-bootstrap: WARN — project fields probe failed: {f_err}",
+                file=sys.stderr,
+            )
+        else:
+            live_names = {
+                str(f.get("name") or "").strip()
+                for f in (live_fields or [])
+                if str(f.get("name") or "").strip()
+            }
+            for req in bs.required_field_names(schema):
+                if req not in live_names:
+                    print(
+                        f"board-bootstrap: WARN — project missing field {req!r} "
+                        "(create in UI or --ensure-fields)",
+                        file=sys.stderr,
+                    )
 
         views, v_err = pc.read_project_views(ssot)
         if v_err:
@@ -501,38 +565,24 @@ def run_board_bootstrap(args: argparse.Namespace) -> int:
                 file=sys.stderr,
             )
         else:
-            import re
-
-            required_cols = {"Priority", "Size", "Estimate", "Start date"}
-            view_n = re.compile(r"^View\s*\d+$", re.IGNORECASE)
-            for view in views or []:
-                name = str(view.get("name") or "view").strip() or "view"
-                if view_n.match(name):
-                    print(
-                        f"board-bootstrap: WARN — rename default view {name!r} "
-                        "(follow views-setup.md minimum: Status board / Prioritized backlog)",
-                        file=sys.stderr,
-                    )
-                layout = str(view.get("layout") or "")
-                if layout not in {"BOARD_LAYOUT", "TABLE_LAYOUT"}:
-                    continue
-                fields = {
-                    str(fname).strip()
-                    for fname in (view.get("fields") if isinstance(view.get("fields"), list) else [])
-                    if str(fname).strip()
-                }
-                missing = sorted(required_cols - fields)
-                if missing:
-                    print(
-                        f"board-bootstrap: WARN — {name} ({layout}) missing columns: {', '.join(missing)}",
-                        file=sys.stderr,
-                    )
+            problems, warnings = bs.compare_views_to_schema(schema, views or [])
+            for w in warnings:
+                print(f"board-bootstrap: WARN — {w}", file=sys.stderr)
+            if problems:
+                for p in problems:
+                    print(f"board-bootstrap: FAIL — {p}", file=sys.stderr)
+                return pc.fail(
+                    "board-bootstrap",
+                    pc.EXIT_VALIDATION,
+                    "minimum views from board-shell schema missing; follow views-setup.md",
+                )
 
     print("board-bootstrap: ok")
     print(f"project: {ssot.get('name')} ({ssot.get('url')})")
     print("next: follow .ai_infra/templates/project-board/views-setup.md (GitHub UI)")
-    print("next: paste contents of project-readme.md into Project README")
+    print("next: paste contents of project-readme.md into Project README (or --apply-readme)")
     print("next: .ai_infra/templates/project-board/views-checklist.md")
+    print("next: first-run coach — .cursor/skills/board-shell-onboard/SKILL.md")
     return pc.EXIT_OK
 
 def run_queue(args: argparse.Namespace) -> int:
