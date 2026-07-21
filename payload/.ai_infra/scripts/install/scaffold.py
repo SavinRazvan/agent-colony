@@ -448,6 +448,17 @@ def _sanity_check(target: Path, log: list[str], *, with_tests: bool = False) -> 
     return errors
 
 
+def _verify_retry_hint(target: Path) -> str:
+    py = Path(resolve_project_python(target))
+    req = target / "requirements-dev.txt"
+    if req.is_file():
+        return (
+            f"Retry: {py} -m pip install -r requirements-dev.txt && "
+            f"{py} -m cursor_workflow activate --directory {target}"
+        )
+    return f"Retry: re-run activate with --verify after fixing the failing gate above"
+
+
 def _run_verify(target: Path, log: list[str]) -> int:
     py = Path(resolve_project_python(target))
     infra = target / ".ai_infra"
@@ -462,6 +473,7 @@ def _run_verify(target: Path, log: list[str]) -> int:
         proc = subprocess.run(cmd, cwd=target, check=False)
         if proc.returncode != 0:
             _log(log, f"VERIFY FAIL: exit {proc.returncode}")
+            _log(log, _verify_retry_hint(target))
             return proc.returncode
     _log(log, "VERIFY PASS: all gates green")
     return 0
@@ -477,12 +489,13 @@ def _create_venv(target: Path, dry_run: bool, log: list[str]) -> None:
         return
     subprocess.run([sys.executable, "-m", "venv", str(venv)], cwd=target, check=True)
     pip = venv / "bin" / "pip"
-    subprocess.run([str(pip), "install", "-q", "pytest", "mcp>=1.2", "pyyaml"], check=True)
     req = target / "requirements-dev.txt"
     if req.is_file():
         subprocess.run([str(pip), "install", "-q", "-r", str(req)], check=True)
+    else:
+        subprocess.run([str(pip), "install", "-q", "pytest", "mcp>=1.2", "pyyaml"], check=True)
     mcp_req = target / "requirements-mcp.txt"
-    if mcp_req.is_file():
+    if mcp_req.is_file() and not req.is_file():
         subprocess.run([str(pip), "install", "-q", "-r", str(mcp_req)], check=True)
     _log(log, f"VENV created: {venv}")
 
@@ -530,7 +543,7 @@ def scaffold(
         _copy_ai_infra_rel(ai_src, ai_dst, rel, dry_run, log)
 
     for rel in spec.get("copy_files", []):
-        if rel == "requirements-mcp.txt":
+        if rel in {"requirements-mcp.txt", "requirements-dev.txt"}:
             _copy_file(source / rel, target / rel, dry_run, log)
         else:
             _copy_file(ai_src / rel, ai_dst / rel, dry_run, log)

@@ -87,7 +87,7 @@ This loads agents, skills, and rules into Cursor. Your project may only get `.cu
 |------|--------|
 | 1. Plugin | Agent chat: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` *(or Marketplace when listed)* |
 | 2. Activate | Open **your app** → Agent chat → **`/workflow-activate`** → wait for **`VERIFY PASS`** and all planes **ready** |
-| 3. Your name | Edit `.local/user_settings/github.collaboration.yaml` → `python3 -m cursor_workflow contributors validate` |
+| 3. Your name | Edit `.local/user_settings/github.collaboration.yaml` → `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` |
 | 4. Board shell *(when `project_ssot.enabled`)* | `gh` Project scopes → paste **Project URL + repo URL** in chat → **`/project-board`** wires `project_ssot` ids → `project doctor` → [board-shell-onboard](../../.cursor/skills/board-shell-onboard/SKILL.md) → human [views-setup.md](../../templates/project-board/views-setup.md) + README paste (or `--apply-readme`) → `project board-bootstrap --check` → `project status`. **Do not** start with `/enterprise-auditor`. Full order: [checklist below](#consumer-project_ssot-onboarding-checklist). |
 | 5. Build | **`/implementer`** · when board SSOT on, Entry = `python3 -m cursor_workflow project status`; else `session-pointer.md` → `plan.md` → `work-tracker.md` |
 
@@ -427,6 +427,8 @@ Details: [gate-matrix.md](gate-matrix.md). **`make gates`** / **`make verify-all
 
 | Problem | Fix |
 |---------|-----|
+| `No module named 'cursor_workflow'` on first activate | **Expected** in empty app — run activate from kit **payload** entrypoint; see [consumer-quickstart § First activate troubleshooting](consumer-quickstart.md#first-activate-troubleshooting) |
+| VERIFY FAIL / missing pytest after activate | `source .venv/bin/activate && pip install -r requirements-dev.txt && python3 -m cursor_workflow activate --directory .` |
 | `bash: /add-plugin: No such file or directory` | Use **Agent chat**, not terminal — paste the GitHub URL after `/add-plugin` |
 | Only `.cursor/settings.json` after plugin | Expected — run **`/workflow-activate`** for `.ai_infra/`, `.local/`, etc. |
 | Subagents missing in `/` menu | Open **your activated project**, not kit repo; re-run `/workflow-activate` |

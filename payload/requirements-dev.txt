@@ -1,0 +1,6 @@
+# Maintainer venv: pip install -e ".[dev,mcp]" (see pyproject.toml)
+# Legacy: pip install -r requirements-dev.txt
+pytest>=8.0
+pyyaml>=6.0
+jsonschema>=4.0
+-r requirements-mcp.txt
