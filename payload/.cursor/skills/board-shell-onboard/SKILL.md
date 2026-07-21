@@ -118,9 +118,32 @@ You **must** run this conversation loop. **Forbidden:** “follow views-setup.md
 
 **Default:** human performs clicks in GitHub UI; you coach one turn at a time.
 
-**Opt-in browser assist:** If the user **explicitly** asks you to open the browser / use browser MCP / click views or columns for them (e.g. “help me in the browser”, “do Turn H for me”, “use cursor-ide-browser”), you **may** use **browser MCP** / cursor-ide-browser for **that** turn only. Still one turn → re-check → next. Do **not** open the browser unprompted. Stop and hand back to the human on login/2FA/permission blockers.
+**Opt-in browser assist:** If the user **explicitly** asks you to open the browser / use browser MCP / click views or columns for them (e.g. “help me in the browser”, “do Turn H for me”, “use cursor-ide-browser”), you **may** use **browser MCP** / cursor-ide-browser for **that** turn only. Still one turn → re-check → next. Do **not** open the browser unprompted. Stop and hand back to the human on login/2FA/permission blockers. Follow **Browser assist map** below (same targets as `views-setup.md`).
 
 **Open:** Project URL from `project status` (e.g. `https://github.com/users/…/projects/N`).
+
+### Browser assist map (universal click targets — opt-in only)
+
+Use this when driving **cursor-ide-browser** (or when coaching clicks). Prefer **minimal 2-view** path unless the user asked for six-view Playground. After each turn: `board-bootstrap --check`.
+
+| Goal | Where to go (GitHub Project UI) | Done when |
+|------|----------------------------------|-----------|
+| Open project | Navigate to Project URL from `project status` | Project header + view tabs visible |
+| Select a view | Click the **view tab** by exact name (`Status board`, `Prioritized backlog`, …) | That view is active |
+| Rename view | Active tab → **⋯** (or right-click / View menu) → **Rename** → type kit name → confirm | Tab label matches schema |
+| New view | **+ New view** (or **New view**) → pick layout → name it | New tab exists with correct name |
+| Layout | View menu / **⋯** → **Layout** → **Board** / **Table** / **Roadmap** | Layout matches turn |
+| Group by (required) | View menu / toolbar **Group by** → **Status** (Status board) | Board columns are Status groups |
+| Show Tier-1 columns | Active view → **+** / field picker / **Fields** / **View settings → Fields** → enable **Priority**, **Size**, **Estimate**, **Start date** | `--check` no longer FAILs those columns on that view |
+| Clear Slice by (if set by mistake) | View menu → **Slice by** → **No slicing** (or clear) | No slice chips; groups only if Group by set |
+| Save view | If UI shows unsaved / **Save** on the view | Changes persist after reload |
+| README | Prefer CLI `--apply-readme` after consent; else Project **⋯** / Settings → **README** | README non-empty; `--check` OK |
+
+**Fast minimal path (browser):** Turn A (Status board rename/layout/Group by Status + Tier-1 fields) → Turn B (Prioritized backlog Table + Tier-1 fields) → Turn G (README) → Turn H only if `--check` still FAILs columns → exit when `--check` **0**.
+
+**Optional polish (not a bootstrap gate):** on **Prioritized backlog** → **Group by** → **Priority** (P0/P1/P2 sections). Empty boards may hide empty group headers until cards have Priority set. Do **not** block “ready for agents” on this.
+
+**Browser stop conditions:** login / 2FA / permission / CAPTCHA / “can’t find control after 2 tries” → hand back to human with the same turn table row; do not invent GraphQL view mutations.
 
 **Turn A — kill `View 1` → Status board**
 
@@ -209,7 +232,7 @@ When the user asks for a **simple board** (Status board + Prioritized backlog on
 
 1. Explain: agent runtime uses CLI/API fields — extra Playground views are optional human UI.
 2. Offer copy from `.ai_infra/templates/user-settings/exemplars/board-shell.schema.minimal.yaml` → `.local/user_settings/board-shell.schema.yaml`.
-3. Coach **Turn A** (Status board) + **Turn B** (Prioritized backlog) only — skip Turns C–F.
+3. Coach **Turn A** (Status board) + **Turn B** (Prioritized backlog) only — skip Turns C–F. Optional: **Group by Priority** on Prioritized backlog (polish; not a `--check` gate).
 4. Re-run `board-bootstrap --check` after each turn until exit **0**.
 
 ### Playground default (six views)
@@ -231,5 +254,6 @@ Only say **ready for agents** when `board-bootstrap --check` exits **0** (no vie
 ## Canon
 
 - Schema: `.ai_infra/templates/project-board/board-shell.schema.yaml`
+- Click map: `.ai_infra/templates/project-board/views-setup.md` § Browser assist map
 - Day-to-day cards: `.cursor/skills/project-board-ssot/SKILL.md`
 - ADR-008: no view API; coach + check by default; browser MCP only when user asks

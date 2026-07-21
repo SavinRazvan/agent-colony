@@ -568,6 +568,8 @@ def test_agents_stub_and_view_pack_text() -> None:
     assert "My items" in views_setup
     assert "Minimal 2-view overlay" in views_setup
     assert "board-shell.schema.minimal.yaml" in views_setup
+    assert "Browser assist map" in views_setup
+    assert "Group by" in views_setup
     assert "Prioritized backlog" in schema_text
     assert "Roadmap" in schema_text
     assert "recommended: []" in schema_text or "recommended:\n  []" in schema_text
@@ -581,11 +583,14 @@ def test_agents_stub_and_view_pack_text() -> None:
         REPO_ROOT / ".cursor" / "skills" / "board-shell-onboard" / "SKILL.md"
     ).read_text(encoding="utf-8")
     assert "board-bootstrap --check" in skill
+    assert "Browser assist map" in skill
+    assert "Optional polish" in skill or "optional polish" in skill.lower()
     assert "Do not" in skill or "do not" in skill.lower()
     project_board_agent = (
         REPO_ROOT / ".cursor" / "agents" / "project-board.md"
     ).read_text(encoding="utf-8")
     assert "browser MCP" in project_board_agent
+    assert "Browser assist map" in project_board_agent
     assert "asks" in project_board_agent.lower() or "explicit" in project_board_agent.lower()
     assert "api=complete" in project_board_agent
 

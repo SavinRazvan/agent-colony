@@ -1,6 +1,6 @@
 # Project board views setup
 
-Human-only paste guide for GitHub Project settings UI (ADR-008). Agents never mutate views, workflows, Insights, or README via undocumented APIs.
+Human paste guide for GitHub Project settings UI (ADR-008). There is **no official API** to create/rename views or set column visibility. Agents **coach** by default; **browser MCP** only when the human explicitly asks (see **Browser assist map**). Opt-in CLI: `--ensure-fields` / `--apply-readme` only.
 
 **CLI asymmetry:** `board-bootstrap --check` **reads** view/column metadata via GraphQL and **detects** gaps; it **cannot fix** views or column visibility — only `--ensure-fields` / `--apply-readme` mutate field defs / README.
 
@@ -67,7 +67,29 @@ Kit **default** remains six Playground views ([`board-shell.schema.yaml`](board-
 5. README: `--apply-readme` or paste `project-readme.md`.
 6. `python3 -m cursor_workflow project board-bootstrap --check` until green.
 
-Agents coach this as **TURN PROTOCOL** in `board-shell-onboard` (one view per chat turn). They cannot click for you.
+Agents coach this as **TURN PROTOCOL** in `board-shell-onboard` (one view per chat turn). **Default:** human clicks. **If the user asks** for browser help, agents may use browser MCP and follow **Browser assist map** below.
+
+---
+
+## Browser assist map (opt-in — universal sections)
+
+No consumer-specific URLs. Open the Project from `project status`. Use when the human asks the agent to drive the browser (or as a click cheat-sheet).
+
+| Goal | UI section | Target |
+|------|------------|--------|
+| Active view | Top **view tabs** | Exact kit name (`Status board`, `Prioritized backlog`, …) |
+| Rename | Tab **⋯** / View menu → **Rename** | Kit view name |
+| New view | **+ New view** | Layout + name from turn |
+| Layout | View menu → **Layout** | Board / Table / Roadmap |
+| Group by | View menu / toolbar **Group by** | **Status** on Status board; optional **Priority** on Prioritized backlog (polish only) |
+| Tier-1 columns | **+** / **Fields** / View settings → Fields | Priority, Size, Estimate, Start date |
+| Undo bad Slice | View menu → **Slice by** → clear | Groups without slice chips |
+| Persist | **Save** on view if shown | Survives reload |
+| README | Settings → README **or** `--apply-readme` | Non-empty README |
+
+**Minimal fast path:** Status board (Board + Group by Status + Tier-1) → Prioritized backlog (Table + Tier-1) → README → re-check. **Group by Priority** on the backlog is optional and **not** required for `--check` exit 0.
+
+Verify after each change: `python3 -m cursor_workflow project board-bootstrap --check`.
 
 ---
 
@@ -142,6 +164,6 @@ Then: `python3 -m cursor_workflow project status`.
 
 ---
 
-## 5. Keep the board human-owned
+## 5. Keep views API-free (browser opt-in)
 
-Agents write card fields and Notes via `cursor_workflow project` only. They do not configure views, workflows, Insights, or README (except opt-in `--apply-readme` / `--ensure-fields`).
+Agents write card fields and Notes via `cursor_workflow project`. They do not use undocumented GraphQL for views. Default shell setup is human UI + coach; **if asked**, browser MCP follows the **Browser assist map**. Opt-in CLI: `--apply-readme` / `--ensure-fields`.
