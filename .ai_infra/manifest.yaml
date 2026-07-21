@@ -41,4 +41,5 @@ profiles:
       - mcp_servers/workflow_mcp
     copy_files:
       - requirements-mcp.txt
+      - requirements-dev.txt
     mcp_json: true

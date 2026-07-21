@@ -114,6 +114,30 @@ source .venv/bin/activate     # after first activate
 python3 -m cursor_workflow activate --directory .
 ```
 
+### First activate troubleshooting
+
+On a **brand-new app repo**, `python3 -m cursor_workflow` fails with *No module named cursor_workflow* until activate copies infrastructure. **Agents:** run activate from the plugin **payload** entrypoint (not bare `python3 -m cursor_workflow` in an empty folder):
+
+```bash
+export KIT=~/Projects/mas-workflow-kit-project-ssot   # or plugin cache checkout
+export TARGET=~/Projects/my-app
+mkdir -p "$TARGET"
+"$KIT/.venv/bin/python" "$KIT/payload/cursor_workflow" activate \
+  --directory "$TARGET" --source "$KIT/payload"
+cd "$TARGET"
+source .venv/bin/activate
+```
+
+If **VERIFY FAIL** on missing test deps after first install:
+
+```bash
+source .venv/bin/activate
+pip install -r requirements-dev.txt
+python3 -m cursor_workflow activate --directory .
+```
+
+After **VERIFY PASS**, always prefix CLI commands with `source .venv/bin/activate &&`.
+
 To pull the latest dashboards after a kit update without a full reinstall:
 
 ```bash
@@ -388,6 +412,8 @@ After the kit fix, expect:
 
 | Problem | Fix |
 |---------|-----|
+| `No module named 'cursor_workflow'` on first activate | **Expected** in empty app — run activate from kit **payload** (see § First activate troubleshooting above), not bare `python3 -m cursor_workflow` before install |
+| VERIFY FAIL / missing pytest deps after activate | `source .venv/bin/activate && pip install -r requirements-dev.txt && python3 -m cursor_workflow activate --directory .` |
 | `bash: /add-plugin: No such file or directory` | `/add-plugin` is **Agent chat only** — paste the GitHub URL in chat, not the terminal |
 | Only `.cursor/settings.json` after plugin install | Normal — run **`/workflow-activate`** in your app folder for the full bundle |
 | `contributors validate` FAIL | Replace placeholders in `github.collaboration.yaml` |
@@ -418,4 +444,4 @@ your-project/
 └── tests/modules/smoke/
 ```
 
-**CLI:** `python3 -m cursor_workflow` from your project root.
+**CLI:** `source .venv/bin/activate && python3 -m cursor_workflow` from your project root.

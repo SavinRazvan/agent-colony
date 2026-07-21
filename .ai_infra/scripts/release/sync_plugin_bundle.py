@@ -206,7 +206,7 @@ def sync_payload(payload_dir: Path, plugin_dir: Path, profile: str = "with_mcp")
         _copy_file(agents_stub, ai_dst / "templates" / "AGENTS.stub.md")
 
     for rel in spec.get("copy_files", []):
-        if rel == "requirements-mcp.txt":
+        if rel in {"requirements-mcp.txt", "requirements-dev.txt"}:
             _copy_file(KIT_ROOT / rel, payload_dir / rel)
         else:
             _copy_file(ai_src / rel, ai_dst / rel)

@@ -228,7 +228,7 @@ def test_create_venv_installs_requirements(tmp_path: Path, monkeypatch: pytest.M
     monkeypatch.setattr(mod.subprocess, "run", _fake_run)
     mod._create_venv(target, False, log)
     assert any("requirements-dev.txt" in " ".join(c) for c in calls)
-    assert any("requirements-mcp.txt" in " ".join(c) for c in calls)
+    assert not any("requirements-mcp.txt" in " ".join(c) for c in calls)
     assert any("VENV created" in line for line in log)
 
 

@@ -16,6 +16,8 @@
 /workflow-activate
 ```
 
+**First install note:** if activate fails with *No module named cursor_workflow*, run from kit payload per [consumer-quickstart § First activate troubleshooting](.ai_infra/docs/operations/consumer-quickstart.md#first-activate-troubleshooting).
+
 ## Just installed?
 
 1. Edit `.local/user_settings/github.collaboration.yaml` → your name + `@handle`
@@ -23,12 +25,12 @@
 3. If `project_ssot.enabled: true`:
    - `gh auth refresh -h github.com -s read:project,project` (keep `repo`) — see [PLUGIN-USER-GUIDE § GitHub CLI auth](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#github-cli-auth-projects)
    - Paste **Project URL** + this **repo URL** in Agent chat → **`/project-board`** wires `project_ssot` ids + `default_repo` (confirm before save), or fill via `gh project view` / `field-list`
-   - `python3 -m cursor_workflow project doctor` (expect **ok**)
-   - `python3 -m cursor_workflow project board-bootstrap --check` — **new Project FAIL on missing views is normal**
+   - `source .venv/bin/activate && python3 -m cursor_workflow project doctor` (expect **ok**)
+   - `source .venv/bin/activate && python3 -m cursor_workflow project board-bootstrap --check` — **new Project FAIL on missing views is normal**
    - **`/project-board`** again → **CONSENT GATE** (board description + “may I proceed?”) then **TURN PROTOCOL** (one view per turn; [views-setup.md](.ai_infra/templates/project-board/views-setup.md) = click reference). Optional `--ensure-fields` / `--apply-readme` only after `yes`.
    - **Automation boundary:** `/project-board` wire = API only; six views + Tier-1 columns = GitHub UI (see PLUGIN-USER-GUIDE § Product promise).
    - Re-run `board-bootstrap --check` until **exit 0**
-   - `python3 -m cursor_workflow project status`
+   - `source .venv/bin/activate && python3 -m cursor_workflow project status`
    - Local trackers are offline fallback when `sync_policy: board_only`
 4. If Project SSOT is disabled or unavailable:
    - Read `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
