@@ -21,6 +21,19 @@ Notes:
 
 User enabled the **MAS Workflow Kit — Project SSOT** plugin (`mas-workflow-kit-project-ssot`) and opened **their app** (not this kit product repo). Run on first use or when planes are missing.
 
+## When user just installed plugin (`/add-plugin`)
+
+If the user ran **`/add-plugin`** and sees the kit welcome summary, use this **canonical first run** — do **not** invent a shorter list that hides the GitHub UI step:
+
+1. **`/workflow-activate`** in **their app repo** (wait for VERIFY PASS)
+2. Edit `github.collaboration.yaml` → identity → `contributors validate`
+3. **`gh auth refresh`** with Project scopes (if board SSOT)
+4. Paste **Project URL + repo URL** → **`/project-board`** wire (API slice — print `board-onboard status: api=complete · shell=incomplete · views=ui-only`)
+5. **`/project-board`** + **CONSENT GATE** + **TURN PROTOCOL** (human clicks six views + Tier-1 columns; one turn at a time)
+6. `board-bootstrap --check` **exit 0** → **`/implementer`**
+
+Never list `/board-shell-onboard` before wire. Never imply views are API-automated. Never use browser MCP for view setup.
+
 ## Guide the user (keep it simple)
 
 **Product promise:** Plugin install loads agents/skills in Cursor only. **`/workflow-activate`** in **their app repo** installs the **full kit** (same three planes as kit-dev). They then edit `.local/user_settings/github.collaboration.yaml` for **their** name, **their** GitHub Project ids, and `default_repo`. After validate + doctor + status pass, usage matches kit-dev (claim/handoff/Tier-1, Issue-at-create). Board must be kit-shaped (Status/Priority/Size/Estimate/Start date keys) — see [PLUGIN-USER-GUIDE § Product promise](../../.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).

@@ -105,7 +105,21 @@ Use this when your team opts into **GitHub Project as the only writable SSOT** (
 
 #### Product promise
 
-Install the **MAS Workflow Kit — Project SSOT** plugin, open **your app repo** (not the kit product repo), and run **`/workflow-activate`**. Activate copies the **full kit infrastructure** — the same three planes kit maintainers use: Cursor contract (`.cursor/` agents, skills, rules; `.agents/skills/`; `AGENTS.md`), infrastructure (`.ai_infra/`, `cursor_workflow/` CLI), and runtime scaffold (`.local/` including `user_settings/` exemplars). You then wire **your** identity and **your** GitHub Project in `.local/user_settings/github.collaboration.yaml`; after `contributors validate`, `project doctor`, and `project status` pass, agents use claim/handoff/Tier-1 the same way as kit-dev.
+Install the **MAS Workflow Kit — Project SSOT** plugin, open **your app repo** (not the kit product repo), and run **`/workflow-activate`**. Activate copies the **full kit infrastructure** — the same three planes kit maintainers use: Cursor contract (`.cursor/` agents, skills, rules; `.agents/skills/`; `AGENTS.md`), infrastructure (`.ai_infra/`, `cursor_workflow/` CLI), and runtime scaffold (`.local/` including `user_settings/` exemplars). You then wire **your** identity and **your** GitHub Project in `.local/user_settings/github.collaboration.yaml`.
+
+**Ready for `/implementer` requires:** `contributors validate` + `project doctor` + **`project board-bootstrap --check` exit 0** (six Playground views + Tier-1 columns on Status board / Prioritized backlog + non-empty README). Wire-only (`/project-board` YAML + fields) is **not** full shell readiness.
+
+**Automation boundary:**
+
+| Automated (CLI/API) | Human UI only (GitHub Project) |
+|---------------------|--------------------------------|
+| YAML ids, field definitions, README (`--apply-readme`) | Six Playground views |
+| `contributors validate`, `project doctor`, `project status` | Column visibility on Status board + Prioritized backlog |
+| `--ensure-fields` | Filters, layout, rename View 1 |
+
+**Future:** `--apply-shell` when GitHub ships a public view mutation API — **not shipped today** (ADR-008).
+
+After API wiring + shell green, agents use claim/handoff/Tier-1 the same way as kit-dev.
 
 **You configure (consumer-specific):** `owner.display_name`, `owner.github_user`, `project_ssot` board identity + field/option ids, `default_repo`, and `gh` auth scopes (`read:project`, `project`, `repo`).
 
@@ -129,7 +143,7 @@ Discover ids: manually via `gh project view <N> --owner <login>` / `gh project f
 | 2. Collaboration YAML (identity) | Edit `.local/user_settings/github.collaboration.yaml`: set `owner.display_name`, `owner.github_user`, and (if using board SSOT) `project_ssot.enabled: true` + `sync_policy: board_only`. Board ids may stay empty until step 3b. |
 | 3. GitHub auth | See **§ GitHub CLI auth (Projects)** below — grant `repo` + Project scopes; use the device login link if no browser opens. Confirm with `gh auth status`. |
 | 3b. Wire board ids (agent-assisted) | Paste **Project URL** (`https://github.com/users/YOU/projects/N` or `…/orgs/ORG/projects/N`) **and** this **repo URL** in Agent chat → **`/project-board`** fills `name` / `number` / `owner` / `project_id` / `fields.*` / `default_repo` via `gh` (or you copy from `gh project view` / `field-list` yourself). Human confirms YAML before save. |
-| 4. Doctor + board shell | `python3 -m cursor_workflow project doctor` (expect **ok**) → `python3 -m cursor_workflow project board-bootstrap --check`. **New Project:** `FAIL — missing minimum view '…'` / `WARN — rename … 'View 1'` is expected — **not** a README-only problem unless FAIL lines say so. → Agent chat **`/project-board`** + `.cursor/skills/board-shell-onboard/SKILL.md`: **CONSENT GATE** (board description + proceed) then **TURN PROTOCOL** (one view per turn; humans use `.ai_infra/templates/project-board/views-setup.md` as click reference) → optional `--ensure-fields` / `--apply-readme` after `yes` → re-run `board-bootstrap --check` until green → `python3 -m cursor_workflow project status`. **No** `--apply-shell` CLI today. |
+| 4. Doctor + board shell | `python3 -m cursor_workflow project doctor` (expect **ok**) → `python3 -m cursor_workflow project board-bootstrap --check`. **New Project:** view FAIL / Tier-1 column FAIL is expected until human UI setup — **not** a README-only problem. **`/project-board` wire alone does not complete the shell.** → Agent chat **`/project-board`** + `.cursor/skills/board-shell-onboard/SKILL.md`: **CONSENT GATE** (board description + proceed) then **TURN PROTOCOL** (one view per turn; [views-setup.md](../../.ai_infra/templates/project-board/views-setup.md) as click reference) → optional `--ensure-fields` / `--apply-readme` after `yes` → re-run `board-bootstrap --check` until **exit 0** → `python3 -m cursor_workflow project status`. **No** `--apply-shell` CLI today. |
 | 5. First card | `python3 -m cursor_workflow project create-from-template --template slice --title "…" --priority p1 --size s --estimate 1 --agent implementer` (assigns `owner.github_user` on Issues) → `claim --last --agent implementer` (sets Start date). Prefer `project guide`. |
 | 6. Rate-limit buffer | Writes may **precheck** GraphQL quota (cached REST) or queue on throttle / Forbidden / 429. If a write returns **EXIT_QUEUED (6)**, do **not** retry-loop — continue local evidence; after quota recovers run `python3 -m cursor_workflow project outbox status` then `project outbox flush`. Configure `project_ssot.outbox` (`precheck_writes`, `dedupe_pending`, …) in collaboration YAML. Outbox is a local buffer, not a second Status SSOT. |
 

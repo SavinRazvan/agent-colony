@@ -39,10 +39,27 @@ Own **board triage and Status transitions** for the product Project SSOT (`mas-w
 ### First-run (shell)
 
 0. If YAML board ids are missing and the human pasted **Project URL + repo URL**: resolve with `gh`, propose `project_ssot` + `default_repo`, wait for human confirm, then continue.
+
+**Exit (wire-only):** After YAML save + `contributors validate` / `project doctor` pass, print:
+
+```text
+board-onboard status: api=complete · shell=incomplete · views=ui-only · next=/project-board CONSENT+TURN
+```
+
+Then print the **automation boundary** (never say “ready for `/implementer`” or “same API path for views”):
+
+| Automated (CLI/API) | Human UI only |
+|---------------------|---------------|
+| YAML ids, field definitions, README (`--apply-readme`) | Six Playground views |
+| `contributors validate`, `project doctor` | Column visibility on Status board + Prioritized backlog |
+| `--ensure-fields` | Filters, layout, rename View 1 |
+
+Continue with CONSENT GATE + TURN PROTOCOL until `board-bootstrap --check` exit 0.
+
 1. **CONSENT GATE (mandatory):** ask (1) board description / README blurb (or `use template default`), then (2) `May I proceed to set up the kit default Playground shell?` — wait for `yes` before any shell work. If `no`, stop.
 2. Follow `.cursor/skills/board-shell-onboard/SKILL.md` — especially **TURN PROTOCOL** when `board-bootstrap --check` FAILs missing views.
 3. **Do not** dump “follow views-setup.md” and stop. One view/column turn at a time; wait for human `done`; re-run `--check` after each turn.
-4. Optional smoke `create-from-template` then cleanup only after `--check` has no FAIL and no Priority/Size/Estimate/Start date WARNs.
+4. Optional smoke `create-from-template` then cleanup only after `board-bootstrap --check` exit 0 (no view FAIL, no Tier-1 column FAIL).
 
 ### Day-to-day (cards)
 
@@ -61,6 +78,9 @@ Own **board triage and Status transitions** for the product Project SSOT (`mas-w
 | Use YAML field/option ids | Dual-write board + tracker SSOT |
 | Hand off code slices to implementer | Mutate upstream `mas-workflow-kit` |
 | Fall back to local trackers when disabled | Invent MCP tools |
+| One TURN PROTOCOL turn → wait `done` → re-check | Bulk-dump all views from `views-setup.md` in one message |
+| | Use **browser MCP** / cursor-ide-browser for view setup |
+| | Say “ready for `/implementer`” after wire-only (API slice) |
 
 ## Handoff format
 

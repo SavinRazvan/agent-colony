@@ -42,8 +42,8 @@ Day-0 requires the kit **default** shell: `.ai_infra/templates/project-board/boa
 1. Load `.cursor/skills/board-shell-onboard/SKILL.md` (coach) and the schema above.
 2. **CONSENT GATE (mandatory):** ask board description (or `use template default`) + `May I proceed to set up the kit default shell?` — only continue on `yes`.
 3. Run `python3 -m cursor_workflow project doctor` → `project board-bootstrap --check`.
-4. On FAIL or Tier-1 column WARNs: TURN PROTOCOL (agent coaches one view at a time; human uses `views-setup.md` as click reference). Optional `--ensure-fields` / `--apply-readme` only after consent. **No** `--apply-shell` CLI today.
-5. Refuse “ready for agents” until default-view check passes, README is non-empty, and primary-view Tier-1 column WARNs are cleared. Then resume day-to-day Pattern A below.
+4. On **exit 5** (view FAIL or Tier-1 column FAIL): TURN PROTOCOL (agent coaches one view at a time; human uses `views-setup.md` as click reference). Optional `--ensure-fields` / `--apply-readme` only after consent. **No** `--apply-shell` CLI today.
+5. Refuse “ready for agents” until `board-bootstrap --check` exits **0** (README non-empty, six views, Tier-1 columns on Status board / Prioritized backlog). Then resume day-to-day Pattern A below.
 
 **Not first-run:** `/enterprise-auditor` (architecture-impacting / pre-merge later).
 
