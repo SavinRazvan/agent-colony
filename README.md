@@ -9,8 +9,8 @@
 | | |
 |--|--|
 | **Product repo** | [mas-workflow-kit-project-ssot](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot) |
-| **Version** | `0.4.0` · **Tests** · 1180 · **Agents** · 8 · **Rules** · **7 universal** |
-| **Board (kit-dev)** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
+| **Version** | `0.4.0` · **Tests** · 1190 · **Agents** · 8 · **Rules** · **7 universal** |
+| **Board (kit-dev)** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) — reference layout for **Prioritized backlog** + **Status board** |
 | **Standing** | **STANDALONE** — permanent product; lineage only from [mas-workflow-kit](https://github.com/SavinRazvan/mas-workflow-kit) (`v0.4.0` / `8a779fa`) |
 
 ---
@@ -67,150 +67,167 @@ Wait for **`VERIFY PASS`** and all three planes **ready**. Activate is idempoten
 | Infrastructure | `.ai_infra/`, `cursor_workflow/` | CLI, scripts, docs, templates |
 | Runtime | `.local/`, `.venv` | Trackers, **user settings** (gitignored) |
 
-### 3. Configure your identity (and optional Project SSOT)
+### 3. Your identity, then wire the board (Project SSOT)
 
-Edit **`.local/user_settings/github.collaboration.yaml`** (copied from exemplars on activate):
+**Order matters:** set identity → validate → (optional) `gh` check → **`/project-board`** wires YAML → shell UI.
+
+#### 3a. Identity
+
+Edit **`.local/user_settings/github.collaboration.yaml`**:
 
 ```yaml
 owner:
   display_name: "Your Full Name"    # → Author: / Action-By:
   github_user: "@yourhandle"        # → GitHub-User:
-
-# Optional — GitHub Project as only writable Status SSOT
-project_ssot:
-  enabled: true
-  sync_policy: board_only           # board wins; local trackers = offline fallback
-  # + name, number, owner, project_id, fields.* option ids
 ```
 
-Set **identity** now (`display_name` / `github_user`). For Project SSOT, leave board ids incomplete if you want help — finish **GitHub auth** below, then paste your **Project URL + repo URL** in Agent chat (next block) so **`/project-board`** can wire the rest.
-
-Validate identity:
+Set **`project_ssot.enabled: true`** when you want the GitHub Project as SSOT (you can leave board ids empty until step 3c).
 
 ```bash
 source .venv/bin/activate
-python3 -m cursor_workflow contributors validate
+python3 -m cursor_workflow contributors validate   # must PASS
 python3 -m cursor_workflow health
 ```
 
-**With Project SSOT on** (kit-shaped board: Status · Priority · Size · Estimate **points** · Start date):
+#### 3b. GitHub CLI (Project SSOT only)
 
-Agents and `cursor_workflow project …` call **`gh`**. You must authorize GitHub **and** grant **Projects** access (read + write).
+Agents call **`gh`** for board operations. Check scopes first — **skip refresh** if you already have Project access:
 
 ```bash
-# First time on this machine (interactive):
-gh auth login -h github.com
-# Or add/refresh Project scopes on an existing login:
-gh auth refresh -h github.com -s read:project,project   # keep existing repo (+ workflow if you use Actions)
-
-# If the terminal cannot open a browser (common on WSL):
-# 1) Copy the one-time code gh prints
-# 2) Open https://github.com/login/device in any browser
-# 3) Paste the code → approve GitHub + Project permissions
-# 4) Return to the terminal (✓ Authentication complete)
-
-gh auth status   # expect scopes including: repo, project (read:project may appear too)
+gh auth status   # need: repo + project (read:project may appear too)
 ```
 
-**Need help filling `project_ssot`?** After `gh auth status` looks good, paste both links in Agent chat and ask **`/project-board`**:
+If Project scopes are missing:
+
+```bash
+gh auth login -h github.com
+# or add scopes on an existing login:
+gh auth refresh -h github.com -s read:project,project
+```
+
+WSL / no browser: copy the one-time code → [github.com/login/device](https://github.com/login/device) → approve → return to terminal.
+
+#### 3c. Wire `project_ssot` (API slice) — use **`/project-board`**
+
+After **`contributors validate`** passes, paste **both URLs** in Agent chat (same message):
 
 ```text
+/project-board
+
 Project: https://github.com/users/YOU/projects/N
-# or org: https://github.com/orgs/ORG/projects/N
 Repo:    https://github.com/YOU/your-app
 ```
 
-The agent uses `gh project view` / `field-list` (and optional `board-bootstrap --check --ensure-fields`) to propose `owner` / `number` / `project_id` / field ids and `default_repo` — you confirm before saving. After wire, expect:
+The **`/project-board`** agent uses `gh project view` / `field-list` to propose **`project_ssot`** (board ids, Status/Priority/Size/Estimate/Start date field ids) and **`default_repo`**. **Confirm before save.**
+
+Day-to-day board protocol lives in the **`project-board-ssot`** skill; onboarding wiring + shell coach is always **`/project-board`**.
+
+Then verify the API slice:
+
+```bash
+source .venv/bin/activate
+python3 -m cursor_workflow project doctor
+python3 -m cursor_workflow project status
+```
+
+Expect:
 
 ```text
 board-onboard status: api=complete · shell=incomplete · views=ui-only · next=/project-board CONSENT+TURN
 ```
 
-**API slice done ≠ board ready.** You still own view/column setup in the GitHub UI (§4).
+**API slice done ≠ board ready.** Views and column visibility are **human UI only** (§4).
 
-Then:
-
-```bash
-python3 -m cursor_workflow project doctor
-python3 -m cursor_workflow project board-bootstrap --check
-python3 -m cursor_workflow project status
-```
-
-**Expected on a brand-new Project:** `doctor: ok` and `status` enabled, but `board-bootstrap --check` **FAIL** (still on GitHub’s blank `View 1` — missing Status board / Prioritized backlog / …). That is normal. **Do not** jump to `/implementer` yet — continue with **step 4** below.
-
-There is **no** terminal command that **creates** Project **views** today (`--check` only **reads** views for validation). Step 4 = Agent coach (**CONSENT GATE** + TURN PROTOCOL) + **you** in the browser (plus optional terminal for fields/README only). **`--apply-shell` is not shipped.**
+**Expected on a brand-new Project:** `doctor: ok` but `board-bootstrap --check` **FAIL** until you finish §4 — do **not** start `/implementer` yet.
 
 Full checklist: [PLUGIN-USER-GUIDE § Consumer project_ssot onboarding](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist).
 
 ---
 
-### 4. Prepare the board with `/project-board` (required when SSOT is on)
+### 4. Prepare the board shell (required when SSOT is on)
 
-> **This is the step after §3.** Skip it and `/implementer` will fight a blank `View 1` board.
+> **After §3c.** Skip this and `/implementer` will fight a blank `View 1` board.
 
-**You are here** when `project doctor` is ok but `board-bootstrap --check` prints `FAIL — missing minimum view '…'` and/or `WARN — rename default view 'View 1'`.
+**You are here** when `project doctor` is ok but `board-bootstrap --check` prints `FAIL — missing minimum view …` and/or column FAILs.
 
-#### What runs where (do not expect a magic CLI for views)
+Choose **one** shell path:
+
+| Path | Views required | When |
+|------|----------------|------|
+| **Minimal 2-view** (recommended for small teams) | **Prioritized backlog** + **Status board** only | Match [AI Project Playground #3](https://github.com/users/SavinRazvan/projects/3) |
+| **Playground default** | Six views (Roadmap, Bugs, In review, My items, …) | Kit default schema — no overlay |
+
+#### Minimal 2-view (matches Playground #3)
+
+**New installs:** activate auto-seeds `.local/user_settings/board-shell.schema.yaml` from the minimal exemplar (consumer repos only). **Existing installs:**
+
+```bash
+python3 -m cursor_workflow project board-shell init --minimal
+```
+
+Or copy manually:
+
+In GitHub UI, mirror [Playground #3](https://github.com/users/SavinRazvan/projects/3):
+
+| View | Layout |
+|------|--------|
+| **Prioritized backlog** | Table · show Priority, Size, Estimate, Start date |
+| **Status board** | Board · group by **Status** · same Tier-1 columns |
+
+Tab order does not matter — bootstrap matches by **view name**.
+
+#### Playground default (six views)
+
+See table in §4B below — use when you do **not** copy the minimal overlay.
+
+#### What runs where
 
 | Action | Where | Command / prompt |
 |--------|--------|------------------|
 | Check shell | Terminal | `python3 -m cursor_workflow project board-bootstrap --check` |
-| Create missing **fields** (Priority/Size/…) | Terminal (optional) | `… board-bootstrap --check --ensure-fields` then confirm YAML |
+| Create missing **fields** | Terminal (optional) | `… board-bootstrap --check --ensure-fields` |
 | Push Project **README** | Terminal (optional) | `… board-bootstrap --check --apply-readme` |
-| Create/rename **views** + show **columns** | **Browser** + Agent coach | **`/project-board`** TURN PROTOCOL (below) — **no CLI** |
-| Day-to-day cards | Later (§5) | `/implementer` only after `--check` is green |
+| Create/rename **views** + **columns** | Browser + **`/project-board`** | CONSENT GATE + TURN PROTOCOL — **no view CLI** |
+| Day-to-day cards | After `--check` green | `/implementer` |
 
-#### A. Tell the agent (Agent chat in **your app** repo — copy/paste)
-
-The agent **must** first ask for a **board description** and **explicit yes** to create the default shell (CONSENT GATE). Then it coaches **one view per turn** (TURN PROTOCOL) — not dump “follow views-setup” and stop.
+#### A. Agent chat (copy/paste)
 
 ```text
 /project-board
 
-board-bootstrap --check FAIL CODE=5 — missing all six Playground views (still on View 1).
-Run board-shell-onboard: CONSENT GATE first (ask my board description + "may I proceed?"),
-then TURN PROTOCOL only:
-- one view (or column fix) per message
-- wait for my reply "done"
-- re-run: python3 -m cursor_workflow project board-bootstrap --check after each turn
-Do NOT skip consent. Do NOT say only "follow views-setup.md". Do NOT start /implementer until --check is green.
+Using minimal 2-view overlay (or: Playground six-view default).
+board-bootstrap --check still FAIL — coach CONSENT GATE then TURN PROTOCOL:
+one view per turn, wait for "done", re-run --check after each turn.
 Project: https://github.com/users/YOU/projects/N
 Repo: https://github.com/YOU/your-app
 ```
 
-Skill: [board-shell-onboard](.cursor/skills/board-shell-onboard/SKILL.md) · clicks: [views-setup.md](.ai_infra/templates/project-board/views-setup.md) § Fast path · checklist: [views-checklist.md](.ai_infra/templates/project-board/views-checklist.md).
+Skill: [board-shell-onboard](.cursor/skills/board-shell-onboard/SKILL.md) · [views-setup.md](.ai_infra/templates/project-board/views-setup.md)
 
-#### B. You click in GitHub (while the agent coaches)
-
-Open the Project (`project status` → `url`). Build the **default** shell:
+#### B. GitHub UI — Playground default (six views)
 
 | View | Layout (short) |
 |------|----------------|
 | **Status board** | Board · group by Status |
-| **Prioritized backlog** | Table · show Priority, Size, Estimate, Start date |
+| **Prioritized backlog** | Table · Tier-1 columns |
 | **Roadmap** | Roadmap |
 | **Bugs** | Table · filter title contains `[BUG]` |
 | **In review** | Table · Status = In review |
 | **My items** | Table · Assignees = `@me` |
 
-On **Status board** and **Prioritized backlog**, show Tier-1 columns: **Priority**, **Size**, **Estimate**, **Start date**.
+On **Status board** and **Prioritized backlog**, show: **Priority**, **Size**, **Estimate**, **Start date**.
 
-#### C. Terminal helpers (after views exist, or for README anytime)
+#### C. Prove the shell (repeat until exit 0)
 
 ```bash
-# optional: create missing field *definitions* (not views)
-python3 -m cursor_workflow project board-bootstrap --check --ensure-fields
-
-# optional: push kit Project README
-python3 -m cursor_workflow project board-bootstrap --check --apply-readme
-
-# required: prove the shell (repeat until exit 0 — no view FAIL, no Tier-1 column FAIL)
+source .venv/bin/activate
 python3 -m cursor_workflow project board-bootstrap --check
+python3 -m cursor_workflow project status
 ```
 
-**Misread trap:** `CODE=5` + `missing minimum view 'Status board'` = **views in the browser**, not README. `--apply-readme` alone will **not** clear those FAILs.
+Schema path should show `.local/user_settings/board-shell.schema.yaml` when using the minimal overlay.
 
-**Do not** start with `/enterprise-auditor`. When bootstrap is green → **step 5** `/implementer`.
+**Do not** start with `/enterprise-auditor`. When bootstrap is green → **§5** `/implementer`.
 
 ---
 

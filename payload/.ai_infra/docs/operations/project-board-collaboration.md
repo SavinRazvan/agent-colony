@@ -17,7 +17,7 @@ Notes:
 
 When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project is the only writable SSOT** for backlog, Status, and continuation. Local trackers are offline fallback only; read-only exports never compete with Status. Canonical skill: `.cursor/skills/project-board-ssot/SKILL.md`.
 
-**First-time consumer setup:** step-by-step checklist in [PLUGIN-USER-GUIDE.md § Consumer project_ssot onboarding](PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) (install → collab YAML → `gh auth` → `project doctor` → `/project-board` + `board-bootstrap --check` + human views-setup/README → `project status` → first card → outbox flush).
+**First-time consumer setup:** step-by-step checklist in [PLUGIN-USER-GUIDE.md § Consumer project_ssot onboarding](PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) (install → identity → `gh auth status` → **`/project-board`** wire → optional minimal 2-view overlay → CONSENT + TURN → `board-bootstrap --check` exit **0** → `project status` → first card → outbox flush).
 
 ## Continuation (why agents update the board)
 
@@ -31,7 +31,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 
 ### Board shell starter (first-run)
 
-- **Desired state:** `.ai_infra/templates/project-board/board-shell.schema.yaml` — **full Playground default** (six views + Tier-1 columns).
+- **Desired state:** `.ai_infra/templates/project-board/board-shell.schema.yaml` — **full Playground default** (six views + Tier-1 columns). **Or** copy `board-shell.schema.minimal.yaml` for **two views** ([Playground #3](https://github.com/users/SavinRazvan/projects/3)).
 - **Customize:** copy/edit `.local/user_settings/board-shell.schema.yaml` — `board-bootstrap --check` prefers the overlay when present. Do **not** remove Status / Priority / Size / Estimate / Start date, or hide **Priority** on Prioritized backlog.
 - **Coach:** `/project-board` + `.cursor/skills/board-shell-onboard/SKILL.md`.
 - **Verify:** `python3 -m cursor_workflow project board-bootstrap --check` (FAIL if a default Playground view is missing; **FAIL (exit 5)** on missing Tier-1 columns; WARN on leftover `View N` / layout mismatch).

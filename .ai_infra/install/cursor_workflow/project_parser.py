@@ -312,6 +312,28 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     )
     boot_cmd.set_defaults(func=pc.cmd_board_bootstrap)
 
+    shell_cmd = project_sub.add_parser(
+        "board-shell",
+        help="Board shell schema overlay helpers",
+    )
+    shell_sub = shell_cmd.add_subparsers(dest="board_shell_command", required=True)
+    shell_init = shell_sub.add_parser(
+        "init",
+        help="Install board-shell.schema.yaml overlay from kit exemplar",
+    )
+    shell_init.add_argument("--directory", type=Path, default=".")
+    shell_init.add_argument(
+        "--minimal",
+        action="store_true",
+        help="Copy minimal 2-view overlay (Prioritized backlog + Status board)",
+    )
+    shell_init.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite existing .local/user_settings/board-shell.schema.yaml",
+    )
+    shell_init.set_defaults(func=pc.cmd_board_shell_init)
+
     assignee_cmd = project_sub.add_parser(
         "set-assignee",
         help="Assign GitHub human user (Issue-backed); default owner.github_user",

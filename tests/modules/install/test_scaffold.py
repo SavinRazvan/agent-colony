@@ -217,9 +217,21 @@ def test_scaffold_creates_user_settings_worksheets(tmp_path: Path) -> None:
     assert (settings / "github.collaboration.yaml").is_file()
     assert (settings / "mcp.agents.yaml").is_file()
     assert (settings / "README.md").is_file()
+    overlay = settings / "board-shell.schema.yaml"
+    assert overlay.is_file(), "consumer activate should seed minimal board-shell overlay"
+    assert "minimal-two-view" in overlay.read_text(encoding="utf-8")
     github = (settings / "github.collaboration.yaml").read_text(encoding="utf-8")
     assert "owner:" in github
     assert "commit_provenance:" in github
+
+
+def test_scaffold_skips_board_shell_overlay_on_kit_dev(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "kit-dev"
+    mod.scaffold(target, REPO_ROOT, with_tests=True)
+    overlay = target / ".local" / "user_settings" / "board-shell.schema.yaml"
+    assert not overlay.is_file()
+    assert (target / "tests" / "modules" / "install" / "test_scaffold.py").is_file()
 
 
 def test_scaffold_rejects_same_source_and_target() -> None:

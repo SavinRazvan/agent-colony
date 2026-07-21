@@ -17,7 +17,7 @@ Notes:
 
 Install **MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) into your project in a few minutes. No special git setup required.
 
-**Product promise:** Install the plugin → open **your app repo** → **`/workflow-activate`** installs the **full kit** (agents, skills, rules, CLI, `.local/` scaffold). You customize `.local/user_settings/github.collaboration.yaml` (identity + board ids). **Ready for agents** requires `board-bootstrap --check` **exit 0** (six views + Tier-1 columns) — not wire-only. Details: [PLUGIN-USER-GUIDE § Product promise](PLUGIN-USER-GUIDE.md#product-promise).
+**Product promise:** Install the plugin → open **your app repo** → **`/workflow-activate`** installs the **full kit**. Customize identity in `github.collaboration.yaml`, then **`/project-board`** wires board ids from Project + repo URLs. **Ready for agents** requires `board-bootstrap --check` **exit 0** — either **two views** (minimal overlay, matches [Playground #3](https://github.com/users/SavinRazvan/projects/3)) or **six Playground views** (kit default). Wire-only is not enough. Details: [PLUGIN-USER-GUIDE § Product promise](PLUGIN-USER-GUIDE.md#product-promise).
 
 > **Full manual:** [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) — plugin vs activate, complete file tree, use-case matrix, PR and audit chapters.
 
@@ -31,11 +31,11 @@ Install **MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) 
 |------|--------|
 | **1. Plugin** | In **Agent chat** (not terminal): `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` — or **Cursor → Marketplace** when listed |
 | **2. Activate** | Open **your app folder** → Agent chat: **`/workflow-activate`** → wait for **`VERIFY PASS`** |
-| **3. Your name** | Edit `.local/user_settings/github.collaboration.yaml` → set `display_name` + `github_user` → `python3 -m cursor_workflow contributors validate` |
-| **3b. GitHub auth** (board SSOT) | `gh auth login` or `gh auth refresh -h github.com -s read:project,project` — grant **repo + Project** permissions. If no browser opens: copy the one-time code → open **https://github.com/login/device** → approve → return to terminal. Details: [PLUGIN-USER-GUIDE § GitHub CLI auth](PLUGIN-USER-GUIDE.md#github-cli-auth-projects). |
-| **3c. Wire board** (board SSOT) | After auth: paste **Project URL + this repo URL** in Agent chat → **`/project-board`** proposes `project_ssot` ids + `default_repo` (you confirm). Or fill ids yourself via `gh project view` / `field-list`. |
-| **4. Board shell** *(when `project_ssot.enabled`)* | Run `project doctor` (expect **ok**) then `board-bootstrap --check`. **Brand-new Project:** view/column FAIL is **normal** (no view-create CLI today). **`/project-board` wire is API-only — not the full shell.** Agent chat **`/project-board`**: **CONSENT GATE** (description + proceed) then **TURN PROTOCOL** (you click in GitHub UI; one view per turn) → optional `--ensure-fields` / `--apply-readme` after `yes` → re-run `--check` until **exit 0** → `project status`. **Not** first-run: `/enterprise-auditor`. |
-| **5. Build** | **`/implementer`** · when board SSOT on, Entry = `python3 -m cursor_workflow project status`; else `session-pointer.md` → `plan.md` → `work-tracker.md` |
+| **3. Identity** | Edit `github.collaboration.yaml` → `display_name` + `github_user` → `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` |
+| **3b. GitHub auth** *(board SSOT)* | `gh auth status` — if Project scopes missing: `gh auth refresh -h github.com -s read:project,project`. Device flow: [github.com/login/device](https://github.com/login/device). [PLUGIN-USER-GUIDE § GitHub CLI auth](PLUGIN-USER-GUIDE.md#github-cli-auth-projects). |
+| **3c. Wire board** *(board SSOT)* | Agent chat **`/project-board`** + paste **Project URL + repo URL** → agent proposes `project_ssot` + `default_repo` (confirm) → `project doctor` + `project status` |
+| **4. Board shell** *(when SSOT on)* | **Minimal 2-view** (recommended): copy overlay → Prioritized backlog + Status board in UI ([Playground #3](https://github.com/users/SavinRazvan/projects/3)). **Or** six-view Playground default. **`/project-board`**: CONSENT GATE + TURN PROTOCOL → `--check` exit **0**. |
+| **5. Build** | **`/implementer`** · Entry = `python3 -m cursor_workflow project status` when board SSOT on |
 
 **Healthy install?** `python3 -m cursor_workflow health` · with board on: `gh auth status` → `project doctor` → `project board-bootstrap --check`
 
@@ -70,7 +70,8 @@ Cursor lists **subagents**, **skills**, and **commands** in the same **`/`** men
 | What you want | Type in chat | Lives on disk |
 |---------------|--------------|---------------|
 | Activate the kit | **`/workflow-activate`** | `.cursor/skills/workflow-activate/` |
-| First-run board shell | **`/project-board`** | `.cursor/agents/project-board.md` + `board-shell-onboard` |
+| Wire board + shell coach | **`/project-board`** | `.cursor/agents/project-board.md` + `board-shell-onboard` |
+| Day-to-day board protocol | **`project-board-ssot`** skill (auto-loaded) | `.cursor/skills/project-board-ssot/` |
 | Implement a slice | **`/implementer`** | `.cursor/agents/implementer.md` |
 | Run tests | **`/test-runner`** | `.cursor/agents/test-runner.md` |
 | PR review / prepare / merge | **`/review-pr`**, `/prepare-pr`, `/merge-pr` | `.agents/skills/` (loaded as skills) |
@@ -160,7 +161,7 @@ cd "$TARGET"
 
 ---
 
-## Step 3 detail — personalize
+## Step 3 detail — identity, auth, wire board
 
 File: `.local/user_settings/github.collaboration.yaml`
 
@@ -171,15 +172,83 @@ owner:
 ```
 
 ```bash
-cd ~/Projects/my-app   # your activated project — not `mas-workflow-kit-project-ssot` (the kit product repo)
-python3 -m cursor_workflow contributors validate   # must PASS before first PR
-python3 -m cursor_workflow integrate validate      # optional; P0 must be 0
+cd ~/Projects/my-app
+source .venv/bin/activate
+python3 -m cursor_workflow contributors validate   # must PASS — do this before wiring board ids
 python3 -m cursor_workflow health
 ```
 
-> **YAML tip:** Edit only `owner` at first. Do not uncomment `# - display_name: Alice Example` under `human_coauthors: []` — that causes a YAML syntax error. To add a co-author, replace `[]` with a proper list (see exemplar comments).
+> **YAML tip:** Edit only `owner` at first. Do not uncomment example lines under `human_coauthors: []`.
+
+### GitHub CLI (when `project_ssot.enabled`)
+
+```bash
+gh auth status
+```
+
+If scopes already include **`project`** (and **`repo`**), skip refresh. Otherwise:
+
+```bash
+gh auth refresh -h github.com -s read:project,project
+```
+
+### Wire board — **`/project-board`** (Agent chat)
+
+After **`contributors validate`** passes, paste both URLs:
+
+```text
+/project-board
+
+Project: https://github.com/users/YOU/projects/N
+Repo:    https://github.com/YOU/your-app
+```
+
+The agent fills **`project_ssot`** field ids and **`default_repo`**. Confirm before save. Then:
+
+```bash
+python3 -m cursor_workflow project doctor
+python3 -m cursor_workflow project status
+```
+
+Expect `api=complete · shell=incomplete` until step 4.
 
 Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → **`/connect-external-mcp`**
+
+---
+
+## Step 4 detail — board shell (minimal 2-view or six-view default)
+
+### Minimal 2-view (matches [Playground #3](https://github.com/users/SavinRazvan/projects/3))
+
+**New installs:** activate auto-seeds `.local/user_settings/board-shell.schema.yaml`. **Existing installs:**
+
+```bash
+source .venv/bin/activate
+python3 -m cursor_workflow project board-shell init --minimal
+```
+
+GitHub UI — two views only:
+
+| View | Layout |
+|------|--------|
+| **Prioritized backlog** | Table + Tier-1 columns |
+| **Status board** | Board · group by Status + Tier-1 columns |
+
+Tier-1 columns on **both**: Priority, Size, Estimate, Start date.
+
+Agent chat: **`/project-board`** → CONSENT GATE → TURN PROTOCOL (Turn A + Turn B for minimal overlay).
+
+### Six-view Playground default
+
+Skip the overlay copy; coach all six views per [views-setup.md](../../templates/project-board/views-setup.md).
+
+### Verify (both paths)
+
+```bash
+source .venv/bin/activate
+python3 -m cursor_workflow project board-bootstrap --check   # exit 0
+python3 -m cursor_workflow project status
+```
 
 ---
 

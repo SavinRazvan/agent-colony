@@ -10,6 +10,7 @@
 #  - board-shell.schema.yaml (fields must match kit Tier-1 contract)
 # Notes:
 #  - Copy to .local/user_settings/board-shell.schema.yaml (gitignored).
+#  - Reference layout: AI Project Playground #3 (Prioritized backlog + Status board).
 #  - Agents use CLI/API only — extra Playground views are optional human UI.
 
 version: 1

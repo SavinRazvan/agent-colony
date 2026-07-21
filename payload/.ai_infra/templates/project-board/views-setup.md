@@ -20,14 +20,14 @@ python3 -m cursor_workflow project board-bootstrap --check
 
 | Tier | What | When |
 |------|------|------|
-| **Default minimum (required)** | All six Playground views + Tier-1 columns on Status board and Prioritized backlog + Project README | Right after activate + `project doctor` |
+| **Default minimum (required)** | **Six Playground views** (kit default schema) **or two views** with minimal overlay — plus Tier-1 columns on Status board and Prioritized backlog + Project README | Right after activate + `project doctor` |
 | **Customize later** | Iteration / End date / Labels / Reviewers columns, Insights, extra filters | Anytime after bootstrap is clean |
 
 GitHub may create a blank Project with names like `View 1`. That is **not** the kit default — rename/create until the board matches the table below.
 
 ### Minimal 2-view overlay (optional)
 
-Use this when you want a **lean board** (Status board + Prioritized backlog only). Agent CLI/API behavior is unchanged — views are human UI only.
+Use this when you want a **lean board** matching kit-dev [AI Project Playground #3](https://github.com/users/SavinRazvan/projects/3): **Prioritized backlog** + **Status board** only. Agent CLI/API behavior is unchanged — views are human UI only.
 
 1. Copy the exemplar:
 
@@ -36,7 +36,13 @@ cp .ai_infra/templates/user-settings/exemplars/board-shell.schema.minimal.yaml \
    .local/user_settings/board-shell.schema.yaml
 ```
 
-2. In GitHub UI: create/rename **Status board** (Board, group by Status) and **Prioritized backlog** (Table).
+2. In GitHub UI, mirror Playground #3:
+
+| View | Layout |
+|------|--------|
+| **Prioritized backlog** | Table |
+| **Status board** | Board · group by **Status** |
+
 3. On **both** views: show **Priority**, **Size**, **Estimate**, **Start date** (Tier-1 contract unchanged).
 4. Paste README (`project-readme.md` or `--apply-readme`).
 5. `board-bootstrap --check` until exit **0** — schema path should show `.local/user_settings/board-shell.schema.yaml`.

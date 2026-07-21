@@ -27,10 +27,11 @@ If the user ran **`/add-plugin`** and sees the kit welcome summary, use this **c
 
 1. **`/workflow-activate`** in **their app repo** (wait for VERIFY PASS)
 2. Edit `github.collaboration.yaml` → identity → `contributors validate`
-3. **`gh auth refresh`** with Project scopes (if board SSOT)
+3. **`gh auth status`** — refresh Project scopes only if missing
 4. Paste **Project URL + repo URL** → **`/project-board`** wire (API slice — print `board-onboard status: api=complete · shell=incomplete · views=ui-only`)
-5. **`/project-board`** + **CONSENT GATE** + **TURN PROTOCOL** (human clicks six views + Tier-1 columns; one turn at a time)
-6. `board-bootstrap --check` **exit 0** → **`/implementer`**
+5. Optional: copy **minimal 2-view overlay** (matches Playground #3) or use six-view default
+6. **`/project-board`** + **CONSENT GATE** + **TURN PROTOCOL** (human UI; 2 or 6 views)
+7. `board-bootstrap --check` **exit 0** → **`/implementer`**
 
 Never list `/board-shell-onboard` before wire. Never imply views are API-automated. Never use browser MCP for view setup.
 
@@ -41,8 +42,8 @@ Never list `/board-shell-onboard` before wire. Never imply views are API-automat
 1. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` (chat only — not terminal). Show [install screenshot](https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit-project-ssot/main/assets/mas-workflow-kit-install.png) or [consumer-quickstart § step 1](../../.ai_infra/docs/operations/consumer-quickstart.md#step-1-detail--install-plugin-from-github) — user clicks the **MAS Workflow Kit — Project SSOT** card in the preview.
 2. Confirm the open folder is **their app**, not the kit product repo (`mas-workflow-kit-project-ssot`).
 3. Run activate (below) — or tell them to pick **`/workflow-activate`** from the **`/`** menu.
-4. Wire collaboration YAML — set name/@handle; when enabling Project SSOT: **`gh` auth first**, then paste **Project URL + repo URL** in chat → **`/project-board`** proposes `project_ssot` + `default_repo` (or fill via `gh project view` / `field-list`) → `contributors validate` → `project doctor`.
-5. When `project_ssot.enabled`: first-run board shell — **`/project-board`** + [board-shell-onboard](board-shell-onboard/SKILL.md) **CONSENT GATE** (description + proceed) then **TURN PROTOCOL** (human clicks; [views-setup.md](../../.ai_infra/templates/project-board/views-setup.md) as reference) → `project board-bootstrap --check` (optional `--ensure-fields` / `--apply-readme` **after** consent) → `project status`. **Do not** start with `/enterprise-auditor`. **No** `--apply-shell` CLI today.
+4. Wire collaboration YAML — set name/@handle → **`contributors validate`** → **`gh auth status`** (refresh only if needed) → paste **Project URL + repo URL** in chat → **`/project-board`** wires `project_ssot` + `default_repo` → `project doctor`.
+5. When `project_ssot.enabled`: copy **minimal 2-view overlay** (optional; [Playground #3](https://github.com/users/SavinRazvan/projects/3)) → **`/project-board`** + [board-shell-onboard](board-shell-onboard/SKILL.md) **CONSENT GATE** + **TURN PROTOCOL** → `board-bootstrap --check` exit **0** → `project status`.
 6. Point them to **`/implementer`** (from **`/`** menu). When board SSOT on, Entry is **`python -m cursor_workflow project status`**; else read `session-pointer.md` first.
 
 Do **not** dump gate lists or maintainer `make` commands.
@@ -105,10 +106,12 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 
 ## Post-activate (tell the user)
 
-1. Open `.local/user_settings/github.collaboration.yaml` — set **display_name**, **github_user**. For Project SSOT: enable + `board_only`. After **`gh` auth**, paste **Project URL + repo URL** in chat → **`/project-board`** proposes board ids + `default_repo` (or use `gh project view` / `field-list`). Wire Status/Priority/**Size**/Estimate/**Start date**. Estimate = **points**; Size↔Estimate in `project-board-ssot` skill. Optional: `board-bootstrap --check --ensure-fields` (human confirms ids).
-2. Terminal: `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` (must PASS). Grant `gh` Project scopes before doctor — [PLUGIN-USER-GUIDE § GitHub CLI auth](../../.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#github-cli-auth-projects).
-3. When board SSOT enabled: `source .venv/bin/activate && python3 -m cursor_workflow project doctor` → **`/project-board`** + `board-shell-onboard` (**CONSENT GATE** then TURN PROTOCOL) → `python3 -m cursor_workflow project board-bootstrap --check` until **exit 0** (kit default six views, or **minimal 2-view overlay** — see [views-setup.md](../../.ai_infra/templates/project-board/views-setup.md)) → `python3 -m cursor_workflow project status`
-4. **`/implementer`** to start · each session Entry: **`source .venv/bin/activate && python3 -m cursor_workflow project status`** when board SSOT on; else read `session-pointer.md` first. Audit (`/enterprise-auditor`) is later / architecture-impacting — not day-0.
+1. Open `.local/user_settings/github.collaboration.yaml` — set **display_name**, **github_user**. For Project SSOT: enable + `board_only`.
+2. Terminal: `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` (must PASS).
+3. **`gh auth status`** — refresh Project scopes only if missing — [PLUGIN-USER-GUIDE § GitHub CLI auth](../../.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#github-cli-auth-projects).
+4. Paste **Project URL + repo URL** in chat → **`/project-board`** wires `project_ssot` + `default_repo` (confirm before save) → `project doctor` + `project status`.
+5. When board SSOT enabled: optional **minimal 2-view overlay** ([Playground #3](https://github.com/users/SavinRazvan/projects/3)) → **`/project-board`** + `board-shell-onboard` (**CONSENT GATE** then TURN PROTOCOL) → `board-bootstrap --check` until **exit 0** → `project status`. See [views-setup.md](../../.ai_infra/templates/project-board/views-setup.md).
+6. **`/implementer`** to start · each session Entry: **`source .venv/bin/activate && python3 -m cursor_workflow project status`** when board SSOT on; else read `session-pointer.md` first. Audit (`/enterprise-auditor`) is later — not day-0.
 
 **Dashboards (optional):** from project root run `source .venv/bin/activate && python3 -m http.server 8000`, then open
 http://localhost:8000/.local/agents-control-center/dashboards/index.html (not `file://`).

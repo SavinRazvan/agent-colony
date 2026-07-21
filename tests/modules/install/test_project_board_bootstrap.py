@@ -294,6 +294,7 @@ def test_board_bootstrap_fails_when_default_playground_views_missing(
     err = capsys.readouterr().err
     assert "missing minimum view" in err
     assert "Roadmap" in err
+    assert "board-shell init --minimal" in err
 
 
 def test_board_bootstrap_warns_when_prioritized_backlog_missing_priority(
@@ -556,7 +557,7 @@ def test_agents_stub_and_view_pack_text() -> None:
     ).read_text(encoding="utf-8")
     assert "/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot" in agents
     assert "/add-plugin https://github.com/SavinRazvan/mas-workflow-kit\n" not in agents
-    assert "project board-bootstrap --check" in agents
+    assert "board-bootstrap --check" in agents
     assert "CONSENT GATE" in agents
     assert "TURN PROTOCOL" in agents
     assert "project board-bootstrap --check" in project_board_readme
@@ -586,3 +587,61 @@ def test_agents_stub_and_view_pack_text() -> None:
     ).read_text(encoding="utf-8")
     assert "browser MCP" in project_board_agent
     assert "api=complete" in project_board_agent
+
+
+def test_board_shell_init_minimal_writes_overlay(tmp_path: Path) -> None:
+    exemplars = tmp_path / ".ai_infra" / "templates" / "user-settings" / "exemplars"
+    exemplars.mkdir(parents=True)
+    minimal_src = (
+        REPO_ROOT
+        / ".ai_infra"
+        / "templates"
+        / "user-settings"
+        / "exemplars"
+        / "board-shell.schema.minimal.yaml"
+    )
+    shutil.copy(minimal_src, exemplars / "board-shell.schema.minimal.yaml")
+    code, message = board_shell.init_minimal_overlay(tmp_path)
+    assert code == 0
+    overlay = tmp_path / ".local" / "user_settings" / "board-shell.schema.yaml"
+    assert overlay.is_file()
+    assert "minimal-two-view" in overlay.read_text(encoding="utf-8")
+    assert "wrote minimal overlay" in message
+
+
+def test_board_bootstrap_passes_with_minimal_overlay_and_two_views(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _template_root(tmp_path)
+    overlay_dir = tmp_path / ".local" / "user_settings"
+    overlay_dir.mkdir(parents=True)
+    shutil.copy(
+        REPO_ROOT
+        / ".ai_infra"
+        / "templates"
+        / "user-settings"
+        / "exemplars"
+        / "board-shell.schema.minimal.yaml",
+        overlay_dir / "board-shell.schema.yaml",
+    )
+    ssot = _ssot()
+    _patch_common(monkeypatch, tmp_path, ssot)
+    monkeypatch.setattr(project_cli, "read_project_readme", lambda ssot_arg: ("# README\n", None))
+    tier = _tier1_fields()
+    monkeypatch.setattr(
+        project_cli,
+        "read_project_views",
+        lambda ssot_arg: (
+            [
+                {"name": "Status board", "layout": "BOARD_LAYOUT", "fields": tier},
+                {"name": "Prioritized backlog", "layout": "TABLE_LAYOUT", "fields": tier},
+            ],
+            None,
+        ),
+    )
+
+    code = project_handlers.run_board_bootstrap(_bootstrap_args(tmp_path))
+    assert code == project_cli.EXIT_OK
+    captured = capsys.readouterr()
+    assert "missing minimum view" not in captured.err
+    assert "board-bootstrap: ok" in captured.out or "board-bootstrap: ok" in captured.err
