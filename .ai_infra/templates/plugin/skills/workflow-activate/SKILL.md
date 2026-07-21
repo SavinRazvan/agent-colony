@@ -17,7 +17,7 @@ User enabled the **MAS Workflow Kit — Project SSOT** plugin (`mas-workflow-kit
 2. Confirm the open folder is **their app**, not the kit product repo.
 3. Run activate (below) — or **`/workflow-activate`** from the **`/`** menu.
 4. Wire collaboration YAML — set name/@handle; when enabling Project SSOT: **`gh` auth first**, then paste **Project URL + repo URL** → **`/project-board`** proposes ids + `default_repo` (or `gh project view` / `field-list`) → `contributors validate` → `project doctor`. Grant scopes `read:project,project` (+ `repo`).
-5. When `project_ssot.enabled`: first-run board shell — **`/project-board`** + `board-shell-onboard` → human `views-setup.md` → `project board-bootstrap --check` (optional `--ensure-fields` / `--apply-readme`) → `project status`. **Do not** start with `/enterprise-auditor`.
+5. When `project_ssot.enabled`: first-run board shell — **`/project-board`** + `board-shell-onboard` **CONSENT GATE** then TURN PROTOCOL → `project board-bootstrap --check` (optional `--ensure-fields` / `--apply-readme`) → `project status`. **Do not** start with `/enterprise-auditor`.
 6. Point them to **`/implementer`**. When board SSOT on, Entry is `python -m cursor_workflow project status`; else read `session-pointer.md` first.
 
 ## One command (agent or human)

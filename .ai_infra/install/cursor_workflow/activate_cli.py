@@ -98,7 +98,7 @@ def _print_post_activate_hints(root: Path) -> None:
         print("  2. Grant gh Project scopes: gh auth refresh -h github.com -s read:project,project")
         print("  3. Agent chat: paste Project URL + this repo URL → /project-board wires project_ssot ids")
         print("  4. Run: python3 -m cursor_workflow project doctor")
-        print("  5. Agent chat: /project-board — apply default shell (board-shell-onboard + views-setup.md)")
+        print("  5. Agent chat: /project-board — CONSENT GATE (description + proceed) then TURN PROTOCOL coach")
         print("  6. Run: python3 -m cursor_workflow project board-bootstrap --check")
         print("     Until default Playground shell green (six views; Priority/Size/Estimate/Start date on Status board + Prioritized backlog).")
         print("  7. Run: python3 -m cursor_workflow project status")

@@ -501,83 +501,86 @@ def run_board_bootstrap(args: argparse.Namespace) -> int:
                 file=sys.stderr,
             )
 
-    if ensure_fields or apply_readme:
-        if skip_live:
-            return pc.fail(
-                "board-bootstrap",
-                pc.EXIT_GH,
-                "low GraphQL quota — refuse --ensure-fields/--apply-readme; retry after reset",
-            )
+    if skip_live:
+        return pc.fail(
+            "board-bootstrap",
+            pc.EXIT_GH,
+            "INCOMPLETE — low GraphQL quota skipped live README/view probe; "
+            "retry after reset (do not treat as shell green)",
+        )
 
-    if ensure_fields and not skip_live:
+    if ensure_fields or apply_readme:
+        # skip_live already returned above; quota gate for mutations kept for clarity
+        pass
+
+    if ensure_fields:
         e_code = pc.ensure_board_shell_fields(root, ssot, schema)
         if e_code != pc.EXIT_OK:
             return e_code
 
-    if apply_readme and not skip_live:
+    if apply_readme:
         a_code = pc.apply_board_shell_readme(root, ssot, schema)
         if a_code != pc.EXIT_OK:
             return a_code
 
-    if not skip_live:
-        readme, err = pc.read_project_readme(ssot)
-        if err:
-            return pc.fail("board-bootstrap", pc.EXIT_GH, err)
-        if not str(readme or "").strip():
+    readme, err = pc.read_project_readme(ssot)
+    if err:
+        return pc.fail("board-bootstrap", pc.EXIT_GH, err)
+    if not str(readme or "").strip():
+        return pc.fail(
+            "board-bootstrap",
+            pc.EXIT_VALIDATION,
+            "project README is empty/whitespace; paste .ai_infra/templates/project-board/project-readme.md "
+            "or re-run with --apply-readme",
+        )
+
+    # Project-level field presence (names) vs schema
+    live_fields, f_err = pc.list_project_fields(ssot)
+    if f_err:
+        print(
+            f"board-bootstrap: WARN — project fields probe failed: {f_err}",
+            file=sys.stderr,
+        )
+    else:
+        live_names = {
+            str(f.get("name") or "").strip()
+            for f in (live_fields or [])
+            if str(f.get("name") or "").strip()
+        }
+        for req in bs.required_field_names(schema):
+            if req not in live_names:
+                print(
+                    f"board-bootstrap: WARN — project missing field {req!r} "
+                    "(create in UI or --ensure-fields)",
+                    file=sys.stderr,
+                )
+
+    views, v_err = pc.read_project_views(ssot)
+    if v_err:
+        print(
+            "board-bootstrap: WARN — view layout metadata opaque; use views-setup.md and views-checklist.md",
+            file=sys.stderr,
+        )
+    else:
+        problems, warnings = bs.compare_views_to_schema(schema, views or [])
+        for w in warnings:
+            print(f"board-bootstrap: WARN — {w}", file=sys.stderr)
+        if problems:
+            for p in problems:
+                print(f"board-bootstrap: FAIL — {p}", file=sys.stderr)
             return pc.fail(
                 "board-bootstrap",
                 pc.EXIT_VALIDATION,
-                "project README is empty/whitespace; paste .ai_infra/templates/project-board/project-readme.md "
-                "or re-run with --apply-readme",
+                "minimum views missing — GitHub UI only (no view create CLI today). "
+                "Agent chat: /project-board → CONSENT GATE then board-shell-onboard TURN PROTOCOL "
+                "(one view at a time). Human: views-setup.md § Fast path "
+                "(rename View 1 → Status board, then add five views + Tier-1 columns).",
             )
-
-        # Project-level field presence (names) vs schema
-        live_fields, f_err = pc.list_project_fields(ssot)
-        if f_err:
-            print(
-                f"board-bootstrap: WARN — project fields probe failed: {f_err}",
-                file=sys.stderr,
-            )
-        else:
-            live_names = {
-                str(f.get("name") or "").strip()
-                for f in (live_fields or [])
-                if str(f.get("name") or "").strip()
-            }
-            for req in bs.required_field_names(schema):
-                if req not in live_names:
-                    print(
-                        f"board-bootstrap: WARN — project missing field {req!r} "
-                        "(create in UI or --ensure-fields)",
-                        file=sys.stderr,
-                    )
-
-        views, v_err = pc.read_project_views(ssot)
-        if v_err:
-            print(
-                "board-bootstrap: WARN — view layout metadata opaque; use views-setup.md and views-checklist.md",
-                file=sys.stderr,
-            )
-        else:
-            problems, warnings = bs.compare_views_to_schema(schema, views or [])
-            for w in warnings:
-                print(f"board-bootstrap: WARN — {w}", file=sys.stderr)
-            if problems:
-                for p in problems:
-                    print(f"board-bootstrap: FAIL — {p}", file=sys.stderr)
-                return pc.fail(
-                    "board-bootstrap",
-                    pc.EXIT_VALIDATION,
-                    "minimum views from board-shell schema missing; follow views-setup.md "
-                    "(kit default = Playground six-view shell)",
-                )
 
     print("board-bootstrap: ok")
     print(f"project: {ssot.get('name')} ({ssot.get('url')})")
-    print("next: follow .ai_infra/templates/project-board/views-setup.md (GitHub UI)")
-    print("next: paste contents of project-readme.md into Project README (or --apply-readme)")
-    print("next: .ai_infra/templates/project-board/views-checklist.md")
-    print("next: first-run coach — .cursor/skills/board-shell-onboard/SKILL.md")
+    print("next: day-to-day Pattern A — project status / create-from-template / claim")
+    print("next: first-run complete — .cursor/skills/board-shell-onboard/SKILL.md (CONSENT+TURN if re-coaching)")
     return pc.EXIT_OK
 
 def run_queue(args: argparse.Namespace) -> int:

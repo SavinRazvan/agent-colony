@@ -8,7 +8,7 @@ description: Independent-governed helper — list/create/move GitHub Project SSO
 
 ## Anchor (mandatory)
 
-**Entry:** Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`, then `.cursor/skills/project-board-ssot/SKILL.md`. Run `python -m cursor_workflow project status` + `project list`. **Wire-from-URLs (day-0):** if the human pastes a **Project URL** + **repo URL** after `gh` auth, use `gh project view` / `field-list` (optional `board-bootstrap --check --ensure-fields`) to propose YAML updates — human confirms before save. **First-run / shell setup:** also load `.cursor/skills/board-shell-onboard/SKILL.md` and run `project board-bootstrap --check` against `board-shell.schema.yaml` — refuse “ready” until the **default** Playground shell (six views + Tier-1 columns on Status board / Prioritized backlog) and README pass.
+**Entry:** Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`, then `.cursor/skills/project-board-ssot/SKILL.md`. Run `python -m cursor_workflow project status` + `project list`. **Wire-from-URLs (day-0):** if the human pastes a **Project URL** + **repo URL** after `gh` auth, use `gh project view` / `field-list` to propose YAML updates — human confirms before save (discovery only — **no** `--ensure-fields` until CONSENT GATE). **First-run / shell setup:** load `.cursor/skills/board-shell-onboard/SKILL.md` — **CONSENT GATE is mandatory** (ask board description + “may I proceed to create the default shell?”) before TURN PROTOCOL or `--apply-readme` / `--ensure-fields`. Then `project board-bootstrap --check` against `board-shell.schema.yaml` — refuse “ready” until the **default** Playground shell (six views + Tier-1 columns on Status board / Prioritized backlog) and README pass.
 
 **Exit:** Board Status updated via CLI for every triage action; append `change-index.md` (Agent: `project-board`); one line in `history/updates-log.md`. Print handoff line (`next=implementer|…`). Do **not** dual-write `work-tracker.md` when `sync_policy: board_only`.
 
@@ -18,7 +18,7 @@ description: Independent-governed helper — list/create/move GitHub Project SSO
 
 **Board lifecycle (role):** Triage Ready (human owns Ready *ordering*). On new/moved cards **must** set Priority/Size/Estimate via `set-field` (Tier-1 contract). Pattern A: `create-from-template` → `claim --last` → hand off to **implementer** with real `item_id`.
 
-**Templates:** feature/`chore/` → `--template slice`; defect/`fix/` → `--template bug`. **Board shell:** first-run uses `board-shell-onboard` + human `views-setup.md` (views stay human UI); optional `board-bootstrap --apply-readme` / `--ensure-fields`. Notes timestamps via CLI; do not hand-forge times.
+**Templates:** feature/`chore/` → `--template slice`; defect/`fix/` → `--template bug`. **Board shell:** first-run = **CONSENT GATE** (description + proceed) then `board-shell-onboard` + human `views-setup.md` / TURN PROTOCOL; optional `board-bootstrap --apply-readme` / `--ensure-fields` only after `proceed=yes`. Notes timestamps via CLI; do not hand-forge times.
 
 ## Role
 
@@ -39,9 +39,10 @@ Own **board triage and Status transitions** for the product Project SSOT (`mas-w
 ### First-run (shell)
 
 0. If YAML board ids are missing and the human pasted **Project URL + repo URL**: resolve with `gh`, propose `project_ssot` + `default_repo`, wait for human confirm, then continue.
-1. Follow `.cursor/skills/board-shell-onboard/SKILL.md`
-2. `project doctor` → `project board-bootstrap --check` → human paste pack until **default** shell pass (no FAIL; no Priority/Start date WARNs on primary views)
-3. Optional smoke `create-from-template` then cleanup
+1. **CONSENT GATE (mandatory):** ask (1) board description / README blurb (or `use template default`), then (2) `May I proceed to set up the kit default Playground shell?` — wait for `yes` before any shell work. If `no`, stop.
+2. Follow `.cursor/skills/board-shell-onboard/SKILL.md` — especially **TURN PROTOCOL** when `board-bootstrap --check` FAILs missing views.
+3. **Do not** dump “follow views-setup.md” and stop. One view/column turn at a time; wait for human `done`; re-run `--check` after each turn.
+4. Optional smoke `create-from-template` then cleanup only after `--check` has no FAIL and no Priority/Size/Estimate/Start date WARNs.
 
 ### Day-to-day (cards)
 

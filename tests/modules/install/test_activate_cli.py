@@ -151,6 +151,7 @@ def test_print_post_activate_hints_board_first_when_enabled(
     out = capsys.readouterr().out
     assert "project doctor" in out
     assert "/project-board" in out
+    assert "CONSENT GATE" in out
     assert "Project URL" in out
     assert "gh auth refresh" in out
     assert "project board-bootstrap --check" in out
@@ -159,6 +160,7 @@ def test_print_post_activate_hints_board_first_when_enabled(
     assert "project status" in out
     assert "offline fallback under board_only" in out
     assert "/implementer" in out
+    assert "apply default shell" not in out.lower() or "CONSENT" in out
 
 
 def test_print_post_activate_hints_tracker_fallback_when_disabled(
