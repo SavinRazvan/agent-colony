@@ -86,7 +86,7 @@ These are the columns agents and humans need for Pattern A. **Prioritized backlo
 1. Open the view (e.g. **Prioritized backlog**).
 2. **+** / field picker → show **Priority** (and Size, Estimate, Start date if missing).
 3. Drag columns into a sensible order: Title → Assignees → Status → Priority → Size → Estimate → Start date → Linked pull requests.
-4. Re-run `board-bootstrap --check` until those WARNs are gone.
+4. Re-run `board-bootstrap --check` until exit **0** (no view FAIL and no Tier-1 column FAILs; leftover `View N` WARNs are OK).
 
 Other views (Roadmap, Bugs, In review, My items) should show Status / Priority / Size where useful; bootstrap enforces Tier-1 column checks on the two primary board/table shells.
 
@@ -110,9 +110,9 @@ python3 -m cursor_workflow project board-bootstrap --check
 
 | Outcome | Meaning |
 |---------|---------|
-| **FAIL** | Missing a **default** view name, or empty README |
-| **WARN** | Missing Tier-1 columns (e.g. Prioritized backlog without **Priority**); leftover `View N` names |
-| **ok** + no column WARNs | Default shell ready → `project status` → day-to-day agents |
+| **FAIL (exit 5)** | Missing a **default** view, empty README, or missing Tier-1 **columns** on Status board / Prioritized backlog |
+| **WARN (exit 0)** | Leftover `View N` names; layout mismatch; recommended view missing — fix before relying on agents |
+| **ok (exit 0)** | Default shell ready → `project status` → `/implementer` |
 
 Then: `python3 -m cursor_workflow project status`.
 

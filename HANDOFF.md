@@ -68,7 +68,7 @@ python3 -m cursor_workflow project list --status ready
 # claim / create-from-template — see: python3 -m cursor_workflow project guide
 ```
 
-**First-run / shell gate (when `project_ssot.enabled`):** if `python3 -m cursor_workflow project board-bootstrap --check` FAILs the kit default Playground shell (`board-shell.schema.yaml`: six views + Tier-1 columns) or WARNs on Priority/Start date for primary views → **`/project-board`** + [board-shell-onboard](.cursor/skills/board-shell-onboard/SKILL.md) before claim/`/implementer`. **`/enterprise-auditor`** is not day-0.
+**First-run / shell gate (when `project_ssot.enabled`):** if `python3 -m cursor_workflow project board-bootstrap --check` exits non-zero (missing views, Tier-1 columns, or empty README) → **`/project-board`** + [board-shell-onboard](.cursor/skills/board-shell-onboard/SKILL.md) before claim/`/implementer`. **`/enterprise-auditor`** is not day-0.
 
 Auth (board write): `gh auth refresh -h github.com -s read:project,project` (keep `repo`).  
 No browser (WSL)? Copy the one-time code → **https://github.com/login/device** → approve Project permissions → `gh auth status`.  
