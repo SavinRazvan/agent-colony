@@ -11,7 +11,7 @@ User enabled the **MAS Workflow Kit — Project SSOT** plugin (`mas-workflow-kit
 
 ## Guide the user (keep it simple)
 
-**Product promise:** Plugin install loads agents/skills in Cursor only. **`/workflow-activate`** in **their app repo** installs the **full kit**. They then edit `.local/user_settings/github.collaboration.yaml` for **their** name, **their** GitHub Project ids, and `default_repo`. After validate + doctor + board shell + status pass, usage matches kit-dev. Board must be kit-shaped — see [PLUGIN-USER-GUIDE § Product promise](../../../docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
+**Product promise:** Plugin install loads agents/skills in Cursor only. **`/workflow-activate`** in **their app repo** installs the **full kit**. They edit `.local/user_settings/github.collaboration.yaml` for identity + board ids. Usage matches kit-dev after **`board-bootstrap --check` exit 0** — see [PLUGIN-USER-GUIDE § Product promise](../../../docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
 
 1. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` (chat only — not terminal).
 2. Confirm the open folder is **their app**, not the kit product repo.

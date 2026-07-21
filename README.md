@@ -120,7 +120,13 @@ Project: https://github.com/users/YOU/projects/N
 Repo:    https://github.com/YOU/your-app
 ```
 
-The agent uses `gh project view` / `field-list` (and optional `board-bootstrap --check --ensure-fields`) to propose `owner` / `number` / `project_id` / field ids and `default_repo` — you confirm before saving. You still own view/column setup in the GitHub UI (§4).
+The agent uses `gh project view` / `field-list` (and optional `board-bootstrap --check --ensure-fields`) to propose `owner` / `number` / `project_id` / field ids and `default_repo` — you confirm before saving. After wire, expect:
+
+```text
+board-onboard status: api=complete · shell=incomplete · views=ui-only · next=/project-board CONSENT+TURN
+```
+
+**API slice done ≠ board ready.** You still own view/column setup in the GitHub UI (§4).
 
 Then:
 
@@ -198,7 +204,7 @@ python3 -m cursor_workflow project board-bootstrap --check --ensure-fields
 # optional: push kit Project README
 python3 -m cursor_workflow project board-bootstrap --check --apply-readme
 
-# required: prove the shell (repeat until exit 0, no FAIL, no Priority/Start date WARNs)
+# required: prove the shell (repeat until exit 0 — no view FAIL, no Tier-1 column FAIL)
 python3 -m cursor_workflow project board-bootstrap --check
 ```
 

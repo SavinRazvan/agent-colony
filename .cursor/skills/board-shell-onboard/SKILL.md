@@ -110,7 +110,7 @@ CONSENT GATE → doctor → board-bootstrap --check → (gaps?) → TURN PROTOCO
 | **FAIL** (exit non-zero) | Missing a **default** Playground view; empty README | Enter **TURN PROTOCOL** below — do not stop after one sentence |
 | **WARN** (exit 0) | Missing Tier-1 **columns** on primary views | Now **FAIL (exit 5)** — coach Turn H until green |
 | **WARN** (exit 0) | Leftover `View N`; layout mismatch | Coach rename/columns until cleared |
-| **PASS** | Six views + README + no Tier-1 WARNs | Smoke card → day-to-day Pattern A |
+| **PASS** | Six views + README + `board-bootstrap --check` exit 0 | Smoke card → day-to-day Pattern A |
 
 ### TURN PROTOCOL (mandatory when views FAIL) — do not skip
 
@@ -163,9 +163,9 @@ python3 -m cursor_workflow project board-bootstrap --check --apply-readme
 
 Or paste contents of `project-readme.md` into Project README settings. Re-check.
 
-**Turn H — clear column WARNs**
+**Turn H — clear Tier-1 column FAILs**
 
-If `--check` still WARNs missing Priority/Size/Estimate/Start date on Status board or Prioritized backlog: open that view → **+** field picker → show the missing columns. Re-check until **no FAIL and no those WARNs**.
+If `--check` still FAILs missing Priority/Size/Estimate/Start date on Status board or Prioritized backlog: open that view → **+** field picker → show the missing columns. Re-check until `board-bootstrap --check` exits **0** (no view FAIL and no Tier-1 column FAILs). Leftover `View N` WARNs are cosmetic and can be cleared separately.
 
 Between every turn print:
 

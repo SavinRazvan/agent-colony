@@ -53,6 +53,12 @@ SAMPLE_SSOT = {
     "project_id": "PVT_kwHOBl46-84A9KZx",
     "sync_policy": "board_only",
     "fallback": "local_trackers",
+    # Unit tests expect immediate live writes; avoid low-quota precheck enqueueing
+    # (which otherwise depends on the runner's current `gh api rate_limit` state).
+    # Keep outbox enabled for "enqueue on GH throttle" tests, but disable
+    # low-quota precheck enqueueing (it depends on the runner's current `gh`
+    # GraphQL remaining value and is flaky).
+    "outbox": {"enabled": True, "precheck_writes": False},
     "fields": {
         "status": {
             "field_id": "PVTSSF_status",

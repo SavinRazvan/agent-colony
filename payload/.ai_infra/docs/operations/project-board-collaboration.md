@@ -34,7 +34,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 - **Desired state:** `.ai_infra/templates/project-board/board-shell.schema.yaml` — **full Playground default** (six views + Tier-1 columns).
 - **Customize:** copy/edit `.local/user_settings/board-shell.schema.yaml` — `board-bootstrap --check` prefers the overlay when present. Do **not** remove Status / Priority / Size / Estimate / Start date, or hide **Priority** on Prioritized backlog.
 - **Coach:** `/project-board` + `.cursor/skills/board-shell-onboard/SKILL.md`.
-- **Verify:** `python3 -m cursor_workflow project board-bootstrap --check` (FAIL if a default Playground view is missing; WARN on missing Tier-1 columns / leftover `View N`).
+- **Verify:** `python3 -m cursor_workflow project board-bootstrap --check` (FAIL if a default Playground view is missing; **FAIL (exit 5)** on missing Tier-1 columns; WARN on leftover `View N` / layout mismatch).
 - **Optional API:** `--ensure-fields` (create missing field definitions + print suggested YAML ids); `--apply-readme` (push README). Views stay human UI (ADR-008).
 
 ## Surfaces — who may write
