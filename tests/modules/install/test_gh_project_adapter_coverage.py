@@ -402,6 +402,84 @@ def test_fetch_project_items_bad_json(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "invalid JSON" in (err or "")
 
 
+def test_fetch_project_item_by_id_ok_maps_fields(monkeypatch: pytest.MonkeyPatch) -> None:
+    payload = json.dumps(
+        {
+            "data": {
+                "node": {
+                    "id": VALID_PVTI,
+                    "content": {
+                        "__typename": "Issue",
+                        "body": "## Acceptance\n\nok\n",
+                    },
+                    "fieldValues": {
+                        "nodes": [
+                            {
+                                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                                "name": "in_review",
+                                "field": {"name": "Status"},
+                            },
+                            {
+                                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                                "name": "p1",
+                                "field": {"name": "Priority"},
+                            },
+                            {
+                                "__typename": "ProjectV2ItemFieldSingleSelectValue",
+                                "name": "s",
+                                "field": {"name": "Size"},
+                            },
+                            {
+                                "__typename": "ProjectV2ItemFieldTextValue",
+                                "text": "1",
+                                "field": {"name": "Estimate"},
+                            },
+                            {
+                                "__typename": "ProjectV2ItemFieldDateValue",
+                                "date": "2026-07-20",
+                                "field": {"name": "Start date"},
+                            },
+                        ]
+                    },
+                }
+            }
+        }
+    )
+    monkeypatch.setattr(project_cli, "run_gh", lambda *a, **k: _gh_ok(payload))
+    item, err = gha.fetch_project_item_by_id(SAMPLE_SSOT, VALID_PVTI)
+    assert err is None
+    assert item is not None
+    assert item["id"] == VALID_PVTI
+    assert item["status"] == "in_review"
+    assert item["priority"] == "p1"
+    assert item["size"] == "s"
+    assert item["estimate"] == "1"
+    assert item["start date"] == "2026-07-20"
+    assert item["content"]["body"].startswith("## Acceptance")
+
+
+def test_fetch_project_item_by_id_gh_fail(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(project_cli, "run_gh", lambda *a, **k: _gh_fail("node query failed"))
+    item, err = gha.fetch_project_item_by_id(SAMPLE_SSOT, VALID_PVTI)
+    assert item is None
+    assert "node query failed" in (err or "")
+
+
+def test_fetch_project_item_by_id_bad_json(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(project_cli, "run_gh", lambda *a, **k: _gh_ok("not-json"))
+    item, err = gha.fetch_project_item_by_id(SAMPLE_SSOT, VALID_PVTI)
+    assert item is None
+    assert "invalid graphql JSON" in (err or "")
+
+
+def test_fetch_project_item_by_id_node_not_found(monkeypatch: pytest.MonkeyPatch) -> None:
+    payload = json.dumps({"data": {"node": None}})
+    monkeypatch.setattr(project_cli, "run_gh", lambda *a, **k: _gh_ok(payload))
+    item, err = gha.fetch_project_item_by_id(SAMPLE_SSOT, VALID_PVTI)
+    assert item is None
+    assert "not found" in (err or "")
+
+
 def test_resolve_item_content_di_prefix(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         project_cli,

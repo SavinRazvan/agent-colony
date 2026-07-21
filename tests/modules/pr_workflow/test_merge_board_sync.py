@@ -99,8 +99,8 @@ def test_sync_board_happy_with_item_id(
     monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "98236657"))
     monkeypatch.setattr(
         project_cli,
-        "fetch_project_items",
-        lambda *a, **k: ([_ready_item()], None),
+        "fetch_project_item_by_id",
+        lambda *a, **k: (_ready_item(), None),
     )
     monkeypatch.setattr(project_cli, "edit_item_body", lambda *a, **k: (True, "ok"))
     monkeypatch.setattr(
@@ -138,8 +138,8 @@ def test_sync_board_warn_edit_item_body_fails_after_set_status(
     monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "98236657"))
     monkeypatch.setattr(
         project_cli,
-        "fetch_project_items",
-        lambda *a, **k: ([_ready_item()], None),
+        "fetch_project_item_by_id",
+        lambda *a, **k: (_ready_item(), None),
     )
     monkeypatch.setattr(
         project_cli,
@@ -170,8 +170,8 @@ def test_sync_board_notes_via_edit_item_body(
     monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "98236657"))
     monkeypatch.setattr(
         project_cli,
-        "fetch_project_items",
-        lambda *a, **k: ([_ready_item()], None),
+        "fetch_project_item_by_id",
+        lambda *a, **k: (_ready_item(), None),
     )
     monkeypatch.setattr(project_cli, "edit_item_body", capture_edit)
     monkeypatch.setattr(
@@ -261,8 +261,8 @@ def test_sync_board_set_status_failure(
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
     monkeypatch.setattr(
         project_cli,
-        "fetch_project_items",
-        lambda *a, **k: ([_ready_item()], None),
+        "fetch_project_item_by_id",
+        lambda *a, **k: (_ready_item(), None),
     )
     monkeypatch.setattr(
         project_cli, "set_item_status", lambda *a, **k: (False, "rate limited")
@@ -280,14 +280,16 @@ def test_sync_board_list_failure_before_status(
 ) -> None:
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
     monkeypatch.setattr(
-        project_cli, "fetch_project_items", lambda *a, **k: ([], "list boom")
+        project_cli,
+        "fetch_project_item_by_id",
+        lambda *a, **k: (None, "list boom"),
     )
     line = merge_mod.sync_board_after_merge(
         root=tmp_path, pr="1", merge_sha="abc", item_id="PVTI_x"
     )
-    assert "list failed" in line
+    assert "fetch failed" in line
     assert "list boom" in line
-    assert "[WARN] board sync list failed" in capsys.readouterr().err
+    assert "[WARN] board sync fetch failed" in capsys.readouterr().err
 
 
 def test_sync_board_body_gate_blocks_tbd(
@@ -309,8 +311,8 @@ def test_sync_board_body_gate_blocks_tbd(
     }
     monkeypatch.setattr(
         project_cli,
-        "fetch_project_items",
-        lambda *a, **k: ([tbd_item], None),
+        "fetch_project_item_by_id",
+        lambda *a, **k: (tbd_item, None),
     )
     called = {"status": False}
 

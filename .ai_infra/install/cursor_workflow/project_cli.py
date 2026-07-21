@@ -36,6 +36,7 @@ from gh_project_adapter import (
     create_issue_item,
     edit_item_body,
     fetch_project_items,
+    fetch_project_item_by_id,
     find_item_by_id,
     promote_draft_item_to_issue,
     resolve_draft_content,
