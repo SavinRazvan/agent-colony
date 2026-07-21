@@ -197,7 +197,7 @@ Rules:
 2. Pull from **Ready** or continue your In progress.
 3. Acceptance / Rollback / Notes on **card body** = continuation index. Attribution = `@owner.github_user/<agent> · <ISO-8601-UTC> · …` via `append-notes --agent` (or `claim`/`handoff` recipes).
 4. Under `board_only`: no competing tracker `in_progress` (DRIFT-009); no dual-mirror “for safety.”
-5. Humans own views, workflows, README, Insights, status updates.
+5. Humans own views, workflows, README, Insights, status updates by default (no view API). If the human **asks** for browser help on views/columns, `/project-board` may use browser MCP for that turn (see `board-shell-onboard`).
 6. Read-only `project export` (if used) never writes Status.
 7. Post-merge Done is Pattern A (`merge.py`), Notes prefixed `@user/merge.py`.
 
@@ -276,14 +276,14 @@ When `sync_policy: board_only`, do **not** mark the same slice `in_progress` in 
 - [ ] If EXIT_QUEUED: confirmed via `outbox status`; no API hammering
 - [ ] Handoff line printed with real item_id
 - [ ] Handoff line printed when another agent continues
-- [ ] No dual-write; no edits to Project views/workflows/README/Insights
+- [ ] No dual-write; no unprompted edits to Project views/workflows/Insights (browser assist only if human asked)
 
 ## Anti-patterns
 
 - Chat-only completion with stale board Status
 - Hardcoding field/option ids
 - Reshuffling Ready/P0 without human or project-board ask
-- Editing Project views, workflows, Insights, or status updates
+- Editing Project views/workflows/Insights unprompted (browser assist only when human asks)
 - Pasting Project settings UI text into a terminal
 - Dual-write board + tracker under `board_only`
 - Multi-step claim without `project claim` / bare Notes without `--agent`
