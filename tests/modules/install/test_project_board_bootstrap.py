@@ -586,6 +586,7 @@ def test_agents_stub_and_view_pack_text() -> None:
         REPO_ROOT / ".cursor" / "agents" / "project-board.md"
     ).read_text(encoding="utf-8")
     assert "browser MCP" in project_board_agent
+    assert "asks" in project_board_agent.lower() or "explicit" in project_board_agent.lower()
     assert "api=complete" in project_board_agent
 
 

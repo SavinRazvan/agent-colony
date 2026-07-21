@@ -14,7 +14,7 @@ Depends On:
  - python -m cursor_workflow project board-bootstrap
 Notes:
  - Consent gate is mandatory before shell apply (description + proceed).
- - Views: coach TURN PROTOCOL today; opt-in CLI when official APIs allow (ADR-008).
+ - Views: coach TURN PROTOCOL by default; browser MCP only when user asks; opt-in CLI when official APIs allow (ADR-008).
  - Do not call undocumented GraphQL view mutations.
 -->
 
@@ -37,7 +37,7 @@ Notes:
 | Run `board-bootstrap --check` until exit 0 (views + Tier-1 columns) | Mutate Insights / workflows / status updates without approval |
 | Optional `--ensure-fields` / `--apply-readme` **only after** CONSENT GATE (no view-apply CLI; **`--apply-shell` is not shipped**) | Invent field option ids into YAML without discovery |
 | Smoke `create-from-template` | Claim “ready” while `--check` exit 5 or Prioritized backlog lacks **Priority** |
-| | Use **browser MCP** / cursor-ide-browser for views; multi-view instruction dumps |
+| Default: coach TURN PROTOCOL (human clicks); **if user asks** for browser help on views/columns → use **browser MCP** / cursor-ide-browser for that turn | Open browser MCP unprompted; multi-view instruction dumps; undocumented GraphQL view mutations |
 
 ## CONSENT GATE (mandatory — every first-run shell) 
 
@@ -115,6 +115,10 @@ CONSENT GATE → doctor → board-bootstrap --check → (gaps?) → TURN PROTOCO
 ### TURN PROTOCOL (mandatory when views FAIL) — do not skip
 
 You **must** run this conversation loop. **Forbidden:** “follow views-setup.md”, “rename View 1”, or “add columns” as a single dump then waiting forever. **Required:** one concrete UI turn, wait for human “done”, then next turn.
+
+**Default:** human performs clicks in GitHub UI; you coach one turn at a time.
+
+**Opt-in browser assist:** If the user **explicitly** asks you to open the browser / use browser MCP / click views or columns for them (e.g. “help me in the browser”, “do Turn H for me”, “use cursor-ide-browser”), you **may** use **browser MCP** / cursor-ide-browser for **that** turn only. Still one turn → re-check → next. Do **not** open the browser unprompted. Stop and hand back to the human on login/2FA/permission blockers.
 
 **Open:** Project URL from `project status` (e.g. `https://github.com/users/…/projects/N`).
 
@@ -228,4 +232,4 @@ Only say **ready for agents** when `board-bootstrap --check` exits **0** (no vie
 
 - Schema: `.ai_infra/templates/project-board/board-shell.schema.yaml`
 - Day-to-day cards: `.cursor/skills/project-board-ssot/SKILL.md`
-- ADR-008 human-only views (coach + check are allowed; view mutation is not)
+- ADR-008: no view API; coach + check by default; browser MCP only when user asks

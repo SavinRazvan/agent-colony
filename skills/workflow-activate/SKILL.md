@@ -33,7 +33,7 @@ If the user ran **`/add-plugin`** and sees the kit welcome summary, use this **c
 6. **`/project-board`** + **CONSENT GATE** + **TURN PROTOCOL** (human UI; 2 or 6 views)
 7. `board-bootstrap --check` **exit 0** → **`/implementer`**
 
-Never list `/board-shell-onboard` before wire. Never imply views are API-automated. Never use browser MCP for view setup.
+Never list `/board-shell-onboard` before wire. Never imply views are API-automated. Default shell coaching is human UI (TURN PROTOCOL); use browser MCP for views/columns only when the user explicitly asks.
 
 ## Guide the user (keep it simple)
 
