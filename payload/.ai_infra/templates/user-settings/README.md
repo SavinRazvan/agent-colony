@@ -20,6 +20,7 @@ Notes:
 |----------|-----------|--------|
 | `exemplars/github.collaboration.yaml` | `.local/user_settings/github.collaboration.yaml` | Commit trailers, PR bodies, PR phase artifacts |
 | `exemplars/mcp.agents.yaml` | `.local/user_settings/mcp.agents.yaml` | `.cursor/mcp.user.json`, `.cursor/mcp.registry.yaml` |
+| `exemplars/board-shell.schema.minimal.yaml` | `.local/user_settings/board-shell.schema.yaml` | Optional 2-view bootstrap minimum (manual copy; gitignored) |
 
 **Agents:** Read completed files for attribution defaults and MCP intent. Wired integration:
 

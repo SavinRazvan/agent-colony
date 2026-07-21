@@ -199,6 +199,17 @@ python3 -m cursor_workflow project validate-item --last
 
 ## Customization
 
+### Minimal 2-view overlay
+
+When the user asks for a **simple board** (Status board + Prioritized backlog only):
+
+1. Explain: agent runtime uses CLI/API fields — extra Playground views are optional human UI.
+2. Offer copy from `.ai_infra/templates/user-settings/exemplars/board-shell.schema.minimal.yaml` → `.local/user_settings/board-shell.schema.yaml`.
+3. Coach **Turn A** (Status board) + **Turn B** (Prioritized backlog) only — skip Turns C–F.
+4. Re-run `board-bootstrap --check` after each turn until exit **0**.
+
+### Playground default (six views)
+
 - Edit overlay `.local/user_settings/board-shell.schema.yaml` only if your team intentionally drops a Playground view (expect FAIL→WARN tradeoffs).
 - **Safe:** Insights, Iteration/End date columns, filters.
 - **Unsafe:** remove Status / Priority / Size / Estimate / Start date fields, or hide **Priority** on Prioritized backlog.
