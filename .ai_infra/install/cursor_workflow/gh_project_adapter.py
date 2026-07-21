@@ -411,6 +411,101 @@ def find_item_by_id(items: list[dict[str, Any]], item_id: str) -> dict[str, Any]
         if str(item.get("id") or "") == item_id:
             return item
     return None
+
+def fetch_project_item_by_id(
+    ssot: dict[str, Any], item_id: str
+) -> tuple[dict[str, Any] | None, str | None]:
+    """
+    Fetch a single ProjectV2Item by its PVTI_… id.
+
+    Normalizes a small subset of fields to match the `gh project item-list` item
+    shape expected by downstream validators (status, priority, size, estimate,
+    start date, and content.body).
+    """
+    iid = (item_id or "").strip()
+    if not iid:
+        return None, "empty item id"
+
+    query = (
+        "query($id:ID!){node(id:$id){...on ProjectV2Item{id content{"
+        "__typename "
+        "...on DraftIssue{id title body} "
+        "...on Issue{id number title body repository{nameWithOwner}}"
+        "}"
+        "fieldValues(first:50){nodes{__typename "
+        "...on ProjectV2ItemFieldSingleSelectValue{name field{name}} "
+        "...on ProjectV2ItemFieldTextValue{text field{name}} "
+        "...on ProjectV2ItemFieldDateValue{date field{name}} "
+        "}}}}}"
+    )
+    proc = _cli().run_gh(
+        ["api", "graphql", "-f", f"query={query}", "-f", f"id={iid}"]
+    )
+    if proc.returncode != 0:
+        return None, (proc.stderr or proc.stdout or "gh graphql node query failed").strip()
+    try:
+        data = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError as exc:
+        return None, f"invalid graphql JSON: {exc}"
+
+    errors = data.get("errors")
+    if errors:
+        msg = errors[0].get("message") if isinstance(errors[0], dict) else errors
+        return None, str(msg)
+
+    node = (data.get("data") or {}).get("node")
+    if not isinstance(node, dict):
+        return None, f"project item not found: {iid}"
+
+    content = node.get("content")
+    body = ""
+    if isinstance(content, dict):
+        maybe_body = content.get("body")
+        if isinstance(maybe_body, str):
+            body = maybe_body
+
+    out: dict[str, Any] = {
+        "id": str(node.get("id") or iid),
+        "content": {"body": body},
+    }
+
+    field_values = node.get("fieldValues") or {}
+    if isinstance(field_values, dict):
+        nodes = field_values.get("nodes") or []
+        if isinstance(nodes, list):
+            for v in nodes:
+                if not isinstance(v, dict):
+                    continue
+                field = v.get("field")
+                field_name = ""
+                if isinstance(field, dict):
+                    field_name = str(field.get("name") or "").strip()
+                if not field_name:
+                    continue
+                normalized = field_name.strip().lower().replace(" ", "_").replace("-", "_")
+
+                if normalized in ("status",):
+                    val = v.get("name")
+                    if isinstance(val, str):
+                        out["status"] = val
+                elif normalized in ("priority",):
+                    val = v.get("name")
+                    if isinstance(val, str):
+                        out["priority"] = val
+                elif normalized in ("size",):
+                    val = v.get("name")
+                    if isinstance(val, str):
+                        out["size"] = val
+                elif normalized in ("estimate",):
+                    val = v.get("text") if "text" in v else v.get("name")
+                    if val is not None:
+                        out["estimate"] = str(val).strip()
+                elif normalized in ("start_date", "startdate", "start_date_utc", "startdateutc", "start_date_time", "start_date_time_utc", "start_date_datetime"):
+                    val = v.get("date")
+                    if val is not None:
+                        out["start date"] = str(val).strip()
+
+    return out, None
 def resolve_item_content(
     ssot: dict[str, Any], item_id: str
 ) -> tuple[str | None, str | None, dict[str, Any] | None, str | None]:

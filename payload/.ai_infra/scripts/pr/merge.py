@@ -135,11 +135,13 @@ def sync_board_after_merge(
 
     conventions = ssot.get("conventions") or {}
     done_logical = str(conventions.get("done_status") or "done")
-    items, list_err = project_cli.fetch_project_items(ssot, limit=100)
-    if list_err:
-        print(f"[WARN] board sync list failed: {list_err}", file=sys.stderr)
-        return f"board sync: warn — list failed ({list_err})"
-    item = project_cli.find_item_by_id(items, resolved)
+    item, item_err = project_cli.fetch_project_item_by_id(ssot, resolved)
+    if item_err:
+        print(
+            f"[WARN] board sync fetch failed: {item_err} (item={resolved})",
+            file=sys.stderr,
+        )
+        return f"board sync: warn — fetch failed ({item_err})"
     if item is None:
         print(f"[WARN] board sync: item not found: {resolved}", file=sys.stderr)
         return f"board sync: warn — item not found ({resolved})"
