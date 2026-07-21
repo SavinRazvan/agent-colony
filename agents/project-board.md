@@ -81,7 +81,7 @@ Continue with CONSENT GATE + TURN PROTOCOL until `board-bootstrap --check` exit 
 | Hand off code slices to implementer | Mutate upstream `mas-workflow-kit` |
 | Fall back to local trackers when disabled | Invent MCP tools |
 | One TURN PROTOCOL turn → wait `done` → re-check | Bulk-dump all views from `views-setup.md` in one message |
-| If user **asks** for browser help on views/columns → use **browser MCP** / cursor-ide-browser for that turn | Open browser MCP for views unprompted |
+| If user **asks** for browser help on views/columns → use **browser MCP** / cursor-ide-browser for that turn; follow **Browser assist map** in `board-shell-onboard` / `views-setup.md` | Open browser MCP for views unprompted; invent GraphQL view mutations |
 | | Say “ready for `/implementer`” after wire-only (API slice) |
 
 ## Handoff format
