@@ -118,12 +118,21 @@ def _board_item(*, start_date: str = "", item_id: str = VALID_PVTI, status: str 
         "id": item_id,
         "title": "Slice",
         "status": status,
+        "priority": "p1",
+        "size": "s",
+        "estimate": "1",
         "content": {
-            "body": "## Acceptance\n\nx\n\n## Rollback\n\ny\n\n## Notes\n\n",
+            "body": (
+                "## Acceptance\n\nx\n\n## Rollback\n\ny\n\n"
+                "## Notes\n\n- @test/implementer · claimed\n"
+            ),
         },
     }
     if start_date:
         item["start date"] = start_date
+        item["start_date"] = start_date
+    else:
+        item["start_date"] = "2026-07-21"
     return item
 
 
@@ -552,6 +561,11 @@ def test_run_handoff_precheck_queues(
     _write_collab(tmp_path, ssot)
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
     monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([_board_item()], None),
+    )
     _mock_graphql(monkeypatch, remaining=50)
     assert project_handlers.run_handoff(_handoff_args(tmp_path)) == project_cli.EXIT_QUEUED
 

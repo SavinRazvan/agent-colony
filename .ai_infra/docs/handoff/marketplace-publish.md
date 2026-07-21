@@ -214,9 +214,9 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-07-20 DOC-ONBOARD / board-shell, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` + `ls .cursor/skills/` — **1166** tests collected, **7089** stmts / **100%** coverage; agent/skill/rule counts (**8** / **12** / **7**) including `board-shell-onboard`; kit version **0.4.0**. Superseded by completeness refresh below.
 
-**Listing copy refresh (2026-07-20 board-shell completeness):** Re-verified — **1168** tests collected (Playground-default schema + template-first agent voice); agent/skill/rule counts (**8** / **12** / **7**); kit version **0.4.0**. Prior DOC-ONBOARD line superseded.
+**Listing copy refresh (2026-07-20 board-shell completeness):** Re-verified — **1178** tests collected (Playground-default schema + template-first agent voice); agent/skill/rule counts (**8** / **12** / **7**); kit version **0.4.0**. Prior DOC-ONBOARD line superseded.
 
-**Listing copy refresh (2026-07-20 DOC-CANVAS-ALIGN):** Canvases re-aligned to live CLI (**22** leaves incl. `board-bootstrap`), board-shell day-0 story, test-runner `coverage.json` + post-100% doc sync, VERIFIED **2026-07-20**; metrics unchanged (**1168** / **7089** / **100%**; **8** / **12** / **7**).
+**Listing copy refresh (2026-07-20 DOC-CANVAS-ALIGN):** Canvases re-aligned to live CLI (**22** leaves incl. `board-bootstrap`), board-shell day-0 story, test-runner `coverage.json` + post-100% doc sync, VERIFIED **2026-07-20**; metrics unchanged (**1178** / **7089** / **100%**; **8** / **12** / **7**).
 
 **Listing copy refresh (2026-07-20 DOC-ALIGN secondary + marketplace description):** Description row + `plugin.json` now mention Project SSOT / Playground board shell / **8 / 12 / 7**; archival stamps above remain historical.
 

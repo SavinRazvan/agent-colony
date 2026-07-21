@@ -401,7 +401,18 @@ def test_cmd_handoff_prefixes_next(
         project_cli,
         "fetch_project_items",
         lambda ssot, limit=100: (
-            [{"id": "PVTI_lAHOBl46-84A9KZxhand01", "title": "H", "status": "In Progress", "content": body_box}],
+            [
+                {
+                    "id": "PVTI_lAHOBl46-84A9KZxhand01",
+                    "title": "H",
+                    "status": "In Progress",
+                    "priority": "p1",
+                    "size": "s",
+                    "estimate": "1",
+                    "start_date": "2026-07-21",
+                    "content": body_box,
+                }
+            ],
             None,
         ),
     )

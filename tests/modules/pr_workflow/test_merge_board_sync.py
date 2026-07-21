@@ -45,9 +45,37 @@ SAMPLE_SSOT = {
                 "in_review": "4cc61d42",
             },
         },
+        "priority": {
+            "field_id": "PVTSSF_priority",
+            "options": {"p1": "0a877460"},
+        },
+        "size": {
+            "field_id": "PVTSSF_size",
+            "options": {"s": "9592a5a3"},
+        },
     },
-    "conventions": {"done_status": "done"},
+    "conventions": {
+        "done_status": "done",
+        "body_sections": ["Acceptance", "Rollback", "Notes"],
+        "require_attribution_on_exit": True,
+    },
 }
+
+READY_BODY = (
+    "## Acceptance\n\n- ok\n\n## Rollback\n\n- revert\n\n"
+    "## Notes\n\n- @test/implementer · claimed\n"
+)
+
+
+def _ready_item(item_id: str = "PVTI_x") -> dict:
+    return {
+        "id": item_id,
+        "status": "In review",
+        "priority": "p1",
+        "size": "s",
+        "estimate": "1",
+        "content": {"body": READY_BODY},
+    }
 
 
 def test_sync_board_skip_flag(tmp_path: Path) -> None:
@@ -72,10 +100,7 @@ def test_sync_board_happy_with_item_id(
     monkeypatch.setattr(
         project_cli,
         "fetch_project_items",
-        lambda *a, **k: (
-            [{"id": "PVTI_x", "content": {"body": "## Notes\n\n- old"}}],
-            None,
-        ),
+        lambda *a, **k: ([_ready_item()], None),
     )
     monkeypatch.setattr(project_cli, "edit_item_body", lambda *a, **k: (True, "ok"))
     monkeypatch.setattr(
@@ -114,7 +139,7 @@ def test_sync_board_warn_edit_item_body_fails_after_set_status(
     monkeypatch.setattr(
         project_cli,
         "fetch_project_items",
-        lambda *a, **k: ([{"id": "PVTI_x", "content": {"body": ""}}], None),
+        lambda *a, **k: ([_ready_item()], None),
     )
     monkeypatch.setattr(
         project_cli,
@@ -146,7 +171,7 @@ def test_sync_board_notes_via_edit_item_body(
     monkeypatch.setattr(
         project_cli,
         "fetch_project_items",
-        lambda *a, **k: ([{"id": "PVTI_x", "content": {"body": ""}}], None),
+        lambda *a, **k: ([_ready_item()], None),
     )
     monkeypatch.setattr(project_cli, "edit_item_body", capture_edit)
     monkeypatch.setattr(
@@ -235,6 +260,11 @@ def test_sync_board_set_status_failure(
 ) -> None:
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
     monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([_ready_item()], None),
+    )
+    monkeypatch.setattr(
         project_cli, "set_item_status", lambda *a, **k: (False, "rate limited")
     )
     line = merge_mod.sync_board_after_merge(
@@ -245,20 +275,58 @@ def test_sync_board_set_status_failure(
     assert "[WARN] board sync set-status failed" in capsys.readouterr().err
 
 
-def test_sync_board_list_failure_after_status(
+def test_sync_board_list_failure_before_status(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
-    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "oid"))
     monkeypatch.setattr(
         project_cli, "fetch_project_items", lambda *a, **k: ([], "list boom")
     )
     line = merge_mod.sync_board_after_merge(
         root=tmp_path, pr="1", merge_sha="abc", item_id="PVTI_x"
     )
-    assert "status→done on PVTI_x" in line
-    assert "notes warn (list boom)" in line
-    assert "append-notes list failed" in capsys.readouterr().err
+    assert "list failed" in line
+    assert "list boom" in line
+    assert "[WARN] board sync list failed" in capsys.readouterr().err
+
+
+def test_sync_board_body_gate_blocks_tbd(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
+    tbd_item = {
+        "id": "PVTI_x",
+        "status": "In review",
+        "priority": "p1",
+        "size": "s",
+        "estimate": "1",
+        "content": {
+            "body": (
+                "## Acceptance\n\n- (TBD)\n\n## Rollback\n\n- ok\n\n"
+                "## Notes\n\n- @test/implementer · claimed\n"
+            )
+        },
+    }
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([tbd_item], None),
+    )
+    called = {"status": False}
+
+    def boom(*a, **k):
+        called["status"] = True
+        return True, "oid"
+
+    monkeypatch.setattr(project_cli, "set_item_status", boom)
+    line = merge_mod.sync_board_after_merge(
+        root=tmp_path, pr="1", merge_sha="abc", item_id="PVTI_x"
+    )
+    assert "body gate failed" in line
+    assert not called["status"]
+    err = capsys.readouterr().err
+    assert "[ERROR] board sync blocked" in err
+    assert "set-section" in err
 
 
 def test_merge_reload_sys_path_bootstrap() -> None:

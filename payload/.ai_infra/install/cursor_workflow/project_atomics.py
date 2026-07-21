@@ -80,9 +80,107 @@ def section_body_content(body: str, section_name: str) -> str:
 
 
 def is_placeholder_section_content(text: str) -> bool:
-    """True for empty/whitespace/(TBD) section content."""
+    """True for empty/whitespace/(TBD) section content (including '- (TBD)' list form)."""
     stripped = str(text or "").strip()
-    return not stripped or stripped.casefold() == "(tbd)"
+    if not stripped:
+        return True
+    lines = [ln.strip() for ln in stripped.splitlines() if ln.strip()]
+    if not lines:
+        return True
+
+    def _line_is_tbd(line: str) -> bool:
+        s = line.casefold()
+        for prefix in ("- ", "* ", "• "):
+            if s.startswith(prefix):
+                s = s[len(prefix) :].strip()
+                break
+        return s in ("(tbd)", "tbd")
+
+    return all(_line_is_tbd(ln) for ln in lines)
+
+
+# Status targets that require non-placeholder Acceptance/Rollback (and other ACTIVE checks).
+BODY_GATE_STATUSES = frozenset({"in_review", "done"})
+
+# set-section may rewrite these only; Notes stay append-only via append-notes.
+SET_SECTION_NAMES: dict[str, str] = {
+    "acceptance": "Acceptance",
+    "rollback": "Rollback",
+}
+
+
+def normalize_set_section_name(raw: str) -> str:
+    """Map acceptance|rollback (any case) to canonical heading; raise ValueError otherwise."""
+    key = str(raw or "").strip().casefold()
+    if key not in SET_SECTION_NAMES:
+        raise ValueError(
+            f"section must be acceptance|rollback (not {raw!r}); Notes stay append-only"
+        )
+    return SET_SECTION_NAMES[key]
+
+
+def replace_section_content(body: str, section_name: str, text: str) -> tuple[str, bool]:
+    """
+    Replace interior of ## section_name (heading preserved).
+
+    Returns (new_body, changed). Raises ValueError when the heading is missing.
+    """
+    name = str(section_name or "").strip()
+    content = str(text or "").strip()
+    if not name:
+        return body or "", False
+    target = f"## {name}".casefold()
+    lines = (body or "").splitlines()
+    start_idx: int | None = None
+    for idx, line in enumerate(lines):
+        if line.strip().casefold() == target:
+            start_idx = idx
+            break
+    if start_idx is None:
+        raise ValueError(f"missing ## {name} heading in card body")
+    end_idx = len(lines)
+    for idx in range(start_idx + 1, len(lines)):
+        if lines[idx].strip().startswith("## "):
+            end_idx = idx
+            break
+    old_interior = "\n".join(lines[start_idx + 1 : end_idx]).strip()
+    if old_interior == content:
+        return (body or ""), False
+    new_block: list[str] = [lines[start_idx], ""]
+    if content:
+        new_block.extend(content.splitlines())
+        new_block.append("")
+    new_lines = lines[:start_idx] + new_block + lines[end_idx:]
+    new_body = "\n".join(new_lines).rstrip() + "\n"
+    return new_body, True
+
+
+def assert_body_ready_for_status(
+    ssot: dict[str, Any],
+    item: dict[str, Any] | None,
+    target_status: str,
+) -> tuple[bool, str]:
+    """
+    Gate Status → in_review|done using collect_validate_item_problems on a target snapshot.
+
+    Returns (ok, detail). detail is empty when ok; otherwise problems + set-section remediation.
+    """
+    target = _normalize_status(str(target_status or ""))
+    if target not in BODY_GATE_STATUSES:
+        return True, ""
+    if not isinstance(item, dict):
+        return False, "item snapshot is not a mapping"
+    snapshot = dict(item)
+    snapshot["status"] = target
+    problems, _warnings = collect_validate_item_problems(ssot, snapshot)
+    if not problems:
+        return True, ""
+    rem = (
+        "fill Acceptance/Rollback via "
+        "`python3 -m cursor_workflow project set-section "
+        "--section acceptance|rollback --text '…' --last` then retry"
+    )
+    return False, f"{'; '.join(problems)}; {rem}"
 
 
 def item_field_value(item: dict[str, Any] | None, *keys: str) -> str:

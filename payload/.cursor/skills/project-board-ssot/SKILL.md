@@ -253,12 +253,13 @@ Index: `.ai_infra/templates/project-board/README.md`. After create, always `clai
 
 1. **Doctor / guide:** `project doctor` · `project guide --agent implementer`
 2. **Status / list:** `project status` · `project list [--status ready|in_progress|in_review]`
-3. **Create:** `project create-from-template --title "[SLICE] short-name" --template slice --status ready --priority p1 --size s --estimate 1 --agent <agent>`
+3. **Create:** `project create-from-template --title "[SLICE] short-name" --template slice --status ready --priority p1 --size s --estimate 1 --agent <agent>` (prefer `--acceptance` / `--rollback` at create)
 4. **Claim:** `project claim --last --agent <this-agent>`
-5. **Handoff:** `project handoff --last --agent <this-agent> --next <agent> [--to in_review|done]`
-6. **Validate:** `project validate-item --last` (card body + Tier-1 fields + status-scoped Notes)
-7. **Atomics (power use):** `set-status` · `set-field` (priority · size · estimate) · `promote-to-issue` · `mention-pr` · `append-notes --agent` · `get --last` · `export`
-8. **Verify:** `project list` + handoff line; `project last` prints saved id
+5. **Fill body (if still TBD):** `project set-section --section acceptance|rollback --text '…' --last --agent <this-agent>` — Notes stay append-only
+6. **Handoff:** `project handoff --last --agent <this-agent> --next <agent> [--to in_review|done]` — **EXIT_VALIDATION (5)** when Acceptance/Rollback are still placeholders (also enforced on `set-status --to in_review|done`)
+7. **Validate:** `project validate-item --last` (same checks; handoff/`set-status` already gate closes)
+8. **Atomics (power use):** `set-status` · `set-field` (priority · size · estimate) · `set-section` · `promote-to-issue` · `mention-pr` · `append-notes --agent` · `get --last` · `export`
+9. **Verify:** `project list` + handoff line; `project last` prints saved id
 
 Exit codes: `0` ok · `2` usage/config (includes placeholder `--id`) · `3` gh · `4` not found · `5` validation · `6` queued (outbox; soft-success — flush later).
 
