@@ -443,6 +443,37 @@ def run_doctor(args: argparse.Namespace) -> int:
     return pc.EXIT_OK
 
 
+def run_board_shell_init(args: argparse.Namespace) -> int:
+    """Install board-shell schema overlay (minimal 2-view consumer default)."""
+    import board_shell as bs
+    import project_cli as pc
+
+    root = Path(args.directory).resolve()
+    minimal = bool(getattr(args, "minimal", False))
+    force = bool(getattr(args, "force", False))
+    if not minimal:
+        return pc.fail(
+            "board-shell",
+            pc.EXIT_USAGE,
+            "board-shell init requires --minimal (copy 2-view overlay to .local/user_settings/)",
+        )
+    code, message = bs.init_minimal_overlay(root, force=force)
+    print(message)
+    if code == 0:
+        print(
+            "next: python3 -m cursor_workflow project board-bootstrap --check "
+            "(schema should show .local/user_settings/board-shell.schema.yaml)"
+        )
+        return pc.EXIT_OK
+    if code == 1:
+        return pc.fail(
+            "board-shell",
+            pc.EXIT_USAGE,
+            message + " (use --force to overwrite)",
+        )
+    return pc.fail("board-shell", pc.EXIT_USAGE, message)
+
+
 def run_board_bootstrap(args: argparse.Namespace) -> int:
     """Schema-aware board shell check; optional ensure-fields / apply-readme."""
     import board_shell as bs
@@ -579,11 +610,7 @@ def run_board_bootstrap(args: argparse.Namespace) -> int:
             return pc.fail(
                 "board-bootstrap",
                 pc.EXIT_VALIDATION,
-                f"{bs.SHELL_INCOMPLETE_VIEWS_NOTE} "
-                "minimum views missing — GitHub UI only (no view create CLI today). "
-                "Agent chat: /project-board → CONSENT GATE then board-shell-onboard TURN PROTOCOL "
-                "(one view at a time). Human: views-setup.md § Fast path "
-                "(rename View 1 → Status board, then add five views + Tier-1 columns).",
+                bs.bootstrap_view_fail_message(schema, problems, views or []),
             )
         if column_blockers:
             for w in column_blockers:

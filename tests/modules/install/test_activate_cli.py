@@ -153,10 +153,13 @@ def test_print_post_activate_hints_board_first_when_enabled(
     assert "/project-board" in out
     assert "CONSENT GATE" in out
     assert "Project URL" in out
+    assert "gh auth status" in out
     assert "gh auth refresh" in out
+    assert "contributors validate" in out
+    assert "board-shell init --minimal" in out
+    assert "minimal 2-view" in out
     assert "project board-bootstrap --check" in out
     assert "shell green" in out
-    assert "Status board + Prioritized backlog" in out
     assert "project status" in out
     assert "offline fallback under board_only" in out
     assert "/implementer" in out

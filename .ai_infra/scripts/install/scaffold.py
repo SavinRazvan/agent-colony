@@ -398,6 +398,29 @@ def _scaffold_user_settings(source: Path, target: Path, dry_run: bool, log: list
         dest_root.mkdir(parents=True, exist_ok=True)
     for name in USER_SETTINGS_FILES:
         _copy_file_if_missing(exemplars / name, dest_root / name, dry_run, log)
+    _scaffold_board_shell_overlay(source, target, dry_run, log)
+
+
+def _scaffold_board_shell_overlay(source: Path, target: Path, dry_run: bool, log: list[str]) -> None:
+    """Consumer default: seed minimal 2-view overlay (Playground #3 parity). Kit-dev skips."""
+    if (target / KIT_TESTS_MARKER).is_file():
+        _log(log, "SKIP board-shell overlay (kit-dev repo)")
+        return
+    dest = target / ".local" / "user_settings" / "board-shell.schema.yaml"
+    if dest.is_file():
+        return
+    minimal = (
+        source
+        / ".ai_infra"
+        / "templates"
+        / "user-settings"
+        / "exemplars"
+        / "board-shell.schema.minimal.yaml"
+    )
+    if not minimal.is_file():
+        _log(log, "SKIP board-shell overlay (minimal exemplar missing on source)")
+        return
+    _copy_file_if_missing(minimal, dest, dry_run, log)
 
 
 def _scaffold_minimal_tests(target: Path, dry_run: bool, log: list[str]) -> None:

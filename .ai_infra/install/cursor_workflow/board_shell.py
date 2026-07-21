@@ -203,3 +203,101 @@ def schema_must_match_prose_names(schema: dict[str, Any]) -> list[str]:
         if n:
             names.append(n)
     return names
+
+
+PLAYGROUND_EXTRA_MINIMUM_VIEWS = frozenset({"Roadmap", "Bugs", "In review", "My items"})
+
+
+def minimal_overlay_exemplar_path(root: Path) -> Path:
+    return (
+        Path(root).resolve()
+        / ".ai_infra"
+        / "templates"
+        / "user-settings"
+        / "exemplars"
+        / "board-shell.schema.minimal.yaml"
+    )
+
+
+def consumer_overlay_path(root: Path) -> Path:
+    return Path(root).resolve() / ".local" / "user_settings" / "board-shell.schema.yaml"
+
+
+def is_kit_dev_install(root: Path) -> bool:
+    """Kit product repo ships install test marker; consumer smoke layout does not."""
+    return (
+        Path(root).resolve() / "tests" / "modules" / "install" / "test_scaffold.py"
+    ).is_file()
+
+
+def init_minimal_overlay(root: Path, *, force: bool = False) -> tuple[int, str]:
+    """
+    Copy minimal 2-view exemplar to user_settings overlay.
+
+    Returns (exit_code, message). 0=written, 1=already exists, 2=exemplar missing.
+    """
+    dest = consumer_overlay_path(root)
+    if dest.is_file() and not force:
+        return 1, f"board-shell: overlay already exists ({dest})"
+    src = minimal_overlay_exemplar_path(root)
+    if not src.is_file():
+        return 2, f"board-shell: minimal exemplar missing ({src})"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
+    return 0, f"board-shell: wrote minimal overlay ({dest})"
+
+
+def _live_view_names(live_views: list[dict[str, Any]]) -> set[str]:
+    return {str(v.get("name") or "").strip() for v in live_views if str(v.get("name") or "").strip()}
+
+
+def bootstrap_view_fail_message(
+    schema: dict[str, Any],
+    problems: list[str],
+    live_views: list[dict[str, Any]],
+) -> str:
+    """Schema-aware operator hint when minimum views are missing."""
+    missing: list[str] = []
+    for problem in problems:
+        if "missing minimum view" in problem:
+            quoted = problem.split("missing minimum view ", 1)[-1].strip()
+            missing.append(quoted.strip("'\""))
+    live = _live_view_names(live_views)
+    min_specs = minimum_views(schema)
+    min_count = len(min_specs)
+    has_status = any(n.casefold() == "status board" for n in live)
+    has_backlog = any(n.casefold() == "prioritized backlog" for n in live)
+
+    base = (
+        f"{SHELL_INCOMPLETE_VIEWS_NOTE} "
+        "minimum views missing — GitHub UI only (no view create CLI today)."
+    )
+
+    if (
+        min_count > 2
+        and missing
+        and set(missing) <= PLAYGROUND_EXTRA_MINIMUM_VIEWS
+        and has_status
+        and has_backlog
+    ):
+        return (
+            f"{base} Board has Status board + Prioritized backlog but bootstrap uses "
+            "six-view kit schema. Fix: "
+            "python3 -m cursor_workflow project board-shell init --minimal "
+            "then re-run board-bootstrap --check. "
+            "Or add missing views in GitHub UI (Playground default). "
+            "Agent chat: /project-board → CONSENT GATE + TURN PROTOCOL."
+        )
+
+    if min_count <= 2:
+        return (
+            f"{base} Agent chat: /project-board → CONSENT GATE + TURN PROTOCOL "
+            "(Turn A Status board, Turn B Prioritized backlog). "
+            "Human: views-setup.md § Minimal 2-view overlay."
+        )
+
+    return (
+        f"{base} Agent chat: /project-board → CONSENT GATE then board-shell-onboard "
+        "TURN PROTOCOL (one view at a time). Human: views-setup.md § Fast path "
+        "(rename View 1 → Status board, then add five views + Tier-1 columns)."
+    )

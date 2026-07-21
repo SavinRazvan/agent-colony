@@ -1222,6 +1222,14 @@ def cmd_board_bootstrap(args: argparse.Namespace) -> int:
     from project_handlers import run_board_bootstrap
 
     return run_board_bootstrap(args)
+
+
+def cmd_board_shell_init(args: argparse.Namespace) -> int:
+    from project_handlers import run_board_shell_init
+
+    return run_board_shell_init(args)
+
+
 def cmd_validate_item(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "validate-item")
