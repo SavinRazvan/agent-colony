@@ -25,7 +25,25 @@ python3 -m cursor_workflow project board-bootstrap --check
 
 GitHub may create a blank Project with names like `View 1`. That is **not** the kit default — rename/create until the board matches the table below.
 
-### Fast path (GitHub UI — do this now)
+### Minimal 2-view overlay (optional)
+
+Use this when you want a **lean board** (Status board + Prioritized backlog only). Agent CLI/API behavior is unchanged — views are human UI only.
+
+1. Copy the exemplar:
+
+```bash
+cp .ai_infra/templates/user-settings/exemplars/board-shell.schema.minimal.yaml \
+   .local/user_settings/board-shell.schema.yaml
+```
+
+2. In GitHub UI: create/rename **Status board** (Board, group by Status) and **Prioritized backlog** (Table).
+3. On **both** views: show **Priority**, **Size**, **Estimate**, **Start date** (Tier-1 contract unchanged).
+4. Paste README (`project-readme.md` or `--apply-readme`).
+5. `board-bootstrap --check` until exit **0** — schema path should show `.local/user_settings/board-shell.schema.yaml`.
+
+Kit **default** remains six Playground views ([`board-shell.schema.yaml`](board-shell.schema.yaml)). The overlay only changes what `--check` requires.
+
+### Fast path (GitHub UI — Playground default)
 
 1. Open the Project in the browser.
 2. Click the **View 1** tab → ⋯ / rename → **Status board** → layout **Board** → group by **Status**.

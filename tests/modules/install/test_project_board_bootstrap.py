@@ -481,6 +481,68 @@ def test_compare_views_to_schema_unit() -> None:
     assert any("View 1" in w for w in warnings)
 
 
+def _load_minimal_overlay_schema() -> dict:
+    import yaml
+
+    path = (
+        REPO_ROOT
+        / ".ai_infra"
+        / "templates"
+        / "user-settings"
+        / "exemplars"
+        / "board-shell.schema.minimal.yaml"
+    )
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    assert isinstance(data, dict)
+    return data
+
+
+def test_minimal_overlay_schema_two_views_pass() -> None:
+    schema = _load_minimal_overlay_schema()
+    tier = _tier1_fields()
+    live = [
+        {"name": "Status board", "layout": "BOARD_LAYOUT", "fields": tier},
+        {"name": "Prioritized backlog", "layout": "TABLE_LAYOUT", "fields": tier},
+    ]
+    problems, warnings = board_shell.compare_views_to_schema(schema, live)
+    assert problems == []
+    assert board_shell.tier1_column_blocking_warnings(warnings) == []
+
+
+def test_minimal_overlay_missing_prioritized_backlog_fails() -> None:
+    schema = _load_minimal_overlay_schema()
+    tier = _tier1_fields()
+    live = [{"name": "Status board", "layout": "BOARD_LAYOUT", "fields": tier}]
+    problems, warnings = board_shell.compare_views_to_schema(schema, live)
+    assert any("Prioritized backlog" in p for p in problems)
+
+
+def test_resolve_board_shell_schema_prefers_overlay(tmp_path: Path) -> None:
+    overlay_dir = tmp_path / ".local" / "user_settings"
+    overlay_dir.mkdir(parents=True)
+    minimal = (
+        REPO_ROOT
+        / ".ai_infra"
+        / "templates"
+        / "user-settings"
+        / "exemplars"
+        / "board-shell.schema.minimal.yaml"
+    )
+    shutil.copy(minimal, overlay_dir / "board-shell.schema.yaml")
+    kit_templates = tmp_path / ".ai_infra" / "templates" / "project-board"
+    kit_templates.mkdir(parents=True)
+    shutil.copy(
+        REPO_ROOT / ".ai_infra" / "templates" / "project-board" / "board-shell.schema.yaml",
+        kit_templates / "board-shell.schema.yaml",
+    )
+    resolved = board_shell.resolve_board_shell_schema_path(tmp_path)
+    assert resolved == overlay_dir / "board-shell.schema.yaml"
+    schema, err = board_shell.load_board_shell_schema(tmp_path)
+    assert err is None and schema is not None
+    assert schema.get("name") == "minimal-two-view"
+    assert len(board_shell.minimum_views(schema)) == 2
+
+
 def test_agents_stub_and_view_pack_text() -> None:
     agents = (REPO_ROOT / ".ai_infra" / "templates" / "AGENTS.stub.md").read_text(encoding="utf-8")
     project_board_readme = (
@@ -503,7 +565,8 @@ def test_agents_stub_and_view_pack_text() -> None:
     assert "Default minimum (required)" in views_setup or "Default views (Playground)" in views_setup
     assert "Priority" in views_setup
     assert "My items" in views_setup
-    assert "Status board" in schema_text
+    assert "Minimal 2-view overlay" in views_setup
+    assert "board-shell.schema.minimal.yaml" in views_setup
     assert "Prioritized backlog" in schema_text
     assert "Roadmap" in schema_text
     assert "recommended: []" in schema_text or "recommended:\n  []" in schema_text

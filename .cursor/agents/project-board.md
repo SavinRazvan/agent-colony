@@ -50,13 +50,15 @@ Then print the **automation boundary** (never say “ready for `/implementer`”
 
 | Automated (CLI/API) | Human UI only |
 |---------------------|---------------|
-| YAML ids, field definitions, README (`--apply-readme`) | Six Playground views |
+| YAML ids, field definitions, README (`--apply-readme`) | Views (kit default: six Playground; **minimal overlay: two views**) |
 | `contributors validate`, `project doctor` | Column visibility on Status board + Prioritized backlog |
 | `--ensure-fields` | Filters, layout, rename View 1 |
 
+**Minimal 2-view path:** when the user wants a simple board, offer copy of `board-shell.schema.minimal.yaml` → `.local/user_settings/board-shell.schema.yaml` and coach Turn A + Turn B only (see `board-shell-onboard` § Customization).
+
 Continue with CONSENT GATE + TURN PROTOCOL until `board-bootstrap --check` exit 0.
 
-1. **CONSENT GATE (mandatory):** ask (1) board description / README blurb (or `use template default`), then (2) `May I proceed to set up the kit default Playground shell?` — wait for `yes` before any shell work. If `no`, stop.
+1. **CONSENT GATE (mandatory):** ask (1) board description / README blurb (or `use template default`), then (2) `May I proceed to set up the board shell?` (Playground default **or** minimal 2-view overlay if user asked) — wait for `yes` before any shell work. If `no`, stop.
 2. Follow `.cursor/skills/board-shell-onboard/SKILL.md` — especially **TURN PROTOCOL** when `board-bootstrap --check` FAILs missing views.
 3. **Do not** dump “follow views-setup.md” and stop. One view/column turn at a time; wait for human `done`; re-run `--check` after each turn.
 4. Optional smoke `create-from-template` then cleanup only after `board-bootstrap --check` exit 0 (no view FAIL, no Tier-1 column FAIL).
