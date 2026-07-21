@@ -35,6 +35,7 @@ _OUTBOX_OPS = frozenset(
     {
         "append-notes",
         "set-status",
+        "set-section",
         "handoff",
         "claim",
         "set-assignee",
@@ -57,6 +58,7 @@ _SCOPE_MISS_RE = re.compile(
 _DEDUPE_PAYLOAD_KEYS: dict[str, tuple[str, ...]] = {
     "append-notes": ("text",),
     "set-status": ("to",),
+    "set-section": ("section", "text"),
     "claim": ("to", "text", "start_date"),
     "handoff": ("next", "to", "note", "text"),
     "set-assignee": ("login",),
@@ -313,6 +315,11 @@ def validate_outbox_entry(entry: dict[str, Any]) -> list[str]:
         errs.append("append-notes payload.text required")
     if op == "set-status" and not str(payload.get("to") or "").strip():
         errs.append("set-status payload.to required")
+    if op == "set-section":
+        if not str(payload.get("section") or "").strip():
+            errs.append("set-section payload.section required")
+        if not str(payload.get("text") or "").strip():
+            errs.append("set-section payload.text required")
     if op == "handoff":
         if not str(payload.get("next") or "").strip():
             errs.append("handoff payload.next required")
@@ -555,11 +562,20 @@ def apply_outbox_entry(
     """Apply one pending entry to the live board. Returns (ok, detail)."""
     # Late imports avoid circular import with project_cli (documented exception).
     from project_atomics import (  # noqa: PLC0415
+        BODY_GATE_STATUSES,
+        _item_body,
         _normalize_status,
+        assert_body_ready_for_status,
         ensure_start_date_if_starting,
+        is_placeholder_section_content,
+        normalize_set_section_name,
+        replace_section_content,
     )
     from project_cli import (  # noqa: PLC0415
         append_notes_helper,
+        edit_item_body,
+        fetch_project_items,
+        find_item_by_id,
         format_agent_attribution,
         promote_draft_item_to_issue,
         resolve_field_option_id,
@@ -587,8 +603,55 @@ def apply_outbox_entry(
         )
         return ok, detail
 
+    if op == "set-section":
+        try:
+            section = normalize_set_section_name(str(payload.get("section") or ""))
+        except ValueError as exc:
+            return False, str(exc)
+        text = str(payload.get("text") or "").strip()
+        if not text or is_placeholder_section_content(text):
+            return False, "set-section text must not be empty or (TBD)"
+        items, err = fetch_project_items(ssot, limit=limit)
+        if err:
+            return False, err
+        item = find_item_by_id(items, item_id)
+        if item is None:
+            return False, f"item not found: {item_id}"
+        body = _item_body(item)
+        try:
+            new_body, changed = replace_section_content(body, section, text)
+        except ValueError as exc:
+            return False, str(exc)
+        if changed:
+            ok, detail = edit_item_body(ssot, item_id, new_body)
+            if not ok:
+                return False, detail
+        if agent:
+            n_ok, n_detail, _ = append_notes_helper(
+                root,
+                ssot,
+                item_id,
+                agent=agent,
+                text=f"set-section {section}",
+                limit=limit,
+                skip_precheck=True,
+            )
+            if not n_ok:
+                return False, f"section ok but Notes failed: {n_detail}"
+        return True, f"{section} updated" if changed else f"{section} unchanged"
+
     if op == "set-status":
         to = str(payload.get("to") or "")
+        if _normalize_status(to) in BODY_GATE_STATUSES:
+            items, err = fetch_project_items(ssot, limit=limit)
+            if err:
+                return False, err
+            item = find_item_by_id(items, item_id)
+            if item is None:
+                return False, f"item not found: {item_id}"
+            ok_body, body_detail = assert_body_ready_for_status(ssot, item, to)
+            if not ok_body:
+                return False, body_detail
         ok, detail = set_item_status(ssot, item_id, to)
         if not ok:
             return False, detail
@@ -688,6 +751,16 @@ def apply_outbox_entry(
         next_agent = str(payload.get("next") or "").strip().lstrip("@")
         status_to = str(payload.get("to") or "").strip()
         extra = str(payload.get("note") or payload.get("text") or "").strip()
+        if status_to and _normalize_status(status_to) in BODY_GATE_STATUSES:
+            items, err = fetch_project_items(ssot, limit=limit)
+            if err:
+                return False, err
+            item = find_item_by_id(items, item_id)
+            if item is None:
+                return False, f"item not found: {item_id}"
+            ok_body, body_detail = assert_body_ready_for_status(ssot, item, status_to)
+            if not ok_body:
+                return False, body_detail
         if status_to:
             ok, detail = set_item_status(ssot, item_id, status_to)
             if not ok:

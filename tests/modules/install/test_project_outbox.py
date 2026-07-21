@@ -672,6 +672,11 @@ def test_apply_outbox_entry_handoff(
     ssot = _outbox_ssot(tmp_path)
     monkeypatch.setattr(
         project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([_board_item()], None),
+    )
+    monkeypatch.setattr(
+        project_cli,
         "set_item_status",
         lambda ssot, iid, to: (True, "4cc61d42"),
     )
@@ -769,6 +774,11 @@ def test_apply_outbox_entry_handoff_status_fail(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     ssot = _outbox_ssot(tmp_path)
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([_board_item()], None),
+    )
     monkeypatch.setattr(
         project_cli,
         "set_item_status",
@@ -1145,7 +1155,16 @@ def _board_item(item_id: str = VALID_ITEM_ID) -> dict:
         "id": item_id,
         "title": "Slice",
         "status": "Ready",
-        "content": {"body": "## Acceptance\n\nx\n\n## Rollback\n\ny\n\n## Notes\n\n"},
+        "priority": "p1",
+        "size": "s",
+        "estimate": "1",
+        "start_date": "2026-07-21",
+        "content": {
+            "body": (
+                "## Acceptance\n\nx\n\n## Rollback\n\ny\n\n"
+                "## Notes\n\n- @test/implementer · claimed\n"
+            )
+        },
     }
 
 

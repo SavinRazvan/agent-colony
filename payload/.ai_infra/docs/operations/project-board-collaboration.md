@@ -27,7 +27,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Status drifts from reality | Status column = truth (DRIFT-009 watches dual-write) |
 | Humans cannot see progress | Project UI is the shared dashboard |
 
-**Rule:** Entry = read board. Exit = update Status and **attributed Notes** for the card you touched. `validate-item` checks the card body, Tier-1 fields (including Assignee when present on the snapshot), and status-scoped Notes; it is not just a section-presence check. Prefer Pattern A recipes: `project claim` / `project handoff` (one command each). Atomics (`append-notes --agent`) remain for power use. **Never** paste Project settings UI text into a shell — humans **follow** `.ai_infra/templates/project-board/views-setup.md` and paste **contents of** `project-readme.md` into Project README settings (or opt-in `board-bootstrap --check --apply-readme`).
+**Rule:** Entry = read board. Exit = update Status and **attributed Notes** for the card you touched. `validate-item` checks the card body, Tier-1 fields (including Assignee when present on the snapshot), and status-scoped Notes; it is not just a section-presence check. **Enforcement:** `handoff` and `set-status` to `in_review`|`done` call the same checks and return EXIT_VALIDATION (5) while Acceptance/Rollback are empty or `(TBD)` (including `- (TBD)` list form). Fill via `create-from-template --acceptance/--rollback` or `project set-section --section acceptance|rollback --text '…' --last`. Prefer Pattern A recipes: `project claim` / `project handoff` (one command each). Atomics (`append-notes --agent`, `set-section`) remain for power use. **Never** paste Project settings UI text into a shell — humans **follow** `.ai_infra/templates/project-board/views-setup.md` and paste **contents of** `project-readme.md` into Project README settings (or opt-in `board-bootstrap --check --apply-readme`).
 
 ### Board shell starter (first-run)
 
@@ -92,14 +92,15 @@ All subcommands registered in `.ai_infra/install/cursor_workflow/project_parser.
 | `list` | List project items (optional `--status` filter) | Any (Entry) |
 | `create` | Create Issue (or Draft if `item_kind_default: draft`) | project-board, implementer, integrator |
 | `create-from-template` | Create Issue from slice/bug body template (default `item_kind_default: issue`) | project-board, implementer |
-| `set-status` | Set item Status from YAML option ids | Power use (prefer `handoff --to`) |
+| `set-status` | Set item Status from YAML option ids; gates `in_review`\|`done` on body (exit 5) | Power use (prefer `handoff --to`) |
 | `set-field` | Set Priority, Size, or Estimate | **Mandatory** on create/claim/own (`priority` + `size` + `estimate`); see skill § Tier-1 card fields contract |
+| `set-section` | Replace ## Acceptance or ## Rollback (Notes stay append-only) | implementer, integrator (before handoff) |
 | `get` | Get one project item by id | Any |
 | `append-notes` | Append attributed line under ## Notes | Any (Exit atomic) |
 | `claim` | Pattern A: In progress + Notes (+ Start date when configured) | implementer, integrator, researcher |
 | `mention-pr` | Notes with PR URL; auto-promote Draft when configured | implementer |
 | `promote-to-issue` | Convert DraftIssue → Issue (same `PVTI_`) | implementer (before shippable PR) |
-| `handoff` | Pattern A: Notes `next=@user/agent` + optional set-status | Any (Exit) |
+| `handoff` | Pattern A: Notes `next=@user/agent` + optional set-status; gates `in_review`\|`done` | Any (Exit) |
 | `validate-item` | Check body + Tier-1 fields + status-scoped Notes (exit 5 on fail) | verifier, project-board |
 | `last` | Print last saved item_id (after create/claim) | Any (with `--last` recipes) |
 | `guide` | Print safe recipes using `--last` (no placeholder ids) | Any (Entry) |

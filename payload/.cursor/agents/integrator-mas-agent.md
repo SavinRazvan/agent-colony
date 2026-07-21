@@ -57,7 +57,7 @@ Independent agents **never** skip governance scanners, file headers, or Pattern 
 ## Loop (one integration slice)
 
 1. **Intake** — classify: new agent | skill | MCP server | script/gate | doc-only.
-2. **Plan** — when `project_ssot.enabled` and `sync_policy: board_only`: claim/create a board card (`create-from-template` / `claim --last --agent integrator-mas-agent`); put Acceptance/Rollback on the card body; do **not** dual-write Active `in_progress` in `work-tracker.md`. Else (offline / disabled): record scope in `plan.md` / `work-tracker.md` (one `in_progress` row).
+2. **Plan** — when `project_ssot.enabled` and `sync_policy: board_only`: claim/create a board card (`create-from-template` with `--acceptance`/`--rollback`, or `set-section` after claim / `claim --last --agent integrator-mas-agent`); put Acceptance/Rollback on the card body before handoff to `in_review`|`done`; do **not** dual-write Active `in_progress` in `work-tracker.md`. Else (offline / disabled): record scope in `plan.md` / `work-tracker.md` (one `in_progress` row).
 3. **Apply templates** — `.ai_infra/templates/agent-integration/` (agent + skill stubs, checklist).
 4. **Wire surfaces** — registry, pipelines, manifest if consumer-visible, plugin sync if marketplace-facing.
 5. **Verify** — `python -m cursor_workflow contributors validate`, `make gates` or targeted pytest, `check_governance_consistency.py` when `.cursor/` or workflows change.

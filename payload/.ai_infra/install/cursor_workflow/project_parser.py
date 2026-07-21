@@ -187,6 +187,30 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     notes_cmd.add_argument("--limit", type=int, default=100)
     notes_cmd.set_defaults(func=pc.cmd_append_notes)
 
+    set_section = project_sub.add_parser(
+        "set-section",
+        help="Replace ## Acceptance or ## Rollback (Notes stay append-only)",
+    )
+    set_section.add_argument("--directory", type=Path, default=".")
+    _add_id_or_last(set_section)
+    set_section.add_argument(
+        "--section",
+        required=True,
+        help="acceptance|rollback (case-insensitive)",
+    )
+    set_section.add_argument(
+        "--text",
+        required=True,
+        help="New section body (must not be empty or (TBD))",
+    )
+    set_section.add_argument(
+        "--agent",
+        default="",
+        help="Optional: append Notes audit line set-section Acceptance|Rollback",
+    )
+    set_section.add_argument("--limit", type=int, default=100)
+    set_section.set_defaults(func=pc.cmd_set_section)
+
     claim_cmd = project_sub.add_parser(
         "claim",
         help="Pattern A: In progress + Notes (+ assignee when Issue-backed)",
@@ -335,7 +359,14 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     queue_cmd.add_argument(
         "--op",
         required=True,
-        choices=("append-notes", "set-status", "handoff", "claim", "set-assignee"),
+        choices=(
+            "append-notes",
+            "set-status",
+            "set-section",
+            "handoff",
+            "claim",
+            "set-assignee",
+        ),
     )
     queue_cmd.add_argument("--agent", required=True)
     queue_cmd.add_argument("--text", default="", help="Notes text / handoff note / claim text")

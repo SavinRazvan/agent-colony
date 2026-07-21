@@ -135,9 +135,42 @@ def sync_board_after_merge(
 
     conventions = ssot.get("conventions") or {}
     done_logical = str(conventions.get("done_status") or "done")
+    items, list_err = project_cli.fetch_project_items(ssot, limit=100)
+    if list_err:
+        print(f"[WARN] board sync list failed: {list_err}", file=sys.stderr)
+        return f"board sync: warn — list failed ({list_err})"
+    item = project_cli.find_item_by_id(items, resolved)
+    if item is None:
+        print(f"[WARN] board sync: item not found: {resolved}", file=sys.stderr)
+        return f"board sync: warn — item not found ({resolved})"
+    ok_body, body_detail = project_cli.assert_body_ready_for_status(
+        ssot, item, done_logical
+    )
+    if not ok_body:
+        print(
+            f"[ERROR] board sync blocked — card body not ready for {done_logical}: {body_detail}",
+            file=sys.stderr,
+        )
+        print(
+            "[ERROR] Remediations: "
+            "python3 -m cursor_workflow project set-section "
+            "--section acceptance|rollback --text '…' --last "
+            "then re-run board close / set-status --to done",
+            file=sys.stderr,
+        )
+        return f"board sync: error — body gate failed ({body_detail})"
     ok, detail = project_cli.set_item_status(ssot, resolved, done_logical)
     if not ok:
         print(f"[WARN] board sync set-status failed: {detail}", file=sys.stderr)
+        if "set-section" in detail or "placeholder" in detail.casefold():
+            print(
+                "[ERROR] Remediations: "
+                "python3 -m cursor_workflow project set-section "
+                "--section acceptance|rollback --text '…' --last "
+                "then re-run board close / set-status --to done",
+                file=sys.stderr,
+            )
+            return f"board sync: error — set-status validation ({detail})"
         return f"board sync: warn — set-status failed ({detail})"
 
     pr_url = _pr_url(root, pr, str(ssot.get("default_repo") or ""))
@@ -146,11 +179,6 @@ def sync_board_after_merge(
         note = project_cli.format_note_line(root, "merge.py", note)
     except Exception:  # noqa: BLE001 — never block merge on attribution
         pass
-    items, list_err = project_cli.fetch_project_items(ssot, limit=100)
-    if list_err:
-        print(f"[WARN] board sync append-notes list failed: {list_err}", file=sys.stderr)
-        return f"board sync: status→{done_logical} on {resolved}; notes warn ({list_err})"
-    item = project_cli.find_item_by_id(items, resolved)
     body = project_cli._item_body(item) if item else ""
     new_body, changed = project_cli.append_notes_to_body(body, note)
     if changed:

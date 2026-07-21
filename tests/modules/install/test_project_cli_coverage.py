@@ -85,6 +85,7 @@ def _board_item(
         "priority": "p1",
         "size": "s",
         "estimate": "1",
+        "start_date": "2026-07-21",
         "content": {"body": body if body is not None else default_body},
     }
 
@@ -356,6 +357,7 @@ def test_normalize_status_and_item_helpers() -> None:
     assert project_cli.section_body_content("## A\n\nx\n\n## B\n\ny\n", "B") == "y"
     assert project_cli.is_placeholder_section_content("   ")
     assert project_cli.is_placeholder_section_content("(TBD)")
+    assert project_cli.is_placeholder_section_content("- (TBD)")
     assert not project_cli.is_placeholder_section_content("ready")
     assert project_cli.item_field_value({"priority": "", "size": "s"}, "priority", "size") == "s"
 
@@ -1442,7 +1444,13 @@ def test_cmd_handoff_ssot_id_and_fetch_queue(
         "fetch_project_items",
         lambda *a, **k: ([], "API rate limit exceeded"),
     )
-    assert project_cli.cmd_handoff(argparse.Namespace(**base)) == project_cli.EXIT_QUEUED
+    # Gated --to in_review: do not enqueue without a body snapshot to validate.
+    assert project_cli.cmd_handoff(argparse.Namespace(**base)) == project_cli.EXIT_GH
+    # Ungated handoff (Notes-only): still queue on rate-limit fetch.
+    assert (
+        project_cli.cmd_handoff(argparse.Namespace(**{**base, "to": ""}))
+        == project_cli.EXIT_QUEUED
+    )
 
 
 def test_cmd_handoff_status_gh_fail_non_rate(

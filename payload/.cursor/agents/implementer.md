@@ -16,7 +16,7 @@ description: Disciplined implementation slices with trackers and Pattern A gates
 
 **Exit (board-first when enabled):**
 
-1. Prefer recipe: `python3 -m cursor_workflow project handoff --last --agent implementer --next verifier --to in_review` (or `--to done`).
+1. Prefer recipe: fill Acceptance/Rollback (`create-from-template --acceptance/--rollback` or `project set-section --section acceptance|rollback --text '…' --last --agent implementer`) then `python3 -m cursor_workflow project handoff --last --agent implementer --next verifier --to in_review` (or `--to done`). Handoff/`set-status` to `in_review`|`done` returns **EXIT_VALIDATION (5)** while placeholders remain — fix with `set-section`, then retry.
 2. Claim with `project claim --last --agent implementer` (after create-from-template; never paste docs placeholder ids).
 3. Before opening a shippable PR: `promote-to-issue --last` **or** `mention-pr --pr N` (auto-promotes when `promote_to_issue_on_pr`). Claim does **not** promote.
 4. Append `change-index.md`; one line in `history/updates-log.md`.

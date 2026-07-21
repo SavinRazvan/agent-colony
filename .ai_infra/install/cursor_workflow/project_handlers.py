@@ -143,6 +143,22 @@ def run_handoff(args: argparse.Namespace) -> int:
     extra = (getattr(args, 'text', None) or '').strip()
     status_to = (getattr(args, 'to', None) or '').strip()
     handoff_payload = {'next': next_agent, 'to': status_to, 'note': extra}
+    items, err = pc.fetch_project_items(ssot, limit=args.limit)
+    if err:
+        if status_to and pc._normalize_status(status_to) in pc.BODY_GATE_STATUSES:
+            return pc.fail('handoff', pc.EXIT_GH, err)
+        queued = pc._try_queue_rate_limit(root, ssot, cmd='handoff', err_detail=err, op='handoff', item_id=item_id, agent=agent, payload=handoff_payload)
+        if queued is not None:
+            return queued
+        return pc.fail('handoff', pc.EXIT_GH, err)
+    item = pc.find_item_by_id(items, item_id)
+    if item is None:
+        return pc.fail('handoff', pc.EXIT_NOT_FOUND, f'item not found: {item_id}')
+    before = pc._normalize_status(str(item.get('status') or ''))
+    if status_to and pc._normalize_status(status_to) in pc.BODY_GATE_STATUSES:
+        ok_body, body_detail = pc.assert_body_ready_for_status(ssot, item, status_to)
+        if not ok_body:
+            return pc.fail('handoff', pc.EXIT_VALIDATION, body_detail)
     pre = pc.guard_write_or_queue(
         root,
         ssot,
@@ -154,16 +170,6 @@ def run_handoff(args: argparse.Namespace) -> int:
     )
     if pre is not None:
         return pre
-    items, err = pc.fetch_project_items(ssot, limit=args.limit)
-    if err:
-        queued = pc._try_queue_rate_limit(root, ssot, cmd='handoff', err_detail=err, op='handoff', item_id=item_id, agent=agent, payload=handoff_payload)
-        if queued is not None:
-            return queued
-        return pc.fail('handoff', pc.EXIT_GH, err)
-    item = pc.find_item_by_id(items, item_id)
-    if item is None:
-        return pc.fail('handoff', pc.EXIT_NOT_FOUND, f'item not found: {item_id}')
-    before = pc._normalize_status(str(item.get('status') or ''))
     note_core = f'next={next_attr}'
     if extra:
         note_core = f'{extra} · {note_core}'

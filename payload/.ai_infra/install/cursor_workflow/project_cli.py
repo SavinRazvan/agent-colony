@@ -48,6 +48,7 @@ from gh_project_adapter import (
     set_item_status,
 )
 from project_atomics import (
+    BODY_GATE_STATUSES,
     EXIT_GH,
     EXIT_NOT_FOUND,
     EXIT_OK,
@@ -65,6 +66,7 @@ from project_atomics import (
     _item_title,
     _normalize_status,
     append_notes_to_body,
+    assert_body_ready_for_status,
     attribution_required,
     build_export_snapshot,
     fail,
@@ -76,6 +78,7 @@ from project_atomics import (
     item_field_value,
     latest_notes_line,
     load_card_template,
+    normalize_set_section_name,
     section_body_content,
     load_last_item_id,
     load_project_ssot,
@@ -84,6 +87,7 @@ from project_atomics import (
     parse_board_item_from_text,
     project_templates_dir,
     render_card_template,
+    replace_section_content,
     require_enabled,
     resolve_field_option_id,
     resolve_human_github_user,
@@ -804,6 +808,17 @@ def cmd_set_status(args: argparse.Namespace) -> int:
             "field_id"
         ):
             queue_payload["start_date"] = utc_today_iso()
+    # Body gate before precheck/queue so EXIT_VALIDATION never enqueues a doomed close.
+    if _normalize_status(str(args.to)) in BODY_GATE_STATUSES:
+        items, list_err = fetch_project_items(ssot, limit=100)
+        if list_err:
+            return fail("set-status", EXIT_GH, list_err)
+        item = find_item_by_id(items, item_id)
+        if item is None:
+            return fail("set-status", EXIT_NOT_FOUND, f"item not found: {item_id}")
+        ok_body, body_detail = assert_body_ready_for_status(ssot, item, str(args.to))
+        if not ok_body:
+            return fail("set-status", EXIT_VALIDATION, body_detail)
     pre = guard_write_or_queue(
         root,
         ssot,
@@ -994,6 +1009,116 @@ def cmd_get(args: argparse.Namespace) -> int:
         print("--- body ---")
         print(payload["body"] or "(empty)")
     return EXIT_OK
+def cmd_set_section(args: argparse.Namespace) -> int:
+    """Replace ## Acceptance or ## Rollback interior; optional Notes audit line when --agent set."""
+    root = Path(args.directory).resolve()
+    ssot, code = _load_enabled_ssot(root, "set-section")
+    if ssot is None:
+        return code
+    item_id, id_code = resolve_item_id_arg(root, args, "set-section")
+    if item_id is None:
+        return id_code
+    try:
+        section = normalize_set_section_name(getattr(args, "section", "") or "")
+    except ValueError as exc:
+        return fail("set-section", EXIT_USAGE, str(exc))
+    text = str(getattr(args, "text", None) or "").strip()
+    if not text:
+        return fail("set-section", EXIT_USAGE, "--text required (non-empty)")
+    if is_placeholder_section_content(text):
+        return fail(
+            "set-section",
+            EXIT_VALIDATION,
+            "text must not be empty or (TBD) placeholder",
+        )
+    agent = (getattr(args, "agent", None) or "").strip()
+    limit = int(getattr(args, "limit", 100) or 100)
+    queue_payload: dict[str, Any] = {"section": section.casefold(), "text": text}
+    pre = guard_write_or_queue(
+        root,
+        ssot,
+        cmd="set-section",
+        op="set-section",
+        item_id=item_id,
+        agent=agent or "project-cli",
+        payload=queue_payload,
+    )
+    if pre is not None:
+        return pre
+    items, err = fetch_project_items(ssot, limit=limit)
+    if err:
+        queued = _try_queue_rate_limit(
+            root,
+            ssot,
+            cmd="set-section",
+            err_detail=err,
+            op="set-section",
+            item_id=item_id,
+            agent=agent or "project-cli",
+            payload=queue_payload,
+        )
+        if queued is not None:
+            return queued
+        return fail("set-section", EXIT_GH, err)
+    item = find_item_by_id(items, item_id)
+    if item is None:
+        return fail("set-section", EXIT_NOT_FOUND, f"item not found: {item_id}")
+    body = _item_body(item)
+    try:
+        new_body, changed = replace_section_content(body, section, text)
+    except ValueError as exc:
+        return fail("set-section", EXIT_VALIDATION, str(exc))
+    if changed:
+        ok, detail = edit_item_body(ssot, item_id, new_body)
+        if not ok:
+            queued = _try_queue_rate_limit(
+                root,
+                ssot,
+                cmd="set-section",
+                err_detail=detail,
+                op="set-section",
+                item_id=item_id,
+                agent=agent or "project-cli",
+                payload=queue_payload,
+            )
+            if queued is not None:
+                return queued
+            return fail("set-section", EXIT_GH, detail)
+        note_successful_write(root, ssot)
+        print(f"set-section: {item_id} — {section} updated")
+    else:
+        print(f"set-section: {item_id} — {section} unchanged (idempotent)")
+    if agent:
+        n_ok, n_detail, n_code = append_notes_helper(
+            root,
+            ssot,
+            item_id,
+            agent=agent,
+            text=f"set-section {section}",
+            limit=limit,
+            skip_precheck=True,
+        )
+        if not n_ok:
+            if n_code == EXIT_QUEUED:
+                return n_code
+            if n_code == EXIT_GH:
+                queued = _try_queue_rate_limit(
+                    root,
+                    ssot,
+                    cmd="set-section",
+                    err_detail=n_detail,
+                    op="append-notes",
+                    item_id=item_id,
+                    agent=agent,
+                    payload={"text": f"set-section {section}"},
+                )
+                if queued is not None:
+                    return queued
+            return fail("set-section", n_code, f"section ok but Notes failed: {n_detail}")
+    save_last_item_id(root, item_id, title=_item_title(item), action="set-section")
+    return EXIT_OK
+
+
 def cmd_append_notes(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "append-notes")
@@ -1158,6 +1283,11 @@ def cmd_guide(args: argparse.Namespace) -> int:
         "(also set-status/handoff→in_progress)"
     )
     print(
+        f"python3 -m cursor_workflow project set-section --section acceptance "
+        f"--text '- criteria…' --last --agent {agent}  "
+        "# also --section rollback; required before handoff/set-status → in_review|done"
+    )
+    print(
         f"python3 -m cursor_workflow project promote-to-issue --last --agent {agent}  "
         "# Draft→Issue (same PVTI_); before PR"
     )
@@ -1166,7 +1296,8 @@ def cmd_guide(args: argparse.Namespace) -> int:
     )
     print(
         f"python3 -m cursor_workflow project handoff --last --agent {agent} "
-        f"--next {nxt} --to in_review"
+        f"--next {nxt} --to in_review  "
+        "# EXIT_VALIDATION (5) if Acceptance/Rollback still (TBD)"
     )
     print(
         f"python3 -m cursor_workflow project mention-pr --pr <n> --last --agent {agent}  "

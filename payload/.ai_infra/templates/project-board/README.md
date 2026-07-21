@@ -29,6 +29,8 @@ Notes:
 
 Card bodies always include `## Acceptance`, `## Rollback`, and `## Notes` so `validate-item` and Entry/Exit stay consistent.
 
+**Fill after create:** Prefer `--acceptance` / `--rollback` on `create-from-template`. If still `(TBD)`, run `project set-section --section acceptance|rollback --text '…' --last` before `handoff` / `set-status` → `in_review`|`done` (CLI exits 5 while placeholders remain). Notes stay append-only via `append-notes` / `claim` / `handoff`.
+
 **Notes format (CLI):** `@github_user/agent · YYYY-MM-DDTHH:MM:SSZ · text` — stamped by `claim`, `handoff`, and `append-notes --agent`. Do not hand-forge timestamps.
 
 | Need | Template / action |
