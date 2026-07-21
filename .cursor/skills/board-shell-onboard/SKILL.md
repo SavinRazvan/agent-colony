@@ -13,7 +13,9 @@ Depends On:
  - .ai_infra/templates/project-board/views-setup.md
  - python -m cursor_workflow project board-bootstrap
 Notes:
- - Views remain human UI (ADR-008). Do not call undocumented view APIs.
+ - Consent gate is mandatory before shell apply (description + proceed).
+ - Views: coach TURN PROTOCOL today; opt-in CLI when official APIs allow (ADR-008).
+ - Do not call undocumented GraphQL view mutations.
 -->
 
 # Board shell onboard (first-run coach)
@@ -29,47 +31,140 @@ Notes:
 
 | Do | Do not |
 |----|--------|
+| **CONSENT GATE** before any shell apply (below) | Create/mutate shell without description + explicit proceed |
 | After `gh` auth, accept Project + repo URLs and propose YAML via `gh project view` / `field-list` | Write YAML without human confirm |
-| Coach humans through `views-setup.md` against `board-shell.schema.yaml` | Create/rename/delete Project **views** via API |
-| Run `board-bootstrap --check` until default views green + Tier-1 column WARNs gone | Mutate Insights / workflows / status updates |
-| Optional `--ensure-fields` / `--apply-readme` | Invent field option ids into YAML without discovery |
+| Coach humans through TURN PROTOCOL (`views-setup.md` = click reference only) | Dump “follow views-setup.md” and stop; undocumented GraphQL view mutations |
+| Run `board-bootstrap --check` until default views green + Tier-1 column WARNs gone | Mutate Insights / workflows / status updates without approval |
+| Optional `--ensure-fields` / `--apply-readme` **only after** CONSENT GATE (no view-apply CLI; **`--apply-shell` is not shipped**) | Invent field option ids into YAML without discovery |
 | Smoke `create-from-template` | Claim “ready” while default schema check fails or Prioritized backlog lacks **Priority** |
+
+## CONSENT GATE (mandatory — every first-run shell) 
+
+**Before** TURN PROTOCOL, `--ensure-fields`, `--apply-readme`, or any future `--apply-shell`, stop and ask the human **both** questions in one message. Do **not** proceed until answered.
+
+### Q1 — Board description (README blurb)
+
+Ask:
+
+```text
+What short description should appear on this Project board?
+(Reply with 1–3 sentences for the Project README, or say "use template default".)
+```
+
+- If they give text → keep it for README placeholders / `--apply-readme` body merge.
+- If `use template default` → use `.ai_infra/templates/project-board/project-readme.md` as-is (title/repo filled from YAML).
+- If README already non-empty and they say keep it → record that; skip overwrite unless they ask.
+
+### Q2 — Proceed to create / coach the default shell?
+
+Ask:
+
+```text
+May I proceed to set up the kit default Playground board shell on this Project
+(six views + Tier-1 columns + README)? Reply "yes" or "no".
+```
+
+- **`yes`** → continue Entry check + TURN PROTOCOL (and/or approved CLI flags).
+- **`no`** → stop. Do not coach views, do not `--apply-readme` / `--ensure-fields`. Offer day-to-day triage only if shell already green.
+- Ambiguous reply → ask again. Never assume yes.
+
+Print after answers:
+
+```text
+board-shell consent: description=custom|template|keep · proceed=yes|no
+```
+
+Only `proceed=yes` unlocks the rest of this skill.
 
 ## Entry
 
-0. If board ids missing and human provided URLs: propose collaboration YAML, confirm, save.
-1. `python3 -m cursor_workflow project status`
-2. `python3 -m cursor_workflow project doctor`
-3. Load desired state:
+0. Run **CONSENT GATE** (Q1 + Q2). If `proceed=no` → Exit with consent line only.
+1. If board ids missing and human provided URLs: propose collaboration YAML, confirm, save.
+2. `python3 -m cursor_workflow project status`
+3. `python3 -m cursor_workflow project doctor`
+4. Load desired state:
    - Overlay if present: `.local/user_settings/board-shell.schema.yaml`
    - Else: `.ai_infra/templates/project-board/board-shell.schema.yaml`
-4. `python3 -m cursor_workflow project board-bootstrap --check`
+5. `python3 -m cursor_workflow project board-bootstrap --check`
 
 ## Loop (refuse ready until default shell passes)
 
 ```text
-doctor → board-bootstrap --check → (gaps?) → human paste pack → re-check → smoke card → ready
+CONSENT GATE → doctor → board-bootstrap --check → (gaps?) → TURN PROTOCOL → re-check → smoke → ready
 ```
 
-**Read FAIL lines literally:** `FAIL — missing minimum view 'Status board'` (etc.) / `WARN — rename default view 'View 1'` → human [views-setup.md](../../.ai_infra/templates/project-board/views-setup.md) in the GitHub UI (agents cannot create views). Empty README / `--apply-readme` is a **separate** fix — do not tell the user a view-missing FAIL is “only README”.
+**Read FAIL lines literally:** `FAIL — missing minimum view 'Status board'` (etc.) / `WARN — rename default view 'View 1'` → human UI until official apply CLI ships. Empty README / `--apply-readme` is a **separate** fix after consent — never tell the user a view-missing FAIL is “only README”.
 
 ### WARN vs FAIL (schema check)
 
 | Outcome | Typical cause | Coach action |
 |---------|---------------|--------------|
-| **FAIL** (exit non-zero) | Missing a **default** Playground view (Status board, Prioritized backlog, Roadmap, Bugs, In review, My items); empty README | Block “ready”; human completes `views-setup.md` / README |
-| **WARN** (exit 0) | Missing Tier-1 **columns** (esp. **Priority** on Prioritized backlog); leftover `View N` name | Still coach columns; **do not** declare ready while Priority/Size/Estimate/Start date WARNs remain |
-| **PASS** | All default views present; README non-empty; no Tier-1 column WARNs | Smoke card → day-to-day Pattern A |
+| **FAIL** (exit non-zero) | Missing a **default** Playground view; empty README | Enter **TURN PROTOCOL** below — do not stop after one sentence |
+| **WARN** (exit 0) | Missing Tier-1 **columns**; leftover `View N` | Coach columns on Status board + Prioritized backlog until WARN gone |
+| **PASS** | Six views + README + no Tier-1 WARNs | Smoke card → day-to-day Pattern A |
 
-### Gaps → human paste pack
+### TURN PROTOCOL (mandatory when views FAIL) — do not skip
 
-1. Open Project settings in GitHub UI.
-2. **Follow** `.ai_infra/templates/project-board/views-setup.md` (do not paste that file into README).
-3. Create/rename until all **six default** views exist (see checklist).
-4. On **Prioritized backlog** and **Status board**, show columns: Priority, Size, Estimate, Start date (plus Title, Assignees, Status, Linked pull requests).
-5. Paste **contents of** `project-readme.md` into Project README (edit placeholders).
-6. Checklist: `views-checklist.md`.
-7. Re-run `board-bootstrap --check`.
+You **must** run this conversation loop. **Forbidden:** “follow views-setup.md”, “rename View 1”, or “add columns” as a single dump then waiting forever. **Required:** one concrete UI turn, wait for human “done”, then next turn.
+
+**Open:** Project URL from `project status` (e.g. `https://github.com/users/…/projects/N`).
+
+**Turn A — kill `View 1` → Status board**
+
+1. Tell human: open the Project → click the view tab named **View 1** (or similar).
+2. Rename it to **Status board**.
+3. Layout = **Board**; Group by = **Status**.
+4. Show fields/columns: Title, Assignees, Status, **Priority**, **Size**, **Estimate**, **Start date**, Linked pull requests.
+5. Ask: reply `done` when Status board exists. Then re-run `--check` (expect fewer FAILs).
+
+**Turn B — Prioritized backlog (new Table view)**
+
+1. **+ New view** → Table → name **Prioritized backlog**.
+2. Show same Tier-1 columns as Status board (**Priority** required).
+3. Wait for `done` → re-check.
+
+**Turn C — Roadmap**
+
+1. **+ New view** → Roadmap layout → name **Roadmap**.
+2. Wait for `done` → re-check.
+
+**Turn D — Bugs**
+
+1. **+ New view** → Table → name **Bugs** (emoji optional).
+2. Filter: title contains `[BUG]`.
+3. Wait for `done` → re-check.
+
+**Turn E — In review**
+
+1. **+ New view** → Table → name **In review**.
+2. Filter: Status = **In review**.
+3. Wait for `done` → re-check.
+
+**Turn F — My items**
+
+1. **+ New view** → Table → name **My items**.
+2. Filter: Assignees = `@me`.
+3. Wait for `done` → re-check.
+
+**Turn G — README**
+
+```bash
+python3 -m cursor_workflow project board-bootstrap --check --apply-readme
+```
+
+Or paste contents of `project-readme.md` into Project README settings. Re-check.
+
+**Turn H — clear column WARNs**
+
+If `--check` still WARNs missing Priority/Size/Estimate/Start date on Status board or Prioritized backlog: open that view → **+** field picker → show the missing columns. Re-check until **no FAIL and no those WARNs**.
+
+Between every turn print:
+
+```text
+board-shell turn: A|B|C|D|E|F|G|H · waiting=human · next=<view or column>
+```
+
+Use checklist: `.ai_infra/templates/project-board/views-checklist.md`. Canon clicks: `.ai_infra/templates/project-board/views-setup.md`.
 
 ### Optional automation (official API only)
 
@@ -78,7 +173,7 @@ python3 -m cursor_workflow project board-bootstrap --check --ensure-fields
 python3 -m cursor_workflow project board-bootstrap --check --apply-readme
 ```
 
-- `--ensure-fields`: create missing **field definitions** by name; print suggested YAML field ids (human confirms before editing collaboration.yaml).
+- `--ensure-fields`: create missing **field definitions** by name; print suggested YAML field ids (human confirms before editing collaboration.yaml). Does **not** create views.
 - `--apply-readme`: push templated README via `updateProjectV2` (opt-in; user approval).
 
 Respect GraphQL quota / outbox — never retry-loop.

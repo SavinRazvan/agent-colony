@@ -171,8 +171,8 @@ def test_board_bootstrap_ok_readme_reports_next_steps(
     captured = capsys.readouterr()
     out = captured.out
     err = captured.err
-    assert "views-setup.md" in out
-    assert "views-checklist.md" in out
+    assert "board-bootstrap: ok" in out
+    assert "day-to-day Pattern A" in out
     assert "board-shell-onboard" in out
     assert "missing columns" in err
     assert "Priority" in err
@@ -207,9 +207,11 @@ def test_board_bootstrap_low_quota_skips_live_probe(
     )
 
     code = project_handlers.run_board_bootstrap(_bootstrap_args(tmp_path))
-    assert code == project_cli.EXIT_OK
+    assert code == project_cli.EXIT_GH
     err = capsys.readouterr().err
     assert "low GraphQL quota" in err
+    assert "INCOMPLETE" in err
+    assert "do not treat as shell green" in err.lower() or "INCOMPLETE" in err
 
 
 def test_board_bootstrap_fails_when_default_playground_views_missing(
@@ -434,6 +436,9 @@ def test_agents_stub_and_view_pack_text() -> None:
     ).read_text(encoding="utf-8")
     assert "/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot" in agents
     assert "/add-plugin https://github.com/SavinRazvan/mas-workflow-kit\n" not in agents
+    assert "project board-bootstrap --check" in agents
+    assert "CONSENT GATE" in agents
+    assert "TURN PROTOCOL" in agents
     assert "project board-bootstrap --check" in project_board_readme
     assert "views-setup.md" in project_board_readme
     assert "views-checklist.md" in project_board_readme

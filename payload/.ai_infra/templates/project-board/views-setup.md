@@ -23,6 +23,26 @@ python3 -m cursor_workflow project board-bootstrap --check
 
 GitHub may create a blank Project with names like `View 1`. That is **not** the kit default — rename/create until the board matches the table below.
 
+### Fast path (GitHub UI — do this now)
+
+1. Open the Project in the browser.
+2. Click the **View 1** tab → ⋯ / rename → **Status board** → layout **Board** → group by **Status**.
+3. **+ New view** five more times (or until you have six tabs):
+
+| New view name | Layout | Filter / group |
+|---------------|--------|----------------|
+| **Prioritized backlog** | Table | (none required) |
+| **Roadmap** | Roadmap | — |
+| **Bugs** | Table | title contains `[BUG]` |
+| **In review** | Table | Status = In review |
+| **My items** | Table | Assignees = `@me` |
+
+4. On **Status board** and **Prioritized backlog**: **+** → show **Priority**, **Size**, **Estimate**, **Start date**.
+5. README: `--apply-readme` or paste `project-readme.md`.
+6. `python3 -m cursor_workflow project board-bootstrap --check` until green.
+
+Agents coach this as **TURN PROTOCOL** in `board-shell-onboard` (one view per chat turn). They cannot click for you.
+
 ---
 
 ## 1. Default views (Playground)

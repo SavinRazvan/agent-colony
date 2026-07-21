@@ -25,7 +25,7 @@
    - Paste **Project URL** + this **repo URL** in Agent chat → **`/project-board`** wires `project_ssot` ids + `default_repo` (confirm before save), or fill via `gh project view` / `field-list`
    - `python3 -m cursor_workflow project doctor` (expect **ok**)
    - `python3 -m cursor_workflow project board-bootstrap --check` — **new Project FAIL on missing views is normal**
-   - **`/project-board`** again (board-shell coach) → follow [views-setup.md](.ai_infra/templates/project-board/views-setup.md) in GitHub UI + Project README (`--apply-readme` optional)
+   - **`/project-board`** again → **CONSENT GATE** (board description + “may I proceed?”) then **TURN PROTOCOL** (one view per turn; [views-setup.md](.ai_infra/templates/project-board/views-setup.md) = click reference). Optional `--ensure-fields` / `--apply-readme` only after `yes`.
    - Re-run `board-bootstrap --check` until default Playground shell green
    - `python3 -m cursor_workflow project status`
    - Local trackers are offline fallback when `sync_policy: board_only`

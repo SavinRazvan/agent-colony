@@ -132,6 +132,8 @@ python3 -m cursor_workflow project status
 
 **Expected on a brand-new Project:** `doctor: ok` and `status` enabled, but `board-bootstrap --check` **FAIL** (still on GitHub’s blank `View 1` — missing Status board / Prioritized backlog / …). That is normal. **Do not** jump to `/implementer` yet — continue with **step 4** below.
 
+There is **no** terminal command that **creates** Project **views** today (`--check` only **reads** views for validation). Step 4 = Agent coach (**CONSENT GATE** + TURN PROTOCOL) + **you** in the browser (plus optional terminal for fields/README only). **`--apply-shell` is not shipped.**
+
 Full checklist: [PLUGIN-USER-GUIDE § Consumer project_ssot onboarding](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist).
 
 ---
@@ -142,22 +144,39 @@ Full checklist: [PLUGIN-USER-GUIDE § Consumer project_ssot onboarding](.ai_infr
 
 **You are here** when `project doctor` is ok but `board-bootstrap --check` prints `FAIL — missing minimum view '…'` and/or `WARN — rename default view 'View 1'`.
 
-**Ask the agent now** (Agent chat in **your app** repo, e.g. Smart-Notes):
+#### What runs where (do not expect a magic CLI for views)
+
+| Action | Where | Command / prompt |
+|--------|--------|------------------|
+| Check shell | Terminal | `python3 -m cursor_workflow project board-bootstrap --check` |
+| Create missing **fields** (Priority/Size/…) | Terminal (optional) | `… board-bootstrap --check --ensure-fields` then confirm YAML |
+| Push Project **README** | Terminal (optional) | `… board-bootstrap --check --apply-readme` |
+| Create/rename **views** + show **columns** | **Browser** + Agent coach | **`/project-board`** TURN PROTOCOL (below) — **no CLI** |
+| Day-to-day cards | Later (§5) | `/implementer` only after `--check` is green |
+
+#### A. Tell the agent (Agent chat in **your app** repo — copy/paste)
+
+The agent **must** first ask for a **board description** and **explicit yes** to create the default shell (CONSENT GATE). Then it coaches **one view per turn** (TURN PROTOCOL) — not dump “follow views-setup” and stop.
 
 ```text
 /project-board
 
-board-bootstrap --check FAILed with missing minimum views (still on View 1).
-Coach me through board-shell-onboard + views-setup.md for the default Playground shell
-(six views + Tier-1 columns on Status board and Prioritized backlog).
-Project URL: https://github.com/users/YOU/projects/N
+board-bootstrap --check FAIL CODE=5 — missing all six Playground views (still on View 1).
+Run board-shell-onboard: CONSENT GATE first (ask my board description + "may I proceed?"),
+then TURN PROTOCOL only:
+- one view (or column fix) per message
+- wait for my reply "done"
+- re-run: python3 -m cursor_workflow project board-bootstrap --check after each turn
+Do NOT skip consent. Do NOT say only "follow views-setup.md". Do NOT start /implementer until --check is green.
+Project: https://github.com/users/YOU/projects/N
 Repo: https://github.com/YOU/your-app
 ```
 
-GitHub does **not** allow agents to create/rename Project views via API. The agent coaches; **you** click in the Project UI:
+Skill: [board-shell-onboard](.cursor/skills/board-shell-onboard/SKILL.md) · clicks: [views-setup.md](.ai_infra/templates/project-board/views-setup.md) § Fast path · checklist: [views-checklist.md](.ai_infra/templates/project-board/views-checklist.md).
 
-- Open the Project in the browser (`project status` → `url`).
-- Follow [views-setup.md](.ai_infra/templates/project-board/views-setup.md) — rename `View 1` / create until you have all **six** default views:
+#### B. You click in GitHub (while the agent coaches)
+
+Open the Project (`project status` → `url`). Build the **default** shell:
 
 | View | Layout (short) |
 |------|----------------|
@@ -168,20 +187,22 @@ GitHub does **not** allow agents to create/rename Project views via API. The age
 | **In review** | Table · Status = In review |
 | **My items** | Table · Assignees = `@me` |
 
-- On **Status board** and **Prioritized backlog**, show Tier-1 columns: **Priority**, **Size**, **Estimate**, **Start date**.
-- Project README: paste [project-readme.md](.ai_infra/templates/project-board/project-readme.md) in the GitHub UI, **or** run:
+On **Status board** and **Prioritized backlog**, show Tier-1 columns: **Priority**, **Size**, **Estimate**, **Start date**.
+
+#### C. Terminal helpers (after views exist, or for README anytime)
 
 ```bash
+# optional: create missing field *definitions* (not views)
+python3 -m cursor_workflow project board-bootstrap --check --ensure-fields
+
+# optional: push kit Project README
 python3 -m cursor_workflow project board-bootstrap --check --apply-readme
-```
 
-- Re-check until green (exit 0, no FAIL; no Priority/Start date WARNs on primary views):
-
-```bash
+# required: prove the shell (repeat until exit 0, no FAIL, no Priority/Start date WARNs)
 python3 -m cursor_workflow project board-bootstrap --check
 ```
 
-**Misread trap:** a `CODE=5` FAIL that lists `missing minimum view 'Status board'` (etc.) is **views**, not README. Empty README is usually a separate WARN/`--apply-readme` fix. Read the FAIL lines literally.
+**Misread trap:** `CODE=5` + `missing minimum view 'Status board'` = **views in the browser**, not README. `--apply-readme` alone will **not** clear those FAILs.
 
 **Do not** start with `/enterprise-auditor`. When bootstrap is green → **step 5** `/implementer`.
 
