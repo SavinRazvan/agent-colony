@@ -26,7 +26,8 @@
    - `python3 -m cursor_workflow project doctor` (expect **ok**)
    - `python3 -m cursor_workflow project board-bootstrap --check` — **new Project FAIL on missing views is normal**
    - **`/project-board`** again → **CONSENT GATE** (board description + “may I proceed?”) then **TURN PROTOCOL** (one view per turn; [views-setup.md](.ai_infra/templates/project-board/views-setup.md) = click reference). Optional `--ensure-fields` / `--apply-readme` only after `yes`.
-   - Re-run `board-bootstrap --check` until default Playground shell green
+   - **Automation boundary:** `/project-board` wire = API only; six views + Tier-1 columns = GitHub UI (see PLUGIN-USER-GUIDE § Product promise).
+   - Re-run `board-bootstrap --check` until **exit 0**
    - `python3 -m cursor_workflow project status`
    - Local trackers are offline fallback when `sync_policy: board_only`
 4. If Project SSOT is disabled or unavailable:

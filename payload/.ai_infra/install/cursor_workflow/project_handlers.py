@@ -569,7 +569,9 @@ def run_board_bootstrap(args: argparse.Namespace) -> int:
         )
     else:
         problems, warnings = bs.compare_views_to_schema(schema, views or [])
-        for w in warnings:
+        column_blockers = bs.tier1_column_blocking_warnings(warnings)
+        non_column_warns = [w for w in warnings if w not in column_blockers]
+        for w in non_column_warns:
             print(f"board-bootstrap: WARN — {w}", file=sys.stderr)
         if problems:
             for p in problems:
@@ -577,10 +579,21 @@ def run_board_bootstrap(args: argparse.Namespace) -> int:
             return pc.fail(
                 "board-bootstrap",
                 pc.EXIT_VALIDATION,
+                f"{bs.SHELL_INCOMPLETE_VIEWS_NOTE} "
                 "minimum views missing — GitHub UI only (no view create CLI today). "
                 "Agent chat: /project-board → CONSENT GATE then board-shell-onboard TURN PROTOCOL "
                 "(one view at a time). Human: views-setup.md § Fast path "
                 "(rename View 1 → Status board, then add five views + Tier-1 columns).",
+            )
+        if column_blockers:
+            for w in column_blockers:
+                print(f"board-bootstrap: FAIL — {w}", file=sys.stderr)
+            return pc.fail(
+                "board-bootstrap",
+                pc.EXIT_VALIDATION,
+                "Tier-1 columns missing on Status board and/or Prioritized backlog — GitHub UI only. "
+                "Agent chat: /project-board → TURN PROTOCOL Turn H. "
+                "Human: views-setup.md § Fast path step 4 (show Priority, Size, Estimate, Start date).",
             )
 
     print("board-bootstrap: ok")

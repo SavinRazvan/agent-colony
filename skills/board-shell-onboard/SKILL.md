@@ -25,7 +25,7 @@ Notes:
 - Fresh consumer after `/workflow-activate` + identity in `github.collaboration.yaml` (board ids may still be empty)
 - Human pastes **Project URL + repo URL** after `gh` auth — help wire `project_ssot` / `default_repo` before shell check
 - User asks to apply the **kit default** board shell (Playground parity: six views + Tier-1 columns)
-- `board-bootstrap --check` FAILs missing default views or WARNs on missing **Priority** / Size / Estimate / Start date / empty README
+- `board-bootstrap --check` FAILs missing default views or **FAILs** Tier-1 columns on Status board / Prioritized backlog / empty README
 
 ## Non-negotiable
 
@@ -34,9 +34,10 @@ Notes:
 | **CONSENT GATE** before any shell apply (below) | Create/mutate shell without description + explicit proceed |
 | After `gh` auth, accept Project + repo URLs and propose YAML via `gh project view` / `field-list` | Write YAML without human confirm |
 | Coach humans through TURN PROTOCOL (`views-setup.md` = click reference only) | Dump “follow views-setup.md” and stop; undocumented GraphQL view mutations |
-| Run `board-bootstrap --check` until default views green + Tier-1 column WARNs gone | Mutate Insights / workflows / status updates without approval |
+| Run `board-bootstrap --check` until exit 0 (views + Tier-1 columns) | Mutate Insights / workflows / status updates without approval |
 | Optional `--ensure-fields` / `--apply-readme` **only after** CONSENT GATE (no view-apply CLI; **`--apply-shell` is not shipped**) | Invent field option ids into YAML without discovery |
-| Smoke `create-from-template` | Claim “ready” while default schema check fails or Prioritized backlog lacks **Priority** |
+| Smoke `create-from-template` | Claim “ready” while `--check` exit 5 or Prioritized backlog lacks **Priority** |
+| | Use **browser MCP** / cursor-ide-browser for views; multi-view instruction dumps |
 
 ## CONSENT GATE (mandatory — every first-run shell) 
 
@@ -79,7 +80,14 @@ Only `proceed=yes` unlocks the rest of this skill.
 ## Entry
 
 0. Run **CONSENT GATE** (Q1 + Q2). If `proceed=no` → Exit with consent line only.
-1. If board ids missing and human provided URLs: propose collaboration YAML, confirm, save.
+1. If board ids missing and human provided URLs: propose collaboration YAML, confirm, save. After wire, print:
+
+```text
+board-onboard status: api=complete · shell=incomplete · views=ui-only · next=/project-board CONSENT+TURN
+```
+
+**Automation boundary:** API automates YAML, field defs, README; **UI required** for six views + Tier-1 column visibility (GitHub has no public view mutation API).
+
 2. `python3 -m cursor_workflow project status`
 3. `python3 -m cursor_workflow project doctor`
 4. Load desired state:
@@ -100,7 +108,8 @@ CONSENT GATE → doctor → board-bootstrap --check → (gaps?) → TURN PROTOCO
 | Outcome | Typical cause | Coach action |
 |---------|---------------|--------------|
 | **FAIL** (exit non-zero) | Missing a **default** Playground view; empty README | Enter **TURN PROTOCOL** below — do not stop after one sentence |
-| **WARN** (exit 0) | Missing Tier-1 **columns**; leftover `View N` | Coach columns on Status board + Prioritized backlog until WARN gone |
+| **WARN** (exit 0) | Missing Tier-1 **columns** on primary views | Now **FAIL (exit 5)** — coach Turn H until green |
+| **WARN** (exit 0) | Leftover `View N`; layout mismatch | Coach rename/columns until cleared |
 | **PASS** | Six views + README + no Tier-1 WARNs | Smoke card → day-to-day Pattern A |
 
 ### TURN PROTOCOL (mandatory when views FAIL) — do not skip
@@ -202,7 +211,7 @@ Print:
 board-shell: minimum=pass|fail · recommended=N missing · schema=<path> · next=day-to-day Pattern A
 ```
 
-Only say **ready for agents** when `--check` has no default-view **FAIL**, README is non-empty, and Tier-1 column WARNs (Priority / Size / Estimate / Start date) are cleared.
+Only say **ready for agents** when `board-bootstrap --check` exits **0** (no view FAIL, no Tier-1 column FAIL on Status board / Prioritized backlog, README non-empty).
 
 ## Canon
 

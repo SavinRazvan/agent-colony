@@ -167,15 +167,62 @@ def test_board_bootstrap_ok_readme_reports_next_steps(
     )
 
     code = project_handlers.run_board_bootstrap(_bootstrap_args(tmp_path))
-    assert code == project_cli.EXIT_OK
+    assert code == project_cli.EXIT_VALIDATION
     captured = capsys.readouterr()
-    out = captured.out
     err = captured.err
-    assert "board-bootstrap: ok" in out
-    assert "day-to-day Pattern A" in out
-    assert "board-shell-onboard" in out
+    assert "board-bootstrap: FAIL" in err
     assert "missing columns" in err
     assert "Priority" in err
+
+
+def test_board_bootstrap_fails_when_status_board_missing_priority_only(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _template_root(tmp_path)
+    ssot = _ssot()
+    _patch_common(monkeypatch, tmp_path, ssot)
+    monkeypatch.setattr(project_cli, "read_project_readme", lambda ssot_arg: ("# README\n", None))
+    tier_no_priority = [
+        "Title",
+        "Assignees",
+        "Status",
+        "Size",
+        "Estimate",
+        "Start date",
+        "Linked pull requests",
+    ]
+    tier_full = [
+        "Title",
+        "Assignees",
+        "Status",
+        "Priority",
+        "Size",
+        "Estimate",
+        "Start date",
+        "Linked pull requests",
+    ]
+    monkeypatch.setattr(
+        project_cli,
+        "read_project_views",
+        lambda ssot_arg: (
+            [
+                {"name": "Status board", "layout": "BOARD_LAYOUT", "fields": tier_no_priority},
+                {"name": "Prioritized backlog", "layout": "TABLE_LAYOUT", "fields": tier_full},
+                {"name": "Roadmap", "layout": "ROADMAP_LAYOUT", "fields": ["Title", "Status"]},
+                {"name": "Bugs", "layout": "TABLE_LAYOUT", "fields": ["Title", "Status"]},
+                {"name": "In review", "layout": "TABLE_LAYOUT", "fields": ["Title", "Status"]},
+                {"name": "My items", "layout": "TABLE_LAYOUT", "fields": ["Title", "Priority"]},
+            ],
+            None,
+        ),
+    )
+
+    code = project_handlers.run_board_bootstrap(_bootstrap_args(tmp_path))
+    assert code == project_cli.EXIT_VALIDATION
+    err = capsys.readouterr().err
+    assert "Status board" in err
+    assert "Priority" in err
+    assert "board-bootstrap: FAIL" in err
 
 
 def test_board_bootstrap_low_quota_skips_live_probe(
@@ -283,11 +330,12 @@ def test_board_bootstrap_warns_when_prioritized_backlog_missing_priority(
     )
 
     code = project_handlers.run_board_bootstrap(_bootstrap_args(tmp_path))
-    assert code == project_cli.EXIT_OK
+    assert code == project_cli.EXIT_VALIDATION
     err = capsys.readouterr().err
     assert "Prioritized backlog" in err
     assert "Priority" in err
     assert "missing columns" in err
+    assert "board-bootstrap: FAIL" in err
 
 
 def test_board_bootstrap_fails_when_minimum_views_missing(
@@ -412,6 +460,16 @@ def test_board_bootstrap_apply_readme_flag(
     assert calls == ["apply"]
 
 
+def test_tier1_column_blocking_warnings_unit() -> None:
+    warnings = [
+        "rename default view 'View 1'",
+        "Status board (BOARD_LAYOUT) missing columns: Priority, Size",
+        "recommended view missing: 'Extra'",
+    ]
+    blockers = board_shell.tier1_column_blocking_warnings(warnings)
+    assert blockers == ["Status board (BOARD_LAYOUT) missing columns: Priority, Size"]
+
+
 def test_compare_views_to_schema_unit() -> None:
     schema, err = board_shell.load_board_shell_schema(REPO_ROOT)
     assert err is None and schema is not None
@@ -460,3 +518,8 @@ def test_agents_stub_and_view_pack_text() -> None:
     ).read_text(encoding="utf-8")
     assert "board-bootstrap --check" in skill
     assert "Do not" in skill or "do not" in skill.lower()
+    project_board_agent = (
+        REPO_ROOT / ".cursor" / "agents" / "project-board.md"
+    ).read_text(encoding="utf-8")
+    assert "browser MCP" in project_board_agent
+    assert "api=complete" in project_board_agent

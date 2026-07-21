@@ -2,6 +2,8 @@
 
 Human-only paste guide for GitHub Project settings UI (ADR-008). Agents never mutate views, workflows, Insights, or README via undocumented APIs.
 
+**CLI asymmetry:** `board-bootstrap --check` **reads** view/column metadata via GraphQL and **detects** gaps; it **cannot fix** views or column visibility — only `--ensure-fields` / `--apply-readme` mutate field defs / README.
+
 **Desired state (kit default):** `.ai_infra/templates/project-board/board-shell.schema.yaml` — **full Playground parity**, not a bare “two views” board.  
 Optional overlay: `.local/user_settings/board-shell.schema.yaml`.  
 First-run coach: `/project-board` + `.cursor/skills/board-shell-onboard/SKILL.md`.

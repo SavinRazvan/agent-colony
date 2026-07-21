@@ -18,6 +18,15 @@ from typing import Any
 
 VIEW_N = re.compile(r"^View\s*\d+$", re.IGNORECASE)
 
+# Consumer onboarding status lines (print after /project-board wire; not full shell green).
+ONBOARD_STATUS_LINE = (
+    "board-onboard status: api=complete · shell=incomplete · views=ui-only · "
+    "next=/project-board CONSENT+TURN"
+)
+SHELL_INCOMPLETE_VIEWS_NOTE = (
+    "shell incomplete (views are GitHub UI only; API slice may already be done)."
+)
+
 _LAYOUT_ALIASES = {
     "BOARD": "BOARD_LAYOUT",
     "BOARD_LAYOUT": "BOARD_LAYOUT",
@@ -179,6 +188,11 @@ def compare_views_to_schema(
             warnings.append(f"recommended view missing: {want_name!r}")
 
     return problems, warnings
+
+
+def tier1_column_blocking_warnings(warnings: list[str]) -> list[str]:
+    """Warnings that must fail board-bootstrap --check (check_columns views only)."""
+    return [w for w in warnings if "missing columns" in w]
 
 
 def schema_must_match_prose_names(schema: dict[str, Any]) -> list[str]:
