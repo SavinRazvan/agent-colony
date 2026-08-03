@@ -16,46 +16,47 @@ import {
   useHostTheme,
 } from "cursor/canvas";
 
-const VERIFIED = "2026-07-20";
+const VERIFIED = "2026-08-03";
 const SOURCES = "Aggregated from .cursor/agents/*.md";
 
 const AGENTS = [
   {
     id: "implementer",
-    description: "Disciplined implementation slices with trackers and Pattern A gates",
+    description:
+      "implementer MAS-SSOT-KIT — Disciplined implementation slices with trackers and Pattern A gates.",
   },
   {
     id: "verifier",
-    description: "Claims vs evidence; minimal high-signal checks",
+    description: "verifier MAS-SSOT-KIT — Claims vs evidence; minimal high-signal checks.",
   },
   {
     id: "test-runner",
-    description: "Module-focused tests, regressions, coverage",
+    description: "test-runner MAS-SSOT-KIT — Module-focused tests, regressions, coverage.",
   },
   {
     id: "drift-guard",
     description:
-      "Operational workflow drift detection; plan/tracker/session coherence and handoff parity",
+      "drift-guard MAS-SSOT-KIT — Operational workflow drift detection; plan/tracker/session coherence and handoff parity.",
   },
   {
     id: "auditor",
     description:
-      "Evidence-only enterprise architecture audit; writes workflow artifacts and tracker hooks for other agents",
+      "auditor MAS-SSOT-KIT — Evidence-only enterprise architecture audit; writes workflow artifacts and tracker hooks for other agents.",
   },
   {
     id: "board",
     description:
-      "Independent-governed helper — list/create/move GitHub Project SSOT cards via project_ssot CLI",
+      "board MAS-SSOT-KIT — Independent-governed helper — list/create/move GitHub Project SSOT cards via project_ssot CLI.",
   },
   {
     id: "integrator",
     description:
-      "Integrates new agents, skills, MCP, and infrastructure expansions — procedural, evidence-only, Pattern A",
+      "integrator MAS-SSOT-KIT — Integrates new agents, skills, MCP, and infrastructure expansions into the MAS Workflow Kit — procedural, evidence-only, Pattern A compliant.",
   },
   {
     id: "researcher",
     description:
-      "Shipped/proven corpus researcher — adaptive Brief; packs under _research_results/ (opt-in after init); hard-stop on product code",
+      "researcher MAS-SSOT-KIT — Brief-driven multi-round research (GitHub/local) into _research_results packs; hard-stop on product code.",
   },
 ];
 

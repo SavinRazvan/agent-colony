@@ -23,7 +23,7 @@ import {
 
 type FlowMode = "slice" | "side";
 
-const VERIFIED = "2026-07-20";
+const VERIFIED = "2026-08-03";
 const SOURCES =
   "project-board-collaboration.md · board-ssot/SKILL.md · board-shell/SKILL.md · .cursor/agents/*.md · agent-roster edges";
 
