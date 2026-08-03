@@ -7,7 +7,7 @@
 
 MAS Workflow Kit enforces infrastructure parity via `integrate validate`, governance scanners, and testing-artifact gates. Those tools do not cover **operational workflow drift**: plan ↔ tracker ↔ session-pointer incoherence, stale handoff docs, or slice-closure discipline gaps.
 
-The **workflow-drift-guard** capability closes that gap without duplicating architecture audits (`enterprise-auditor`) or claim verification (`verifier`).
+The **drift-guard** capability closes that gap without duplicating architecture audits (`auditor`) or claim verification (`verifier`).
 
 ## Decision
 
@@ -17,7 +17,7 @@ Introduce a script-first drift validator and MAS-integrated agent per [ADR-006](
 
 | Artifact | Location |
 |----------|----------|
-| Agent id | `workflow-drift-guard` |
+| Agent id | `drift-guard` |
 | CLI | `python -m cursor_workflow drift validate` |
 | Script SSOT | `.ai_infra/scripts/workflow/check_drift.py` |
 | Checks module | `.ai_infra/scripts/workflow/drift_checks.py` |
@@ -71,7 +71,7 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 | test-plan/index existence | `check_testing_artifacts.py` |
 | Plugin/payload SHA drift | `sync_plugin_bundle.py --check` |
 | Slice claim verification | `verifier` |
-| Architecture scorecard | `enterprise-auditor` |
+| Architecture scorecard | `auditor` |
 
 ## Non-goals
 
@@ -88,7 +88,7 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 
 ## References
 
-- `.local/workflow-artifacts/drift/workflow-drift-guard-plan.md`
-- `.cursor/agents/workflow-drift-guard.md`
+- `.local/workflow-artifacts/drift/drift-guard-plan.md`
+- `.cursor/agents/drift-guard.md`
 - `.cursor/skills/drift-audit/SKILL.md`
 - [ADR-006-agent-integration-model.md](ADR-006-agent-integration-model.md)

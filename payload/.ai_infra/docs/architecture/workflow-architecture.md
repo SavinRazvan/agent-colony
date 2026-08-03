@@ -52,10 +52,10 @@ Gate order: read `.ai_infra/scripts/pr/prepare.py` only — do not duplicate her
 | `implementer` | Slices, code; board Status when `project_ssot.enabled` |
 | `test-runner` | Module tests, coverage; board Exit Status |
 | `verifier` | Evidence checks; board Done / In review |
-| `enterprise-auditor` | Architecture audits; audit card Status + Notes |
+| `auditor` | Architecture audits; audit card Status + Notes |
 | `researcher` | **Shipped/proven** adaptive Brief multi-round packs under `_research_results/` (opt-in after init); chat/agent/card intake; research card Done + `AGENT_BRIEF` paths |
 | `integrator` | Add agents/skills/MCP; integration card Status |
-| `workflow-drift-guard` | Drift + DRIFT-009; **reads board**, closes drift card |
+| `drift-guard` | Drift + DRIFT-009; **reads board**, closes drift card |
 | `project-board` | Board triage + **first-run shell coach** (`board-shell`; ADR-006); not in default PR pipelines |
 
 Continuation: every agent Entry reads the Project; Exit updates Status/Notes — [project-board-collaboration.md](../operations/project-board-collaboration.md).

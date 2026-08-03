@@ -8,7 +8,7 @@ alwaysApply: true
 - When `.local/user_settings/github.collaboration.yaml` → `project_ssot.enabled: true` and `sync_policy: board_only`, the **GitHub Project** is the **only writable** backlog/status **and continuation** SSOT.
 - **Every agent:** Entry reads the board (`project status` / list / claim); Exit updates Status (and Notes) so the next agent can continue from the Project — not from chat alone. See `.cursor/skills/board-ssot/SKILL.md` § Continuation contract.
 - **First-run (when enabled):** if `project board-bootstrap --check` FAILs the kit default Playground shell (`board-shell.schema.yaml`: six views + Tier-1 columns on primary views) → `/project-board` + `board-shell` (**CONSENT GATE** then TURN PROTOCOL) before day-to-day claim/`/implementer` (audit is not day-0).
-- **workflow-drift-guard:** must read board Status for DRIFT-009 / DRIFT-010; updates the drift-pass card on Exit; remediations via Notes/Ready handoff — never silent dual-write to trackers.
+- **drift-guard:** must read board Status for DRIFT-009 / DRIFT-010; updates the drift-pass card on Exit; remediations via Notes/Ready handoff — never silent dual-write to trackers.
 - Do **not** dual-write competing slice status to `work-tracker.md` / `session-pointer.md`. Do **not** dual-mirror “for safety.”
 - Read-only `project export` snapshots (if present) never write Status and never compete with board Status.
 - Overrides tracker `in_progress` expectations in `implementation-workflow-governance.mdc` when board SSOT is on — see ADR-008 (`board_only` wins; DRIFT-009).

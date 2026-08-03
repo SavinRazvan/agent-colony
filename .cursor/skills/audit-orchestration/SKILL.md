@@ -1,6 +1,6 @@
 ---
 name: audit-orchestration
-description: Orchestrate verify-all preflight, enterprise-auditor, implementer doc-sync, drift-guard, and verifier with Task delegation.
+description: Orchestrate verify-all preflight, auditor, implementer doc-sync, drift-guard, and verifier with Task delegation.
 ---
 <!--
 File: SKILL.md
@@ -8,7 +8,7 @@ Path: .cursor/skills/audit-orchestration/SKILL.md
 Role: Phased Task delegation for enterprise audits with script preflight and agent handoffs.
 Used By:
  - Maintainers running full audit + closure slices
- - Parent agents orchestrating enterprise-auditor pipeline
+ - Parent agents orchestrating auditor pipeline
 Depends On:
  - .cursor/skills/auditor-protocol/SKILL.md
  - .cursor/skills/drift-audit/SKILL.md
@@ -52,7 +52,7 @@ Launch concurrently:
 
 | Subagent | Mode | Deliverable |
 |----------|------|-------------|
-| `enterprise-auditor` | artifact-write (`.local/` only) | `enterprise-architecture-audit.md`, `enterprise-audit-actions.md` |
+| `auditor` | artifact-write (`.local/` only) | `enterprise-architecture-audit.md`, `enterprise-audit-actions.md` |
 | `audit-module-map` skill (optional) | artifact-write (`.local/` only) | `.local/module-map.md` summary for audit §3 |
 
 Parent **does not** duplicate inventory searches — consumes subagent outputs + preflight JSON.
@@ -77,7 +77,7 @@ make doc-validate
 
 | Subagent | When |
 |----------|------|
-| `workflow-drift-guard` | After tracker/doc edits; P0/P1 drift findings |
+| `drift-guard` | After tracker/doc edits; P0/P1 drift findings |
 | `verifier` | Spot-check top audit claims vs preflight + repo paths |
 
 ## Phase 4 — Maintainer PR

@@ -328,8 +328,8 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | **Implement a feature slice** | `/implementer` | — | [implementer-loop](../../.cursor/skills/implementer-loop/SKILL.md) |
 | **Run tests / coverage** | `/test-runner` | `pytest -q` | [workflow-complete.md](workflow-complete.md) §C |
 | **Verify a claim** | `/verifier` | — | Evidence-only checks |
-| **Architecture audit** *(not day-0)* | `/enterprise-auditor` | — (subagent only; no dedicated MCP tool) | [agent-workflow-procedures.md](agent-workflow-procedures.md) §1 — after board shell |
-| **Operational drift** (plan ↔ tracker) | `/workflow-drift-guard` (optional) | `python3 -m cursor_workflow drift validate --profile consumer` on app projects | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) · [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
+| **Architecture audit** *(not day-0)* | `/auditor` | — (subagent only; no dedicated MCP tool) | [agent-workflow-procedures.md](agent-workflow-procedures.md) §1 — after board shell |
+| **Operational drift** (plan ↔ tracker) | `/drift-guard` (optional) | `python3 -m cursor_workflow drift validate --profile consumer` on app projects | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) · [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
 | **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` `resolve_gates()` | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
 | **Add agents / skills / MCP** | `/integrator` + `/integrator-protocol` | `integrate validate` | [mas-infrastructure-integration.md](mas-infrastructure-integration.md) |
 | **Connect external MCP** | `/mcp-connect` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
@@ -345,8 +345,8 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | `/implementer` | `.cursor/agents/implementer.md` |
 | `/test-runner` | `.cursor/agents/test-runner.md` |
 | `/verifier` | `.cursor/agents/verifier.md` |
-| `/enterprise-auditor` | `.cursor/agents/enterprise-auditor.md` |
-| `/workflow-drift-guard` | `.cursor/agents/workflow-drift-guard.md` |
+| `/auditor` | `.cursor/agents/auditor.md` |
+| `/drift-guard` | `.cursor/agents/drift-guard.md` |
 | `/researcher` | `.cursor/agents/researcher.md` — **shipped/proven**; adaptive Brief; public/private GitHub (private needs `gh`/git auth); anti-loop ≤6 rounds; `research init\|fetch\|validate`; corpus opt-in after init |
 | `/integrator` | `.cursor/agents/integrator.md` |
 | `/project-board` | `.cursor/agents/project-board.md` + `board-ssot` + first-run `board-shell` |
@@ -392,7 +392,7 @@ Full checklist: [workflow-complete.md](workflow-complete.md).
 
 For architecture-impacting work before merge prep:
 
-1. **`/enterprise-auditor`** with skill **`/auditor-protocol`**
+1. **`/auditor`** with skill **`/auditor-protocol`**
 2. Outputs under `.local/workflow-artifacts/enterprise-architecture-audit/`
 3. Focused PR pass may write `.local/workflow-artifacts/alignment/` instead
 

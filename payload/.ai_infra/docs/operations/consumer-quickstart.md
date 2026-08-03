@@ -259,7 +259,7 @@ python3 -m cursor_workflow project status
 1. When `project_ssot.enabled`: `python3 -m cursor_workflow project status` (board first); else open `.local/index-and-planning/current/session-pointer.md`
 2. Claim/update the board card (Status + Notes `@user/agent · <ISO-8601-UTC> · …`); local `plan.md` / `work-tracker.md` only as offline fallback under `board_only`; optional `history/continuity-index.md` (≥3-day local rollup)
 3. If board writes hit GraphQL rate-limit (EXIT_QUEUED): `project outbox status` / later `outbox flush` — enable `project_ssot.outbox` defaults after activate
-4. **`/implementer`** (or `/test-runner`, `/verifier`; `/enterprise-auditor` only for architecture-impacting / pre-merge audits — not day-0 onboarding)
+4. **`/implementer`** (or `/test-runner`, `/verifier`; `/auditor` only for architecture-impacting / pre-merge audits — not day-0 onboarding)
 5. Dashboard (optional, **deprecated**): see [Control Center dashboards](#control-center-dashboards-deprecated) below
 
 **Add your own agent/skill/MCP:** **`/integrator`** + **`/integrator-protocol`**
@@ -284,8 +284,8 @@ python3 -m cursor_workflow project status
 | Implement a slice | `/implementer` |
 | Tests / coverage | `/test-runner` |
 | Verify claims | `/verifier` |
-| Architecture audit | `/enterprise-auditor` |
-| Drift check | `/workflow-drift-guard` |
+| Architecture audit | `/auditor` |
+| Drift check | `/drift-guard` |
 | Add agents/skills/MCP | `/integrator` |
 | External MCP setup | `/mcp-connect` |
 | PR workflow | `/review-pr` → `/prepare-pr` → `/merge-pr` |
@@ -383,7 +383,7 @@ Full checklist: [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) §6 · [workflow-co
 
 For architecture-impacting work before merge prep:
 
-1. **`/enterprise-auditor`** with **`/auditor-protocol`**
+1. **`/auditor`** with **`/auditor-protocol`**
 2. Outputs under `.local/workflow-artifacts/enterprise-architecture-audit/`
 
 Procedure: [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) §7 · [agent-workflow-procedures.md](agent-workflow-procedures.md) §1.
@@ -431,7 +431,7 @@ Architecture: [workflow-architecture.md](../architecture/workflow-architecture.m
 
 ## Drift on consumer apps
 
-Run from your project root. **No agent is required** before this command — `/workflow-drift-guard` is optional (writes advisory artifacts under `.local/workflow-artifacts/drift/`).
+Run from your project root. **No agent is required** before this command — `/drift-guard` is optional (writes advisory artifacts under `.local/workflow-artifacts/drift/`).
 
 ```bash
 python3 -m cursor_workflow drift validate --directory . --profile consumer

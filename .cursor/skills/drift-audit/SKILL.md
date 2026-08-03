@@ -7,7 +7,7 @@ File: SKILL.md
 Path: .cursor/skills/drift-audit/SKILL.md
 Role: Operational workflow drift audit protocol for plan/tracker/session coherence.
 Used By:
- - .cursor/agents/workflow-drift-guard.md
+ - .cursor/agents/drift-guard.md
 Depends On:
  - .ai_infra/docs/decisions/ADR-007-workflow-drift-guard.md
  - .ai_infra/scripts/workflow/check_drift.py
@@ -19,7 +19,7 @@ Notes:
 
 ## Goal
 
-Detect **operational workflow drift** — plan ↔ tracker ↔ session-pointer incoherence, **session Board vs export (DRIFT-004b)**, **board vs tracker dual-write (DRIFT-009)**, **board Status vs open PRs / stale In progress (DRIFT-010)**, handoff doc parity, slice-closure signals — without replacing `enterprise-auditor` or `verifier`.
+Detect **operational workflow drift** — plan ↔ tracker ↔ session-pointer incoherence, **session Board vs export (DRIFT-004b)**, **board vs tracker dual-write (DRIFT-009)**, **board Status vs open PRs / stale In progress (DRIFT-010)**, handoff doc parity, slice-closure signals — without replacing `auditor` or `verifier`.
 
 ## When
 
@@ -49,7 +49,7 @@ Detect **operational workflow drift** — plan ↔ tracker ↔ session-pointer i
 
 ```text
 Audit-Type: workflow-drift-pass
-Audited-By: workflow-drift-guard
+Audited-By: drift-guard
 Action-By: <name>
 GitHub-User: <handle>
 Date: <ISO-8601>
@@ -77,7 +77,7 @@ Open findings with id, severity, evidence, recommendation, status (`open` | `fix
 
 ## Overlap (do NOT duplicate)
 
-Governance/debrand → `check_governance_consistency.py`. Agent/registry → `integrate validate`. Architecture → `enterprise-auditor`. Claims → `verifier`.
+Governance/debrand → `check_governance_consistency.py`. Agent/registry → `integrate validate`. Architecture → `auditor`. Claims → `verifier`.
 
 ## Exit criteria
 

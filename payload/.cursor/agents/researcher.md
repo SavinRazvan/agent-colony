@@ -112,7 +112,7 @@ Agent fills rounds 1–6 under `sources/<slug>/`; CLI owns scaffold, fetch pin, 
 | Implement features | `implementer` (consume `AGENT_BRIEF.md`) |
 | Integrate kit surfaces | `integrator` |
 | PR merge | `pr-workflow/SKILL.md` |
-| Full enterprise audit | `enterprise-auditor` |
+| Full enterprise audit | `auditor` |
 | Verify a claim | `verifier` |
 
 ## Handoff format

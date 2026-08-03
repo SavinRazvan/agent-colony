@@ -45,11 +45,11 @@ Additionally when changing governance, workflows, `.cursor/`, `.agents/`, or tra
 
 Follow **`agent-workflow-procedures.md` §3b**. Includes **`AGENTS.md`**, **`rules-overlap-matrix.md`**, **`workflow-source-owners.md`**, PR scripts, and mirrored `.cursor/` / `.agents/` skills. Run **`check_governance_consistency.py`** when tracked policy paths change.
 
-## Operational drift (workflow-drift-guard)
+## Operational drift (drift-guard)
 
 Script-first checks for plan ↔ tracker ↔ session-pointer coherence and handoff doc parity. See [ADR-007](../decisions/ADR-007-workflow-drift-guard.md).
 
-**Kit-dev PR prep:** `prepare.py` `resolve_gates()` auto-runs `drift validate` before merge (with doc facts). Optional: Task **`workflow-drift-guard`** after pass to refresh `.local/workflow-artifacts/drift/` artifacts.
+**Kit-dev PR prep:** `prepare.py` `resolve_gates()` auto-runs `drift validate` before merge (with doc facts). Optional: Task **`drift-guard`** after pass to refresh `.local/workflow-artifacts/drift/` artifacts.
 
 | Concern | Owner | Do NOT duplicate in drift |
 |---------|-------|---------------------------|
@@ -59,7 +59,7 @@ Script-first checks for plan ↔ tracker ↔ session-pointer coherence and hando
 | test-plan/index existence | `check_testing_artifacts.py` | File exists checks |
 | Plugin/payload SHA drift | `sync_plugin_bundle.py --check` | Bundle sync |
 | Slice claim verification | `verifier` | Subjective verification |
-| Architecture scorecard | `enterprise-auditor` | Module deep-dive |
+| Architecture scorecard | `auditor` | Module deep-dive |
 
 **Command:** `python -m cursor_workflow drift validate --directory .` or `make drift-validate`.
 

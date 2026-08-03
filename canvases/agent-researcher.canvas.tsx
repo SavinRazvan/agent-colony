@@ -128,7 +128,7 @@ const PEERS = [
   ["Use instead", "implementer", "Product code changes"],
   ["Use instead", "integrator", "Kit surface integration"],
   ["Use instead", "pr-workflow", "Git commit/push/PR"],
-  ["Use instead", "enterprise-auditor", "Architecture audits"],
+  ["Use instead", "auditor", "Architecture audits"],
   ["Use instead", "verifier", "Claims vs evidence"],
   ["Consumes from", "any agent", "Notes / handoff / cited pack path"],
   ["Proven with", "verifier", "Post-pack Claim A/B check (optional)"],
@@ -292,7 +292,7 @@ export default function AgentResearcherCanvas() {
         </Callout>
         <Callout tone="warning" title="Hard stop">
           Write only _research_results/. No src/tests/scripts. No git commit/push/PR.
-          Use implementer, integrator, pr-workflow, enterprise-auditor, or verifier
+          Use implementer, integrator, pr-workflow, auditor, or verifier
           for those tasks.
         </Callout>
         <DagPanel mode={mode} tokens={tokens} />

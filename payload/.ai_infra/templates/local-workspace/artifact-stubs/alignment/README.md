@@ -4,7 +4,7 @@
 
 | File | Writer |
 |------|--------|
-| `alignment-audit.md` | `enterprise-auditor` agent |
-| `alignment-todos.md` | `enterprise-auditor` agent |
+| `alignment-audit.md` | `auditor` agent |
+| `alignment-todos.md` | `auditor` agent |
 
 Schema: `.ai_infra/docs/roadmap/alignment-audit-schema.md`. See `.ai_infra/docs/operations/local-workspace-layout.md`.

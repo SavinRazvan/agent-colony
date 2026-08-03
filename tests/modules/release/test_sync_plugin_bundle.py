@@ -147,7 +147,7 @@ def test_plugin_canonical_skills_not_overwritten_by_stubs(tmp_path: Path) -> Non
     orchestration = (plugin_dir / "skills" / "audit-orchestration" / "SKILL.md").read_text(
         encoding="utf-8"
     )
-    assert "verify-all" in orchestration or "enterprise-auditor" in orchestration
+    assert "verify-all" in orchestration or "auditor" in orchestration
 
     drift = (plugin_dir / "skills" / "drift-audit" / "SKILL.md").read_text(encoding="utf-8")
     assert "drift validate" in drift.lower()

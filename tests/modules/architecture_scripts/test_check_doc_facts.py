@@ -31,7 +31,7 @@ def test_doc_facts_passes_on_kit_repo() -> None:
 def test_missing_agent_in_readme_fails(tmp_path: Path) -> None:
     _copy_minimal_kit(tmp_path)
     readme = tmp_path / "README.md"
-    readme.write_text(readme.read_text(encoding="utf-8").replace("workflow-drift-guard", ""), encoding="utf-8")
+    readme.write_text(readme.read_text(encoding="utf-8").replace("drift-guard", ""), encoding="utf-8")
     results = run_checks(tmp_path)
     doc001 = next(r for r in results if r.check_id == "DOC-001")
     assert not doc001.passed

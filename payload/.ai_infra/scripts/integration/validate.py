@@ -84,7 +84,7 @@ def _paths(root: Path) -> dict[str, Path]:
         "ops_doc": infra / "docs" / "operations" / "mas-infrastructure-integration.md",
         "checklist": infra / "templates" / "agent-integration" / "INTEGRATION-CHECKLIST.md",
         "plugin_integrator": root / "agents" / "integrator.md",
-        "plugin_drift_guard": root / "agents" / "workflow-drift-guard.md",
+        "plugin_drift_guard": root / "agents" / "drift-guard.md",
     }
 
 
@@ -265,14 +265,14 @@ def _import_check_drift(root: Path):
 
 
 def _check_int011(root: Path, paths: dict[str, Path]) -> CheckResult:
-    agent_source = paths["agents_dir"] / "workflow-drift-guard.md"
+    agent_source = paths["agents_dir"] / "drift-guard.md"
     plugin_copy = paths["plugin_drift_guard"]
     if not agent_source.is_file():
         return CheckResult(
             check_id="INT-011",
             severity=Severity.P0,
             passed=False,
-            detail="missing .cursor/agents/workflow-drift-guard.md",
+            detail="missing .cursor/agents/drift-guard.md",
         )
     if not _is_kit_dev_root(root):
         return CheckResult(
@@ -287,9 +287,9 @@ def _check_int011(root: Path, paths: dict[str, Path]) -> CheckResult:
         severity=Severity.P2,
         passed=exists,
         detail=(
-            "agents/workflow-drift-guard.md present"
+            "agents/drift-guard.md present"
             if exists
-            else "missing agents/workflow-drift-guard.md — run make sync-plugin"
+            else "missing agents/drift-guard.md — run make sync-plugin"
         ),
     )
 

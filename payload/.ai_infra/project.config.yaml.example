@@ -32,7 +32,7 @@ local_artifact_protection:
 
 alignment_audit:
   enabled: true
-  auditor_agent: enterprise-auditor
+  auditor_agent: auditor
   auditor_skill: auditor-protocol
   schema: .ai_infra/docs/roadmap/alignment-audit-schema.md
   artifact_paths:

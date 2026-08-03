@@ -170,7 +170,7 @@ def resolve_agents_for_pr(
     pipeline_agents = pipeline_agents_list(cfg, pipeline)
     if agents_from_session:
         session_agents = collect_session_agents(root)
-        pr_only = [a for a in pipeline_agents if a in PR_PHASE_AGENT_SUFFIX or a == "enterprise-auditor"]
+        pr_only = [a for a in pipeline_agents if a in PR_PHASE_AGENT_SUFFIX or a == "auditor"]
         if not pr_only:
             pr_only = list(PR_PHASE_AGENT_SUFFIX)
         return merge_agent_lists(session_agents, pr_only)

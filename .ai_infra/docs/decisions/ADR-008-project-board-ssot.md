@@ -33,7 +33,7 @@ Related: [ADR-006](ADR-006-agent-integration-model.md), [HANDOFF.md](../../../HA
 - Skill: `.cursor/skills/board-ssot/SKILL.md` (Continuation contract + per-agent rights)
 - Ops: `.ai_infra/docs/operations/project-board-collaboration.md`
 - Agent: `.cursor/agents/project-board.md`
-- Drift: DRIFT-009 (dual-write) and DRIFT-010 (board vs PRs / stale In progress; read-only export); DRIFT-004b (session Board vs snapshot); workflow-drift-guard **reads and updates** the board on Exit; pending outbox is not a DRIFT failure
+- Drift: DRIFT-009 (dual-write) and DRIFT-010 (board vs PRs / stale In progress; read-only export); DRIFT-004b (session Board vs snapshot); drift-guard **reads and updates** the board on Exit; pending outbox is not a DRIFT failure
 - Post-merge Done: Pattern A `merge.py` (not a dedicated agent)
 - DraftIssue body edits: `append-notes` / `edit_item_body` resolve project item `PVTI_…` → content `DI_…` (+ preserve `--title`); Status/field edits stay on `PVTI_…`
 - Attribution: `append-notes --agent` prefixes `@github_user/agent · <ISO-8601-UTC> ·`; `merge.py` Notes use `@user/merge.py`; `set-assignee` for human My items (Issue-backed)

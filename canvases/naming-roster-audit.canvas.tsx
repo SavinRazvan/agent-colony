@@ -97,7 +97,7 @@ const PLAN_ROWS: {
   },
   {
     lane: "Quality",
-    agentNow: "enterprise-auditor",
+    agentNow: "auditor",
     skillsNow:
       "PRIMARY auditor-protocol · ALSO audit-orchestration, audit-module-map",
     agentNext: "auditor",
@@ -108,7 +108,7 @@ const PLAN_ROWS: {
   },
   {
     lane: "Quality",
-    agentNow: "workflow-drift-guard",
+    agentNow: "drift-guard",
     skillsNow: "PRIMARY drift-audit",
     agentNext: "drift-guard",
     skillsNext: "PRIMARY drift-audit",
@@ -278,14 +278,14 @@ const AGENT_SCORES: ScoredName[] = [
     note: "Clear; longer Notes stamp; -ssot only on skill",
   },
   {
-    id: "enterprise-auditor",
+    id: "auditor",
     kind: "agent",
     primaryPair: "auditor-protocol",
     dims: { clarity: 4, brevity: 2, pairing: 3, convention: 4, uniqueness: 4 },
     note: "enterprise- brand noise; auditor vs architecture-audit",
   },
   {
-    id: "workflow-drift-guard",
+    id: "drift-guard",
     kind: "agent",
     primaryPair: "drift-audit",
     dims: { clarity: 3, brevity: 2, pairing: 3, convention: 4, uniqueness: 4 },
@@ -380,14 +380,14 @@ const SKILL_SCORES: ScoredName[] = [
   {
     id: "auditor-protocol",
     kind: "skill-canonical",
-    primaryPair: "enterprise-auditor",
+    primaryPair: "auditor",
     dims: { clarity: 4, brevity: 2, pairing: 3, convention: 3, uniqueness: 3 },
     note: "Long; stem ≠ auditor",
   },
   {
     id: "drift-audit",
     kind: "skill-canonical",
-    primaryPair: "workflow-drift-guard",
+    primaryPair: "drift-guard",
     dims: { clarity: 3, brevity: 2, pairing: 3, convention: 3, uniqueness: 3 },
     note: "guard/audit split; prefer drift-audit",
   },
@@ -408,7 +408,7 @@ const SKILL_SCORES: ScoredName[] = [
   {
     id: "audit-alignment",
     kind: "skill-maintainer",
-    primaryPair: "enterprise-auditor",
+    primaryPair: "auditor",
     dims: { clarity: 2, brevity: 4, pairing: 1, convention: 2, uniqueness: 2 },
     note: "DEPRECATED stub — retire",
   },
@@ -539,7 +539,7 @@ const RENAME_ROWS: RenameRow[] = [
   },
   {
     layer: "agents",
-    current: "enterprise-auditor",
+    current: "auditor",
     proposed: "auditor",
     action: "rename",
     priority: "P1",
@@ -547,7 +547,7 @@ const RENAME_ROWS: RenameRow[] = [
   },
   {
     layer: "agents",
-    current: "workflow-drift-guard",
+    current: "drift-guard",
     proposed: "drift-guard",
     action: "rename",
     priority: "P1",

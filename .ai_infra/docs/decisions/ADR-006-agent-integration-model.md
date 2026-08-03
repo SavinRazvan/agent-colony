@@ -46,7 +46,7 @@ Standalone agent for a narrow domain; not in default PR pipelines unless explici
 | Work updates trackers, gates, or manifest | Work is read-only or single-shot |
 | Agent id should appear in PR `Agent/s` | Agent should not appear in PR attribution |
 | Multiple agents coordinate on same slice | Single-purpose tool with no PR coupling,
-| Examples: implementer, integrator, enterprise-auditor | Examples: one-off research, external-only automation |
+| Examples: implementer, integrator, auditor | Examples: one-off research, external-only automation |
 
 ## Consequences
 

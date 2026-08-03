@@ -107,13 +107,13 @@ const WHO_WRITES: string[][] = [
     "Claims vs evidence",
   ],
   [
-    "enterprise-auditor",
+    "auditor",
     "Audit card Status + artifact paths in Notes",
     "auditor-protocol/ · alignment/",
     "Evidence-only — no product fixes",
   ],
   [
-    "workflow-drift-guard",
+    "drift-guard",
     "Drift-pass card Done; remediation via Ready",
     "drift/drift-audit.md · drift-todos.md",
     "Never silent dual-write Status",
@@ -154,13 +154,13 @@ const ARTIFACT_LANES: string[][] = [
   [
     "Audit / alignment",
     ".local/workflow-artifacts/enterprise-architecture-audit/",
-    "enterprise-auditor",
+    "auditor",
     "Actions backlog for implementer",
   ],
   [
     "Drift",
     ".local/workflow-artifacts/drift/",
-    "workflow-drift-guard",
+    "drift-guard",
     "DRIFT-009 watches dual-write",
   ],
   [
@@ -434,11 +434,11 @@ export default function AgentsArtifactsBoardCanvas() {
       <CollapsibleSection title="Side paths (audit / drift)">
         <Stack gap={8}>
           <Text size="small">
-            enterprise-auditor → .local audit artifacts → Notes paths →
+            auditor → .local audit artifacts → Notes paths →
             implementer Ready cards. Does not mutate product code during audit.
           </Text>
           <Text size="small">
-            implementer makes drift-validate → P0/P1 → workflow-drift-guard writes
+            implementer makes drift-validate → P0/P1 → drift-guard writes
             drift artifacts → remediation via Notes/Ready (never silent tracker
             Status).
           </Text>

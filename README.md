@@ -26,7 +26,7 @@
 
 ## What you get
 
-- **8 agents:** `implementer`, `test-runner`, `verifier`, `enterprise-auditor`, `researcher`, `integrator`, `workflow-drift-guard`, `project-board`
+- **8 agents:** `implementer`, `test-runner`, `verifier`, `auditor`, `researcher`, `integrator`, `drift-guard`, `project-board`
 - **12 canonical skills** + maintainer PR slash skills (`/review-pr` → `/prepare-pr` → `/merge-pr`)
 - **Board Pattern A CLI:** `python3 -m cursor_workflow project …` (claim, handoff, Tier-1 fields, outbox)
 - **PR gates** via `prepare.py` · optional MCP (`workflow_mcp`) · research corpus under `_research_results/` (opt-in)
@@ -227,7 +227,7 @@ python3 -m cursor_workflow project status
 
 Schema path should show `.local/user_settings/board-shell.schema.yaml` when using the minimal overlay.
 
-**Do not** start with `/enterprise-auditor`. When bootstrap is green → **§5** `/implementer`.
+**Do not** start with `/auditor`. When bootstrap is green → **§5** `/implementer`.
 
 ---
 
@@ -241,7 +241,7 @@ Schema path should show `.local/user_settings/board-shell.schema.yaml` when usin
 | PR lifecycle | `/review-pr` → `/prepare-pr` → `/merge-pr` |
 | Research a repo | `/researcher` + a GitHub URL |
 | Extend agents/skills/MCP | `/integrator` |
-| Architecture audit *(later)* | `/enterprise-auditor` — not day-0 onboarding |
+| Architecture audit *(later)* | `/auditor` — not day-0 onboarding |
 
 **Every session Entry:** if `project_ssot.enabled` → `python3 -m cursor_workflow project status`; else → `.local/index-and-planning/current/session-pointer.md`.
 

@@ -31,7 +31,7 @@ Abbreviations: [`.ai_infra/docs/operations/abbreviations-notepad.md`](.ai_infra/
 | `.cursor/rules/commit-trailer-format.mdc` | Commit trailers + optional `Assisted-by` (AI) |
 | `.cursor/rules/file-docstring-header-relations.mdc` | File headers |
 | `.cursor/rules/local-artifact-protection.mdc` | Protected local paths (`.coverage`, `.env`) |
-| `.cursor/rules/advisory-audit-alignment-enforcement.mdc` | Architecture-impacting audits → **`enterprise-auditor`** + alignment artifacts |
+| `.cursor/rules/advisory-audit-alignment-enforcement.mdc` | Architecture-impacting audits → **`auditor`** + alignment artifacts |
 | `.cursor/rules/project-ssot-precedence.mdc` | Board SSOT precedes local trackers when `project_ssot.enabled` (ADR-008) |
 
 **Product rules** belong in **`overlays/rules/`** at install — see [`overlays/README.md`](overlays/README.md). **Do not duplicate gate lists** in chat or `updates-log.md` — say *prepare gates green* or paste failing command output only.
@@ -73,7 +73,7 @@ Full handoff checklist: [`.ai_infra/docs/operations/workflow-complete.md`](.ai_i
 
 When adding or changing agents, skills, pipelines, or integration templates, also run **`python3 -m cursor_workflow integrate validate`** (included in governance consistency on kit dev repo).
 
-At slice closure, run **`python3 -m cursor_workflow drift validate`** (or `make drift-validate`) and hand off to **`workflow-drift-guard`** when P0/P1 findings need artifacts.
+At slice closure, run **`python3 -m cursor_workflow drift validate`** (or `make drift-validate`) and hand off to **`drift-guard`** when P0/P1 findings need artifacts.
 
 After doc or agent roster changes, run **`make doc-validate`** (included in **`make gates`**). Before full audits, run **`make verify-all`** — see `.cursor/skills/audit-orchestration/SKILL.md`.
 
@@ -99,7 +99,7 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 |------|------|
 | `.cursor/agents/` | Subagent cards (8) — Task delegation; **`model: auto`**; audit agents write `.local/` artifacts only |
 | `.cursor/skills/` | **Canonical protocols** (12 folders: audit, drift, implement loop, activate, project-board, board-shell, …) |
-| `.agents/skills/` | **Maintainer slash skills** (5 folders: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `audit-alignment` stub → `enterprise-auditor`) — additive in plugin sync |
+| `.agents/skills/` | **Maintainer slash skills** (5 folders: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `audit-alignment` stub → `auditor`) — additive in plugin sync |
 | `.cursor/rules/` | **7** `alwaysApply` rules in this product repo (6 kit + `project-ssot-precedence`) — high context cost by design |
 
 **Plugin sync:** `.cursor/skills/` wins; `.agents/skills/` never overwrites same folder name (`sync_plugin_bundle.py`).
@@ -121,10 +121,10 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 | Integrate infrastructure | `.cursor/agents/integrator.md` + `.cursor/skills/integrator-protocol/SKILL.md` — validate with `python3 -m cursor_workflow integrate validate` |
 | Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-coverage/SKILL.md` |
 | Verify claims | `.cursor/agents/verifier.md` |
-| Operational drift | **`workflow-drift-guard`** — `.cursor/agents/workflow-drift-guard.md` + `.cursor/skills/drift-audit/SKILL.md` — validate with `python3 -m cursor_workflow drift validate` |
-| Audits (canonical) | **`enterprise-auditor`** — `.cursor/agents/enterprise-auditor.md` + `.cursor/skills/auditor-protocol/SKILL.md` |
+| Operational drift | **`drift-guard`** — `.cursor/agents/drift-guard.md` + `.cursor/skills/drift-audit/SKILL.md` — validate with `python3 -m cursor_workflow drift validate` |
+| Audits (canonical) | **`auditor`** — `.cursor/agents/auditor.md` + `.cursor/skills/auditor-protocol/SKILL.md` |
 | Audit orchestration | `.cursor/skills/audit-orchestration/SKILL.md` — parent runs verify-all + Task delegation (no dedicated agent) |
-| Audit module map | `.cursor/skills/audit-module-map/SKILL.md` — optional deep map; invoke via **`enterprise-auditor`** |
+| Audit module map | `.cursor/skills/audit-module-map/SKILL.md` — optional deep map; invoke via **`auditor`** |
 | Maintainer PR | `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` → `merge-pr` |
 | Research corpus (shipped; opt-in packs) | `.cursor/agents/researcher.md` — adaptive Brief from chat/agents; HTTPS/`github:`/`path:`; `research init\|fetch\|validate`; packs in `_research_results/sources/<slug>/`; live E2E proven 2026-07-19 |
 | MCP | `.ai_infra/mcp_servers/workflow_mcp/` — `python -m workflow_mcp`; [`.cursor/mcp.json.kit.example`](.cursor/mcp.json.kit.example) + [mcp-connect](.ai_infra/docs/operations/connect-external-mcp.md) |
@@ -133,7 +133,7 @@ Scripts:
 
 - `python .ai_infra/scripts/pr/verify_publish.py --branch <branch>`
 - `python .ai_infra/scripts/pr/review.py|prepare.py|merge.py --pr <id|url> --actor "<name>" --agents "<pipeline>"`
-- Architecture-impacting PRs: run **`enterprise-auditor`** before `/prepare-pr` when required
+- Architecture-impacting PRs: run **`auditor`** before `/prepare-pr` when required
 
 ## Next work
 

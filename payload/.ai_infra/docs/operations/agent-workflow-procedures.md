@@ -5,7 +5,7 @@ Role: Canonical procedures for audits and workflow deduplication.
 Used By:
  - .ai_infra/docs/operations/workflow-complete.md
 Depends On:
- - .cursor/agents/enterprise-auditor.md
+ - .cursor/agents/auditor.md
  - .ai_infra/scripts/pr/prepare.py
 Notes:
  - Do not copy gate command lists; reference prepare.py `resolve_gates()` (`GATES` = alias).
@@ -17,7 +17,7 @@ Notes:
 
 **When:** Module boundaries, workflow policy, test layout, or maintainer calls for alignment before prepare/merge. **Not** consumer day-0 onboarding — complete board shell (`/project-board` + `board-bootstrap --check`) first; use this for architecture-impacting / pre-merge work.
 
-**Canonical agent:** **`enterprise-auditor`** with **`.cursor/skills/auditor-protocol/SKILL.md`**.
+**Canonical agent:** **`auditor`** with **`.cursor/skills/auditor-protocol/SKILL.md`**.
 
 **Procedure (advisory-only):**
 

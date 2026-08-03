@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/workflow-drift-guard.md · drift-audit/SKILL.md · board-ssot/SKILL.md";
+  ".cursor/agents/drift-guard.md · drift-audit/SKILL.md · board-ssot/SKILL.md";
 
 const GOALS = [
   "Operational workflow drift detection",
@@ -99,7 +99,7 @@ const PATTERNS = [
   ["Tier-1", "Shared Board rights; no silent tracker dual-write"],
   ["Dual-write remediation", "Notes or handoff to project-board / implementer via Ready"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
-  ["Attribution", "@owner.github_user/workflow-drift-guard via --agent"],
+  ["Attribution", "@owner.github_user/drift-guard via --agent"],
 ];
 
 const ARTIFACTS = [
@@ -198,7 +198,7 @@ export default function AgentWorkflowDriftGuardCanvas() {
     <Stack gap={20} style={{ padding: 20, maxWidth: 980 }}>
       <Stack gap={8}>
         <Row gap={10} style={{ alignItems: "center" }}>
-          <H1 style={{ margin: 0 }}>workflow-drift-guard</H1>
+          <H1 style={{ margin: 0 }}>drift-guard</H1>
           <Pill tone="info" size="sm">
             kit agent
           </Pill>

@@ -7,7 +7,7 @@ description: Builds a deep per-module workflow map with importance, goals, and v
 
 ## Relationship to audits
 
-This is a **depth tool** for **`enterprise-auditor`**, not a separate audit authority. Run it when the enterprise architecture audit (or a focused alignment pass) needs HTML/topology evidence; fold outputs into the parent audit’s citations.
+This is a **depth tool** for **`auditor`**, not a separate audit authority. Run it when the enterprise architecture audit (or a focused alignment pass) needs HTML/topology evidence; fold outputs into the parent audit’s citations.
 
 ## Goal
 
@@ -15,7 +15,7 @@ Produce a module-by-module audit that explains workflow, behavior, importance, a
 
 ## When to Use
 
-- **`enterprise-auditor`** requests deep module topology or `module-audit.html` export.
+- **`auditor`** requests deep module topology or `module-audit.html` export.
 - Team needs a current module map before architecture reconciliation.
 - Documentation drift is suspected across module boundaries and ownership.
 

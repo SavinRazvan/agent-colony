@@ -33,8 +33,8 @@ type AgentId =
   | "verifier"
   | "test-runner"
   | "integrator"
-  | "enterprise-auditor"
-  | "workflow-drift-guard"
+  | "auditor"
+  | "drift-guard"
   | "researcher"
   | "all";
 
@@ -65,12 +65,12 @@ const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
     lane: "Infrastructure",
   },
   {
-    id: "enterprise-auditor",
+    id: "auditor",
     role: "Evidence-only architecture audit artifacts",
     lane: "Quality",
   },
   {
-    id: "workflow-drift-guard",
+    id: "drift-guard",
     role: "Drift validate; dual-write remediation",
     lane: "Quality",
   },
@@ -108,36 +108,36 @@ const RELATIONS: {
   },
   {
     from: "implementer",
-    to: "workflow-drift-guard",
+    to: "drift-guard",
     via: "invoke after drift-validate",
     when: "P0/P1 findings need drift artifacts",
   },
   {
-    from: "workflow-drift-guard",
+    from: "drift-guard",
     to: "project-board",
     via: "Ready / Notes remediation",
     when: "Confirmed dual-write — triage card",
   },
   {
-    from: "workflow-drift-guard",
+    from: "drift-guard",
     to: "implementer",
     via: "Ready / Notes remediation",
     when: "Confirmed dual-write — fix in slice",
   },
   {
-    from: "enterprise-auditor",
+    from: "auditor",
     to: "implementer",
     via: "Notes + artifact paths",
     when: "Audit card closed; implementer applies actions",
   },
   {
-    from: "enterprise-auditor",
-    to: "workflow-drift-guard",
+    from: "auditor",
+    to: "drift-guard",
     via: "audit-orchestration Phase 3",
     when: "After tracker/doc edits; P0/P1 drift findings",
   },
   {
-    from: "enterprise-auditor",
+    from: "auditor",
     to: "verifier",
     via: "audit-orchestration Phase 3",
     when: "Spot-check top audit claims vs preflight + repo paths",
@@ -156,7 +156,7 @@ const RELATIONS: {
   },
   {
     from: "integrator",
-    to: "enterprise-auditor",
+    to: "auditor",
     via: "escalate architecture",
     when: "Integration is architecture-impacting",
   },
@@ -177,8 +177,8 @@ const RELATIONS: {
 const RESEARCHER_REDIRECTS: [string, string][] = [
   ["implementer", "Product code / commits / PRs"],
   ["verifier", "Claims vs evidence checks"],
-  ["enterprise-auditor", "Architecture audits"],
-  ["workflow-drift-guard", "Drift / tracker coherence"],
+  ["auditor", "Architecture audits"],
+  ["drift-guard", "Drift / tracker coherence"],
 ];
 
 const HAPPY_PATH = [
@@ -193,7 +193,7 @@ const LANES: [string, string][] = [
   ["Coordination", "project-board"],
   ["Delivery", "implementer · test-runner · verifier"],
   ["Infrastructure", "integrator"],
-  ["Quality", "enterprise-auditor · workflow-drift-guard"],
+  ["Quality", "auditor · drift-guard"],
   ["Research (opt-in corpus)", "researcher"],
 ];
 

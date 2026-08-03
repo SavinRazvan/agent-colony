@@ -162,7 +162,7 @@ pr_collaboration:
         - merge-pr
     architecture_impacting:
       agents:
-        - enterprise-auditor
+        - auditor
         - integrator
         - review-pr
         - prepare-pr
@@ -171,7 +171,7 @@ pr_collaboration:
     infrastructure_integration:
       agents:
         - integrator
-        - enterprise-auditor
+        - auditor
         - review-pr
         - prepare-pr
     multi_agent_feature:

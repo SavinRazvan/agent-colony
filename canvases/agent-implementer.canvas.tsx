@@ -161,9 +161,9 @@ const PATTERNS = [
 
 const PEERS = [
   ["Outbound", "verifier", "handoff --next verifier (Exit recipe)"],
-  ["Outbound", "workflow-drift-guard", "When make drift-validate finds P0/P1 needing artifacts"],
+  ["Outbound", "drift-guard", "When make drift-validate finds P0/P1 needing artifacts"],
   ["Inbound", "project-board", "Triage hands Ready cards for implementation"],
-  ["Inbound", "enterprise-auditor", "Audit Notes / artifact paths for implementer to apply"],
+  ["Inbound", "auditor", "Audit Notes / artifact paths for implementer to apply"],
   ["Escalation (integrator)", "integrator may hand product src/ to implementer", "integrator card"],
 ];
 
@@ -315,7 +315,7 @@ export default function AgentImplementerCanvas() {
           </Text>
           <Text>
             5. Close: board Status via CLI; change-index + updates-log; make
-            drift-validate; hand off to workflow-drift-guard on P0/P1 findings.
+            drift-validate; hand off to drift-guard on P0/P1 findings.
           </Text>
         </Stack>
       </CollapsibleSection>

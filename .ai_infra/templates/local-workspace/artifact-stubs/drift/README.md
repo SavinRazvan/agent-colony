@@ -4,7 +4,7 @@
 
 | File | Writer |
 |------|--------|
-| `drift-audit.md` | `workflow-drift-guard` agent |
-| `drift-todos.md` | `workflow-drift-guard` agent |
+| `drift-audit.md` | `drift-guard` agent |
+| `drift-todos.md` | `drift-guard` agent |
 
 Validate with `python -m cursor_workflow drift validate`. See `.ai_infra/docs/operations/local-workspace-layout.md`.
