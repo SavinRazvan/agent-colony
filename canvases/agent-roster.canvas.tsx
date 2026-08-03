@@ -43,7 +43,7 @@ const AGENTS = [
       "Evidence-only enterprise architecture audit; writes workflow artifacts and tracker hooks for other agents",
   },
   {
-    id: "project-board",
+    id: "board",
     description:
       "Independent-governed helper — list/create/move GitHub Project SSOT cards via project_ssot CLI",
   },
@@ -60,7 +60,7 @@ const AGENTS = [
 ];
 
 const ROSTER_NODES = [
-  { id: "project-board" },
+  { id: "board" },
   { id: "implementer" },
   { id: "verifier" },
   { id: "drift-guard" },
@@ -71,10 +71,10 @@ const ROSTER_NODES = [
 ];
 
 const ROSTER_EDGES = [
-  { from: "project-board", to: "implementer" },
+  { from: "board", to: "implementer" },
   { from: "implementer", to: "verifier" },
   { from: "implementer", to: "drift-guard" },
-  { from: "drift-guard", to: "project-board" },
+  { from: "drift-guard", to: "board" },
   { from: "drift-guard", to: "implementer" },
   { from: "auditor", to: "implementer" },
   { from: "integrator", to: "implementer" },
@@ -83,10 +83,10 @@ const ROSTER_EDGES = [
 ];
 
 const EDGE_LABELS: Record<string, string> = {
-  "project-board→implementer": "handoff next=implementer",
+  "board→implementer": "handoff next=implementer",
   "implementer→verifier": "Exit --next verifier",
   "implementer→drift-guard": "P0/P1 after drift-validate",
-  "drift-guard→project-board": "dual-write remediation",
+  "drift-guard→board": "dual-write remediation",
   "drift-guard→implementer": "dual-write remediation",
   "auditor→implementer": "Notes + artifact paths",
   "integrator→implementer": "escalate product src/",
@@ -262,10 +262,10 @@ export default function AgentRosterCanvas() {
               "drift-guard",
               "P0/P1 after make drift-validate",
             ],
-            ["project-board", "implementer", "handoff next=implementer"],
+            ["board", "implementer", "handoff next=implementer"],
             [
               "drift-guard",
-              "project-board | implementer",
+              "board | implementer",
               "Dual-write remediation via Ready",
             ],
             [

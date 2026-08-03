@@ -116,7 +116,7 @@ const ABC_SLICES = [
     color: "purple" as const,
     items: [
       "project export → read-only snapshot",
-      ".local/generated-data/project-board-snapshot.json",
+      ".local/generated-data/board-snapshot.json",
       "Never writes Status — DRIFT-010 stale PR / board drift",
       "Deprecated HTML ICC Project Board tab (EA-010) — offline export only; prefer live board + Open Canvas",
     ],
@@ -181,7 +181,7 @@ const CLI_ATOMIC_ROWS = [
   ["append-notes", "Handoff lines; DraftIssue DI_ resolve + Issue edit"],
   ["set-assignee", "Human assignee (UI or PAT)"],
   ["find-by-pr", "Resolve card from PR number"],
-  ["export", "Read-only snapshot → project-board-snapshot.json"],
+  ["export", "Read-only snapshot → board-snapshot.json"],
   ["doctor", "Config / PAT / field-id diagnostics"],
   ["board-bootstrap", "Schema-aware shell check; opt-in --ensure-fields / --apply-readme"],
   ["queue", "Enqueue deferred board write"],
@@ -535,7 +535,7 @@ export default function BoardSsotVsKitCanvas() {
           <CardBody>
             <Text size="small">
               Compares read-only export to open PRs / stale board state.
-              Uses .local/generated-data/project-board-snapshot.json — never
+              Uses .local/generated-data/board-snapshot.json — never
               writes Status. DRIFT-006 fixed via real test-index paths.
             </Text>
           </CardBody>

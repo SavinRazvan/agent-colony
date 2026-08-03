@@ -17,7 +17,7 @@ Notes:
 
 Install **MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) into your project in a few minutes. No special git setup required.
 
-**Product promise:** Install the plugin → open **your app repo** → **`/workflow-activate`** installs the **full kit**. Customize identity in `github.collaboration.yaml`, then **`/project-board`** wires board ids from Project + repo URLs. **Ready for agents** requires `board-bootstrap --check` **exit 0** — either **two views** (minimal overlay, matches [Playground #3](https://github.com/users/SavinRazvan/projects/3)) or **six Playground views** (kit default). Wire-only is not enough. Details: [PLUGIN-USER-GUIDE § Product promise](PLUGIN-USER-GUIDE.md#product-promise).
+**Product promise:** Install the plugin → open **your app repo** → **`/workflow-activate`** installs the **full kit**. Customize identity in `github.collaboration.yaml`, then **`/board`** wires board ids from Project + repo URLs. **Ready for agents** requires `board-bootstrap --check` **exit 0** — either **two views** (minimal overlay, matches [Playground #3](https://github.com/users/SavinRazvan/projects/3)) or **six Playground views** (kit default). Wire-only is not enough. Details: [PLUGIN-USER-GUIDE § Product promise](PLUGIN-USER-GUIDE.md#product-promise).
 
 > **Full manual:** [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) — plugin vs activate, complete file tree, use-case matrix, PR and audit chapters.
 
@@ -33,8 +33,8 @@ Install **MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) 
 | **2. Activate** | Open **your app folder** → Agent chat: **`/workflow-activate`** → wait for **`VERIFY PASS`** |
 | **3. Identity** | Edit `github.collaboration.yaml` → `display_name` + `github_user` → `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` |
 | **3b. GitHub auth** *(board SSOT)* | `gh auth status` — if Project scopes missing: `gh auth refresh -h github.com -s read:project,project`. Device flow: [github.com/login/device](https://github.com/login/device). [PLUGIN-USER-GUIDE § GitHub CLI auth](PLUGIN-USER-GUIDE.md#github-cli-auth-projects). |
-| **3c. Wire board** *(board SSOT)* | Agent chat **`/project-board`** + paste **Project URL + repo URL** → agent proposes `project_ssot` + `default_repo` (confirm) → `project doctor` + `project status` |
-| **4. Board shell** *(when SSOT on)* | **Minimal 2-view** (recommended): copy overlay → Prioritized backlog + Status board in UI ([Playground #3](https://github.com/users/SavinRazvan/projects/3)). **Or** six-view Playground default. **`/project-board`**: CONSENT GATE + TURN PROTOCOL → `--check` exit **0**. |
+| **3c. Wire board** *(board SSOT)* | Agent chat **`/board`** + paste **Project URL + repo URL** → agent proposes `project_ssot` + `default_repo` (confirm) → `project doctor` + `project status` |
+| **4. Board shell** *(when SSOT on)* | **Minimal 2-view** (recommended): copy overlay → Prioritized backlog + Status board in UI ([Playground #3](https://github.com/users/SavinRazvan/projects/3)). **Or** six-view Playground default. **`/board`**: CONSENT GATE + TURN PROTOCOL → `--check` exit **0**. |
 | **5. Build** | **`/implementer`** · Entry = `python3 -m cursor_workflow project status` when board SSOT on |
 
 **Healthy install?** `python3 -m cursor_workflow health` · with board on: `gh auth status` → `project doctor` → `project board-bootstrap --check`
@@ -70,7 +70,7 @@ Cursor lists **subagents**, **skills**, and **commands** in the same **`/`** men
 | What you want | Type in chat | Lives on disk |
 |---------------|--------------|---------------|
 | Activate the kit | **`/workflow-activate`** | `.cursor/skills/workflow-activate/` |
-| Wire board + shell coach | **`/project-board`** | `.cursor/agents/project-board.md` + `board-shell` |
+| Wire board + shell coach | **`/board`** | `.cursor/agents/board.md` + `board-shell` |
 | Day-to-day board protocol | **`board-ssot`** skill (auto-loaded) | `.cursor/skills/board-ssot/` |
 | Implement a slice | **`/implementer`** | `.cursor/agents/implementer.md` |
 | Run tests | **`/test-runner`** | `.cursor/agents/test-runner.md` |
@@ -192,12 +192,12 @@ If scopes already include **`project`** (and **`repo`**), skip refresh. Otherwis
 gh auth refresh -h github.com -s read:project,project
 ```
 
-### Wire board — **`/project-board`** (Agent chat)
+### Wire board — **`/board`** (Agent chat)
 
 After **`contributors validate`** passes, paste both URLs:
 
 ```text
-/project-board
+/board
 
 Project: https://github.com/users/YOU/projects/N
 Repo:    https://github.com/YOU/your-app
@@ -236,7 +236,7 @@ GitHub UI — two views only:
 
 Tier-1 columns on **both**: Priority, Size, Estimate, Start date.
 
-Agent chat: **`/project-board`** → CONSENT GATE → TURN PROTOCOL (Turn A + Turn B for minimal overlay).
+Agent chat: **`/board`** → CONSENT GATE → TURN PROTOCOL (Turn A + Turn B for minimal overlay).
 
 ### Six-view Playground default
 

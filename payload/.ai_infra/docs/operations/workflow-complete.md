@@ -17,7 +17,7 @@ Notes:
 
 # Complete workflows (maintainer checklist)
 
-**Consumer / first-run (when `project_ssot.enabled`):** board shell before day-to-day PRs — [PLUGIN-USER-GUIDE § Consumer onboarding](PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) · `/project-board` + `board-shell` · `project board-bootstrap --check`. Architecture audit is **not** day-0.
+**Consumer / first-run (when `project_ssot.enabled`):** board shell before day-to-day PRs — [PLUGIN-USER-GUIDE § Consumer onboarding](PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) · `/board` + `board-shell` · `project board-bootstrap --check`. Architecture audit is **not** day-0.
 
 ## A) Standard PR slice (happy path)
 

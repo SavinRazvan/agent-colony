@@ -5,7 +5,7 @@ Role: Thin CLI facade for GitHub Project SSOT — cmd_* delegates, re-exports, r
 Used By:
  - .ai_infra/install/cursor_workflow/cli.py
  - .cursor/skills/board-ssot/SKILL.md
- - .cursor/agents/project-board.md
+ - .cursor/agents/board.md
 Depends On:
  - .ai_infra/install/cursor_workflow/project_atomics.py
  - .ai_infra/install/cursor_workflow/gh_project_adapter.py
@@ -1366,7 +1366,7 @@ def cmd_export(args: argparse.Namespace) -> int:
         print(text, end="")
         return EXIT_OK
     out_path = Path(args.output) if args.output else (
-        root / ".local" / "generated-data" / "project-board-snapshot.json"
+        root / ".local" / "generated-data" / "board-snapshot.json"
     )
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(text, encoding="utf-8")

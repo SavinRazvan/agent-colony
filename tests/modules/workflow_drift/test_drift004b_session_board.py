@@ -67,7 +67,7 @@ def _scaffold(
     if write_snapshot and snapshot is not None:
         gen = tmp / ".local" / "generated-data"
         gen.mkdir(parents=True)
-        (gen / "project-board-snapshot.json").write_text(
+        (gen / "board-snapshot.json").write_text(
             json.dumps(snapshot), encoding="utf-8"
         )
     return tmp
@@ -115,7 +115,7 @@ def test_drift004b_skips_when_disabled(tmp_path: Path) -> None:
 
 def test_drift004b_fails_stale_in_progress_vs_done(tmp_path: Path) -> None:
     snap = {
-        "schema": "project-board-snapshot/v1",
+        "schema": "board-snapshot/v1",
         "items": [
             {
                 "id": "PVTI_stale",
@@ -138,7 +138,7 @@ def test_drift004b_fails_stale_in_progress_vs_done(tmp_path: Path) -> None:
 
 def test_drift004b_passes_matching_in_progress(tmp_path: Path) -> None:
     snap = {
-        "schema": "project-board-snapshot/v1",
+        "schema": "board-snapshot/v1",
         "items": [
             {
                 "id": "PVTI_ok",
@@ -166,7 +166,7 @@ def test_drift004b_skips_without_board_item_id(tmp_path: Path) -> None:
 
 
 def test_drift004b_fails_missing_item(tmp_path: Path) -> None:
-    snap = {"schema": "project-board-snapshot/v1", "items": []}
+    snap = {"schema": "board-snapshot/v1", "items": []}
     root = _scaffold(
         tmp_path,
         board_cell="PVTI_gone In progress",

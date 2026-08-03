@@ -6,7 +6,7 @@ Human paste guide for GitHub Project settings UI (ADR-008). There is **no offici
 
 **Desired state (kit default):** `.ai_infra/templates/project-board/board-shell.schema.yaml` — **full Playground parity**, not a bare “two views” board.  
 Optional overlay: `.local/user_settings/board-shell.schema.yaml`.  
-First-run coach: `/project-board` + `.cursor/skills/board-shell/SKILL.md`.
+First-run coach: `/board` + `.cursor/skills/board-shell/SKILL.md`.
 
 **Product rule:** apply this **default shell** so the board matches Playground (Status board, Prioritized backlog, Roadmap, Bugs, In review, My items) with Tier-1 columns. Customize cosmetics later. Verify with:
 

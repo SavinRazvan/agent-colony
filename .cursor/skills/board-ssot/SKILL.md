@@ -8,7 +8,7 @@ File: SKILL.md
 Path: .cursor/skills/board-ssot/SKILL.md
 Role: Procedural skill for board-first backlog/status + multi-agent continuation on the Project.
 Used By:
- - .cursor/agents/project-board.md
+ - .cursor/agents/board.md
  - All kit agents when project_ssot.enabled
 Depends On:
  - .local/user_settings/github.collaboration.yaml (project_ssot)
@@ -30,7 +30,7 @@ Notes:
 
 When `project_ssot.enabled` and `sync_policy: board_only`, use the GitHub Project as the **only writable SSOT** for backlog, Status, and multi-agent continuation. Prefer CLI over inventing `gh` flags. Local trackers are offline fallback only; read-only exports never compete with board Status.
 
-**Agent:** `.cursor/agents/project-board.md`  
+**Agent:** `.cursor/agents/board.md`  
 **Ops mirror:** `.ai_infra/docs/operations/project-board-collaboration.md`  
 **ADR:** `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`
 
@@ -197,7 +197,7 @@ Rules:
 2. Pull from **Ready** or continue your In progress.
 3. Acceptance / Rollback / Notes on **card body** = continuation index. Attribution = `@owner.github_user/<agent> · <ISO-8601-UTC> · …` via `append-notes --agent` (or `claim`/`handoff` recipes).
 4. Under `board_only`: no competing tracker `in_progress` (DRIFT-009); no dual-mirror “for safety.”
-5. Humans own views, workflows, README, Insights, status updates by default (no view API). If the human **asks** for browser help on views/columns, `/project-board` may use browser MCP for that turn (see `board-shell`).
+5. Humans own views, workflows, README, Insights, status updates by default (no view API). If the human **asks** for browser help on views/columns, `/board` may use browser MCP for that turn (see `board-shell`).
 6. Read-only `project export` (if used) never writes Status.
 7. Post-merge Done is Pattern A (`merge.py`), Notes prefixed `@user/merge.py`.
 
@@ -205,13 +205,13 @@ Rules:
 
 | Agent | Entry (read board) | Exit (must update board) | Local writes |
 |-------|--------------------|--------------------------|--------------|
-| **project-board** | status + list | create/move any Status; Priority/Size; hand off to implementer | change-index, updates-log |
+| **board** | status + list | create/move any Status; Priority/Size; hand off to implementer | change-index, updates-log |
 | **implementer** | status + Ready/claim | In progress → In review (PR) → Done; fields on own card; may create slice cards | code; change-index; PR |
 | **test-runner** | status + slice card | Stay on card; → In review when tests gate PR; Done when test-only slice closes | test-index / test-plan |
 | **verifier** | status + related card | Confirm → Done or leave In review with Notes (failures) | evidence / PR artifacts |
 | **integrator** | status + Ready/claim | claim → Done on integration card; may create cards | integrate / payload |
 | **auditor** | status + audit card | Audit card → In review/Done; Notes point to artifact paths | `.local/workflow-artifacts/…` |
-| **drift-guard** | **Must** status + list In progress (dual-write check) | Drift-pass card → Done (or In review if P0/P1 need human); cite board Status in drift-audit; hand remediation to project-board/implementer via Ready card or Notes — **do not** silent-edit trackers | drift-audit / drift-todos |
+| **drift-guard** | **Must** status + list In progress (dual-write check) | Drift-pass card → Done (or In review if P0/P1 need human); cite board Status in drift-audit; hand remediation to board/implementer via Ready card or Notes — **do not** silent-edit trackers | drift-audit / drift-todos |
 | **researcher** | status + research card if any | If a research card exists → Done + Notes with corpus paths; else read-only | `_research_results/` |
 
 ### Status path
@@ -222,11 +222,11 @@ Ready → In progress → In review → Done
 
 | Moment | Actor | CLI |
 |--------|-------|-----|
-| Start work | implementer / integrator / test-runner / project-board | `set-status --to in_progress` |
+| Start work | implementer / integrator / test-runner / board | `set-status --to in_progress` |
 | PR open / peer handoff | implementer | `set-status --to in_review` |
 | Part verified closed | implementer / verifier / test-runner | `set-status --to done` |
 | Drift / audit pass closed | drift-guard / auditor | `set-status --to done` (their card) |
-| Queue triage | project-board or human | create / set-status / set-field |
+| Queue triage | board or human | create / set-status / set-field |
 
 ## Procedure (CLI) — prefer Pattern A recipes
 
@@ -238,9 +238,9 @@ Human Project README: paste `.ai_infra/templates/project-board/project-readme.md
 
 | Need | Who | Template / action |
 |------|-----|-------------------|
-| slice / feature / `chore/` | implementer, project-board, integrator | `create-from-template --template slice` |
-| bug / defect / `fix/` | implementer, project-board | `create-from-template --template bug` |
-| external / corpus research | researcher, project-board | `create-from-template --template research` |
+| slice / feature / `chore/` | implementer, board, integrator | `create-from-template --template slice` |
+| bug / defect / `fix/` | implementer, board | `create-from-template --template bug` |
+| external / corpus research | researcher, board | `create-from-template --template research` |
 | audit pass | auditor | `--template slice` + title `[AUDIT] …` then `claim --last` |
 | consume existing card | test-runner, verifier | **No** `create-from-template` — claim/continue only |
 | Project README | **Humans only** | paste `project-readme.md` in Project settings UI |
@@ -282,7 +282,7 @@ When `sync_policy: board_only`, do **not** mark the same slice `in_progress` in 
 
 - Chat-only completion with stale board Status
 - Hardcoding field/option ids
-- Reshuffling Ready/P0 without human or project-board ask
+- Reshuffling Ready/P0 without human or board ask
 - Editing Project views/workflows/Insights unprompted (browser assist only when human asks)
 - Pasting Project settings UI text into a terminal
 - Dual-write board + tracker under `board_only`

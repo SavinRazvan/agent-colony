@@ -52,7 +52,7 @@ const PLAN_ROWS: {
 }[] = [
   {
     lane: "Coordination",
-    agentNow: "project-board",
+    agentNow: "board",
     skillsNow: "PRIMARY board-ssot · ALSO board-shell",
     agentNext: "board",
     skillsNext: "PRIMARY board-ssot · ALSO board-shell",
@@ -271,7 +271,7 @@ const AGENT_SCORES: ScoredName[] = [
     note: "Good agent; skill wording diverges (runner vs coverage)",
   },
   {
-    id: "project-board",
+    id: "board",
     kind: "agent",
     primaryPair: "board-ssot",
     dims: { clarity: 4, brevity: 3, pairing: 4, convention: 5, uniqueness: 4 },
@@ -346,14 +346,14 @@ const SKILL_SCORES: ScoredName[] = [
   {
     id: "board-ssot",
     kind: "skill-canonical",
-    primaryPair: "project-board",
+    primaryPair: "board",
     dims: { clarity: 4, brevity: 3, pairing: 4, convention: 4, uniqueness: 4 },
     note: "-ssot doctrine keyword is valuable",
   },
   {
     id: "board-shell",
     kind: "skill-canonical",
-    primaryPair: "project-board",
+    primaryPair: "board",
     dims: { clarity: 4, brevity: 3, pairing: 4, convention: 4, uniqueness: 4 },
     note: "onboard is mode noise; could be board-shell",
   },
@@ -555,7 +555,7 @@ const RENAME_ROWS: RenameRow[] = [
   },
   {
     layer: "agents",
-    current: "project-board",
+    current: "board",
     proposed: "board",
     action: "rename",
     priority: "P1",

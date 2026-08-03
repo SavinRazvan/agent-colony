@@ -147,7 +147,7 @@ const ARTIFACTS = [
 ];
 
 const PATTERNS = [
-  ["Day-0 shell", "board-bootstrap --check green before claim; /project-board on FAIL"],
+  ["Day-0 shell", "board-bootstrap --check green before claim; /board on FAIL"],
   ["Pattern A recipes", "claim --last / handoff --last / create-from-template"],
   ["Tier-1", "claim/set-status→In progress Start date; Size/Estimate per skill table"],
   ["Promote before PR", "promote-to-issue OR mention-pr (auto when promote_to_issue_on_pr)"],
@@ -162,7 +162,7 @@ const PATTERNS = [
 const PEERS = [
   ["Outbound", "verifier", "handoff --next verifier (Exit recipe)"],
   ["Outbound", "drift-guard", "When make drift-validate finds P0/P1 needing artifacts"],
-  ["Inbound", "project-board", "Triage hands Ready cards for implementation"],
+  ["Inbound", "board", "Triage hands Ready cards for implementation"],
   ["Inbound", "auditor", "Audit Notes / artifact paths for implementer to apply"],
   ["Escalation (integrator)", "integrator may hand product src/ to implementer", "integrator card"],
 ];

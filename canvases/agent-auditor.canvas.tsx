@@ -124,7 +124,7 @@ const ARTIFACTS = [
   ["history/updates-log.md", "Exit", "Continuity readers"],
   ["Board Status + Notes", "in_review / done", "implementer"],
   [
-    ".local/generated-data/project-board-snapshot.json",
+    ".local/generated-data/board-snapshot.json",
     "project export (read-only)",
     "Deprecated HTML ICC (EA-010) — offline only; prefer board + Open Canvas",
   ],

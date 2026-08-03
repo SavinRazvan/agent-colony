@@ -19,7 +19,7 @@ Notes:
 |------|-----|-----|
 | `card-body-slice.md` | Agents | `create-from-template --template slice --title "…" --priority p1` (size/estimate default s/1) |
 | `card-body-bug.md` | Agents | `create-from-template --template bug --priority p1` |
-| `card-body-research.md` | researcher / project-board | `create-from-template --template research --priority p2` |
+| `card-body-research.md` | researcher / board | `create-from-template --template research --priority p2` |
 | `board-shell.schema.yaml` | Coach / CLI | Desired-state Playground parity; overlay `.local/user_settings/board-shell.schema.yaml` |
 | `outbox-entry.schema.json` | Agents / CLI | Validate lines in `.local/generated-data/board-outbox.jsonl` |
 | `outbox-entry.example.json` | Docs | Exemplar outbox line (never paste fake `item_id` as `--id`) |
@@ -38,7 +38,7 @@ Card bodies always include `## Acceptance`, `## Rollback`, and `## Notes` so `va
 | slice / feature work | `create-from-template --template slice --priority p1` |
 | bug fix | `create-from-template --template bug --priority p1` |
 | external / corpus research | `create-from-template --template research --priority p2` |
-| Project board bootstrap | `project doctor` → `/project-board` first-run (`board-shell`) → follow `views-setup.md` → paste `project-readme.md` → `project board-bootstrap --check` → `project status` |
+| Project board bootstrap | `project doctor` → `/board` first-run (`board-shell`) → follow `views-setup.md` → paste `project-readme.md` → `project board-bootstrap --check` → `project status` |
 | Project README | **Humans** paste **contents of** `project-readme.md`, or opt-in `board-bootstrap --check --apply-readme` |
 
 **Do not** paste Project settings labels (`Project name`, `Short description`, `README`, …) into bash — use `cursor_workflow project` recipes instead.

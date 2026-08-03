@@ -87,7 +87,7 @@ What **`/workflow-activate`** copies into **your app** (e.g. Smart-Notes):
 my-app/
 ├── AGENTS.md                       Stub router (from template)
 ├── .cursor/
-│   ├── agents/                     8 agents (from payload; incl. project-board)
+│   ├── agents/                     8 agents (from payload; incl. board)
 │   ├── rules/                      7 rules (6 kit + project-ssot-precedence)
 │   └── skills/                     12 canonical skills only (no repo-root skills/ merge)
 ├── .agents/skills/                 5 maintainer slash folders (+ audit-alignment stub)
@@ -134,7 +134,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `auditor` | Yes | Yes | `/auditor` |
 | `integrator` | Yes | Yes | `/integrator` |
 | `drift-guard` | Yes | Yes | `/drift-guard` |
-| `project-board` | Yes | Yes | `/project-board` |
+| `board` | Yes | Yes | `/board` |
 | `researcher` | Yes | Yes (opt-in packs after `research init`) | `/researcher` (adaptive Brief + HTTPS; shipped/proven) |
 
 **Deprecated agents:** none.
@@ -154,8 +154,8 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `implementer-loop` | `implementer` |
 | `test-coverage` | `test-runner` |
 | `integrator-protocol` | `integrator` |
-| `board-ssot` | `project-board` (board Entry/Exit; ADR-008) |
-| `board-shell` | `project-board` (first-run shell coach) |
+| `board-ssot` | `board` (board Entry/Exit; ADR-008) |
+| `board-shell` | `board` (first-run shell coach) |
 | `workflow-activate` | Install / re-activate |
 | `mcp-connect` | MCP setup |
 | `research-corpus` | `researcher` |

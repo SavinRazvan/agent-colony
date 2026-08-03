@@ -195,7 +195,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 | Organization handle | `savin-razvan` (or `mas-workflow-kit-project-ssot`) |
 | Contact email | razvan.i.savin@gmail.com |
 | Logotype URL | `https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit-project-ssot/main/assets/logo.png` |
-| Description | MAS Workflow Kit — Project SSOT installs multi-agent workflow into any Cursor project (8 agents, 12 skills, 7 rules): GitHub Project as writable backlog/status SSOT, PR lifecycle scripts, `.local/` evidence, optional MCP. Run **`/workflow-activate`**, then first-run **`/project-board`** (Playground board shell) before **`/implementer`**. Pattern A: one script per maintainer action. |
+| Description | MAS Workflow Kit — Project SSOT installs multi-agent workflow into any Cursor project (8 agents, 12 skills, 7 rules): GitHub Project as writable backlog/status SSOT, PR lifecycle scripts, `.local/` evidence, optional MCP. Run **`/workflow-activate`**, then first-run **`/board`** (Playground board shell) before **`/implementer`**. Pattern A: one script per maintainer action. |
 | GitHub repository | https://github.com/SavinRazvan/mas-workflow-kit-project-ssot |
 | Owner | Individual · razvan.i.savin@gmail.com |
 | Website URL | https://razvansavin.com/ |

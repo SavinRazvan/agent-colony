@@ -171,7 +171,7 @@ def test_scaffold_pages_json_includes_artifact_tabs(tmp_path: Path) -> None:
         )
     )
     page_ids = {page["id"] for page in pages["pages"]}
-    assert {"pr-review", "drift-audit", "ea-audit", "project-board"}.issubset(page_ids)
+    assert {"pr-review", "drift-audit", "ea-audit", "board"}.issubset(page_ids)
 
 
 def test_scaffold_pages_json_tier1_paths_resolve(tmp_path: Path) -> None:

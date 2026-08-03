@@ -365,7 +365,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         "--output",
         type=Path,
         default=None,
-        help="Output path (default: .local/generated-data/project-board-snapshot.json)",
+        help="Output path (default: .local/generated-data/board-snapshot.json)",
     )
     export_cmd.add_argument("--limit", type=int, default=100)
     export_cmd.add_argument("--json", action="store_true", help="Also print JSON to stdout")

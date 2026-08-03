@@ -619,7 +619,7 @@ def run_board_bootstrap(args: argparse.Namespace) -> int:
                 "board-bootstrap",
                 pc.EXIT_VALIDATION,
                 "Tier-1 columns missing on Status board and/or Prioritized backlog — GitHub UI only. "
-                "Agent chat: /project-board → TURN PROTOCOL Turn H. "
+                "Agent chat: /board → TURN PROTOCOL Turn H. "
                 "Human: views-setup.md § Fast path step 4 (show Priority, Size, Estimate, Start date).",
             )
 

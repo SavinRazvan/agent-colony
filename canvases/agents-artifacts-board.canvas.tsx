@@ -83,7 +83,7 @@ const EDGE_HINTS: Record<string, string> = {
 
 const WHO_WRITES: string[][] = [
   [
-    "project-board",
+    "board",
     "Board Status / Notes / fields",
     "(rarely) continuity Notes only",
     "Triage Ready; handoff next=…",
@@ -142,7 +142,7 @@ const ARTIFACT_LANES: string[][] = [
   [
     "Day-0 board shell",
     "board-bootstrap --check · views-setup.md · board-shell",
-    "project-board / human (before claim)",
+    "board / human (before claim)",
     "Does not write Status — Playground six-view gate",
   ],
   [

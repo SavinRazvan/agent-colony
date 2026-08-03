@@ -18,10 +18,10 @@ from typing import Any
 
 VIEW_N = re.compile(r"^View\s*\d+$", re.IGNORECASE)
 
-# Consumer onboarding status lines (print after /project-board wire; not full shell green).
+# Consumer onboarding status lines (print after /board wire; not full shell green).
 ONBOARD_STATUS_LINE = (
     "board-onboard status: api=complete · shell=incomplete · views=ui-only · "
-    "next=/project-board CONSENT+TURN"
+    "next=/board CONSENT+TURN"
 )
 SHELL_INCOMPLETE_VIEWS_NOTE = (
     "shell incomplete (views are GitHub UI only; API slice may already be done)."
@@ -286,18 +286,18 @@ def bootstrap_view_fail_message(
             "python3 -m cursor_workflow project board-shell init --minimal "
             "then re-run board-bootstrap --check. "
             "Or add missing views in GitHub UI (Playground default). "
-            "Agent chat: /project-board → CONSENT GATE + TURN PROTOCOL."
+            "Agent chat: /board → CONSENT GATE + TURN PROTOCOL."
         )
 
     if min_count <= 2:
         return (
-            f"{base} Agent chat: /project-board → CONSENT GATE + TURN PROTOCOL "
+            f"{base} Agent chat: /board → CONSENT GATE + TURN PROTOCOL "
             "(Turn A Status board, Turn B Prioritized backlog). "
             "Human: views-setup.md § Minimal 2-view overlay."
         )
 
     return (
-        f"{base} Agent chat: /project-board → CONSENT GATE then board-shell "
+        f"{base} Agent chat: /board → CONSENT GATE then board-shell "
         "TURN PROTOCOL (one view at a time). Human: views-setup.md § Fast path "
         "(rename View 1 → Status board, then add five views + Tier-1 columns)."
     )

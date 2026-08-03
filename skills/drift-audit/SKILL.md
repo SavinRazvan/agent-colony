@@ -34,7 +34,7 @@ Detect **operational workflow drift** — plan ↔ tracker ↔ session-pointer i
 2. **Script:** `python -m cursor_workflow drift validate --directory .` (or `make drift-validate`). On **consumer app projects**, use `--profile consumer`. Include **DRIFT-004b** / **DRIFT-009** / **DRIFT-010** when `project_ssot` board_only is enabled (ADR-007/008).
 3. Capture profile, check IDs, severities, and details from output.
 4. Write artifacts under `.local/workflow-artifacts/drift/` only.
-5. **Board Exit:** set drift-pass card → `done` (or `in_review` if P0/P1 need human). For Confirmed dual-write, Notes on offending card or Ready handoff to project-board/implementer — do **not** auto-edit `plan.md`, `work-tracker.md`, or `session-pointer.md`.
+5. **Board Exit:** set drift-pass card → `done` (or `in_review` if P0/P1 need human). For Confirmed dual-write, Notes on offending card or Ready handoff to board/implementer — do **not** auto-edit `plan.md`, `work-tracker.md`, or `session-pointer.md`.
 6. Print handoff line with `item_id` when applicable.
 
 ## Evidence contract

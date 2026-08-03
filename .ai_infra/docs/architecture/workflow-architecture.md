@@ -41,7 +41,7 @@ Gate order: read `.ai_infra/scripts/pr/prepare.py` only — do not duplicate her
 
 ## Anchoring
 
-**When `project_ssot.enabled`** (see `github.collaboration.yaml`, [ADR-008](../decisions/ADR-008-project-board-ssot.md)): session backlog/status is the **GitHub Project** via `python -m cursor_workflow project …` and `.cursor/skills/board-ssot/SKILL.md`. **Day-0:** `/project-board` + `board-shell` until `board-bootstrap --check` matches `board-shell.schema.yaml` (Playground six-view default) — before `/implementer`; audit is not day-0. Local `session-pointer.md` / `plan.md` / `work-tracker.md` are **offline fallback only** under `sync_policy: board_only` (no dual-write; DRIFT-009).
+**When `project_ssot.enabled`** (see `github.collaboration.yaml`, [ADR-008](../decisions/ADR-008-project-board-ssot.md)): session backlog/status is the **GitHub Project** via `python -m cursor_workflow project …` and `.cursor/skills/board-ssot/SKILL.md`. **Day-0:** `/board` + `board-shell` until `board-bootstrap --check` matches `board-shell.schema.yaml` (Playground six-view default) — before `/implementer`; audit is not day-0. Local `session-pointer.md` / `plan.md` / `work-tracker.md` are **offline fallback only** under `sync_policy: board_only` (no dual-write; DRIFT-009).
 
 **Otherwise:** every session → `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
 
@@ -56,7 +56,7 @@ Gate order: read `.ai_infra/scripts/pr/prepare.py` only — do not duplicate her
 | `researcher` | **Shipped/proven** adaptive Brief multi-round packs under `_research_results/` (opt-in after init); chat/agent/card intake; research card Done + `AGENT_BRIEF` paths |
 | `integrator` | Add agents/skills/MCP; integration card Status |
 | `drift-guard` | Drift + DRIFT-009; **reads board**, closes drift card |
-| `project-board` | Board triage + **first-run shell coach** (`board-shell`; ADR-006); not in default PR pipelines |
+| `board` | Board triage + **first-run shell coach** (`board-shell`; ADR-006); not in default PR pipelines |
 
 Continuation: every agent Entry reads the Project; Exit updates Status/Notes — [project-board-collaboration.md](../operations/project-board-collaboration.md).
 

@@ -101,7 +101,7 @@ card_create:
     - research
   notes: >
     Tier-1 timing in board-ssot skill. Agents never mutate views.
-    First-run coach: board-shell skill via /project-board.
+    First-run coach: board-shell skill via /board.
 
 customization:
   overlay_path: .local/user_settings/board-shell.schema.yaml
