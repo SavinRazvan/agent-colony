@@ -1,7 +1,7 @@
 ---
 name: test-runner
 model: auto
-description: Module-focused tests, regressions, coverage.
+description: test-runner MAS-SSOT-KIT — Module-focused tests, regressions, coverage.
 ---
 
 # Test runner

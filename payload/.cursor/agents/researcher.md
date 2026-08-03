@@ -1,7 +1,7 @@
 ---
 name: researcher
 model: auto
-description: Brief-driven multi-round research (GitHub/local) into _research_results packs; hard-stop on product code.
+description: researcher MAS-SSOT-KIT — Brief-driven multi-round research (GitHub/local) into _research_results packs; hard-stop on product code.
 ---
 
 # Researcher (shipped; opt-in corpus)

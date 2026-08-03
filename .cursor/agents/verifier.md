@@ -1,7 +1,7 @@
 ---
 name: verifier
 model: auto
-description: Claims vs evidence; minimal high-signal checks.
+description: verifier MAS-SSOT-KIT — Claims vs evidence; minimal high-signal checks.
 ---
 
 # Verifier

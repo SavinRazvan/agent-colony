@@ -1,7 +1,7 @@
 ---
 name: board
 model: auto
-description: Independent-governed helper — list/create/move GitHub Project SSOT cards via project_ssot CLI.
+description: board MAS-SSOT-KIT — Independent-governed helper — list/create/move GitHub Project SSOT cards via project_ssot CLI.
 ---
 
 # Project board
