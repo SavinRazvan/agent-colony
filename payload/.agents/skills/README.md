@@ -10,12 +10,12 @@ Each skill: **`<skill-name>/SKILL.md`**.
 
 | Area | Where |
 |------|--------|
-| Implementation loop | `.cursor/skills/implementation-execution-loop/`, `.cursor/agents/implementer.md` |
-| **Project board SSOT** | `.cursor/skills/project-board-ssot/`, `.cursor/agents/project-board.md` |
-| **Board shell first-run** | `.cursor/skills/board-shell-onboard/` (via `/project-board`) |
-| Tests | `.cursor/skills/test-module-coverage/`, `.cursor/agents/test-runner.md` |
+| Implementation loop | `.cursor/skills/implementer-loop/`, `.cursor/agents/implementer.md` |
+| **Project board SSOT** | `.cursor/skills/board-ssot/`, `.cursor/agents/project-board.md` |
+| **Board shell first-run** | `.cursor/skills/board-shell/` (via `/project-board`) |
+| Tests | `.cursor/skills/test-coverage/`, `.cursor/agents/test-runner.md` |
 | **Maintainer PR** | **`pr-workflow/`** + `review-pr` / `prepare-pr` / `merge-pr` (`PR_WORKFLOW.md` = legacy redirect) |
-| **Research corpus** | `RESEARCH_WORKFLOW.md` + `.cursor/skills/research-corpus-execution/` |
+| **Research corpus** | `RESEARCH_WORKFLOW.md` + `.cursor/skills/research-corpus/` |
 | **Enterprise audit** | `.cursor/skills/enterprise-architecture-audit/SKILL.md` + `.cursor/agents/enterprise-auditor.md` |
 | **Drift guard** | `.cursor/skills/workflow-drift-audit/SKILL.md` + `.cursor/agents/workflow-drift-guard.md` |
 | **Audit orchestration** | `.cursor/skills/audit-orchestration/SKILL.md` |

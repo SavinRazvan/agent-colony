@@ -28,7 +28,7 @@ import {
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  "ADR-008 · project-board-ssot/SKILL.md · project-board-collaboration.md · agent cards · HYGIENE post-COV100";
+  "ADR-008 · board-ssot/SKILL.md · project-board-collaboration.md · agent cards · HYGIENE post-COV100";
 
 const NODE_W = 118;
 const NODE_H = 36;
@@ -141,7 +141,7 @@ const ARTIFACT_LANES: string[][] = [
   ],
   [
     "Day-0 board shell",
-    "board-bootstrap --check · views-setup.md · board-shell-onboard",
+    "board-bootstrap --check · views-setup.md · board-shell",
     "project-board / human (before claim)",
     "Does not write Status — Playground six-view gate",
   ],

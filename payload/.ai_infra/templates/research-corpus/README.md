@@ -4,7 +4,7 @@ Path: .ai_infra/templates/research-corpus/README.md
 Role: Index for research corpus pack templates and CLI enablement.
 Used By:
  - .ai_infra/install/cursor_workflow/research_cli.py
- - .cursor/skills/research-corpus-execution/SKILL.md
+ - .cursor/skills/research-corpus/SKILL.md
  - .cursor/agents/researcher.md
 Depends On:
  - INDEX.schema.json

@@ -580,7 +580,7 @@ def test_agents_stub_and_view_pack_text() -> None:
     assert "PROJECT_TITLE" in readme
     assert "AI Project Playground" not in readme.split("\n", 5)[0]
     skill = (
-        REPO_ROOT / ".cursor" / "skills" / "board-shell-onboard" / "SKILL.md"
+        REPO_ROOT / ".cursor" / "skills" / "board-shell" / "SKILL.md"
     ).read_text(encoding="utf-8")
     assert "board-bootstrap --check" in skill
     assert "Browser assist map" in skill

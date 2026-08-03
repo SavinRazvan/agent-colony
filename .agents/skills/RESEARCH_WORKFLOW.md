@@ -9,7 +9,7 @@ Versioned hub (in git). Corpus boundaries: `_research_results/RESEARCH_BOUNDARIE
 ## Order (active)
 
 1. `.cursor/agents/researcher.md` — **Adaptive intake** (chat / peer agents / board)
-2. `.cursor/skills/research-corpus-execution/SKILL.md`
+2. `.cursor/skills/research-corpus/SKILL.md`
 3. Normalize source → `research init` → `research fetch` → rounds → `validate`
 4. Pack `BRIEF.md` + `SOURCE.md` under `_research_results/sources/<slug>/`
 

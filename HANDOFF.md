@@ -56,7 +56,7 @@ This repository **is** the product: installable multi-agent workflow infrastruct
 - Fill **Tier-1** fields (Status, Priority, Size/Estimate per skill rubric, Start date on first In progress, Assignee, Linked PR via `mention-pr`).
 - GraphQL throttle / Forbidden / precheck low quota → EXIT_QUEUED (6) / `project outbox` (do not retry-loop); flush after reset — outbox is not SSOT.
 
-Doctrine detail: [ADR-008](.ai_infra/docs/decisions/ADR-008-project-board-ssot.md) · ops [project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md) · skill [project-board-ssot](.cursor/skills/project-board-ssot/SKILL.md).
+Doctrine detail: [ADR-008](.ai_infra/docs/decisions/ADR-008-project-board-ssot.md) · ops [project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md) · skill [board-ssot](.cursor/skills/board-ssot/SKILL.md).
 
 ---
 
@@ -68,7 +68,7 @@ python3 -m cursor_workflow project list --status ready
 # claim / create-from-template — see: python3 -m cursor_workflow project guide
 ```
 
-**First-run / shell gate (when `project_ssot.enabled`):** if `python3 -m cursor_workflow project board-bootstrap --check` exits non-zero (missing views, Tier-1 columns, or empty README) → **`/project-board`** + [board-shell-onboard](.cursor/skills/board-shell-onboard/SKILL.md) before claim/`/implementer`. **`/enterprise-auditor`** is not day-0.
+**First-run / shell gate (when `project_ssot.enabled`):** if `python3 -m cursor_workflow project board-bootstrap --check` exits non-zero (missing views, Tier-1 columns, or empty README) → **`/project-board`** + [board-shell](.cursor/skills/board-shell/SKILL.md) before claim/`/implementer`. **`/enterprise-auditor`** is not day-0.
 
 Auth (board write): `gh auth refresh -h github.com -s read:project,project` (keep `repo`).  
 No browser (WSL)? Copy the one-time code → **https://github.com/login/device** → approve Project permissions → `gh auth status`.  
@@ -87,7 +87,7 @@ If the board is unavailable: `fallback: local_trackers` only, then resume board 
 | Repo map (kit vs payload) | [repository-map](.ai_infra/docs/handoff/repository-map.md) |
 | Agent roster / gates / commits | [AGENTS.md](AGENTS.md) |
 | PR merge path | [.agents/skills/pr-workflow](.agents/skills/pr-workflow/SKILL.md) |
-| MCP connect | [connect-external-mcp](.ai_infra/docs/operations/connect-external-mcp.md) |
+| MCP connect | [mcp-connect](.ai_infra/docs/operations/connect-external-mcp.md) |
 
 ---
 
@@ -95,7 +95,7 @@ If the board is unavailable: `fallback: local_trackers` only, then resume board 
 
 | Agent | Role |
 |-------|------|
-| `project-board` | Board triage / recipes + first-run shell coach (`board-shell-onboard`; independent-governed) |
+| `project-board` | Board triage / recipes + first-run shell coach (`board-shell`; independent-governed) |
 | `implementer` | Product slices; board-first Entry/Exit |
 | `test-runner` / `verifier` | Tests and claim verification |
 | `enterprise-auditor` | Alignment / scorecard → `.local/workflow-artifacts/` |

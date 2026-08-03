@@ -153,7 +153,7 @@ const FOLLOWUP_SLICES = [
     color: "blue" as const,
     items: [
       "audit-orchestration, workflow-activate",
-      "mas-infrastructure-integration, test-module-coverage",
+      "mas-infrastructure-integration, test-coverage",
       "review-pr board_only caveats",
       "DRIFT validate P0=0 P1=0 P2=0 — shipped on main",
     ],
@@ -571,7 +571,7 @@ export default function BoardSsotVsKitCanvas() {
           [
             "Day-0 board shell",
             "N/A",
-            "board-bootstrap --check vs board-shell.schema.yaml (Playground six-view); board-shell-onboard coach",
+            "board-bootstrap --check vs board-shell.schema.yaml (Playground six-view); board-shell coach",
           ],
         ]}
         striped
@@ -641,7 +641,7 @@ export default function BoardSsotVsKitCanvas() {
               <Text size="small">EA-004: pyright blocking in kit-quality CI</Text>
               <Text size="small">EA-010: deprecated HTML ICC tab (offline export; prefer board + Open Canvas)</Text>
               <Text size="small">
-                Day-0: board-shell-onboard + board-bootstrap --check (Playground
+                Day-0: board-shell + board-bootstrap --check (Playground
                 six-view default; schema board-shell.schema.yaml)
               </Text>
             </Stack>

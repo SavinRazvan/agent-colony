@@ -6,8 +6,8 @@ alwaysApply: true
 # Project SSOT precedence
 
 - When `.local/user_settings/github.collaboration.yaml` → `project_ssot.enabled: true` and `sync_policy: board_only`, the **GitHub Project** is the **only writable** backlog/status **and continuation** SSOT.
-- **Every agent:** Entry reads the board (`project status` / list / claim); Exit updates Status (and Notes) so the next agent can continue from the Project — not from chat alone. See `.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract.
-- **First-run (when enabled):** if `project board-bootstrap --check` FAILs the kit default Playground shell (`board-shell.schema.yaml`: six views + Tier-1 columns on primary views) → `/project-board` + `board-shell-onboard` (**CONSENT GATE** then TURN PROTOCOL) before day-to-day claim/`/implementer` (audit is not day-0).
+- **Every agent:** Entry reads the board (`project status` / list / claim); Exit updates Status (and Notes) so the next agent can continue from the Project — not from chat alone. See `.cursor/skills/board-ssot/SKILL.md` § Continuation contract.
+- **First-run (when enabled):** if `project board-bootstrap --check` FAILs the kit default Playground shell (`board-shell.schema.yaml`: six views + Tier-1 columns on primary views) → `/project-board` + `board-shell` (**CONSENT GATE** then TURN PROTOCOL) before day-to-day claim/`/implementer` (audit is not day-0).
 - **workflow-drift-guard:** must read board Status for DRIFT-009 / DRIFT-010; updates the drift-pass card on Exit; remediations via Notes/Ready handoff — never silent dual-write to trackers.
 - Do **not** dual-write competing slice status to `work-tracker.md` / `session-pointer.md`. Do **not** dual-mirror “for safety.”
 - Read-only `project export` snapshots (if present) never write Status and never compete with board Status.
@@ -21,4 +21,4 @@ alwaysApply: true
 - This product lives only in `mas-workflow-kit-project-ssot`. Do not mutate upstream `mas-workflow-kit`. Board = only writable SSOT; local = evidence/fallback.
 - Multi-collaborator Notes: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC; user → their agents) via `append-notes --agent`. Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime.
 - Prefer board Pattern A recipes (`claim` / `handoff` / `create-from-template`) over multi-step atomics; never paste Project settings UI into a shell.
-- Tier-1 board fields: **create as Issue** (`item_kind_default: issue`); claim / `set-status` / `handoff --to in_progress` may set Start date (UTC when configured); triage/own card sets Priority/Size/Estimate via `set-field` (Size↔Estimate table in `project-board-ssot` skill); Draft→Issue via `promote-to-issue` (or `mention-pr` auto when `promote_to_issue_on_pr`); PR URL via `mention-pr` — Iteration, Labels, Reviewers, End date out of scope for agents by default.
+- Tier-1 board fields: **create as Issue** (`item_kind_default: issue`); claim / `set-status` / `handoff --to in_progress` may set Start date (UTC when configured); triage/own card sets Priority/Size/Estimate via `set-field` (Size↔Estimate table in `board-ssot` skill); Draft→Issue via `promote-to-issue` (or `mention-pr` auto when `promote_to_issue_on_pr`); PR URL via `mention-pr` — Iteration, Labels, Reviewers, End date out of scope for agents by default.

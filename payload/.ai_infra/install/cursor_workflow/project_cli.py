@@ -4,7 +4,7 @@ Path: .ai_infra/install/cursor_workflow/project_cli.py
 Role: Thin CLI facade for GitHub Project SSOT — cmd_* delegates, re-exports, register_project_subparser.
 Used By:
  - .ai_infra/install/cursor_workflow/cli.py
- - .cursor/skills/project-board-ssot/SKILL.md
+ - .cursor/skills/board-ssot/SKILL.md
  - .cursor/agents/project-board.md
 Depends On:
  - .ai_infra/install/cursor_workflow/project_atomics.py
@@ -1301,7 +1301,7 @@ def cmd_guide(args: argparse.Namespace) -> int:
         "# Draft→Issue (same PVTI_); before PR"
     )
     print(
-        "# Size↔Estimate points table: project-board-ssot skill (defaults s/1 if omitted)"
+        "# Size↔Estimate points table: board-ssot skill (defaults s/1 if omitted)"
     )
     print(
         f"python3 -m cursor_workflow project handoff --last --agent {agent} "

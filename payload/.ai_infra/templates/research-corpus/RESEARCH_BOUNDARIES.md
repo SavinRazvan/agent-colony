@@ -4,7 +4,7 @@ Path: .ai_infra/templates/research-corpus/RESEARCH_BOUNDARIES.md
 Role: Hard-stop rules for the research corpus (copied to _research_results/ on enable).
 Used By:
  - .cursor/agents/researcher.md
- - .cursor/skills/research-corpus-execution/SKILL.md
+ - .cursor/skills/research-corpus/SKILL.md
 Depends On:
  - None
 Notes:

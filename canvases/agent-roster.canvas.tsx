@@ -199,7 +199,7 @@ export default function AgentRosterCanvas() {
         </Text>
         <Callout tone="info" title="Board lifecycle (all 8)">
           Tier-1: Start date on claim or first In progress; Size↔Estimate points
-          table in project-board-ssot skill. Promote Draft→Issue via promote-to-issue or mention-pr (auto when
+          table in board-ssot skill. Promote Draft→Issue via promote-to-issue or mention-pr (auto when
           promote_to_issue_on_pr) before shippable PR — claim does not auto-promote.
           Notes: @owner.github_user/&lt;agent&gt; · YYYY-MM-DDTHH:MM:SSZ · … via
           append-notes --agent. See agent-board-collaboration canvas.

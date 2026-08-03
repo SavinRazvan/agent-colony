@@ -22,7 +22,7 @@ Notes:
 |-------|----------------|------|
 | 1 | `python -m cursor_workflow project status` + `project list` | **Every session start** |
 | 2 | Board card body (Acceptance / Rollback / Notes) | Claimed / In progress card |
-| 3 | `.cursor/skills/project-board-ssot/SKILL.md` § Continuation | When mutating Status |
+| 3 | `.cursor/skills/board-ssot/SKILL.md` § Continuation | When mutating Status |
 | 4 | `change-index.md` | Resume mid-slice (thin cache) |
 | 5 | `test-plan.md`, `test-index.md` | When tests change |
 | 6 | `workflow-artifacts/pr/*.md` | Only when phase = review \| prepare \| merge |

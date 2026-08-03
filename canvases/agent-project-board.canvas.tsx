@@ -25,11 +25,11 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/project-board.md · project-board-ssot/SKILL.md · board-shell-onboard/SKILL.md · ADR-006";
+  ".cursor/agents/project-board.md · board-ssot/SKILL.md · board-shell/SKILL.md · ADR-006";
 
 const GOALS = [
   "Independent-governed helper for GitHub Project SSOT",
-  "First-run: coach default Playground shell (board-shell-onboard)",
+  "First-run: coach default Playground shell (board-shell)",
   "List/create/move cards via project_ssot CLI",
   "Triage Ready cards and hand off to implementer",
 ];
@@ -84,8 +84,8 @@ const FALLBACK_LABELS: Record<string, string> = {
 };
 
 const READ_FIRST = [
-  [".cursor/skills/project-board-ssot/SKILL.md", "Board SSOT canon"],
-  [".cursor/skills/board-shell-onboard/SKILL.md", "First-run Playground shell coach"],
+  [".cursor/skills/board-ssot/SKILL.md", "Board SSOT canon"],
+  [".cursor/skills/board-shell/SKILL.md", "First-run Playground shell coach"],
   [".ai_infra/templates/project-board/board-shell.schema.yaml", "Kit default desired state"],
   [".local/user_settings/github.collaboration.yaml", "project_ssot block"],
   [".ai_infra/templates/project-board/README.md", "Card templates"],
@@ -245,7 +245,7 @@ export default function AgentProjectBoardCanvas() {
 
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
-          <Text>1. Read YAML + project-board-ssot skill; project status.</Text>
+          <Text>1. Read YAML + board-ssot skill; project status.</Text>
           <Text>2. list --status ready (or other triage views).</Text>
           <Text>3. create-from-template + claim --last for new work.</Text>
           <Text>4. Move Status for every triage action.</Text>

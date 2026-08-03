@@ -151,14 +151,14 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `audit-module-map` | `enterprise-auditor` (depth tool) |
 | `audit-orchestration` | Parent orchestration |
 | `workflow-drift-audit` | `workflow-drift-guard` |
-| `implementation-execution-loop` | `implementer` |
-| `test-module-coverage` | `test-runner` |
+| `implementer-loop` | `implementer` |
+| `test-coverage` | `test-runner` |
 | `mas-infrastructure-integration` | `integrator-mas-agent` |
-| `project-board-ssot` | `project-board` (board Entry/Exit; ADR-008) |
-| `board-shell-onboard` | `project-board` (first-run shell coach) |
+| `board-ssot` | `project-board` (board Entry/Exit; ADR-008) |
+| `board-shell` | `project-board` (first-run shell coach) |
 | `workflow-activate` | Install / re-activate |
-| `connect-external-mcp` | MCP setup |
-| `research-corpus-execution` | `researcher` |
+| `mcp-connect` | MCP setup |
+| `research-corpus` | `researcher` |
 
 ### Maintainer slash — `.agents/skills/` → consumer `.agents/skills/`
 

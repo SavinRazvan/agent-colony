@@ -123,7 +123,7 @@ const SOFT = [
   {
     layer: "Skill checklist (G3)",
     what: "Exit: CODE=6 = soft-success; no retry loop; outbox status",
-    where: "project-board-ssot/SKILL.md",
+    where: "board-ssot/SKILL.md",
   },
   {
     layer: "Always-apply rule (G3)",
@@ -138,7 +138,7 @@ const SOFT = [
   {
     layer: "Researcher anti-loop",
     what: "rounds ≤6; one clone attempt; no re-init without --force",
-    where: "researcher + research-corpus-execution",
+    where: "researcher + research-corpus",
   },
   {
     layer: "Read-only export",
@@ -296,7 +296,7 @@ export default function GithubApiSafetyCanvas() {
 
       <Spacer height={8} />
       <Text tone="secondary" size="small">
-        Canon: ADR-008 · project_outbox.py · project-board-ssot skill ·
+        Canon: ADR-008 · project_outbox.py · board-ssot skill ·
         project-ssot-precedence.mdc · project-board-collaboration.md § Rate
         limits · github-collaboration.schema.json
       </Text>

@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/researcher.md · research-corpus-execution/SKILL.md · research_cli.py · .agents/skills/RESEARCH_WORKFLOW.md · live pack flexiai-toolsmith + verifier";
+  ".cursor/agents/researcher.md · research-corpus/SKILL.md · research_cli.py · .agents/skills/RESEARCH_WORKFLOW.md · live pack flexiai-toolsmith + verifier";
 
 const GOALS = [
   "Adaptive Brief from chat, peer agent Notes/handoffs, or board research card",
@@ -101,9 +101,9 @@ const LIVE_PROOF = [
 ];
 
 const READ_FIRST = [
-  [".cursor/skills/research-corpus-execution/SKILL.md", "Intake + rounds canon"],
+  [".cursor/skills/research-corpus/SKILL.md", "Intake + rounds canon"],
   ["_research_results/RESEARCH_BOUNDARIES.md", "Hard-stop boundaries"],
-  [".cursor/skills/project-board-ssot/SKILL.md", "When project_ssot.enabled"],
+  [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
 ];
 
 const PATTERNS = [

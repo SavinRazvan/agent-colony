@@ -156,7 +156,7 @@ def workflow_list_mcp_registry() -> str:
 
 @mcp.tool()
 def workflow_mcp_connection_guide() -> str:
-    """Return connect-external-mcp operations doc for users and agents."""
+    """Return mcp-connect operations doc for users and agents."""
     return read_mcp_connection_guide(workspace_root())
 
 

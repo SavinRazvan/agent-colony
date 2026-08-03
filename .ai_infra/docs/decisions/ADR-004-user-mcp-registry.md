@@ -21,5 +21,5 @@ Registry maps agent ids → server keys → tool hints. Agents read registry bef
 ## Consequences
 
 - `cursor_workflow mcp link` / `mcp validate` CLI (Phase 5b)
-- `connect-external-mcp` skill and ops doc
+- `mcp-connect` skill and ops doc
 - Secrets in `.cursor/mcp.user.json` (gitignored)

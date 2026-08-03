@@ -31,7 +31,7 @@ When `.local/user_settings/github.collaboration.yaml` → `project_ssot.enabled:
 
 1. `python -m cursor_workflow project status` — board health + active card
 2. Claim or read In progress card; Acceptance/Rollback on **card body** (`body_sections`)
-3. `.cursor/skills/project-board-ssot/SKILL.md` § Continuation — Pattern A claim/handoff/mention-pr/promote
+3. `.cursor/skills/board-ssot/SKILL.md` § Continuation — Pattern A claim/handoff/mention-pr/promote
 
 **Offline fallback** (`project_ssot` disabled or board unreachable with `fallback: local_trackers`):
 

@@ -212,7 +212,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-07-19 COV-100 doc-align, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` on `main` post G1–G5 github-api-safety + `test_project_cov100_gaps.py` — **1166** tests collected, **7089** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts at that date (**8** / **11** / **7**); kit version **0.4.0**. Superseded by board-shell / DOC-ONBOARD refresh below.
 
-**Listing copy refresh (2026-07-20 DOC-ONBOARD / board-shell, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` + `ls .cursor/skills/` — **1166** tests collected, **7089** stmts / **100%** coverage; agent/skill/rule counts (**8** / **12** / **7**) including `board-shell-onboard`; kit version **0.4.0**. Superseded by completeness refresh below.
+**Listing copy refresh (2026-07-20 DOC-ONBOARD / board-shell, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` + `ls .cursor/skills/` — **1166** tests collected, **7089** stmts / **100%** coverage; agent/skill/rule counts (**8** / **12** / **7**) including `board-shell`; kit version **0.4.0**. Superseded by completeness refresh below.
 
 **Listing copy refresh (2026-07-21 consumer board onboarding):** Tier-1 column FAIL gate + onboarding automation boundary docs; **1180** tests collected.
 

@@ -17,7 +17,7 @@ Notes:
 
 # Complete workflows (maintainer checklist)
 
-**Consumer / first-run (when `project_ssot.enabled`):** board shell before day-to-day PRs — [PLUGIN-USER-GUIDE § Consumer onboarding](PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) · `/project-board` + `board-shell-onboard` · `project board-bootstrap --check`. Architecture audit is **not** day-0.
+**Consumer / first-run (when `project_ssot.enabled`):** board shell before day-to-day PRs — [PLUGIN-USER-GUIDE § Consumer onboarding](PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) · `/project-board` + `board-shell` · `project board-bootstrap --check`. Architecture audit is **not** day-0.
 
 ## A) Standard PR slice (happy path)
 
@@ -54,10 +54,10 @@ Before `/prepare-pr` / final merge:
 Before final `/prepare-pr`:
 
 1. Map changes → `tests/modules/<area>/`.
-2. Follow `.cursor/skills/test-module-coverage/SKILL.md` (local) / test-runner agent profile.
+2. Follow `.cursor/skills/test-coverage/SKILL.md` (local) / test-runner agent profile.
 3. Update `.local/index-and-planning/current/test-plan.md` and `test-index.md`.
 4. Run `python .ai_infra/scripts/pr/check_testing_artifacts.py`.
-5. **Post scoped coverage 100%:** full doc reality sync per `.cursor/skills/test-module-coverage/SKILL.md` step 6 — `IMPLEMENTATION-STATUS.md`, `make coverage-index`, `make doc-validate`, README/HANDOFF/repository-map claims, `make sync-plugin` when payload copies change.
+5. **Post scoped coverage 100%:** full doc reality sync per `.cursor/skills/test-coverage/SKILL.md` step 6 — `IMPLEMENTATION-STATUS.md`, `make coverage-index`, `make doc-validate`, README/HANDOFF/repository-map claims, `make sync-plugin` when payload copies change.
 
 ## D) Doc / plan sync (when scope shifts)
 
@@ -96,7 +96,7 @@ This is the **implementation agent** end-of-loop on top of sections **C** and **
 6. **`module-audit.html`** — touch only when deliberately refreshing a deep module audit export.
 7. **`make drift-validate`** — hand off to **`workflow-drift-guard`** on P0/P1.
 
-Canonical detail: **`.local/index-and-planning/current/plan.md`** / board card body; skill `.cursor/skills/project-board-ssot/SKILL.md` § Continuation contract.
+Canonical detail: **`.local/index-and-planning/current/plan.md`** / board card body; skill `.cursor/skills/board-ssot/SKILL.md` § Continuation contract.
 
 ## File retention policy (explicit)
 

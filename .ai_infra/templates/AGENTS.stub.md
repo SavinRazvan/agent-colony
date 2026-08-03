@@ -35,7 +35,7 @@
    - **`/project-board`** → **CONSENT GATE** + **TURN PROTOCOL** (one view per turn; [views-setup.md](.ai_infra/templates/project-board/views-setup.md))
    - Re-run `board-bootstrap --check` until **exit 0**
    - `source .venv/bin/activate && python3 -m cursor_workflow project status`
-   - Day-to-day board protocol: `project-board-ssot` skill (loaded automatically); wire + shell coach: **`/project-board`**
+   - Day-to-day board protocol: `board-ssot` skill (loaded automatically); wire + shell coach: **`/project-board`**
 4. If Project SSOT is disabled: read `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 5. **`/implementer`** when bootstrap is green (not day-0: `/enterprise-auditor`)
 

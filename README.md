@@ -120,7 +120,7 @@ Repo:    https://github.com/YOU/your-app
 
 The **`/project-board`** agent uses `gh project view` / `field-list` to propose **`project_ssot`** (board ids, Status/Priority/Size/Estimate/Start date field ids) and **`default_repo`**. **Confirm before save.**
 
-Day-to-day board protocol lives in the **`project-board-ssot`** skill; onboarding wiring + shell coach is always **`/project-board`**.
+Day-to-day board protocol lives in the **`board-ssot`** skill; onboarding wiring + shell coach is always **`/project-board`**.
 
 Then verify the API slice:
 
@@ -202,7 +202,7 @@ Project: https://github.com/users/YOU/projects/N
 Repo: https://github.com/YOU/your-app
 ```
 
-Skill: [board-shell-onboard](.cursor/skills/board-shell-onboard/SKILL.md) · [views-setup.md](.ai_infra/templates/project-board/views-setup.md)
+Skill: [board-shell](.cursor/skills/board-shell/SKILL.md) · [views-setup.md](.ai_infra/templates/project-board/views-setup.md)
 
 #### B. GitHub UI — Playground default (six views)
 
@@ -305,7 +305,7 @@ python3 -m cursor_workflow project list --status ready
 # create / claim — see: python3 -m cursor_workflow project guide
 ```
 
-Maintainer gates: `make gates` · `make drift-validate` · `make doc-validate` · shipped matrix: [IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md). Kit canvases: **14** files under `canvases/` (**11** agent/roster hubs + 3 concept hubs — see IMPLEMENTATION-STATUS § Kit canvases).
+Maintainer gates: `make gates` · `make drift-validate` · `make doc-validate` · shipped matrix: [IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md). Kit canvases: **15** files under `canvases/` (**11** agent/roster hubs + 4 concept hubs — see IMPLEMENTATION-STATUS § Kit canvases).
 
 ---
 

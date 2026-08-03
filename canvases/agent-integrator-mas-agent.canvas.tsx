@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/integrator-mas-agent.md · mas-infrastructure-integration/SKILL.md · project-board-ssot/SKILL.md";
+  ".cursor/agents/integrator-mas-agent.md · mas-infrastructure-integration/SKILL.md · board-ssot/SKILL.md";
 
 const GOALS = [
   "Integrates new agents, skills, MCP, and infrastructure expansions",
@@ -87,7 +87,7 @@ const FALLBACK_LABELS: Record<string, string> = {
 
 const READ_FIRST = [
   [".cursor/skills/mas-infrastructure-integration/SKILL.md", "Integration canon"],
-  [".cursor/skills/project-board-ssot/SKILL.md", "When project_ssot.enabled"],
+  [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
   ["python3 -m cursor_workflow integrate validate", "Wire verification"],
   ["check_governance_consistency.py", "When policy docs change"],
 ];

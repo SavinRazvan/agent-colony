@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/test-runner.md · test-module-coverage/SKILL.md · project-board-ssot/SKILL.md";
+  ".cursor/agents/test-runner.md · test-coverage/SKILL.md · board-ssot/SKILL.md";
 
 const GOALS = [
   "Module-focused tests, regressions, coverage",
@@ -93,8 +93,8 @@ const FALLBACK_LABELS: Record<string, string> = {
 };
 
 const READ_FIRST = [
-  [".cursor/skills/test-module-coverage/SKILL.md", "Test lifecycle canon"],
-  [".cursor/skills/project-board-ssot/SKILL.md", "When project_ssot.enabled"],
+  [".cursor/skills/test-coverage/SKILL.md", "Test lifecycle canon"],
+  [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
   [".local/index-and-planning/current/test-index.md", "When tests change"],
   [".local/index-and-planning/current/test-plan.md", "When tests change"],
   ["check_testing_artifacts.py", "Before PR path"],

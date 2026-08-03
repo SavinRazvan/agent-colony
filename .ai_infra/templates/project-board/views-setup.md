@@ -6,7 +6,7 @@ Human paste guide for GitHub Project settings UI (ADR-008). There is **no offici
 
 **Desired state (kit default):** `.ai_infra/templates/project-board/board-shell.schema.yaml` — **full Playground parity**, not a bare “two views” board.  
 Optional overlay: `.local/user_settings/board-shell.schema.yaml`.  
-First-run coach: `/project-board` + `.cursor/skills/board-shell-onboard/SKILL.md`.
+First-run coach: `/project-board` + `.cursor/skills/board-shell/SKILL.md`.
 
 **Product rule:** apply this **default shell** so the board matches Playground (Status board, Prioritized backlog, Roadmap, Bugs, In review, My items) with Tier-1 columns. Customize cosmetics later. Verify with:
 
@@ -67,7 +67,7 @@ Kit **default** remains six Playground views ([`board-shell.schema.yaml`](board-
 5. README: `--apply-readme` or paste `project-readme.md`.
 6. `python3 -m cursor_workflow project board-bootstrap --check` until green.
 
-Agents coach this as **TURN PROTOCOL** in `board-shell-onboard` (one view per chat turn). **Default:** human clicks. **If the user asks** for browser help, agents may use browser MCP and follow **Browser assist map** below.
+Agents coach this as **TURN PROTOCOL** in `board-shell` (one view per chat turn). **Default:** human clicks. **If the user asks** for browser help, agents may use browser MCP and follow **Browser assist map** below.
 
 ---
 

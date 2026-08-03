@@ -4,7 +4,7 @@ Path: .ai_infra/templates/project-board/README.md
 Role: Index for GitHub Project card / Project README templates (board Pattern A).
 Used By:
  - .ai_infra/install/cursor_workflow/project_cli.py (create-from-template)
- - .cursor/skills/project-board-ssot/SKILL.md
+ - .cursor/skills/board-ssot/SKILL.md
 Depends On:
  - conventions.body_sections in github.collaboration.yaml
 Notes:
@@ -38,7 +38,7 @@ Card bodies always include `## Acceptance`, `## Rollback`, and `## Notes` so `va
 | slice / feature work | `create-from-template --template slice --priority p1` |
 | bug fix | `create-from-template --template bug --priority p1` |
 | external / corpus research | `create-from-template --template research --priority p2` |
-| Project board bootstrap | `project doctor` → `/project-board` first-run (`board-shell-onboard`) → follow `views-setup.md` → paste `project-readme.md` → `project board-bootstrap --check` → `project status` |
+| Project board bootstrap | `project doctor` → `/project-board` first-run (`board-shell`) → follow `views-setup.md` → paste `project-readme.md` → `project board-bootstrap --check` → `project status` |
 | Project README | **Humans** paste **contents of** `project-readme.md`, or opt-in `board-bootstrap --check --apply-readme` |
 
 **Do not** paste Project settings labels (`Project name`, `Short description`, `README`, …) into bash — use `cursor_workflow project` recipes instead.
@@ -54,7 +54,7 @@ python3 -m cursor_workflow project mention-pr --pr <n> --last --agent implemente
 python3 -m cursor_workflow project handoff --last --agent implementer --next verifier --to in_review
 ```
 
-`--priority` is required on `create-from-template`. `--size`/`--estimate` default to `s`/`1` (Notes when guessed). Issue create assigns `owner.github_user` unless `--no-assignee`. Size↔Estimate points table: `project-board-ssot` skill. `--last` reads `.local/generated-data/project-last-item.json` (machine-local pointer, not a second Status SSOT). Claim does **not** auto-promote; `mention-pr` auto-promotes Draft when `promote_to_issue_on_pr` (default true). Start date sets on claim / first In progress when configured.
+`--priority` is required on `create-from-template`. `--size`/`--estimate` default to `s`/`1` (Notes when guessed). Issue create assigns `owner.github_user` unless `--no-assignee`. Size↔Estimate points table: `board-ssot` skill. `--last` reads `.local/generated-data/project-last-item.json` (machine-local pointer, not a second Status SSOT). Claim does **not** auto-promote; `mention-pr` auto-promotes Draft when `promote_to_issue_on_pr` (default true). Start date sets on claim / first In progress when configured.
 
 **Rate-limit outbox (do not hammer GraphQL):**
 

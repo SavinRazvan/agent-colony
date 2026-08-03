@@ -412,7 +412,7 @@ def run_doctor(args: argparse.Namespace) -> int:
             print(f'doctor: WARN — fields.{key}.field_id missing (Tier-1)', file=sys.stderr)
     conventions = ssot.get('conventions') if isinstance(ssot.get('conventions'), dict) else {}
     print(f"set_start_date_on_claim: {conventions.get('set_start_date_on_claim', True)}")
-    print('doctor: note — Size/Estimate use points table in project-board-ssot skill (not hours)')
+    print('doctor: note — Size/Estimate use points table in board-ssot skill (not hours)')
     print(f"item_kind_default: {conventions.get('item_kind_default', 'issue')}")
     print(f'promote_to_issue_on_pr: {conventions.get('promote_to_issue_on_pr', True)}')
     default_repo = str(ssot.get('default_repo') or '').strip()
@@ -626,7 +626,7 @@ def run_board_bootstrap(args: argparse.Namespace) -> int:
     print("board-bootstrap: ok")
     print(f"project: {ssot.get('name')} ({ssot.get('url')})")
     print("next: day-to-day Pattern A — project status / create-from-template / claim")
-    print("next: first-run complete — .cursor/skills/board-shell-onboard/SKILL.md (CONSENT+TURN if re-coaching)")
+    print("next: first-run complete — .cursor/skills/board-shell/SKILL.md (CONSENT+TURN if re-coaching)")
     return pc.EXIT_OK
 
 def run_queue(args: argparse.Namespace) -> int:

@@ -24,7 +24,7 @@ import {
 type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-20";
-const SOURCES = ".cursor/agents/verifier.md · project-board-ssot/SKILL.md § Continuation";
+const SOURCES = ".cursor/agents/verifier.md · board-ssot/SKILL.md § Continuation";
 
 const GOALS = [
   "Claims vs evidence; minimal high-signal checks",
@@ -89,7 +89,7 @@ const FALLBACK_LABELS: Record<string, string> = {
 
 const READ_FIRST = [
   [".cursor/agents/verifier.md", "Agent card (canon)"],
-  [".cursor/skills/project-board-ssot/SKILL.md", "When project_ssot.enabled"],
+  [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
   [".local/index-and-planning/current/session-pointer.md", "Fallback Entry"],
   [".local/workflow-artifacts/pr/", "When maintainer workflow in play"],
 ];
