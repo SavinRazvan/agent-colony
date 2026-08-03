@@ -22,7 +22,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m venv .venv
+          .venv/bin/pip install -q -U pip
           .venv/bin/pip install -q -e ".[dev,mcp]"
+          .venv/bin/python -c "from mcp.server.fastmcp import FastMCP; print('mcp FastMCP OK', FastMCP.__module__)"
 
       - name: Seed CI workspace
         run: .venv/bin/python .ai_infra/scripts/ci/seed_kit_workspace.py --directory .

@@ -98,6 +98,18 @@ This is the **implementation agent** end-of-loop on top of sections **C** and **
 
 Canonical detail: **`.local/index-and-planning/current/plan.md`** / board card body; skill `.cursor/skills/board-ssot/SKILL.md` § Continuation contract.
 
+## Stacked PRs (feature → feature → main)
+
+When landing a stack of dependent PRs:
+
+1. Merge the **bottom** PR into `main` first.
+2. **Retarget** the next PR’s base to `main` (or merge `main` into its head and push) **before** deleting the parent remote branch.
+3. Only then run `finalize.py` / remote branch delete for the parent.
+4. Prefer **not** `--skip-gates` unless the **same SHA** just ran `resolve_gates()`; prefer **not** `--skip-board-sync` when `board-bootstrap --check` is green (else Notes + outbox later).
+5. Pattern A artifacts (`review.md` / `prep.md` / `merge.md`) are tip-of-session files under `.local/workflow-artifacts/pr/` — they overwrite per PR; optional dated copies under `pr/archive/` only if you need an audit trail.
+
+Never `finalize` a stacked parent head while a child PR still lists that branch as its base.
+
 ## File retention policy (explicit)
 
 - **Do not delete** workflow sources: `.agents/skills/**`, versioned `.cursor/rules`, `.cursor/agents`, `.cursor/skills` (see `.gitignore` exceptions), tracked `.ai_infra/scripts/pr/**`, or this checklist.
