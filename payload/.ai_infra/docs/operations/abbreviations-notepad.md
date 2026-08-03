@@ -99,7 +99,7 @@ High-signal drift ids you will see often: **DRIFT-009** (no competing tracker `i
 |-------|------|
 | project-board | Board triage, Status, Tier-1 fields; hand off to implementer |
 | implementer | Slice implementation |
-| integrator-mas-agent | Extend agents/skills/MCP into kit infrastructure |
+| integrator | Extend agents/skills/MCP into kit infrastructure |
 | test-runner | Module tests and coverage |
 | verifier | Evidence-based verification |
 | enterprise-auditor | Architecture audits (alignment / scorecard artifacts) |

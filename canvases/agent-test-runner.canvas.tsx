@@ -127,7 +127,7 @@ const ARTIFACTS = [
 const PEERS = [
   ["Outbound", "next (generic)", "handoff format per card"],
   ["Inbound", "implementer", "Handoff when tests/coverage needed before merge"],
-  ["Inbound", "integrator-mas-agent", "Escalates coverage work to test-runner"],
+  ["Inbound", "integrator", "Escalates coverage work to test-runner"],
 ];
 
 function DagPanel({

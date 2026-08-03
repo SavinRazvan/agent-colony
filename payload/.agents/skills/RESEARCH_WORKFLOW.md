@@ -86,6 +86,6 @@ No product repo edits; no git commits for research packs; writes only `_research
 |----------|------|
 | PR merge | `pr-workflow/SKILL.md` |
 | Implementation | `implementer` (reads `AGENT_BRIEF.md`) |
-| Integration | `integrator-mas-agent` |
+| Integration | `integrator` |
 | Audit | `enterprise-auditor` |
 | Agent canvas | `canvases/agent-researcher.canvas.tsx` |

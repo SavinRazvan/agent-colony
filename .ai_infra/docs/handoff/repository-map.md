@@ -132,7 +132,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `test-runner` | Yes | Yes | `/test-runner` |
 | `verifier` | Yes | Yes | `/verifier` |
 | `enterprise-auditor` | Yes | Yes | `/enterprise-auditor` |
-| `integrator-mas-agent` | Yes | Yes | `/integrator-mas-agent` |
+| `integrator` | Yes | Yes | `/integrator` |
 | `workflow-drift-guard` | Yes | Yes | `/workflow-drift-guard` |
 | `project-board` | Yes | Yes | `/project-board` |
 | `researcher` | Yes | Yes (opt-in packs after `research init`) | `/researcher` (adaptive Brief + HTTPS; shipped/proven) |
@@ -153,7 +153,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `drift-audit` | `workflow-drift-guard` |
 | `implementer-loop` | `implementer` |
 | `test-coverage` | `test-runner` |
-| `integrator-protocol` | `integrator-mas-agent` |
+| `integrator-protocol` | `integrator` |
 | `board-ssot` | `project-board` (board Entry/Exit; ADR-008) |
 | `board-shell` | `project-board` (first-run shell coach) |
 | `workflow-activate` | Install / re-activate |

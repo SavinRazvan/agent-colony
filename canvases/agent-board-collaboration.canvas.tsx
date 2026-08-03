@@ -35,7 +35,7 @@ const ROSTER_NODES = [
   { id: "verifier" },
   { id: "workflow-drift-guard" },
   { id: "enterprise-auditor" },
-  { id: "integrator-mas-agent" },
+  { id: "integrator" },
   { id: "test-runner" },
 ];
 
@@ -46,9 +46,9 @@ const ROSTER_EDGES = [
   { from: "workflow-drift-guard", to: "project-board" },
   { from: "workflow-drift-guard", to: "implementer" },
   { from: "enterprise-auditor", to: "implementer" },
-  { from: "integrator-mas-agent", to: "implementer" },
-  { from: "integrator-mas-agent", to: "test-runner" },
-  { from: "integrator-mas-agent", to: "enterprise-auditor" },
+  { from: "integrator", to: "implementer" },
+  { from: "integrator", to: "test-runner" },
+  { from: "integrator", to: "enterprise-auditor" },
 ];
 
 const EDGE_LABELS: Record<string, string> = {
@@ -58,9 +58,9 @@ const EDGE_LABELS: Record<string, string> = {
   "workflow-drift-guard→project-board": "dual-write remediation",
   "workflow-drift-guard→implementer": "dual-write remediation",
   "enterprise-auditor→implementer": "Notes + artifact paths",
-  "integrator-mas-agent→implementer": "escalate product src/",
-  "integrator-mas-agent→test-runner": "escalate coverage",
-  "integrator-mas-agent→enterprise-auditor": "escalate architecture",
+  "integrator→implementer": "escalate product src/",
+  "integrator→test-runner": "escalate coverage",
+  "integrator→enterprise-auditor": "escalate architecture",
 };
 
 const PER_AGENT_ENTRY_EXIT = [
@@ -85,9 +85,9 @@ const PER_AGENT_ENTRY_EXIT = [
     "→Done or leave In review; --agent verifier",
   ],
   [
-    "integrator-mas-agent",
+    "integrator",
     "status + claim",
-    "→Done; --agent integrator-mas-agent",
+    "→Done; --agent integrator",
   ],
   [
     "enterprise-auditor",
@@ -243,7 +243,7 @@ const SIDE_FLOW = [
   "enterprise-auditor: audit card → write .local/workflow-artifacts/… → Notes paths → implementer",
   "implementer: make drift-validate → P0/P1 → hand off workflow-drift-guard",
   "workflow-drift-guard: must read board In progress → drift artifacts → drift card done; remediation via Notes/Ready to project-board or implementer",
-  "integrator-mas-agent: integration card → validate → escalate to implementer | test-runner | enterprise-auditor",
+  "integrator: integration card → validate → escalate to implementer | test-runner | enterprise-auditor",
 ];
 
 function CollaborationDag({

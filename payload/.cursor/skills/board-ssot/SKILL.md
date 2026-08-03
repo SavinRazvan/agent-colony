@@ -209,7 +209,7 @@ Rules:
 | **implementer** | status + Ready/claim | In progress → In review (PR) → Done; fields on own card; may create slice cards | code; change-index; PR |
 | **test-runner** | status + slice card | Stay on card; → In review when tests gate PR; Done when test-only slice closes | test-index / test-plan |
 | **verifier** | status + related card | Confirm → Done or leave In review with Notes (failures) | evidence / PR artifacts |
-| **integrator-mas-agent** | status + Ready/claim | claim → Done on integration card; may create cards | integrate / payload |
+| **integrator** | status + Ready/claim | claim → Done on integration card; may create cards | integrate / payload |
 | **enterprise-auditor** | status + audit card | Audit card → In review/Done; Notes point to artifact paths | `.local/workflow-artifacts/…` |
 | **workflow-drift-guard** | **Must** status + list In progress (dual-write check) | Drift-pass card → Done (or In review if P0/P1 need human); cite board Status in drift-audit; hand remediation to project-board/implementer via Ready card or Notes — **do not** silent-edit trackers | drift-audit / drift-todos |
 | **researcher** | status + research card if any | If a research card exists → Done + Notes with corpus paths; else read-only | `_research_results/` |

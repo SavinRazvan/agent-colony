@@ -118,7 +118,7 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 | Implement | `.cursor/agents/implementer.md` + `.cursor/skills/implementer-loop/SKILL.md` |
 | Project board SSOT | `.cursor/agents/project-board.md` + `.cursor/skills/board-ssot/SKILL.md` — `python -m cursor_workflow project …` |
 | Board shell first-run | `/project-board` + `.cursor/skills/board-shell/SKILL.md` + `board-shell.schema.yaml` |
-| Integrate infrastructure | `.cursor/agents/integrator-mas-agent.md` + `.cursor/skills/integrator-protocol/SKILL.md` — validate with `python3 -m cursor_workflow integrate validate` |
+| Integrate infrastructure | `.cursor/agents/integrator.md` + `.cursor/skills/integrator-protocol/SKILL.md` — validate with `python3 -m cursor_workflow integrate validate` |
 | Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-coverage/SKILL.md` |
 | Verify claims | `.cursor/agents/verifier.md` |
 | Operational drift | **`workflow-drift-guard`** — `.cursor/agents/workflow-drift-guard.md` + `.cursor/skills/drift-audit/SKILL.md` — validate with `python3 -m cursor_workflow drift validate` |

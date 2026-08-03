@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/integrator-mas-agent.md · integrator-protocol/SKILL.md · board-ssot/SKILL.md";
+  ".cursor/agents/integrator.md · integrator-protocol/SKILL.md · board-ssot/SKILL.md";
 
 const GOALS = [
   "Integrates new agents, skills, MCP, and infrastructure expansions",
@@ -98,7 +98,7 @@ const PATTERNS = [
   ["Tier-1", "claim/set-status→In progress Start date; Size/Estimate per skill table"],
   ["STANDALONE", "Product lives only in mas-workflow-kit-project-ssot"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
-  ["Attribution", "@owner.github_user/integrator-mas-agent via --agent"],
+  ["Attribution", "@owner.github_user/integrator via --agent"],
 ];
 
 const ARTIFACTS = [
@@ -192,7 +192,7 @@ export default function AgentIntegratorMasAgentCanvas() {
     <Stack gap={20} style={{ padding: 20, maxWidth: 980 }}>
       <Stack gap={8}>
         <Row gap={10} style={{ alignItems: "center" }}>
-          <H1 style={{ margin: 0 }}>integrator-mas-agent</H1>
+          <H1 style={{ margin: 0 }}>integrator</H1>
           <Pill tone="info" size="sm">
             kit agent
           </Pill>

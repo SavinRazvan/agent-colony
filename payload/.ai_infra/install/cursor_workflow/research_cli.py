@@ -38,7 +38,7 @@ _DEFAULT_LENSES = [
     "decisions",
     "patterns",
 ]
-_DEFAULT_CONSUMERS = ["implementer", "integrator-mas-agent"]
+_DEFAULT_CONSUMERS = ["implementer", "integrator"]
 
 
 def _fail(cmd: str, code: int, reason: str) -> int:

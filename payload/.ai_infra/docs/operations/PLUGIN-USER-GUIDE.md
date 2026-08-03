@@ -258,7 +258,7 @@ your-project/
 | Implement | `/implementer` |
 | Tests | `/test-runner` |
 | PR lifecycle | `/review-pr` → `/prepare-pr` → `/merge-pr` |
-| Extend kit | `/integrator-mas-agent` |
+| Extend kit | `/integrator` |
 
 ### Terminal commands (project root)
 
@@ -331,7 +331,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | **Architecture audit** *(not day-0)* | `/enterprise-auditor` | — (subagent only; no dedicated MCP tool) | [agent-workflow-procedures.md](agent-workflow-procedures.md) §1 — after board shell |
 | **Operational drift** (plan ↔ tracker) | `/workflow-drift-guard` (optional) | `python3 -m cursor_workflow drift validate --profile consumer` on app projects | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) · [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
 | **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` `resolve_gates()` | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
-| **Add agents / skills / MCP** | `/integrator-mas-agent` + `/integrator-protocol` | `integrate validate` | [mas-infrastructure-integration.md](mas-infrastructure-integration.md) |
+| **Add agents / skills / MCP** | `/integrator` + `/integrator-protocol` | `integrate validate` | [mas-infrastructure-integration.md](mas-infrastructure-integration.md) |
 | **Connect external MCP** | `/mcp-connect` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
 | **Upgrade / refresh dashboards** | `/workflow-activate` | `python3 -m cursor_workflow activate --directory .` | [upgrade-kit.md](upgrade-kit.md) |
 | **Check install health** | — | `python3 -m cursor_workflow health` | [gate-matrix.md](gate-matrix.md) |
@@ -348,7 +348,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | `/enterprise-auditor` | `.cursor/agents/enterprise-auditor.md` |
 | `/workflow-drift-guard` | `.cursor/agents/workflow-drift-guard.md` |
 | `/researcher` | `.cursor/agents/researcher.md` — **shipped/proven**; adaptive Brief; public/private GitHub (private needs `gh`/git auth); anti-loop ≤6 rounds; `research init\|fetch\|validate`; corpus opt-in after init |
-| `/integrator-mas-agent` | `.cursor/agents/integrator-mas-agent.md` |
+| `/integrator` | `.cursor/agents/integrator.md` |
 | `/project-board` | `.cursor/agents/project-board.md` + `board-ssot` + first-run `board-shell` |
 | `/board-shell` | `.cursor/skills/board-shell/` — first-run coach (also via `/project-board`) |
 | `/review-pr`, `/prepare-pr`, `/merge-pr` | `.agents/skills/` |

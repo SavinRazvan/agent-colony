@@ -44,7 +44,7 @@ Normalize a **Research Brief** from whatever channel started you — do **not** 
 - `question`: “Map architecture, entrypoints, and patterns useful to our MAS kit; produce `AGENT_BRIEF` for implementer/integrator.”
 - `lenses`: architecture, cli, agents, skills, tests, decisions, patterns
 - `slug`: repo name lowercased (`grok-build`)
-- `consumers`: implementer, integrator-mas-agent
+- `consumers`: implementer, integrator
 - `rounds_max`: 6
 
 **Only refuse** when you cannot find any source (no URL, no path, no `github:`) **and** the user did not ask for `mode: self`. If question is missing, use the default above and state it in Notes — do not block.
@@ -110,7 +110,7 @@ Agent fills rounds 1–6 under `sources/<slug>/`; CLI owns scaffold, fetch pin, 
 | Need | Use |
 |------|-----|
 | Implement features | `implementer` (consume `AGENT_BRIEF.md`) |
-| Integrate kit surfaces | `integrator-mas-agent` |
+| Integrate kit surfaces | `integrator` |
 | PR merge | `pr-workflow/SKILL.md` |
 | Full enterprise audit | `enterprise-auditor` |
 | Verify a claim | `verifier` |

@@ -32,7 +32,7 @@ type AgentId =
   | "implementer"
   | "verifier"
   | "test-runner"
-  | "integrator-mas-agent"
+  | "integrator"
   | "enterprise-auditor"
   | "workflow-drift-guard"
   | "researcher"
@@ -60,7 +60,7 @@ const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
     lane: "Delivery",
   },
   {
-    id: "integrator-mas-agent",
+    id: "integrator",
     role: "Wire agents/skills/MCP into the kit",
     lane: "Infrastructure",
   },
@@ -143,19 +143,19 @@ const RELATIONS: {
     when: "Spot-check top audit claims vs preflight + repo paths",
   },
   {
-    from: "integrator-mas-agent",
+    from: "integrator",
     to: "implementer",
     via: "escalate product src/",
     when: "Integration needs product code",
   },
   {
-    from: "integrator-mas-agent",
+    from: "integrator",
     to: "test-runner",
     via: "escalate coverage",
     when: "Integration needs test module work",
   },
   {
-    from: "integrator-mas-agent",
+    from: "integrator",
     to: "enterprise-auditor",
     via: "escalate architecture",
     when: "Integration is architecture-impacting",
@@ -192,7 +192,7 @@ const HAPPY_PATH = [
 const LANES: [string, string][] = [
   ["Coordination", "project-board"],
   ["Delivery", "implementer · test-runner · verifier"],
-  ["Infrastructure", "integrator-mas-agent"],
+  ["Infrastructure", "integrator"],
   ["Quality", "enterprise-auditor · workflow-drift-guard"],
   ["Research (opt-in corpus)", "researcher"],
 ];

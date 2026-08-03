@@ -116,11 +116,11 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 **Dashboards (optional):** from project root run `source .venv/bin/activate && python3 -m http.server 8000`, then open
 http://localhost:8000/.local/agents-control-center/dashboards/index.html (not `file://`).
 
-Optional: `integrate validate`, `health`. Add infrastructure later: **`/integrator-mas-agent`**.
+Optional: `integrate validate`, `health`. Add infrastructure later: **`/integrator`**.
 
 ## Adding agents/skills/MCP later
 
-Invoke subagent **`/integrator-mas-agent`** with skill **`/integrator-protocol`** — not shell commands ([Subagents](https://cursor.com/docs/subagents), [Skills](https://cursor.com/docs/skills)).
+Invoke subagent **`/integrator`** with skill **`/integrator-protocol`** — not shell commands ([Subagents](https://cursor.com/docs/subagents), [Skills](https://cursor.com/docs/skills)).
 
 ## Success
 

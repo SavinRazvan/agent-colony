@@ -88,7 +88,7 @@ const PLAN_ROWS: {
   },
   {
     lane: "Infrastructure",
-    agentNow: "integrator-mas-agent",
+    agentNow: "integrator",
     skillsNow: "PRIMARY integrator-protocol",
     agentNext: "integrator",
     skillsNext: "PRIMARY integrator-protocol",
@@ -292,7 +292,7 @@ const AGENT_SCORES: ScoredName[] = [
     note: "guard vs audit dual metaphor; workflow- redundant",
   },
   {
-    id: "integrator-mas-agent",
+    id: "integrator",
     kind: "agent",
     primaryPair: "integrator-protocol",
     dims: { clarity: 3, brevity: 1, pairing: 2, convention: 1, uniqueness: 3 },
@@ -401,7 +401,7 @@ const SKILL_SCORES: ScoredName[] = [
   {
     id: "integrator-protocol",
     kind: "skill-canonical",
-    primaryPair: "integrator-mas-agent",
+    primaryPair: "integrator",
     dims: { clarity: 3, brevity: 1, pairing: 2, convention: 2, uniqueness: 3 },
     note: "Worst skill pairing; prefer integrator-protocol",
   },
@@ -523,7 +523,7 @@ type RenameRow = {
 const RENAME_ROWS: RenameRow[] = [
   {
     layer: "agents",
-    current: "integrator-mas-agent",
+    current: "integrator",
     proposed: "integrator",
     action: "rename",
     priority: "P0",
@@ -748,8 +748,8 @@ export default function NamingRosterAuditCanvas() {
             tone={below18 > 0 ? "warning" : "success"}
           />
           <Stat
-            value={String(total(AGENT_SCORES.find((a) => a.id === "integrator-mas-agent")!.dims))}
-            label="Worst agent (integrator-mas-agent)"
+            value={String(total(AGENT_SCORES.find((a) => a.id === "integrator")!.dims))}
+            label="Worst agent (integrator)"
             tone="danger"
           />
         </Grid>

@@ -4,7 +4,7 @@ Path: .ai_infra/templates/research-corpus/AGENT_BRIEF.template.md
 Role: Short handoff pack for implementer / integrator (and other consumers).
 Used By:
  - researcher exit
- - implementer / integrator-mas-agent Read first
+ - implementer / integrator Read first
 Depends On:
  - CURATED.md
  - INDEX.json

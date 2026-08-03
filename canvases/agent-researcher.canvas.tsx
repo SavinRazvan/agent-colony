@@ -126,7 +126,7 @@ const ARTIFACTS = [
 
 const PEERS = [
   ["Use instead", "implementer", "Product code changes"],
-  ["Use instead", "integrator-mas-agent", "Kit surface integration"],
+  ["Use instead", "integrator", "Kit surface integration"],
   ["Use instead", "pr-workflow", "Git commit/push/PR"],
   ["Use instead", "enterprise-auditor", "Architecture audits"],
   ["Use instead", "verifier", "Claims vs evidence"],
