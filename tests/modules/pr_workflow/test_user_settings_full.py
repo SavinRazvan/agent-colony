@@ -349,7 +349,7 @@ pr_collaboration:
     default:
       agents: [review-pr]
     architecture_impacting:
-      agents: [enterprise-auditor, review-pr]
+      agents: [auditor, review-pr]
       requires_alignment_artifacts: true
 """,
     )

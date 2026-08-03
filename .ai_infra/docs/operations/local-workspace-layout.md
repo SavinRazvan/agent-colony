@@ -50,7 +50,7 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 | `workflow-artifacts/pr/` | `review.md`, `prep.md`, `merge.md` |
 | `workflow-artifacts/alignment/` | `alignment-audit.md`, `alignment-todos.md` |
 | `workflow-artifacts/enterprise-architecture-audit/` | Full audit report + actions |
-| `workflow-artifacts/drift/` | `drift-audit.md`, `drift-todos.md` (workflow-drift-guard) |
+| `workflow-artifacts/drift/` | `drift-audit.md`, `drift-todos.md` (drift-guard) |
 | `workflow-artifacts/release/` | Optional RC sign-off (`rc-signoff.md`) |
 | `workflow-artifacts/audit/` | `preflight.json`, `doc-facts-preflight.json` (verify-all / doc validate) |
 | `user_settings/` | Gitignored YAML worksheets: GitHub collaboration + MCP agent wiring (from kit exemplars) |

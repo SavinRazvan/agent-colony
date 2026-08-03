@@ -68,7 +68,7 @@ python3 -m cursor_workflow project list --status ready
 # claim / create-from-template — see: python3 -m cursor_workflow project guide
 ```
 
-**First-run / shell gate (when `project_ssot.enabled`):** if `python3 -m cursor_workflow project board-bootstrap --check` exits non-zero (missing views, Tier-1 columns, or empty README) → **`/project-board`** + [board-shell](.cursor/skills/board-shell/SKILL.md) before claim/`/implementer`. **`/enterprise-auditor`** is not day-0.
+**First-run / shell gate (when `project_ssot.enabled`):** if `python3 -m cursor_workflow project board-bootstrap --check` exits non-zero (missing views, Tier-1 columns, or empty README) → **`/project-board`** + [board-shell](.cursor/skills/board-shell/SKILL.md) before claim/`/implementer`. **`/auditor`** is not day-0.
 
 Auth (board write): `gh auth refresh -h github.com -s read:project,project` (keep `repo`).  
 No browser (WSL)? Copy the one-time code → **https://github.com/login/device** → approve Project permissions → `gh auth status`.  
@@ -98,8 +98,8 @@ If the board is unavailable: `fallback: local_trackers` only, then resume board 
 | `project-board` | Board triage / recipes + first-run shell coach (`board-shell`; independent-governed) |
 | `implementer` | Product slices; board-first Entry/Exit |
 | `test-runner` / `verifier` | Tests and claim verification |
-| `enterprise-auditor` | Alignment / scorecard → `.local/workflow-artifacts/` |
-| `workflow-drift-guard` | DRIFT-009/010; board on Exit |
+| `auditor` | Alignment / scorecard → `.local/workflow-artifacts/` |
+| `drift-guard` | DRIFT-009/010; board on Exit |
 | `integrator` | Agents, skills, MCP, kit expansions |
 | `researcher` | Shipped/proven corpus researcher — adaptive Brief; packs under `_research_results/` (opt-in after `research init`); hard-stop on product code · live E2E Issue #74 |
 

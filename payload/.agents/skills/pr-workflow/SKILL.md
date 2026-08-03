@@ -12,7 +12,7 @@ This skill is the **merge path** only: **review → prepare → merge** (slash s
 
 ## Order
 
-1. `review-pr` — findings only; optional **`make drift-validate`** before review when trackers/board status changed. When scope is architecture-impacting, run **`enterprise-auditor`** and write alignment artifacts per `.cursor/rules/advisory-audit-alignment-enforcement.mdc`.
+1. `review-pr` — findings only; optional **`make drift-validate`** before review when trackers/board status changed. When scope is architecture-impacting, run **`auditor`** and write alignment artifacts per `.cursor/rules/advisory-audit-alignment-enforcement.mdc`.
 2. `prepare-pr` — board Status (or tracker sync only if offline fallback) + `prepare.py` (`resolve_gates()` — **4** steps on kit-dev: testing artifacts, pytest, drift, doc facts).
 3. `merge-pr` — `merge.py` check, `gh pr merge`, `merge.py --merge-sha` (sets board card → Done when SSOT on), finalize repo state.
 

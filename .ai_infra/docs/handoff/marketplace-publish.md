@@ -138,7 +138,7 @@ python3 -m cursor_workflow drift validate --directory . --profile consumer
 
 1. Run `make sync-plugin`
 2. In Agent chat: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot`
-3. Confirm agents: `implementer`, `enterprise-auditor`, maintainer slash skills
+3. Confirm agents: `implementer`, `auditor`, maintainer slash skills
 4. Run **`/workflow-activate`** in Agent chat with a **non-kit** project folder open
 
 ```bash
@@ -241,7 +241,7 @@ Local pre-publish evidence: run `make gates` + `make smoke-consumer` / `make ins
 1. Complete **Pre-publish** steps above on a release tag (or reuse a fresh dry-run)
 2. Follow Cursor Marketplace maintainer docs for your account tier
 3. Record publish URL + version in `.local/workflow-artifacts/enterprise-architecture-audit/` (no secrets in git)
-4. Re-run `enterprise-auditor` focused pass on deployability category
+4. Re-run `auditor` focused pass on deployability category
 5. Flip PLUGIN-USER-GUIDE “recommended until Marketplace” once the listing is live
 
 Until live publish, **deployability score remains capped** at local dry-run evidence (see enterprise audit v5 §7 EA-v4-002).

@@ -111,7 +111,7 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 3. **`gh auth status`** — refresh Project scopes only if missing — [PLUGIN-USER-GUIDE § GitHub CLI auth](../../.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#github-cli-auth-projects).
 4. Paste **Project URL + repo URL** in chat → **`/project-board`** wires `project_ssot` + `default_repo` (confirm before save) → `project doctor` + `project status`.
 5. When board SSOT enabled: optional **minimal 2-view overlay** ([Playground #3](https://github.com/users/SavinRazvan/projects/3)) → **`/project-board`** + `board-shell` (**CONSENT GATE** then TURN PROTOCOL) → `board-bootstrap --check` until **exit 0** → `project status`. See [views-setup.md](../../.ai_infra/templates/project-board/views-setup.md).
-6. **`/implementer`** to start · each session Entry: **`source .venv/bin/activate && python3 -m cursor_workflow project status`** when board SSOT on; else read `session-pointer.md` first. Audit (`/enterprise-auditor`) is later — not day-0.
+6. **`/implementer`** to start · each session Entry: **`source .venv/bin/activate && python3 -m cursor_workflow project status`** when board SSOT on; else read `session-pointer.md` first. Audit (`/auditor`) is later — not day-0.
 
 **Dashboards (optional):** from project root run `source .venv/bin/activate && python3 -m http.server 8000`, then open
 http://localhost:8000/.local/agents-control-center/dashboards/index.html (not `file://`).

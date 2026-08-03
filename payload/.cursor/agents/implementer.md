@@ -31,7 +31,7 @@ description: Disciplined implementation slices with trackers and Pattern A gates
 
 **Templates:** feature/`chore/` → `--template slice`; defect/`fix/` → `--template bug`; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
 
-**Board shell gate (SSOT on):** Day-0 requires the kit **default** board shell (`.ai_infra/templates/project-board/board-shell.schema.yaml`: six Playground views; Priority/Size/Estimate/Start date on Status board + Prioritized backlog). Run `project board-bootstrap --check`. On **exit 5** (view or Tier-1 column FAIL), do **not** claim work — hand the human to **`/project-board`** + `board-shell` (**CONSENT GATE** then **TURN PROTOCOL**; human UI per `views-setup.md`). Do not treat `/enterprise-auditor` as day-0 setup.
+**Board shell gate (SSOT on):** Day-0 requires the kit **default** board shell (`.ai_infra/templates/project-board/board-shell.schema.yaml`: six Playground views; Priority/Size/Estimate/Start date on Status board + Prioritized backlog). Run `project board-bootstrap --check`. On **exit 5** (view or Tier-1 column FAIL), do **not** claim work — hand the human to **`/project-board`** + `board-shell` (**CONSENT GATE** then **TURN PROTOCOL**; human UI per `views-setup.md`). Do not treat `/auditor` as day-0 setup.
 
 **STANDALONE:** this product lives only in `mas-workflow-kit-project-ssot` — do not mutate or merge doctrine into upstream `mas-workflow-kit`.
 
@@ -58,7 +58,7 @@ When the slice touches tests or ownership: `test-plan.md`, `test-index.md`. Afte
 2. Contracts → implementation → tests. **New sources:** module header per `.cursor/rules/file-docstring-header-relations.mdc`.
 3. **Gates:** run `python .ai_infra/scripts/pr/prepare.py` (executes `resolve_gates()`; `GATES` is the 2-gate back-compat alias). Add `python .ai_infra/scripts/architecture/check_governance_consistency.py` if governance/workflows/policy docs changed.
 4. **Commits:** trailers via `python -m cursor_workflow contributors commit-trailers` (`.cursor/rules/commit-trailer-format.mdc`). Optional `Assisted-by:`. No tool-generated human sign-off.
-5. **Close:** board Status via CLI; `change-index.md` + `updates-log.md`; fallback tracker close only if offline. Run **`make drift-validate`**; hand off to **`workflow-drift-guard`** when P0/P1 findings need artifacts.
+5. **Close:** board Status via CLI; `change-index.md` + `updates-log.md`; fallback tracker close only if offline. Run **`make drift-validate`**; hand off to **`drift-guard`** when P0/P1 findings need artifacts.
 
 ## Architecture
 

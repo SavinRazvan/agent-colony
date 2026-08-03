@@ -6,7 +6,7 @@ Used By:
  - Maintainers / local agents
 Depends On:
  - .agents/skills/pr-workflow/SKILL.md (canonical maintainer merge path + skill order)
- - docs/operations/agent-workflow-procedures.md (enterprise-auditor + dedup contract)
+ - docs/operations/agent-workflow-procedures.md (auditor + dedup contract)
  - .ai_infra/scripts/pr/README.md (PR scripts vs git commit trailers)
  - .ai_infra/scripts/pr/review.py, .ai_infra/scripts/pr/prepare.py, .ai_infra/scripts/pr/merge.py, .ai_infra/scripts/pr/finalize.py, .ai_infra/scripts/pr/verify_publish.py
  - .ai_infra/scripts/pr/check_testing_artifacts.py
@@ -43,7 +43,7 @@ Notes:
 
 Before `/prepare-pr` / final merge:
 
-1. Run **`enterprise-auditor`** with a **focused alignment pass** (`.cursor/skills/auditor-protocol/SKILL.md`; merge path in `.agents/skills/pr-workflow/SKILL.md`).
+1. Run **`auditor`** with a **focused alignment pass** (`.cursor/skills/auditor-protocol/SKILL.md`; merge path in `.agents/skills/pr-workflow/SKILL.md`).
 2. Ensure **both** exist (merge script enforces with `--arch-impacting`):
    - `.local/workflow-artifacts/alignment/alignment-audit.md`
    - `.local/workflow-artifacts/alignment/alignment-todos.md`
@@ -84,7 +84,7 @@ This is the **implementation agent** end-of-loop on top of sections **C** and **
 3. **`change-index.md`** — one row; do **not** dual-write tracker `in_progress` under `board_only`.
 4. **`test-plan.md` / `test-index.md`** — when tests changed.
 5. After merge: **`merge.py --merge-sha`** is the sole Pattern A writer that sets the card → **Done** + Notes (PR URL + SHA); `find-by-pr` resolves from the PR body, or pass `--item-id` when known. Prefer `- Board-Item: <id>` in the PR Collaboration section (never paste docs placeholders).
-6. **`make drift-validate`** — on P0/P1, hand off to **`workflow-drift-guard`** (reads + updates the board; DRIFT-009/010).
+6. **`make drift-validate`** — on P0/P1, hand off to **`drift-guard`** (reads + updates the board; DRIFT-009/010).
 
 **Offline fallback (project_ssot disabled / no gh):**
 
@@ -94,7 +94,7 @@ This is the **implementation agent** end-of-loop on top of sections **C** and **
 4. **`coverage-index.md`** — regenerate after any coverage run that matters.
 5. **`implementation-control-center.html` (deprecated)** — under `.local/agents-control-center/dashboards/`; offline tracker browser only. Prefer board SSOT when enabled. If you still add a tracker tab, update **`../config/pages.json`**.
 6. **`module-audit.html`** — touch only when deliberately refreshing a deep module audit export.
-7. **`make drift-validate`** — hand off to **`workflow-drift-guard`** on P0/P1.
+7. **`make drift-validate`** — hand off to **`drift-guard`** on P0/P1.
 
 Canonical detail: **`.local/index-and-planning/current/plan.md`** / board card body; skill `.cursor/skills/board-ssot/SKILL.md` § Continuation contract.
 

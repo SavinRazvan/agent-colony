@@ -77,7 +77,7 @@ Quick reference for reading `README.md`, `AGENTS.md`, `HANDOFF.md`, and kit docs
 |---|---|---|
 | DRIFT-NNN | Operational drift check id (plan/tracker/board coherence) | ADR-007; `drift validate` |
 | INT-NNN | Integrate / registry parity check id | `integrate validate` |
-| EA-NNN | Enterprise-architecture finding / backlog id | enterprise-auditor artifacts / HANDOFF |
+| EA-NNN | Enterprise-architecture finding / backlog id | auditor artifacts / HANDOFF |
 | DOC-NNN | Documentation fact / validate check id | `make doc-validate` / doc facts |
 | COV-NNN | Coverage readiness claim / slice label | IMPLEMENTATION-STATUS / coverage evidence |
 | P0 / P1 / P2 / P3 | Priority — board uses `p0\|p1\|p2`; chat P3 → board `p2` + Notes `deferred` | `board-ssot` skill |
@@ -102,8 +102,8 @@ High-signal drift ids you will see often: **DRIFT-009** (no competing tracker `i
 | integrator | Extend agents/skills/MCP into kit infrastructure |
 | test-runner | Module tests and coverage |
 | verifier | Evidence-based verification |
-| enterprise-auditor | Architecture audits (alignment / scorecard artifacts) |
-| workflow-drift-guard | Operational drift audit + board Exit for drift-pass cards |
+| auditor | Architecture audits (alignment / scorecard artifacts) |
+| drift-guard | Operational drift audit + board Exit for drift-pass cards |
 | researcher | Brief-driven research packs; CLI `research init\|fetch\|validate` |
 
 ## Research (optional)

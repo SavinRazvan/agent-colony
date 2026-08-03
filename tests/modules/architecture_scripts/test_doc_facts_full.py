@@ -378,7 +378,7 @@ def test_main_fails_on_missing_agent(tmp_path: Path) -> None:
     _copy_minimal_kit(tmp_path)
     readme = tmp_path / "README.md"
     readme.write_text(
-        readme.read_text(encoding="utf-8").replace("workflow-drift-guard", ""), encoding="utf-8"
+        readme.read_text(encoding="utf-8").replace("drift-guard", ""), encoding="utf-8"
     )
     code = cdf.main(["--directory", str(tmp_path)])
     assert code == 1

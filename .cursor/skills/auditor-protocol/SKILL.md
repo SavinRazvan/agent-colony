@@ -7,7 +7,7 @@ File: SKILL.md
 Path: .cursor/skills/auditor-protocol/SKILL.md
 Role: Enterprise-grade, evidence-only repository architecture audit protocol and workflow hooks.
 Used By:
- - .cursor/agents/enterprise-auditor.md
+ - .cursor/agents/auditor.md
 Depends On:
  - .ai_infra/docs/roadmap/alignment-audit-schema.md
  - .ai_infra/docs/operations/local-workspace-layout.md
@@ -94,7 +94,7 @@ Evidence-Standard: repository + user context only
 
 When the **maintainer workflow** requires alignment files for `--arch-impacting` but a **full** `enterprise-architecture-audit.md` is not requested:
 
-- Stay on **`enterprise-auditor`** and keep the **Evidence contract** (paths for every Confirmed finding; §2 Audit Method lists what you read/searched).
+- Stay on **`auditor`** and keep the **Evidence contract** (paths for every Confirmed finding; §2 Audit Method lists what you read/searched).
 - **Write only** (unless the user also wants the full report):
   - `.local/workflow-artifacts/alignment/alignment-audit.md`
   - `.local/workflow-artifacts/alignment/alignment-todos.md`

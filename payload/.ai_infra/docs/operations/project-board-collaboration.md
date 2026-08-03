@@ -66,8 +66,8 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | **test-runner** | status + slice card | →In review or →Done; `--agent test-runner` |
 | **verifier** | status + related card | →Done or leave In review; `--agent verifier` |
 | **integrator** | status + claim | →Done; `--agent integrator` |
-| **enterprise-auditor** | status + audit card | →In review/Done; `--agent enterprise-auditor` + artifact paths |
-| **workflow-drift-guard** | **Must** status + list In progress | Drift card →Done; `--agent workflow-drift-guard`; remediation via Notes/Ready — no silent tracker edits |
+| **auditor** | status + audit card | →In review/Done; `--agent auditor` + artifact paths |
+| **drift-guard** | **Must** status + list In progress | Drift card →Done; `--agent drift-guard`; remediation via Notes/Ready — no silent tracker edits |
 | **researcher** | status (+ research card) | Research card →Done; `--agent researcher` + `AGENT_BRIEF` / pack paths (adaptive intake from chat/Notes) |
 
 ## Status path
@@ -108,12 +108,12 @@ All subcommands registered in `.ai_infra/install/cursor_workflow/project_parser.
 | `board-bootstrap` | Schema-aware shell check (`--check`); opt-in `--ensure-fields` / `--apply-readme` | project-board first-run / human |
 | `set-assignee` | Assign GitHub human user (Issue-backed items) | project-board, implementer |
 | `find-by-pr` | Resolve project item id from PR number or URL | verifier, merge.py |
-| `export` | Read-only board snapshot (never mutates Status) | workflow-drift-guard, ICC |
+| `export` | Read-only board snapshot (never mutates Status) | drift-guard, ICC |
 | `queue` | Enqueue a board op to local outbox (EXIT_QUEUED=6) | Any (rate-limit fallback) |
 | `outbox status` | Outbox counts + GraphQL remaining | Any |
 | `outbox flush` | Apply pending outbox ops when quota allows | implementer, project-board |
 
-## workflow-drift-guard specifically
+## drift-guard specifically
 
 1. **Read board first** (`project status`, `list --status in_progress`) so dual-write checks compare board Status vs trackers.
 2. Run `drift validate` (includes DRIFT-009 / DRIFT-010 when board_only; refresh `project export` for DRIFT-010).

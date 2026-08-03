@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/enterprise-auditor.md · auditor-protocol/SKILL.md · board-ssot/SKILL.md";
+  ".cursor/agents/auditor.md · auditor-protocol/SKILL.md · board-ssot/SKILL.md";
 
 const GOALS = [
   "Evidence-only enterprise architecture audit",
@@ -96,7 +96,7 @@ const PATTERNS = [
   ["Tier-1", "Shared Board rights; Start date on claim / first In progress"],
   ["Tracker etiquette", "Propose edits in audit-actions; implementer applies"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
-  ["Attribution", "@owner.github_user/enterprise-auditor via --agent"],
+  ["Attribution", "@owner.github_user/auditor via --agent"],
 ];
 
 const ARTIFACTS = [
@@ -212,7 +212,7 @@ export default function AgentEnterpriseAuditorCanvas() {
     <Stack gap={20} style={{ padding: 20, maxWidth: 980 }}>
       <Stack gap={8}>
         <Row gap={10} style={{ alignItems: "center" }}>
-          <H1 style={{ margin: 0 }}>enterprise-auditor</H1>
+          <H1 style={{ margin: 0 }}>auditor</H1>
           <Pill tone="info" size="sm">
             kit agent
           </Pill>

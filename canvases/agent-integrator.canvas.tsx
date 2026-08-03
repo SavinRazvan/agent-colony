@@ -30,7 +30,7 @@ const SOURCES =
 const GOALS = [
   "Integrates new agents, skills, MCP, and infrastructure expansions",
   "Procedural, evidence-only, Pattern A",
-  "Escalate to enterprise-auditor, test-runner, implementer, PR maintainer skills",
+  "Escalate to auditor, test-runner, implementer, PR maintainer skills",
 ];
 
 const BOARD_NODES = [
@@ -109,7 +109,7 @@ const ARTIFACTS = [
 ];
 
 const PEERS = [
-  ["Escalation", "enterprise-auditor", "Architecture-impacting integration"],
+  ["Escalation", "auditor", "Architecture-impacting integration"],
   ["Escalation", "test-runner", "Coverage work"],
   ["Escalation", "implementer", "Product src/ handoff"],
   ["Escalation", "PR maintainer skills", "pr-workflow pipeline"],

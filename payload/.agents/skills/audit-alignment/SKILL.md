@@ -1,14 +1,14 @@
 ---
 name: audit-alignment
-description: DEPRECATED — use enterprise-auditor; alignment outputs unchanged for merge gates.
+description: DEPRECATED — use auditor; alignment outputs unchanged for merge gates.
 disable-model-invocation: true
 ---
 
 # Audit alignment (deprecated stub)
 
-**Do not use this file as the primary workflow.** The canonical audit agent is **`enterprise-auditor`**.
+**Do not use this file as the primary workflow.** The canonical audit agent is **`auditor`**.
 
-- **Agent:** `.cursor/agents/enterprise-auditor.md`
+- **Agent:** `.cursor/agents/auditor.md`
 - **Protocol:** `.cursor/skills/auditor-protocol/SKILL.md`
 - **Merge-gate outputs (unchanged):** `.local/workflow-artifacts/alignment/alignment-audit.md`, `alignment-todos.md` per `.ai_infra/docs/roadmap/alignment-audit-schema.md`
 - **Rule:** `.cursor/rules/advisory-audit-alignment-enforcement.mdc`

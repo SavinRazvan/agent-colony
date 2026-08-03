@@ -33,12 +33,12 @@ const AGENTS = [
     description: "Module-focused tests, regressions, coverage",
   },
   {
-    id: "workflow-drift-guard",
+    id: "drift-guard",
     description:
       "Operational workflow drift detection; plan/tracker/session coherence and handoff parity",
   },
   {
-    id: "enterprise-auditor",
+    id: "auditor",
     description:
       "Evidence-only enterprise architecture audit; writes workflow artifacts and tracker hooks for other agents",
   },
@@ -63,8 +63,8 @@ const ROSTER_NODES = [
   { id: "project-board" },
   { id: "implementer" },
   { id: "verifier" },
-  { id: "workflow-drift-guard" },
-  { id: "enterprise-auditor" },
+  { id: "drift-guard" },
+  { id: "auditor" },
   { id: "integrator" },
   { id: "test-runner" },
   { id: "researcher" },
@@ -73,31 +73,31 @@ const ROSTER_NODES = [
 const ROSTER_EDGES = [
   { from: "project-board", to: "implementer" },
   { from: "implementer", to: "verifier" },
-  { from: "implementer", to: "workflow-drift-guard" },
-  { from: "workflow-drift-guard", to: "project-board" },
-  { from: "workflow-drift-guard", to: "implementer" },
-  { from: "enterprise-auditor", to: "implementer" },
+  { from: "implementer", to: "drift-guard" },
+  { from: "drift-guard", to: "project-board" },
+  { from: "drift-guard", to: "implementer" },
+  { from: "auditor", to: "implementer" },
   { from: "integrator", to: "implementer" },
   { from: "integrator", to: "test-runner" },
-  { from: "integrator", to: "enterprise-auditor" },
+  { from: "integrator", to: "auditor" },
 ];
 
 const EDGE_LABELS: Record<string, string> = {
   "project-board→implementer": "handoff next=implementer",
   "implementer→verifier": "Exit --next verifier",
-  "implementer→workflow-drift-guard": "P0/P1 after drift-validate",
-  "workflow-drift-guard→project-board": "dual-write remediation",
-  "workflow-drift-guard→implementer": "dual-write remediation",
-  "enterprise-auditor→implementer": "Notes + artifact paths",
+  "implementer→drift-guard": "P0/P1 after drift-validate",
+  "drift-guard→project-board": "dual-write remediation",
+  "drift-guard→implementer": "dual-write remediation",
+  "auditor→implementer": "Notes + artifact paths",
   "integrator→implementer": "escalate product src/",
   "integrator→test-runner": "escalate coverage",
-  "integrator→enterprise-auditor": "escalate architecture",
+  "integrator→auditor": "escalate architecture",
 };
 
 const RESEARCHER_REDIRECTS = [
   ["implementer", "Product code changes"],
   ["verifier", "Claims vs evidence"],
-  ["enterprise-auditor", "Architecture audits"],
+  ["auditor", "Architecture audits"],
   ["pr-workflow", "Git commit/push/PR (not researcher)"],
 ];
 
@@ -259,23 +259,23 @@ export default function AgentRosterCanvas() {
             ["implementer", "verifier", "Exit recipe --next verifier"],
             [
               "implementer",
-              "workflow-drift-guard",
+              "drift-guard",
               "P0/P1 after make drift-validate",
             ],
             ["project-board", "implementer", "handoff next=implementer"],
             [
-              "workflow-drift-guard",
+              "drift-guard",
               "project-board | implementer",
               "Dual-write remediation via Ready",
             ],
             [
-              "enterprise-auditor",
+              "auditor",
               "implementer",
               "Notes with artifact paths for implementer",
             ],
             [
               "integrator",
-              "implementer | test-runner | enterprise-auditor",
+              "implementer | test-runner | auditor",
               "Escalation table on integrator card",
             ],
           ]}

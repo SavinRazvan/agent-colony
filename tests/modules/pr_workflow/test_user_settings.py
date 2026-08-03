@@ -54,7 +54,7 @@ pr_collaboration:
     default:
       agents: [review-pr, prepare-pr, merge-pr]
     architecture_impacting:
-      agents: [enterprise-auditor, review-pr, prepare-pr, merge-pr]
+      agents: [auditor, review-pr, prepare-pr, merge-pr]
       requires_alignment_artifacts: true
 """
 
@@ -85,7 +85,7 @@ def test_resolve_pr_attribution_from_pipeline(tmp_path: Path) -> None:
         pipeline="architecture_impacting",
     )
     assert actor == "Example Author"
-    assert "enterprise-auditor" in agents
+    assert "auditor" in agents
     assert handle == "@example"
 
 

@@ -65,7 +65,7 @@ Co-authored-by: Cursor <cursoragent@cursor.com>
 ## Collaboration
 - Action-By: Your Full Name
 - GitHub-User: @yourhandle
-- Agent/s: enterprise-auditor | review-pr | prepare-pr | merge-pr
+- Agent/s: auditor | review-pr | prepare-pr | merge-pr
 - Alignment: `.local/workflow-artifacts/alignment/`
 ```
 

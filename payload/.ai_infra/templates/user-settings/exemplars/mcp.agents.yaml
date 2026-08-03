@@ -20,7 +20,7 @@ kit:
     - implementer
     - test-runner
     - verifier
-    - enterprise-auditor
+    - auditor
     - researcher
     - integrator
   tools_hint:
@@ -75,7 +75,7 @@ agent_defaults:
   test-runner:
     primary_servers: [workflow-kit]
     optional_servers: []
-  enterprise-auditor:
+  auditor:
     primary_servers: [workflow-kit]
     optional_servers: []
   researcher:

@@ -23,7 +23,7 @@ Notes:
 
 - [ ] Classified integration type
 - [ ] MAS-integrated vs independent decided
-- [ ] Architecture-impacting? (→ enterprise-auditor if yes)
+- [ ] Architecture-impacting? (→ auditor if yes)
 
 ## Files
 

@@ -61,7 +61,7 @@ Independent agents **never** skip governance scanners, file headers, or Pattern 
 3. **Apply templates** — `.ai_infra/templates/agent-integration/` (agent + skill stubs, checklist).
 4. **Wire surfaces** — registry, pipelines, manifest if consumer-visible, plugin sync if marketplace-facing.
 5. **Verify** — `python -m cursor_workflow contributors validate`, `make gates` or targeted pytest, `check_governance_consistency.py` when `.cursor/` or workflows change.
-6. **Handoff** — implementer owns product code; test-runner owns tests; enterprise-auditor if architecture-impacting.
+6. **Handoff** — implementer owns product code; test-runner owns tests; auditor if architecture-impacting.
 
 ## Non-negotiables
 
@@ -75,7 +75,7 @@ Independent agents **never** skip governance scanners, file headers, or Pattern 
 
 | Situation | Agent |
 |-----------|--------|
-| Architecture audit / alignment | `enterprise-auditor` |
+| Architecture audit / alignment | `auditor` |
 | Test coverage slice | `test-runner` |
 | Product `src/` implementation | `implementer` |
 | PR merge path | maintainer skills `review-pr` → `prepare-pr` → `merge-pr` |

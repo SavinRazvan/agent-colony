@@ -4,7 +4,7 @@ Path: .ai_infra/docs/operations/gate-matrix.md
 Role: Explains prepare resolve_gates() vs kit-dev gates vs consumer verify.
 Used By:
  - consumer-quickstart.md
- - enterprise-auditor alignment
+ - auditor alignment
 Depends On:
  - .ai_infra/scripts/pr/prepare.py
  - .ai_infra/install/cursor_workflow/cli.py

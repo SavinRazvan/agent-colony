@@ -41,7 +41,7 @@ Integrate **new agents, skills, MCP servers, scripts, or docs** into the kit so 
 Ask (or infer from request):
 
 1. **MAS-integrated** or **independent contract**? (see ADR-006: `.ai_infra/docs/decisions/ADR-006-agent-integration-model.md`)
-2. Touches **architecture / manifest / workflows**? → plan `enterprise-auditor` before merge prep.
+2. Touches **architecture / manifest / workflows**? → plan `auditor` before merge prep.
 3. **Consumer-visible** (copied on install)? → update `manifest.yaml` + `install-contract.json`.
 4. Research pack cited? → read `_research_results/sources/<slug>/AGENT_BRIEF.md` before classifying.
 
@@ -146,7 +146,7 @@ Record PASS/FAIL in `change-index.md` and `updates-log.md`.
 | Outcome | Next agent |
 |---------|------------|
 | Needs product code / tests | `implementer` + `test-runner` |
-| Architecture-impacting | `enterprise-auditor` → alignment artifacts |
+| Architecture-impacting | `auditor` → alignment artifacts |
 | Ready for PR | maintainer `review-pr` with `--pipeline` + `--agents-from-session` |
 
 ---

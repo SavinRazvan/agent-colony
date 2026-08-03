@@ -45,7 +45,7 @@ Day-0 requires the kit **default** shell: `.ai_infra/templates/project-board/boa
 4. On **exit 5** (view FAIL or Tier-1 column FAIL): TURN PROTOCOL (agent coaches one view at a time; human uses `views-setup.md` as click reference). Optional `--ensure-fields` / `--apply-readme` only after consent. **No** `--apply-shell` CLI today.
 5. Refuse “ready for agents” until `board-bootstrap --check` exits **0** (README non-empty, six views, Tier-1 columns on Status board / Prioritized backlog). Then resume day-to-day Pattern A below.
 
-**Not first-run:** `/enterprise-auditor` (architecture-impacting / pre-merge later).
+**Not first-run:** `/auditor` (architecture-impacting / pre-merge later).
 
 ## Continuation contract (all agents — non-negotiable when enabled)
 
@@ -142,7 +142,7 @@ Rules:
 
 1. After create: **Priority + Size + Estimate** before coding; on first In progress confirm **Start date** from CLI output.
 2. Exit Notes and chat: `[P0]…; [P1]…; [P2]…; [P3]…` and `Priority=p? · Size=? · Estimate=?`.
-3. `enterprise-auditor` / `workflow-drift-guard`: recommend Priority/Size/Estimate (per table) when seeding Ready cards.
+3. `auditor` / `drift-guard`: recommend Priority/Size/Estimate (per table) when seeding Ready cards.
 4. `verifier`: spot-check Status, Priority, Size, Estimate, **Start date on In progress / In review / Done**; Assignee when Issue-backed; Linked PR when a PR opened. Missing Start date on those statuses = **incomplete Exit**.
 5. Missing Tier-1 fields = incomplete Exit — fill or document blocker in Notes before handoff.
 
@@ -210,8 +210,8 @@ Rules:
 | **test-runner** | status + slice card | Stay on card; → In review when tests gate PR; Done when test-only slice closes | test-index / test-plan |
 | **verifier** | status + related card | Confirm → Done or leave In review with Notes (failures) | evidence / PR artifacts |
 | **integrator** | status + Ready/claim | claim → Done on integration card; may create cards | integrate / payload |
-| **enterprise-auditor** | status + audit card | Audit card → In review/Done; Notes point to artifact paths | `.local/workflow-artifacts/…` |
-| **workflow-drift-guard** | **Must** status + list In progress (dual-write check) | Drift-pass card → Done (or In review if P0/P1 need human); cite board Status in drift-audit; hand remediation to project-board/implementer via Ready card or Notes — **do not** silent-edit trackers | drift-audit / drift-todos |
+| **auditor** | status + audit card | Audit card → In review/Done; Notes point to artifact paths | `.local/workflow-artifacts/…` |
+| **drift-guard** | **Must** status + list In progress (dual-write check) | Drift-pass card → Done (or In review if P0/P1 need human); cite board Status in drift-audit; hand remediation to project-board/implementer via Ready card or Notes — **do not** silent-edit trackers | drift-audit / drift-todos |
 | **researcher** | status + research card if any | If a research card exists → Done + Notes with corpus paths; else read-only | `_research_results/` |
 
 ### Status path
@@ -241,7 +241,7 @@ Human Project README: paste `.ai_infra/templates/project-board/project-readme.md
 | slice / feature / `chore/` | implementer, project-board, integrator | `create-from-template --template slice` |
 | bug / defect / `fix/` | implementer, project-board | `create-from-template --template bug` |
 | external / corpus research | researcher, project-board | `create-from-template --template research` |
-| audit pass | enterprise-auditor | `--template slice` + title `[AUDIT] …` then `claim --last` |
+| audit pass | auditor | `--template slice` + title `[AUDIT] …` then `claim --last` |
 | consume existing card | test-runner, verifier | **No** `create-from-template` — claim/continue only |
 | Project README | **Humans only** | paste `project-readme.md` in Project settings UI |
 

@@ -76,7 +76,7 @@ Full checklist: `.ai_infra/templates/agent-integration/INTEGRATION-CHECKLIST.md`
 
 | Need | Agent |
 |------|--------|
-| Architecture audit | `enterprise-auditor` |
+| Architecture audit | `auditor` |
 | Tests | `test-runner` |
 | Application code | `implementer` |
 | Merge | `review-pr` → `prepare-pr` → `merge-pr` |

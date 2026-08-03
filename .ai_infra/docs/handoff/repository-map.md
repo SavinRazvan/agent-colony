@@ -131,9 +131,9 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `implementer` | Yes | Yes | `/implementer` |
 | `test-runner` | Yes | Yes | `/test-runner` |
 | `verifier` | Yes | Yes | `/verifier` |
-| `enterprise-auditor` | Yes | Yes | `/enterprise-auditor` |
+| `auditor` | Yes | Yes | `/auditor` |
 | `integrator` | Yes | Yes | `/integrator` |
-| `workflow-drift-guard` | Yes | Yes | `/workflow-drift-guard` |
+| `drift-guard` | Yes | Yes | `/drift-guard` |
 | `project-board` | Yes | Yes | `/project-board` |
 | `researcher` | Yes | Yes (opt-in packs after `research init`) | `/researcher` (adaptive Brief + HTTPS; shipped/proven) |
 
@@ -147,10 +147,10 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 
 | Skill | Paired agent |
 |-------|----------------|
-| `auditor-protocol` | `enterprise-auditor` (full audit + **focused alignment pass**) |
-| `audit-module-map` | `enterprise-auditor` (depth tool) |
+| `auditor-protocol` | `auditor` (full audit + **focused alignment pass**) |
+| `audit-module-map` | `auditor` (depth tool) |
 | `audit-orchestration` | Parent orchestration |
-| `drift-audit` | `workflow-drift-guard` |
+| `drift-audit` | `drift-guard` |
 | `implementer-loop` | `implementer` |
 | `test-coverage` | `test-runner` |
 | `integrator-protocol` | `integrator` |
@@ -168,7 +168,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `review-pr` | Active | |
 | `prepare-pr` | Active | |
 | `merge-pr` | Active | |
-| **`audit-alignment`** | **Deprecated stub** | Redirect → `enterprise-auditor`; outputs unchanged (`alignment-audit.md`, `alignment-todos.md`) |
+| **`audit-alignment`** | **Deprecated stub** | Redirect → `auditor`; outputs unchanged (`alignment-audit.md`, `alignment-todos.md`) |
 
 Also under `.agents/skills/`: `README.md`, `PR_WORKFLOW.md` (legacy redirect), `RESEARCH_WORKFLOW.md` (research hub pointer).
 
@@ -198,7 +198,7 @@ Product overlays: `overlays/rules/*.mdc` remains the source for domain overlays;
 
 | Path | Status | Use instead |
 |------|--------|-------------|
-| `.agents/skills/audit-alignment/` | Deprecated stub | `enterprise-auditor` + `auditor-protocol` |
+| `.agents/skills/audit-alignment/` | Deprecated stub | `auditor` + `auditor-protocol` |
 | `skills/audit-alignment/` (repo root) | Same stub (generated) | Same |
 | `.agents/skills/PR_WORKFLOW.md` | Legacy redirect | `pr-workflow/SKILL.md` |
 | `project-rules/` | Deprecated alias | `overlays/rules/` |
@@ -214,9 +214,9 @@ Product overlays: `overlays/rules/*.mdc` remains the source for domain overlays;
 | `index-and-planning/current/` | 1 base + 2 runtime | scaffold + agents |
 | `index-and-planning/history/` | 2 | agents — `updates-log.md`; `continuity-index.md` (rolling ≥3-day UTC rows; board Notes = full lifetime) |
 | `workflow-artifacts/pr/` | 2 | review/prepare/merge scripts |
-| `workflow-artifacts/alignment/` | 2 | `enterprise-auditor` |
-| `workflow-artifacts/drift/` | 2 | `workflow-drift-guard` |
-| `workflow-artifacts/enterprise-architecture-audit/` | 2 | `enterprise-auditor` |
+| `workflow-artifacts/alignment/` | 2 | `auditor` |
+| `workflow-artifacts/drift/` | 2 | `drift-guard` |
+| `workflow-artifacts/enterprise-architecture-audit/` | 2 | `auditor` |
 | `agents-control-center/` | 1 + refresh | scaffold / activate |
 | `user_settings/` | 1 | human (gitignored) |
 | `generated-data/` | 2 | pytest / CI |

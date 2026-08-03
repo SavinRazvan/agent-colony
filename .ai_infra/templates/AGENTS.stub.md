@@ -37,7 +37,7 @@
    - `source .venv/bin/activate && python3 -m cursor_workflow project status`
    - Day-to-day board protocol: `board-ssot` skill (loaded automatically); wire + shell coach: **`/project-board`**
 4. If Project SSOT is disabled: read `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
-5. **`/implementer`** when bootstrap is green (not day-0: `/enterprise-auditor`)
+5. **`/implementer`** when bootstrap is green (not day-0: `/auditor`)
 
 **Dashboards (optional):** from project root:
 

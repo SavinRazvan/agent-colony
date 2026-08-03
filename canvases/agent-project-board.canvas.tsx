@@ -111,7 +111,7 @@ const ARTIFACTS = [
 
 const PEERS = [
   ["Outbound", "implementer", "handoff next=implementer (typical)"],
-  ["Inbound", "workflow-drift-guard", "Dual-write remediation via Ready"],
+  ["Inbound", "drift-guard", "Dual-write remediation via Ready"],
 ];
 
 function DagPanel({

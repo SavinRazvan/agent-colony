@@ -1,5 +1,5 @@
 ---
-name: workflow-drift-guard
+name: drift-guard
 model: auto
 description: Operational workflow drift detection; plan/tracker/session coherence and handoff parity.
 ---
@@ -12,7 +12,7 @@ description: Operational workflow drift detection; plan/tracker/session coherenc
 
 **Exit:** Prefer `handoff --last` / `claim --last` after create. Write drift artifacts under `.local/workflow-artifacts/drift/`. When board SSOT is on: (1) set the **drift-pass card** Status → `done` (or `in_review` if P0/P1 need human); (2) for Confirmed dual-write, add Notes on the offending card or hand off to **project-board** / **implementer** via Ready — do **not** auto-edit `plan.md` / `work-tracker.md` / invent competing tracker `in_progress`. One line in `updates-log.md`.
 
-**Board rights:** Status + Notes on the card you touch. Tier-1: claim/set-status/handoff→in_progress may set Start date (UTC); triage sets Priority/Size/Estimate per skill table; use `mention-pr` for PR Notes; promote via `project promote-to-issue --last --agent workflow-drift-guard` (or `mention-pr` auto when `promote_to_issue_on_pr`) before PR — do not leave shippable work as Draft through merge — do not set Iteration/End date/Reviewers by default. Prefer `claim --last` / `handoff --last --agent workflow-drift-guard` (→ `@owner.github_user/workflow-drift-guard`); atomics `append-notes --agent workflow-drift-guard` OK. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+**Board rights:** Status + Notes on the card you touch. Tier-1: claim/set-status/handoff→in_progress may set Start date (UTC); triage sets Priority/Size/Estimate per skill table; use `mention-pr` for PR Notes; promote via `project promote-to-issue --last --agent drift-guard` (or `mention-pr` auto when `promote_to_issue_on_pr`) before PR — do not leave shippable work as Draft through merge — do not set Iteration/End date/Reviewers by default. Prefer `claim --last` / `handoff --last --agent drift-guard` (→ `@owner.github_user/drift-guard`); atomics `append-notes --agent drift-guard` OK. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
 
 **Tier-1 fields (mandatory):** On create/claim/own fill Status, Priority, Size, Estimate, Start date (via `claim` / first In progress), Assignee (human — create as Issue via `item_kind_default: issue`; promote only if stuck on Draft), and Linked PR via `mention-pr` when a PR exists. `set-field --field priority --to p0|p1|p2`; `size`/`estimate` per skill Size↔Estimate table (default `s`/`1` + Notes if guessed). Chat **P3**/deferred → board `p2` + Notes `deferred`. Exit: `Priority=p? · Size=? · Estimate=?` and `Tasks: [P0]…; [P1]…; [P2]…; [P3]…`. Canon: `.cursor/skills/board-ssot/SKILL.md` § Tier-1 card fields contract. When seeding Ready remediations, set or recommend Priority/Size/Estimate.
 
@@ -26,7 +26,7 @@ description: Operational workflow drift detection; plan/tracker/session coherenc
 2. Map script output to `drift-audit.md` and `drift-todos.md` per skill (include **DRIFT-009** / **DRIFT-010** when project SSOT enabled; prefer a fresh `project export` snapshot for DRIFT-010).
 3. P0 failures block prepare-pr handoff; P1 fix in same slice; P2 → backlog (preferably a Ready board card).
 4. On kit-dev, `prepare.py` runs drift validate automatically — refresh drift artifacts when triage or evidence is needed.
-5. Do not duplicate governance, integrate, or enterprise-auditor scope (ADR-007 / ADR-008).
+5. Do not duplicate governance, integrate, or auditor scope (ADR-007 / ADR-008).
 
 ## Read first
 

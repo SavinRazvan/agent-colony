@@ -33,8 +33,8 @@ const ROSTER_NODES = [
   { id: "project-board" },
   { id: "implementer" },
   { id: "verifier" },
-  { id: "workflow-drift-guard" },
-  { id: "enterprise-auditor" },
+  { id: "drift-guard" },
+  { id: "auditor" },
   { id: "integrator" },
   { id: "test-runner" },
 ];
@@ -42,25 +42,25 @@ const ROSTER_NODES = [
 const ROSTER_EDGES = [
   { from: "project-board", to: "implementer" },
   { from: "implementer", to: "verifier" },
-  { from: "implementer", to: "workflow-drift-guard" },
-  { from: "workflow-drift-guard", to: "project-board" },
-  { from: "workflow-drift-guard", to: "implementer" },
-  { from: "enterprise-auditor", to: "implementer" },
+  { from: "implementer", to: "drift-guard" },
+  { from: "drift-guard", to: "project-board" },
+  { from: "drift-guard", to: "implementer" },
+  { from: "auditor", to: "implementer" },
   { from: "integrator", to: "implementer" },
   { from: "integrator", to: "test-runner" },
-  { from: "integrator", to: "enterprise-auditor" },
+  { from: "integrator", to: "auditor" },
 ];
 
 const EDGE_LABELS: Record<string, string> = {
   "project-board→implementer": "handoff next=implementer",
   "implementer→verifier": "Exit --next verifier",
-  "implementer→workflow-drift-guard": "P0/P1 after drift-validate",
-  "workflow-drift-guard→project-board": "dual-write remediation",
-  "workflow-drift-guard→implementer": "dual-write remediation",
-  "enterprise-auditor→implementer": "Notes + artifact paths",
+  "implementer→drift-guard": "P0/P1 after drift-validate",
+  "drift-guard→project-board": "dual-write remediation",
+  "drift-guard→implementer": "dual-write remediation",
+  "auditor→implementer": "Notes + artifact paths",
   "integrator→implementer": "escalate product src/",
   "integrator→test-runner": "escalate coverage",
-  "integrator→enterprise-auditor": "escalate architecture",
+  "integrator→auditor": "escalate architecture",
 };
 
 const PER_AGENT_ENTRY_EXIT = [
@@ -90,14 +90,14 @@ const PER_AGENT_ENTRY_EXIT = [
     "→Done; --agent integrator",
   ],
   [
-    "enterprise-auditor",
+    "auditor",
     "status + audit card",
-    "→In review/Done; --agent enterprise-auditor + artifact paths",
+    "→In review/Done; --agent auditor + artifact paths",
   ],
   [
-    "workflow-drift-guard",
+    "drift-guard",
     "Must status + list In progress",
-    "Drift card →Done; --agent workflow-drift-guard; remediation via Notes/Ready — no silent tracker edits",
+    "Drift card →Done; --agent drift-guard; remediation via Notes/Ready — no silent tracker edits",
   ],
   [
     "researcher",
@@ -147,7 +147,7 @@ const ARTIFACT_FLOWS = [
   ],
   [
     ".local/index-and-planning/current/change-index.md",
-    "implementer, project-board, integrator, verifier, test-runner, enterprise-auditor (Exit)",
+    "implementer, project-board, integrator, verifier, test-runner, auditor (Exit)",
     "Slice close / triage",
     "Next agents, humans, ICC",
     "Append row; scope pointer for continuation",
@@ -168,21 +168,21 @@ const ARTIFACT_FLOWS = [
   ],
   [
     ".local/workflow-artifacts/drift/drift-audit.md + drift-todos.md",
-    "workflow-drift-guard",
+    "drift-guard",
     "After drift validate pass",
     "project-board, implementer (via Notes / Ready)",
     "Dual-write evidence; remediation handoff — no silent tracker edits",
   ],
   [
     ".local/workflow-artifacts/enterprise-architecture-audit/enterprise-architecture-audit.md + enterprise-audit-actions.md",
-    "enterprise-auditor",
+    "auditor",
     "Audit complete",
     "implementer",
     "implementer applies tracker actions from Notes paths",
   ],
   [
     ".local/workflow-artifacts/alignment/alignment-audit.md + alignment-todos.md",
-    "enterprise-auditor (optional)",
+    "auditor (optional)",
     "Governance drift findings",
     "implementer (advisory)",
     "Optional alignment pass; no auto-remediation",
@@ -212,7 +212,7 @@ const ARTIFACT_FLOWS = [
     ".local/generated-data/project-board-snapshot.json",
     "project export (read-only)",
     "DRIFT-010 refresh",
-    "workflow-drift-guard · ICC (EA-010)",
+    "drift-guard · ICC (EA-010)",
     "Read-only export; never writes Status",
   ],
   [
@@ -228,7 +228,7 @@ const NEXT_AGENT_STEPS = [
   "List Ready / In progress / In review on board (project status · project list)",
   "Read Notes: @owner.github_user/agent · YYYY-MM-DDTHH:MM:SSZ · …",
   "Follow handoff line: item_id=… · Status=a→b · next=@user/agent",
-  "Follow artifact paths in Notes (e.g. enterprise-auditor → implementer)",
+  "Follow artifact paths in Notes (e.g. auditor → implementer)",
   "Claim with project claim --last --agent <this-agent> after create",
 ];
 
@@ -240,10 +240,10 @@ const SLICE_FLOW = [
 ];
 
 const SIDE_FLOW = [
-  "enterprise-auditor: audit card → write .local/workflow-artifacts/… → Notes paths → implementer",
-  "implementer: make drift-validate → P0/P1 → hand off workflow-drift-guard",
-  "workflow-drift-guard: must read board In progress → drift artifacts → drift card done; remediation via Notes/Ready to project-board or implementer",
-  "integrator: integration card → validate → escalate to implementer | test-runner | enterprise-auditor",
+  "auditor: audit card → write .local/workflow-artifacts/… → Notes paths → implementer",
+  "implementer: make drift-validate → P0/P1 → hand off drift-guard",
+  "drift-guard: must read board In progress → drift artifacts → drift card done; remediation via Notes/Ready to project-board or implementer",
+  "integrator: integration card → validate → escalate to implementer | test-runner | auditor",
 ];
 
 function CollaborationDag({
@@ -380,7 +380,7 @@ export default function AgentBoardCollaborationCanvas() {
             date on Status board + Prioritized backlog).
           </Text>
           <Text>
-            /enterprise-auditor is architecture-impacting / pre-merge — not day-0.
+            /auditor is architecture-impacting / pre-merge — not day-0.
           </Text>
         </Stack>
       </Callout>

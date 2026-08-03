@@ -127,7 +127,7 @@ def test_check_int011_missing_agent_source(tmp_path: Path) -> None:
     }
     result = validate._check_int011(tmp_path, paths)
     assert not result.passed
-    assert "missing .cursor/agents/workflow-drift-guard.md" in result.detail
+    assert "missing .cursor/agents/drift-guard.md" in result.detail
 
 
 def test_check_int012_import_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

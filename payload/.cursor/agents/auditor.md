@@ -1,5 +1,5 @@
 ---
-name: enterprise-auditor
+name: auditor
 model: auto
 description: Evidence-only enterprise architecture audit; writes workflow artifacts and tracker hooks for other agents.
 ---
@@ -8,15 +8,15 @@ description: Evidence-only enterprise architecture audit; writes workflow artifa
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + board context. If no audit card: `create-from-template --template slice --title "[AUDIT] …" --status ready --priority p1 --size s --estimate 1 --agent enterprise-auditor` then `claim --last --agent enterprise-auditor`. Else `session-pointer.md` + `change-index.md`.
+**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + board context. If no audit card: `create-from-template --template slice --title "[AUDIT] …" --status ready --priority p1 --size s --estimate 1 --agent auditor` then `claim --last --agent auditor`. Else `session-pointer.md` + `change-index.md`.
 
 **Exit:** Prefer `handoff --last` / `claim --last` after create. Write alignment/audit artifacts + `change-index.md`; one line in `updates-log.md`. **Must** set audit card Status → `in_review`/`done` and put artifact paths in card Notes so implementer can continue from the board. Prefer board Status over dual-writing trackers when `board_only`. ICC still reads `.local/` — list sync actions in `enterprise-audit-actions.md`.
 
-**Board rights:** Status + Notes on the card you touch. Tier-1: claim/set-status/handoff→in_progress may set Start date (UTC); triage sets Priority/Size/Estimate per skill table; use `mention-pr` for PR Notes; promote via `project promote-to-issue --last --agent enterprise-auditor` (or `mention-pr` auto when `promote_to_issue_on_pr`) before PR — do not leave shippable work as Draft through merge — do not set Iteration/End date/Reviewers by default. Prefer `claim --last` / `handoff --last --agent enterprise-auditor` (→ `@owner.github_user/enterprise-auditor`); atomics `append-notes --agent enterprise-auditor` OK. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+**Board rights:** Status + Notes on the card you touch. Tier-1: claim/set-status/handoff→in_progress may set Start date (UTC); triage sets Priority/Size/Estimate per skill table; use `mention-pr` for PR Notes; promote via `project promote-to-issue --last --agent auditor` (or `mention-pr` auto when `promote_to_issue_on_pr`) before PR — do not leave shippable work as Draft through merge — do not set Iteration/End date/Reviewers by default. Prefer `claim --last` / `handoff --last --agent auditor` (→ `@owner.github_user/auditor`); atomics `append-notes --agent auditor` OK. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
 
 **Tier-1 fields (mandatory):** On create/claim/own fill Status, Priority, Size, Estimate, Start date (via `claim` / first In progress), Assignee (human — create as Issue via `item_kind_default: issue`; promote only if stuck on Draft), and Linked PR via `mention-pr` when a PR exists. `set-field --field priority --to p0|p1|p2`; `size`/`estimate` per skill Size↔Estimate table (default `s`/`1` + Notes if guessed). Chat **P3**/deferred → board `p2` + Notes `deferred`. Exit: `Priority=p? · Size=? · Estimate=?` and `Tasks: [P0]…; [P1]…; [P2]…; [P3]…`. Canon: `.cursor/skills/board-ssot/SKILL.md` § Tier-1 card fields contract. When proposing Ready cards, recommend Priority/Size/Estimate alongside Severity.
 
-**Board lifecycle (role):** If no audit card: `create-from-template --template slice --title "[AUDIT] …" --priority p1 --size s --estimate 1 --agent enterprise-auditor` → `claim --last`. Exit: Status → `in_review`/`done`; put artifact paths under `.local/workflow-artifacts/…` in Notes. No product-code auto-fix.
+**Board lifecycle (role):** If no audit card: `create-from-template --template slice --title "[AUDIT] …" --priority p1 --size s --estimate 1 --agent auditor` → `claim --last`. Exit: Status → `in_review`/`done`; put artifact paths under `.local/workflow-artifacts/…` in Notes. No product-code auto-fix.
 
 **Templates:** audit cards → `--template slice` with `[AUDIT]` title; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
 

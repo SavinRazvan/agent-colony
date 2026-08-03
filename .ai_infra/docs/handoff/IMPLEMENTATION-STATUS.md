@@ -4,7 +4,7 @@ Path: .ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md
 Role: Shipped vs spec — single source when maintainer megadocs lag the repo.
 Used By:
  - README.md
- - enterprise-auditor alignment passes
+ - auditor alignment passes
 Depends On:
  - .ai_infra/scripts/pr/prepare.py
  - .ai_infra/mcp_servers/workflow_mcp/
