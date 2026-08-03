@@ -84,7 +84,7 @@ Tier 1 base layout created by scaffold (see [local-workspace-layout.md](local-wo
 |------|---------|
 | `.local/index-and-planning/current/` | Exemplar trackers (if missing), including `coverage-index.md` |
 | `.local/index-and-planning/history/` | `updates-log.md` (if missing) |
-| `.local/workflow-artifacts/{pr,alignment,drift,enterprise-architecture-audit,release,audit}/` | Dirs + README stubs (if missing) |
+| `.local/workflow-artifacts/{pr,alignment,drift,auditor-protocol,release,audit}/` | Dirs + README stubs (if missing) |
 | `.local/agents-control-center/config/pages.json` | Cockpit tabs (if missing) |
 | `.local/agents-control-center/dashboards/` | Optional HTML/CSS (if missing) |
 | `AGENTS.md` | From `.ai_infra/templates/AGENTS.stub.md` (if missing) |

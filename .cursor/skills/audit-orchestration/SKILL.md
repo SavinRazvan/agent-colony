@@ -10,8 +10,8 @@ Used By:
  - Maintainers running full audit + closure slices
  - Parent agents orchestrating enterprise-auditor pipeline
 Depends On:
- - .cursor/skills/enterprise-architecture-audit/SKILL.md
- - .cursor/skills/workflow-drift-audit/SKILL.md
+ - .cursor/skills/auditor-protocol/SKILL.md
+ - .cursor/skills/drift-audit/SKILL.md
  - .cursor/skills/implementer-loop/SKILL.md
 Notes:
  - Human-triggered only; scripts run before prose agents consume results.

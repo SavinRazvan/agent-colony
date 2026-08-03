@@ -11,7 +11,7 @@ disable-model-invocation: true
 ## Steps
 
 1. `review.md` exists; clear BLOCKER/IMPORTANT items first.
-2. Alignment files present when required (authored via **`enterprise-auditor`** / `enterprise-architecture-audit` skill; see `advisory-audit-alignment-enforcement.mdc`); no open **P0** unless explicitly accepted.
+2. Alignment files present when required (authored via **`enterprise-auditor`** / `auditor-protocol` skill; see `advisory-audit-alignment-enforcement.mdc`); no open **P0** unless explicitly accepted.
 3. Fixes **only** in PR scope.
 4. Status sync: when `project_ssot.enabled` and `sync_policy: board_only`, update **board Status/Notes only** — do **not** dual-write competing `in_progress` into local trackers. Local `.local/index-and-planning/current/` files are offline fallback / session pointer only. When SSOT is disabled or offline fallback is active, sync trackers as usual (`session-pointer.md`, `change-index.md`, `plan.md`, `work-tracker.md`, `test-plan.md`, `test-index.md` when applicable).
 5. Run (owner from YAML; **Agent/s** auto-merges trackers + pipeline unless `--agents` set):  

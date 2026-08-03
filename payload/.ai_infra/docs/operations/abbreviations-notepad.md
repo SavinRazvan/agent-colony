@@ -119,6 +119,6 @@ High-signal drift ids you will see often: **DRIFT-009** (no competing tracker `i
 | Catalog | Index |
 |---------|--------|
 | ADRs | `.ai_infra/docs/decisions/README.md` |
-| Drift checks | ADR-007 + `.cursor/skills/workflow-drift-audit/SKILL.md` |
+| Drift checks | ADR-007 + `.cursor/skills/drift-audit/SKILL.md` |
 | Board ops | `.ai_infra/docs/operations/project-board-collaboration.md` |
 | Token / log discipline | `.ai_infra/docs/operations/token-efficiency.md` |

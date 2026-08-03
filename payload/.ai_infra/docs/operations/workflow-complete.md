@@ -43,7 +43,7 @@ Notes:
 
 Before `/prepare-pr` / final merge:
 
-1. Run **`enterprise-auditor`** with a **focused alignment pass** (`.cursor/skills/enterprise-architecture-audit/SKILL.md`; merge path in `.agents/skills/pr-workflow/SKILL.md`).
+1. Run **`enterprise-auditor`** with a **focused alignment pass** (`.cursor/skills/auditor-protocol/SKILL.md`; merge path in `.agents/skills/pr-workflow/SKILL.md`).
 2. Ensure **both** exist (merge script enforces with `--arch-impacting`):
    - `.local/workflow-artifacts/alignment/alignment-audit.md`
    - `.local/workflow-artifacts/alignment/alignment-todos.md`

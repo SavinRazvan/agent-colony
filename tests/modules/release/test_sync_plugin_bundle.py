@@ -138,7 +138,7 @@ def test_plugin_canonical_skills_not_overwritten_by_stubs(tmp_path: Path) -> Non
     plugin_dir = tmp_path / "plugin"
     mod.sync_plugin_surface(plugin_dir)
 
-    enterprise = (plugin_dir / "skills" / "enterprise-architecture-audit" / "SKILL.md").read_text(
+    enterprise = (plugin_dir / "skills" / "auditor-protocol" / "SKILL.md").read_text(
         encoding="utf-8"
     )
     assert "Evidence contract" in enterprise
@@ -149,7 +149,7 @@ def test_plugin_canonical_skills_not_overwritten_by_stubs(tmp_path: Path) -> Non
     )
     assert "verify-all" in orchestration or "enterprise-auditor" in orchestration
 
-    drift = (plugin_dir / "skills" / "workflow-drift-audit" / "SKILL.md").read_text(encoding="utf-8")
+    drift = (plugin_dir / "skills" / "drift-audit" / "SKILL.md").read_text(encoding="utf-8")
     assert "drift validate" in drift.lower()
 
     assert (plugin_dir / "skills" / "review-pr" / "SKILL.md").is_file()

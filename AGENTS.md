@@ -118,11 +118,11 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 | Implement | `.cursor/agents/implementer.md` + `.cursor/skills/implementer-loop/SKILL.md` |
 | Project board SSOT | `.cursor/agents/project-board.md` + `.cursor/skills/board-ssot/SKILL.md` — `python -m cursor_workflow project …` |
 | Board shell first-run | `/project-board` + `.cursor/skills/board-shell/SKILL.md` + `board-shell.schema.yaml` |
-| Integrate infrastructure | `.cursor/agents/integrator-mas-agent.md` + `.cursor/skills/mas-infrastructure-integration/SKILL.md` — validate with `python3 -m cursor_workflow integrate validate` |
+| Integrate infrastructure | `.cursor/agents/integrator-mas-agent.md` + `.cursor/skills/integrator-protocol/SKILL.md` — validate with `python3 -m cursor_workflow integrate validate` |
 | Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-coverage/SKILL.md` |
 | Verify claims | `.cursor/agents/verifier.md` |
-| Operational drift | **`workflow-drift-guard`** — `.cursor/agents/workflow-drift-guard.md` + `.cursor/skills/workflow-drift-audit/SKILL.md` — validate with `python3 -m cursor_workflow drift validate` |
-| Audits (canonical) | **`enterprise-auditor`** — `.cursor/agents/enterprise-auditor.md` + `.cursor/skills/enterprise-architecture-audit/SKILL.md` |
+| Operational drift | **`workflow-drift-guard`** — `.cursor/agents/workflow-drift-guard.md` + `.cursor/skills/drift-audit/SKILL.md` — validate with `python3 -m cursor_workflow drift validate` |
+| Audits (canonical) | **`enterprise-auditor`** — `.cursor/agents/enterprise-auditor.md` + `.cursor/skills/auditor-protocol/SKILL.md` |
 | Audit orchestration | `.cursor/skills/audit-orchestration/SKILL.md` — parent runs verify-all + Task delegation (no dedicated agent) |
 | Audit module map | `.cursor/skills/audit-module-map/SKILL.md` — optional deep map; invoke via **`enterprise-auditor`** |
 | Maintainer PR | `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` → `merge-pr` |

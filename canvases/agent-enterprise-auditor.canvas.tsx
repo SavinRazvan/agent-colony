@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/enterprise-auditor.md · enterprise-architecture-audit/SKILL.md · board-ssot/SKILL.md";
+  ".cursor/agents/enterprise-auditor.md · auditor-protocol/SKILL.md · board-ssot/SKILL.md";
 
 const GOALS = [
   "Evidence-only enterprise architecture audit",
@@ -83,7 +83,7 @@ const FALLBACK_LABELS: Record<string, string> = {
 };
 
 const READ_FIRST = [
-  [".cursor/skills/enterprise-architecture-audit/SKILL.md", "Audit canon"],
+  [".cursor/skills/auditor-protocol/SKILL.md", "Audit canon"],
   [".cursor/skills/audit-module-map/SKILL.md", "Optional deep map"],
   [".cursor/skills/audit-orchestration/SKILL.md", "Optional orchestration"],
   [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
@@ -267,7 +267,7 @@ export default function AgentEnterpriseAuditorCanvas() {
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
           <Text>1. project status; create [AUDIT] slice card if needed; claim.</Text>
-          <Text>2. Evidence-only audit per enterprise-architecture-audit/SKILL.md.</Text>
+          <Text>2. Evidence-only audit per auditor-protocol/SKILL.md.</Text>
           <Text>
             3. Write enterprise-architecture-audit.md + enterprise-audit-actions.md;
             optional alignment artifacts for merge workflow.

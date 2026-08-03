@@ -21,7 +21,7 @@ Introduce a script-first drift validator and MAS-integrated agent per [ADR-006](
 | CLI | `python -m cursor_workflow drift validate` |
 | Script SSOT | `.ai_infra/scripts/workflow/check_drift.py` |
 | Checks module | `.ai_infra/scripts/workflow/drift_checks.py` |
-| Skill | `.cursor/skills/workflow-drift-audit/SKILL.md` |
+| Skill | `.cursor/skills/drift-audit/SKILL.md` |
 | Local artifacts | `.local/workflow-artifacts/drift/drift-audit.md`, `drift-todos.md` |
 
 ### Profiles
@@ -90,5 +90,5 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 
 - `.local/workflow-artifacts/drift/workflow-drift-guard-plan.md`
 - `.cursor/agents/workflow-drift-guard.md`
-- `.cursor/skills/workflow-drift-audit/SKILL.md`
+- `.cursor/skills/drift-audit/SKILL.md`
 - [ADR-006-agent-integration-model.md](ADR-006-agent-integration-model.md)

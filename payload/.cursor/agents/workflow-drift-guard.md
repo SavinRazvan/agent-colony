@@ -30,7 +30,7 @@ description: Operational workflow drift detection; plan/tracker/session coherenc
 
 ## Read first
 
-- `.cursor/skills/workflow-drift-audit/SKILL.md` — full protocol
+- `.cursor/skills/drift-audit/SKILL.md` — full protocol
 - `.cursor/skills/board-ssot/SKILL.md` — when `project_ssot.enabled`
 - `.ai_infra/docs/decisions/ADR-007-workflow-drift-guard.md`
 - `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md` (when project_ssot enabled)

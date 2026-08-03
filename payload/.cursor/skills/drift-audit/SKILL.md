@@ -1,10 +1,10 @@
 ---
-name: workflow-drift-audit
+name: drift-audit
 description: Run drift validate first; write drift-audit.md and drift-todos.md with evidence contract.
 ---
 <!--
 File: SKILL.md
-Path: .cursor/skills/workflow-drift-audit/SKILL.md
+Path: .cursor/skills/drift-audit/SKILL.md
 Role: Operational workflow drift audit protocol for plan/tracker/session coherence.
 Used By:
  - .cursor/agents/workflow-drift-guard.md

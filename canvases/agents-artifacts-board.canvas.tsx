@@ -109,7 +109,7 @@ const WHO_WRITES: string[][] = [
   [
     "enterprise-auditor",
     "Audit card Status + artifact paths in Notes",
-    "enterprise-architecture-audit/ · alignment/",
+    "auditor-protocol/ · alignment/",
     "Evidence-only — no product fixes",
   ],
   [

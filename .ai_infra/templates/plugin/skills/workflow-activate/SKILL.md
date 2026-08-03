@@ -61,7 +61,7 @@ Optional: `integrate validate`, `health`. Add infrastructure later: **`/integrat
 
 ## Adding agents/skills/MCP later
 
-Invoke subagent **`/integrator-mas-agent`** with skill **`/mas-infrastructure-integration`** — not shell commands.
+Invoke subagent **`/integrator-mas-agent`** with skill **`/integrator-protocol`** — not shell commands.
 
 ## Agent delegation
 

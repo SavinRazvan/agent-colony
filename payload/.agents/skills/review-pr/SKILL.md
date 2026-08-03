@@ -19,6 +19,6 @@ disable-model-invocation: true
    Uses **`change-index.md`** + agent history from **`session-pointer.md`** (offline pointer) or board Notes when `project_ssot.enabled`, then appends PR phase agents.  
    Override: `--agents "custom | list"` or `--no-agents-from-session`.  
    Then **replace** `.local/workflow-artifacts/pr/review.md` with real findings and **READY FOR /prepare-pr** | **NEEDS WORK** | **NEEDS DISCUSSION**.
-5. **Architecture-impacting:** use **`enterprise-auditor`** + `.cursor/skills/enterprise-architecture-audit/SKILL.md` (focused alignment pass); write `.local/workflow-artifacts/alignment/alignment-audit.md` + `alignment-todos.md` per `.ai_infra/docs/roadmap/alignment-audit-schema.md` (advisory only). Use `--pipeline architecture_impacting` on PR scripts when applicable.
+5. **Architecture-impacting:** use **`enterprise-auditor`** + `.cursor/skills/auditor-protocol/SKILL.md` (focused alignment pass); write `.local/workflow-artifacts/alignment/alignment-audit.md` + `alignment-todos.md` per `.ai_infra/docs/roadmap/alignment-audit-schema.md` (advisory only). Use `--pipeline architecture_impacting` on PR scripts when applicable.
 
 **More context:** `.agents/skills/pr-workflow/SKILL.md`.

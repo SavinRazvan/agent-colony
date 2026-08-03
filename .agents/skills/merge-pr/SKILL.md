@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 1. **Check** (pipeline from user settings when omitted; add `--arch-impacting` for alignment enforcement):  
    `python .ai_infra/scripts/pr/merge.py --pr <id|url> --pipeline default --check-only`  
-   Add `--arch-impacting` if alignment artifacts are required (enforces both alignment files; produced by **`enterprise-auditor`** per `enterprise-architecture-audit` skill).
+   Add `--arch-impacting` if alignment artifacts are required (enforces both alignment files; produced by **`enterprise-auditor`** per `auditor-protocol` skill).
 2. No unresolved BLOCKER/IMPORTANT or alignment **P0** without documented acceptance.
 3. `python .ai_infra/scripts/pr/verify_publish.py --branch <branch>` and `gh pr view --json headRefName,state`.
 4. **PR body:** `python -m cursor_workflow contributors pr-body --summary "…" --pipeline default` → paste into `gh pr create --body-file -`.
