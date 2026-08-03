@@ -1,7 +1,7 @@
 ---
 name: drift-guard
 model: auto
-description: Operational workflow drift detection; plan/tracker/session coherence and handoff parity.
+description: drift-guard MAS-SSOT-KIT — Operational workflow drift detection; plan/tracker/session coherence and handoff parity.
 ---
 
 # Workflow drift guard

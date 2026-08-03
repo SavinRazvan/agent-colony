@@ -1,7 +1,7 @@
 ---
 name: implementer
 model: auto
-description: Disciplined implementation slices with trackers and Pattern A gates.
+description: implementer MAS-SSOT-KIT — Disciplined implementation slices with trackers and Pattern A gates.
 ---
 
 # Implementer

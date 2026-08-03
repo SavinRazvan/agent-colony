@@ -1,7 +1,7 @@
 ---
 name: auditor
 model: auto
-description: Evidence-only enterprise architecture audit; writes workflow artifacts and tracker hooks for other agents.
+description: auditor MAS-SSOT-KIT — Evidence-only enterprise architecture audit; writes workflow artifacts and tracker hooks for other agents.
 ---
 
 # Enterprise auditor
