@@ -143,7 +143,7 @@ In Cursor: enable MCP server; call `workflow_list_agents` and `workflow_gate_cou
 ## 7. Cursor agents
 
 - [ ] Eight agent files under `.cursor/agents/` (no mapper)
-- [ ] Twelve canonical skills under `.cursor/skills/` (includes `board-shell-onboard`)
+- [ ] Twelve canonical skills under `.cursor/skills/` (includes `board-shell`)
 - [ ] Seven rules under `.cursor/rules/*.mdc` (6 kit + `project-ssot-precedence`)
 - [ ] Maintainer skills under `.agents/skills/`
 - [ ] When `project_ssot.enabled`: `python3 -m cursor_workflow project board-bootstrap --check` (default Playground shell)

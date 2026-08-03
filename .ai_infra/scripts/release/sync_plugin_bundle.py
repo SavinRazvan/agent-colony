@@ -55,7 +55,7 @@ ACTIVATE_SKILL_SRC = (
 CURSOR_WORKFLOW_SRC = KIT_ROOT / "cursor_workflow"
 PAYLOAD_EXTRA_AI_INFRA = ("install/cursor_workflow", "scripts/install")
 CONNECT_SKILL_SRC = (
-    ai_infra_dir() / "templates" / "plugin" / "skills" / "connect-external-mcp" / "SKILL.md"
+    ai_infra_dir() / "templates" / "plugin" / "skills" / "mcp-connect" / "SKILL.md"
 )
 LICENSE_FILES = ("LICENSE", "NOTICE")
 
@@ -179,7 +179,7 @@ def sync_plugin_surface(plugin_dir: Path) -> None:
         activate_dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(activate_src, activate_dest)
 
-    connect_dest = plugin_dir / "skills" / "connect-external-mcp" / "SKILL.md"
+    connect_dest = plugin_dir / "skills" / "mcp-connect" / "SKILL.md"
     if not connect_dest.is_file() and CONNECT_SKILL_SRC.is_file():
         connect_dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(CONNECT_SKILL_SRC, connect_dest)
@@ -282,7 +282,7 @@ def check_bundle(profile: str = "with_mcp") -> list[str]:
 
     required = [
         PLUGIN_DIR / "skills" / "workflow-activate" / "SKILL.md",
-        PLUGIN_DIR / "skills" / "connect-external-mcp" / "SKILL.md",
+        PLUGIN_DIR / "skills" / "mcp-connect" / "SKILL.md",
         PLUGIN_DIR / "agents" / "implementer.md",
         PAYLOAD_DIR / ".ai_infra" / "scripts" / "pr" / "prepare.py",
         PAYLOAD_DIR / ".ai_infra" / "scripts" / "install" / "scaffold.py",

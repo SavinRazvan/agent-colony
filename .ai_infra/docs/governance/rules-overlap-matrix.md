@@ -23,7 +23,7 @@ Notes:
 | `commit-trailer-format.mdc` | Required commit trailers + optional `Assisted-by` (no `Made-with:`) | `README.md`, `AGENTS.md` § Commits | **Keep separate** |
 | `file-docstring-header-relations.mdc` | File headers | All new source files | **Keep** |
 | `local-artifact-protection.mdc` | `.coverage`, `.env` (project paths) | ops runbooks | **Keep** |
-| `project-ssot-precedence.mdc` | Board SSOT precedes local trackers when `project_ssot.enabled` (ADR-008) | `project-board-ssot` skill, ADR-008 | **Keep** (product SSOT; also under `overlays/rules/`) |
+| `project-ssot-precedence.mdc` | Board SSOT precedes local trackers when `project_ssot.enabled` (ADR-008) | `board-ssot` skill, ADR-008 | **Keep** (product SSOT; also under `overlays/rules/`) |
 
 ## Not in universal core
 

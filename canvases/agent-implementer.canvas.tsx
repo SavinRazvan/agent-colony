@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/implementer.md · implementation-execution-loop/SKILL.md · board-shell-onboard · project-board-ssot § Continuation";
+  ".cursor/agents/implementer.md · implementer-loop/SKILL.md · board-shell · board-ssot § Continuation";
 
 const GOALS = [
   "Day-0: refuse claim until default Playground board shell is green",
@@ -102,9 +102,9 @@ const FALLBACK_LABELS: Record<string, string> = {
 };
 
 const READ_FIRST = [
-  [".cursor/skills/implementation-execution-loop/SKILL.md", "Slice lifecycle"],
-  [".cursor/skills/board-shell-onboard/SKILL.md", "Day-0 Playground shell (before claim)"],
-  [".cursor/skills/project-board-ssot/SKILL.md", "When project_ssot.enabled"],
+  [".cursor/skills/implementer-loop/SKILL.md", "Slice lifecycle"],
+  [".cursor/skills/board-shell/SKILL.md", "Day-0 Playground shell (before claim)"],
+  [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
   [".ai_infra/templates/project-board/board-shell.schema.yaml", "Kit default desired state"],
   [".ai_infra/templates/project-board/README.md", "When creating cards"],
   [".local/user_settings/github.collaboration.yaml", "project_ssot block"],
@@ -368,7 +368,7 @@ export default function AgentImplementerCanvas() {
               evidence; do not hammer GraphQL.
             </Text>
             <Text>
-              CLI helper: project guide. Canon: project-board-ssot/SKILL.md §
+              CLI helper: project guide. Canon: board-ssot/SKILL.md §
               Continuation.
             </Text>
           </Stack>

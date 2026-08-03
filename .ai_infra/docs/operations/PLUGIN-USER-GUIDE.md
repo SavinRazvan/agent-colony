@@ -324,15 +324,15 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | I want to… | Type in chat | Or run | Deep dive |
 |------------|--------------|--------|-----------|
 | **First-time setup** | `/workflow-activate` | `python3 -m cursor_workflow activate --directory .` | §2 above · [workflow-activate skill](../../.cursor/skills/workflow-activate/SKILL.md) |
-| **First-run board shell** *(SSOT on)* | `/project-board` | paste Project+repo URLs → wire YAML → `project doctor` → `board-bootstrap --check` | [board-shell-onboard](../../.cursor/skills/board-shell-onboard/SKILL.md) · checklist §3b–4 |
-| **Implement a feature slice** | `/implementer` | — | [implementation-execution-loop](../../.cursor/skills/implementation-execution-loop/SKILL.md) |
+| **First-run board shell** *(SSOT on)* | `/project-board` | paste Project+repo URLs → wire YAML → `project doctor` → `board-bootstrap --check` | [board-shell](../../.cursor/skills/board-shell/SKILL.md) · checklist §3b–4 |
+| **Implement a feature slice** | `/implementer` | — | [implementer-loop](../../.cursor/skills/implementer-loop/SKILL.md) |
 | **Run tests / coverage** | `/test-runner` | `pytest -q` | [workflow-complete.md](workflow-complete.md) §C |
 | **Verify a claim** | `/verifier` | — | Evidence-only checks |
 | **Architecture audit** *(not day-0)* | `/enterprise-auditor` | — (subagent only; no dedicated MCP tool) | [agent-workflow-procedures.md](agent-workflow-procedures.md) §1 — after board shell |
 | **Operational drift** (plan ↔ tracker) | `/workflow-drift-guard` (optional) | `python3 -m cursor_workflow drift validate --profile consumer` on app projects | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) · [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
 | **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` `resolve_gates()` | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
 | **Add agents / skills / MCP** | `/integrator-mas-agent` + `/mas-infrastructure-integration` | `integrate validate` | [mas-infrastructure-integration.md](mas-infrastructure-integration.md) |
-| **Connect external MCP** | `/connect-external-mcp` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
+| **Connect external MCP** | `/mcp-connect` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
 | **Upgrade / refresh dashboards** | `/workflow-activate` | `python3 -m cursor_workflow activate --directory .` | [upgrade-kit.md](upgrade-kit.md) |
 | **Check install health** | — | `python3 -m cursor_workflow health` | [gate-matrix.md](gate-matrix.md) |
 | **Dry-run install preview** | — | `python3 -m cursor_workflow install --target <dir> --dry-run` | [install-dry-run.md](install-dry-run.md) |
@@ -349,11 +349,11 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | `/workflow-drift-guard` | `.cursor/agents/workflow-drift-guard.md` |
 | `/researcher` | `.cursor/agents/researcher.md` — **shipped/proven**; adaptive Brief; public/private GitHub (private needs `gh`/git auth); anti-loop ≤6 rounds; `research init\|fetch\|validate`; corpus opt-in after init |
 | `/integrator-mas-agent` | `.cursor/agents/integrator-mas-agent.md` |
-| `/project-board` | `.cursor/agents/project-board.md` + `project-board-ssot` + first-run `board-shell-onboard` |
-| `/board-shell-onboard` | `.cursor/skills/board-shell-onboard/` — first-run coach (also via `/project-board`) |
+| `/project-board` | `.cursor/agents/project-board.md` + `board-ssot` + first-run `board-shell` |
+| `/board-shell` | `.cursor/skills/board-shell/` — first-run coach (also via `/project-board`) |
 | `/review-pr`, `/prepare-pr`, `/merge-pr` | `.agents/skills/` |
 | `/mas-infrastructure-integration` | `.cursor/skills/mas-infrastructure-integration/` |
-| `/connect-external-mcp` | `.cursor/skills/connect-external-mcp/` |
+| `/mcp-connect` | `.cursor/skills/mcp-connect/` |
 | `/enterprise-architecture-audit` | `.cursor/skills/enterprise-architecture-audit/` |
 | `/workflow-drift-audit` | `.cursor/skills/workflow-drift-audit/` |
 

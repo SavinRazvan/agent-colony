@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/workflow-drift-guard.md · workflow-drift-audit/SKILL.md · project-board-ssot/SKILL.md";
+  ".cursor/agents/workflow-drift-guard.md · workflow-drift-audit/SKILL.md · board-ssot/SKILL.md";
 
 const GOALS = [
   "Operational workflow drift detection",
@@ -87,7 +87,7 @@ const FALLBACK_LABELS: Record<string, string> = {
 
 const READ_FIRST = [
   [".cursor/skills/workflow-drift-audit/SKILL.md", "Drift audit canon"],
-  [".cursor/skills/project-board-ssot/SKILL.md", "Board SSOT when enabled"],
+  [".cursor/skills/board-ssot/SKILL.md", "Board SSOT when enabled"],
   ["python3 -m cursor_workflow drift validate", "CLI entry"],
   ["DRIFT-009 / DRIFT-010", "Board vs tracker checks"],
   ["project export", "DRIFT-010 evidence"],

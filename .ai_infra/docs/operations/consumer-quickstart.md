@@ -70,8 +70,8 @@ Cursor lists **subagents**, **skills**, and **commands** in the same **`/`** men
 | What you want | Type in chat | Lives on disk |
 |---------------|--------------|---------------|
 | Activate the kit | **`/workflow-activate`** | `.cursor/skills/workflow-activate/` |
-| Wire board + shell coach | **`/project-board`** | `.cursor/agents/project-board.md` + `board-shell-onboard` |
-| Day-to-day board protocol | **`project-board-ssot`** skill (auto-loaded) | `.cursor/skills/project-board-ssot/` |
+| Wire board + shell coach | **`/project-board`** | `.cursor/agents/project-board.md` + `board-shell` |
+| Day-to-day board protocol | **`board-ssot`** skill (auto-loaded) | `.cursor/skills/board-ssot/` |
 | Implement a slice | **`/implementer`** | `.cursor/agents/implementer.md` |
 | Run tests | **`/test-runner`** | `.cursor/agents/test-runner.md` |
 | PR review / prepare / merge | **`/review-pr`**, `/prepare-pr`, `/merge-pr` | `.agents/skills/` (loaded as skills) |
@@ -212,7 +212,7 @@ python3 -m cursor_workflow project status
 
 Expect `api=complete · shell=incomplete` until step 4.
 
-Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → **`/connect-external-mcp`**
+Optional: `.local/user_settings/mcp.agents.yaml` · external MCP → **`/mcp-connect`**
 
 ---
 
@@ -287,7 +287,7 @@ python3 -m cursor_workflow project status
 | Architecture audit | `/enterprise-auditor` |
 | Drift check | `/workflow-drift-guard` |
 | Add agents/skills/MCP | `/integrator-mas-agent` |
-| External MCP setup | `/connect-external-mcp` |
+| External MCP setup | `/mcp-connect` |
 | PR workflow | `/review-pr` → `/prepare-pr` → `/merge-pr` |
 | Attach file context | `@` + pick file (not for starting workflows) |
 

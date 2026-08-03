@@ -130,7 +130,7 @@ def test_sync_plugin_surface_copies_connect_skill_from_fallback(
     plugin_dir = tmp_path / "plugin"
     mod.sync_plugin_surface(plugin_dir)
 
-    dest = plugin_dir / "skills" / "connect-external-mcp" / "SKILL.md"
+    dest = plugin_dir / "skills" / "mcp-connect" / "SKILL.md"
     assert dest.read_text(encoding="utf-8") == "connect skill content\n"
 
 

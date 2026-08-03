@@ -24,7 +24,7 @@ owner:
 # Your board must be kit-shaped (Status backlog|ready|in_progress|in_review|done;
 # Priority p0–p2; Size xs–xl; Estimate number; Start date). Custom layouts are not auto-supported.
 # Discover ids: gh project view <N> --owner <login> · gh project field-list <N> --owner <login>
-# First-run shell: project doctor → /project-board (board-shell-onboard) → board-bootstrap --check
+# First-run shell: project doctor → /project-board (board-shell) → board-bootstrap --check
 # Optional: board-bootstrap --check --ensure-fields (prints suggested field ids; human confirms before paste)
 project_ssot:
   enabled: false                          # set true after filling board identity + field ids
@@ -78,7 +78,7 @@ project_ssot:
         p1: "PRIORITY_P1_OPTION_ID"
         p2: "PRIORITY_P2_OPTION_ID"
     size:
-      # Size↔Estimate table (points): see project-board-ssot skill — xs=1, s=1–2, m=3–5, l=5–8, xl=split
+      # Size↔Estimate table (points): see board-ssot skill — xs=1, s=1–2, m=3–5, l=5–8, xl=split
       field_id: PVTSSF_PLACEHOLDER_SIZE
       options:
         xs: "SIZE_XS_OPTION_ID"

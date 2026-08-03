@@ -84,7 +84,7 @@ Evidence-Standard: repository + user context only
 
 **Downstream agents:**
 
-- **Implementer:** consume `enterprise-audit-actions.md`; move agreed items onto **board Ready cards** when `project_ssot.enabled` (Acceptance/Rollback in body); else `work-tracker.md` (one primary `in_progress`). Follow `.cursor/skills/implementation-execution-loop/SKILL.md` + `project-board-ssot` Continuation contract.
+- **Implementer:** consume `enterprise-audit-actions.md`; move agreed items onto **board Ready cards** when `project_ssot.enabled` (Acceptance/Rollback in body); else `work-tracker.md` (one primary `in_progress`). Follow `.cursor/skills/implementer-loop/SKILL.md` + `board-ssot` Continuation contract.
 - **Alignment / maintainer:** if findings are doc-policy-roadmap drift, also record P0/P1 items per `.ai_infra/docs/roadmap/alignment-audit-schema.md` in `.local/workflow-artifacts/alignment/alignment-audit.md` and `alignment-todos.md` (advisory).
 - **Module map depth:** optionally run `.cursor/skills/audit-module-map/SKILL.md` for `module-map` / HTML export; cite those paths as evidence in the enterprise report.
 

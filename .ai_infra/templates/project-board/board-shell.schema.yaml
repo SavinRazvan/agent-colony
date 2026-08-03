@@ -5,7 +5,7 @@
 # Role: Machine-readable starter format for board-bootstrap --check and first-run coach.
 # Used By:
 #  - project board-bootstrap --check
-#  - .cursor/skills/board-shell-onboard/SKILL.md
+#  - .cursor/skills/board-shell/SKILL.md
 # Depends On:
 #  - views-setup.md / views-checklist.md (human prose must match)
 # Notes:
@@ -100,8 +100,8 @@ card_create:
     - bug
     - research
   notes: >
-    Tier-1 timing in project-board-ssot skill. Agents never mutate views.
-    First-run coach: board-shell-onboard skill via /project-board.
+    Tier-1 timing in board-ssot skill. Agents never mutate views.
+    First-run coach: board-shell skill via /project-board.
 
 customization:
   overlay_path: .local/user_settings/board-shell.schema.yaml

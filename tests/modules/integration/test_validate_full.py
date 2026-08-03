@@ -33,7 +33,7 @@ def _copy_minimal_kit(target: Path) -> None:
     for rel in (
         ".cursor/agents",
         ".cursor/rules",
-        ".cursor/skills/implementation-execution-loop",
+        ".cursor/skills/implementer-loop",
         ".cursor/mcp.registry.yaml.example",
         ".ai_infra/scripts/pr",
         ".ai_infra/scripts/integration",
@@ -159,7 +159,7 @@ def test_check_int014_missing_alwaysapply_and_missing_references(tmp_path: Path)
     agents = tmp_path / ".cursor" / "agents"
     agents.mkdir(parents=True)
     (agents / "implementer.md").write_text("no header rule mention\n", encoding="utf-8")
-    skills = tmp_path / ".cursor" / "skills" / "implementation-execution-loop"
+    skills = tmp_path / ".cursor" / "skills" / "implementer-loop"
     skills.mkdir(parents=True)
     (skills / "SKILL.md").write_text("no header rule mention\n", encoding="utf-8")
 
@@ -167,7 +167,7 @@ def test_check_int014_missing_alwaysapply_and_missing_references(tmp_path: Path)
     assert not result.passed
     assert "missing alwaysApply: true" in result.detail
     assert "implementer.md missing file-docstring-header-relations reference" in result.detail
-    assert "implementation-execution-loop/SKILL.md missing file-docstring-header reference" in result.detail
+    assert "implementer-loop/SKILL.md missing file-docstring-header reference" in result.detail
 
 
 def test_format_report_counts_all_severities() -> None:

@@ -25,7 +25,7 @@ type FlowMode = "slice" | "side";
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  "project-board-collaboration.md · project-board-ssot/SKILL.md · board-shell-onboard/SKILL.md · .cursor/agents/*.md · agent-roster edges";
+  "project-board-collaboration.md · board-ssot/SKILL.md · board-shell/SKILL.md · .cursor/agents/*.md · agent-roster edges";
 
 const STATUS_STEPS = ["Ready", "In progress", "In review", "Done"];
 
@@ -117,7 +117,7 @@ const BOARD_TIER1 = [
   [
     "Size / Estimate",
     "create-from-template / set-field",
-    "Points table in project-board-ssot skill (defaults s/1 when guessed)",
+    "Points table in board-ssot skill (defaults s/1 when guessed)",
     "Triage + create",
     "Priority required; Estimate = points not hours",
   ],
@@ -375,7 +375,7 @@ export default function AgentBoardCollaborationCanvas() {
       <Callout tone="warning" title="Day-0 board shell (before day-to-day cards)">
         <Stack gap={6}>
           <Text>
-            /project-board + board-shell-onboard until board-bootstrap --check
+            /project-board + board-shell until board-bootstrap --check
             matches the Playground six-view default (Priority/Size/Estimate/Start
             date on Status board + Prioritized backlog).
           </Text>
@@ -434,7 +434,7 @@ export default function AgentBoardCollaborationCanvas() {
         <CollapsibleSection
           title={
             flowMode === "slice"
-              ? "Typical slice (project-board-ssot SKILL § Multi-agent handoffs)"
+              ? "Typical slice (board-ssot SKILL § Multi-agent handoffs)"
               : "Audit / drift side paths"
           }
           defaultOpen

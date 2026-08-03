@@ -82,7 +82,7 @@ def test_read_agent() -> None:
 def test_read_skill() -> None:
     from workflow_mcp.resources import read_skill
 
-    body = read_skill(REPO_ROOT, "implementation-execution-loop")
+    body = read_skill(REPO_ROOT, "implementer-loop")
     assert "implementation execution loop" in body.lower()
 
 

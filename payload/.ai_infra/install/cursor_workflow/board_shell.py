@@ -297,7 +297,7 @@ def bootstrap_view_fail_message(
         )
 
     return (
-        f"{base} Agent chat: /project-board → CONSENT GATE then board-shell-onboard "
+        f"{base} Agent chat: /project-board → CONSENT GATE then board-shell "
         "TURN PROTOCOL (one view at a time). Human: views-setup.md § Fast path "
         "(rename View 1 → Status board, then add five views + Tier-1 columns)."
     )

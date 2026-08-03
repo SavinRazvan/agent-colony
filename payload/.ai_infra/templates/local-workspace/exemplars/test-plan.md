@@ -4,7 +4,7 @@ Path: .local/index-and-planning/current/test-plan.md
 Role: Living modular testing plan.
 Used By:
  - test-runner agent
- - .cursor/skills/test-module-coverage/SKILL.md
+ - .cursor/skills/test-coverage/SKILL.md
 Depends On:
  - .local/index-and-planning/current/test-index.md
 Notes:

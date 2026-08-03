@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/enterprise-auditor.md · enterprise-architecture-audit/SKILL.md · project-board-ssot/SKILL.md";
+  ".cursor/agents/enterprise-auditor.md · enterprise-architecture-audit/SKILL.md · board-ssot/SKILL.md";
 
 const GOALS = [
   "Evidence-only enterprise architecture audit",
@@ -86,7 +86,7 @@ const READ_FIRST = [
   [".cursor/skills/enterprise-architecture-audit/SKILL.md", "Audit canon"],
   [".cursor/skills/audit-module-map/SKILL.md", "Optional deep map"],
   [".cursor/skills/audit-orchestration/SKILL.md", "Optional orchestration"],
-  [".cursor/skills/project-board-ssot/SKILL.md", "When project_ssot.enabled"],
+  [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
   [".ai_infra/docs/roadmap/alignment-audit-schema.md", "Alignment schema"],
 ];
 
