@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-07-20";
+const VERIFIED = "2026-08-03";
 const SOURCES =
   ".cursor/agents/integrator.md · integrator-protocol/SKILL.md · board-ssot/SKILL.md";
 
@@ -69,7 +69,7 @@ const FALLBACK_EDGES = [
 
 const BOARD_LABELS: Record<string, string> = {
   status: "project status",
-  skill: "mas-infrastructure",
+  skill: "integrator-protocol",
   claim: "claim / create card",
   intake: "Intake → Plan",
   wire: "templates → wire",

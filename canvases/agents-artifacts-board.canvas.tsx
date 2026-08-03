@@ -26,7 +26,7 @@ import {
  * Not an agent-* canvas — excluded from DOC-008 roster scan (same as board-ssot-vs-kit).
  */
 
-const VERIFIED = "2026-07-20";
+const VERIFIED = "2026-08-03";
 const SOURCES =
   "ADR-008 · board-ssot/SKILL.md · project-board-collaboration.md · agent cards · HYGIENE post-COV100";
 

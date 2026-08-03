@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-07-20";
+const VERIFIED = "2026-08-03";
 const SOURCES =
   ".cursor/agents/researcher.md · research-corpus/SKILL.md · research_cli.py · .agents/skills/RESEARCH_WORKFLOW.md · live pack flexiai-toolsmith + verifier";
 

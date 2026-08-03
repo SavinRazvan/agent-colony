@@ -11,7 +11,7 @@
  *  - .agents/skills (maintainer SKILL.md folders)
  * Notes:
  *  - Concept hub (not agent-*). Excluded from DOC-008 roster scan like board-ssot-vs-kit.
- *  - Advisory only until human confirms rename appetite; no renames applied by this canvas.
+ *  - B-safe rename SHIPPED 2026-08-03 (#140, #146–#149); plan table is historical → keep/keep.
  *  - Avoid "star-slash" globs in this block comment — they terminate the comment early.
  */
 
@@ -56,8 +56,8 @@ const PLAN_ROWS: {
     skillsNow: "PRIMARY board-ssot · ALSO board-shell",
     agentNext: "board",
     skillsNext: "PRIMARY board-ssot · ALSO board-shell",
-    agentChange: "rename",
-    skillChange: "rename",
+    agentChange: "keep",
+    skillChange: "keep",
   },
   {
     lane: "Delivery",
@@ -66,7 +66,7 @@ const PLAN_ROWS: {
     agentNext: "implementer",
     skillsNext: "PRIMARY implementer-loop",
     agentChange: "keep",
-    skillChange: "rename",
+    skillChange: "keep",
   },
   {
     lane: "Delivery",
@@ -75,7 +75,7 @@ const PLAN_ROWS: {
     agentNext: "test-runner",
     skillsNext: "PRIMARY test-coverage",
     agentChange: "keep",
-    skillChange: "rename",
+    skillChange: "keep",
   },
   {
     lane: "Delivery",
@@ -92,8 +92,8 @@ const PLAN_ROWS: {
     skillsNow: "PRIMARY integrator-protocol",
     agentNext: "integrator",
     skillsNext: "PRIMARY integrator-protocol",
-    agentChange: "rename",
-    skillChange: "rename",
+    agentChange: "keep",
+    skillChange: "keep",
   },
   {
     lane: "Quality",
@@ -103,8 +103,8 @@ const PLAN_ROWS: {
     agentNext: "auditor",
     skillsNext:
       "PRIMARY auditor-protocol · ALSO audit-orchestration, audit-module-map (keep)",
-    agentChange: "rename",
-    skillChange: "rename",
+    agentChange: "keep",
+    skillChange: "keep",
   },
   {
     lane: "Quality",
@@ -112,8 +112,8 @@ const PLAN_ROWS: {
     skillsNow: "PRIMARY drift-audit",
     agentNext: "drift-guard",
     skillsNext: "PRIMARY drift-audit",
-    agentChange: "rename",
-    skillChange: "rename",
+    agentChange: "keep",
+    skillChange: "keep",
   },
   {
     lane: "Research",
@@ -122,13 +122,13 @@ const PLAN_ROWS: {
     agentNext: "researcher",
     skillsNext: "PRIMARY research-corpus",
     agentChange: "keep",
-    skillChange: "rename",
+    skillChange: "keep",
   },
 ];
 
 const SHARED_SKILLS = [
   [
-    "board-ssot → board-ssot",
+    "board-ssot (shipped)",
     "Shared by ALL agents for board Entry/Exit — not one agent's exclusive skill",
   ],
   [
@@ -136,7 +136,7 @@ const SHARED_SKILLS = [
     "Skill-only — consumer install; no agent twin",
   ],
   [
-    "mcp-connect → mcp-connect (optional)",
+    "mcp-connect (shipped)",
     "Skill-only — MCP wiring",
   ],
   [
@@ -144,8 +144,8 @@ const SHARED_SKILLS = [
     "Maintainer slash namespace (.agents/skills) — not Task agents",
   ],
   [
-    "audit-alignment (retire later)",
-    "DEPRECATED stub → points at auditor",
+    "audit-alignment (stub)",
+    "DEPRECATED stub → points at auditor + auditor-protocol",
   ],
 ];
 type PillTone = "neutral" | "added" | "deleted" | "renamed" | "success" | "warning" | "info";
@@ -768,17 +768,17 @@ export default function NamingRosterAuditCanvas() {
 
       {view === "plan" ? (
         <Stack gap={16}>
-          <Callout tone="warning" title="Plan only — no renames applied yet">
-            Current skills are confirmed from each agent card (.cursor/agents/*.md).
-            Almost every agent ALSO loads board-ssot for board Entry/Exit — that is
-            a shared skill, not their primary protocol. Suggested names are a design target;
-            auditor advised deferring agent-id renames in v1 due to Notes/DOC/Task blast radius.
+          <Callout tone="success" title="B-safe rename SHIPPED — 2026-08-03">
+            Agent/skill renames landed via #140 + #146–#149 (tip before CI: 333321d;
+            descriptions later prefixed MAS-SSOT-KIT in #153). Plan rows below are
+            keep/keep historical record — filesystem roster is current truth
+            (8 agents / 12 skills / 7 rules). Shared board-ssot remains Entry/Exit for all agents.
           </Callout>
 
           <Stack gap={8}>
-            <H2>Agent ↔ skill plan (4 columns)</H2>
+            <H2>Agent ↔ skill roster (shipped)</H2>
             <Text tone="secondary" size="small">
-              Column meaning: now agent · now skills · suggested agent · suggested skills
+              Column meaning: agent · skills · same (post-rename) · change = keep
             </Text>
             <Table
               headers={[
@@ -981,9 +981,9 @@ export default function NamingRosterAuditCanvas() {
             ])}
             striped
           />
-          <Callout tone="warning" title="Projected scores after rename">
-            integrator 23 · auditor 22 · drift-guard 21 · board 21 · implementer pair ~23
-            once implementer-loop ships — all above admission bar.
+          <Callout tone="success" title="Post-rename scores (shipped roster)">
+            Current ids score at or above admission bar: integrator / auditor /
+            drift-guard / board / implementer↔implementer-loop — rename debt closed.
           </Callout>
         </Stack>
       ) : null}

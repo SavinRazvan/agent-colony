@@ -331,7 +331,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | **Architecture audit** *(not day-0)* | `/auditor` | — (subagent only; no dedicated MCP tool) | [agent-workflow-procedures.md](agent-workflow-procedures.md) §1 — after board shell |
 | **Operational drift** (plan ↔ tracker) | `/drift-guard` (optional) | `python3 -m cursor_workflow drift validate --profile consumer` on app projects | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) · [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
 | **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` `resolve_gates()` | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
-| **Add agents / skills / MCP** | `/integrator` + `/integrator-protocol` | `integrate validate` | [mas-infrastructure-integration.md](mas-infrastructure-integration.md) |
+| **Add agents / skills / MCP** | `/integrator` + `/integrator-protocol` | `integrate validate` | [integrator-protocol skill](../../.cursor/skills/integrator-protocol/SKILL.md) · [mas-infrastructure-integration.md](mas-infrastructure-integration.md) (ops filename kept) |
 | **Connect external MCP** | `/mcp-connect` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
 | **Upgrade / refresh dashboards** | `/workflow-activate` | `python3 -m cursor_workflow activate --directory .` | [upgrade-kit.md](upgrade-kit.md) |
 | **Check install health** | — | `python3 -m cursor_workflow health` | [gate-matrix.md](gate-matrix.md) |
