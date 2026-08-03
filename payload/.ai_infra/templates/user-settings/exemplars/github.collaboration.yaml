@@ -24,7 +24,7 @@ owner:
 # Your board must be kit-shaped (Status backlog|ready|in_progress|in_review|done;
 # Priority p0–p2; Size xs–xl; Estimate number; Start date). Custom layouts are not auto-supported.
 # Discover ids: gh project view <N> --owner <login> · gh project field-list <N> --owner <login>
-# First-run shell: project doctor → /project-board (board-shell) → board-bootstrap --check
+# First-run shell: project doctor → /board (board-shell) → board-bootstrap --check
 # Optional: board-bootstrap --check --ensure-fields (prints suggested field ids; human confirms before paste)
 project_ssot:
   enabled: false                          # set true after filling board identity + field ids

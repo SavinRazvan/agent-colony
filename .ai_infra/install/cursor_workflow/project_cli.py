@@ -5,7 +5,7 @@ Role: Thin CLI facade for GitHub Project SSOT — cmd_* delegates, re-exports, r
 Used By:
  - .ai_infra/install/cursor_workflow/cli.py
  - .cursor/skills/board-ssot/SKILL.md
- - .cursor/agents/project-board.md
+ - .cursor/agents/board.md
 Depends On:
  - .ai_infra/install/cursor_workflow/project_atomics.py
  - .ai_infra/install/cursor_workflow/gh_project_adapter.py

@@ -13,6 +13,6 @@ disable-model-invocation: true
 - **Merge-gate outputs (unchanged):** `.local/workflow-artifacts/alignment/alignment-audit.md`, `alignment-todos.md` per `.ai_infra/docs/roadmap/alignment-audit-schema.md`
 - **Rule:** `.cursor/rules/advisory-audit-alignment-enforcement.mdc`
 
-For architecture-impacting PRs, run a **focused alignment pass** (see enterprise skill) unless a **full** `enterprise-architecture-audit.md` report is explicitly requested.
+For architecture-impacting PRs, run a **focused alignment pass** (see `auditor-protocol`) unless a **full** `enterprise-architecture-audit.md` report is explicitly requested.
 
 This stub remains so old links and governance scans that mention `audit-alignment/` keep resolving to a clear redirect.

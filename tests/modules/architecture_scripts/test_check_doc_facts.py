@@ -64,7 +64,7 @@ def test_unknown_agent_in_canvas_fails_doc008(tmp_path: Path) -> None:
     relations = tmp_path / "canvases" / "agent-relations.canvas.tsx"
     relations.write_text(
         relations.read_text(encoding="utf-8").replace(
-            'from: "project-board"',
+            'from: "board"',
             'from: "ghost-agent"',
         ),
         encoding="utf-8",

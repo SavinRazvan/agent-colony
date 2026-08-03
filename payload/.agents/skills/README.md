@@ -11,8 +11,8 @@ Each skill: **`<skill-name>/SKILL.md`**.
 | Area | Where |
 |------|--------|
 | Implementation loop | `.cursor/skills/implementer-loop/`, `.cursor/agents/implementer.md` |
-| **Project board SSOT** | `.cursor/skills/board-ssot/`, `.cursor/agents/project-board.md` |
-| **Board shell first-run** | `.cursor/skills/board-shell/` (via `/project-board`) |
+| **Project board SSOT** | `.cursor/skills/board-ssot/`, `.cursor/agents/board.md` |
+| **Board shell first-run** | `.cursor/skills/board-shell/` (via `/board`) |
 | Tests | `.cursor/skills/test-coverage/`, `.cursor/agents/test-runner.md` |
 | **Maintainer PR** | **`pr-workflow/`** + `review-pr` / `prepare-pr` / `merge-pr` (`PR_WORKFLOW.md` = legacy redirect) |
 | **Research corpus** | `RESEARCH_WORKFLOW.md` + `.cursor/skills/research-corpus/` |

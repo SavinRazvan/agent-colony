@@ -30,7 +30,7 @@ const SOURCES =
 const STATUS_STEPS = ["Ready", "In progress", "In review", "Done"];
 
 const ROSTER_NODES = [
-  { id: "project-board" },
+  { id: "board" },
   { id: "implementer" },
   { id: "verifier" },
   { id: "drift-guard" },
@@ -40,10 +40,10 @@ const ROSTER_NODES = [
 ];
 
 const ROSTER_EDGES = [
-  { from: "project-board", to: "implementer" },
+  { from: "board", to: "implementer" },
   { from: "implementer", to: "verifier" },
   { from: "implementer", to: "drift-guard" },
-  { from: "drift-guard", to: "project-board" },
+  { from: "drift-guard", to: "board" },
   { from: "drift-guard", to: "implementer" },
   { from: "auditor", to: "implementer" },
   { from: "integrator", to: "implementer" },
@@ -52,10 +52,10 @@ const ROSTER_EDGES = [
 ];
 
 const EDGE_LABELS: Record<string, string> = {
-  "project-board→implementer": "handoff next=implementer",
+  "board→implementer": "handoff next=implementer",
   "implementer→verifier": "Exit --next verifier",
   "implementer→drift-guard": "P0/P1 after drift-validate",
-  "drift-guard→project-board": "dual-write remediation",
+  "drift-guard→board": "dual-write remediation",
   "drift-guard→implementer": "dual-write remediation",
   "auditor→implementer": "Notes + artifact paths",
   "integrator→implementer": "escalate product src/",
@@ -65,7 +65,7 @@ const EDGE_LABELS: Record<string, string> = {
 
 const PER_AGENT_ENTRY_EXIT = [
   [
-    "project-board",
+    "board",
     "status + list",
     "Full triage; handoff to implementer",
   ],
@@ -147,7 +147,7 @@ const ARTIFACT_FLOWS = [
   ],
   [
     ".local/index-and-planning/current/change-index.md",
-    "implementer, project-board, integrator, verifier, test-runner, auditor (Exit)",
+    "implementer, board, integrator, verifier, test-runner, auditor (Exit)",
     "Slice close / triage",
     "Next agents, humans, ICC",
     "Append row; scope pointer for continuation",
@@ -170,7 +170,7 @@ const ARTIFACT_FLOWS = [
     ".local/workflow-artifacts/drift/drift-audit.md + drift-todos.md",
     "drift-guard",
     "After drift validate pass",
-    "project-board, implementer (via Notes / Ready)",
+    "board, implementer (via Notes / Ready)",
     "Dual-write evidence; remediation handoff — no silent tracker edits",
   ],
   [
@@ -233,7 +233,7 @@ const NEXT_AGENT_STEPS = [
 ];
 
 const SLICE_FLOW = [
-  "project-board: status + list → triage Ready → handoff next=implementer",
+  "board: status + list → triage Ready → handoff next=implementer",
   "implementer: claim --agent implementer → code + gates → handoff --next verifier (typical)",
   "test-runner (when tests gate PR): status + slice card → test-index / test-plan → in_review",
   "verifier: status + related card → evidence check → done or in_review with failure Notes",
@@ -242,7 +242,7 @@ const SLICE_FLOW = [
 const SIDE_FLOW = [
   "auditor: audit card → write .local/workflow-artifacts/… → Notes paths → implementer",
   "implementer: make drift-validate → P0/P1 → hand off drift-guard",
-  "drift-guard: must read board In progress → drift artifacts → drift card done; remediation via Notes/Ready to project-board or implementer",
+  "drift-guard: must read board In progress → drift artifacts → drift card done; remediation via Notes/Ready to board or implementer",
   "integrator: integration card → validate → escalate to implementer | test-runner | auditor",
 ];
 
@@ -308,12 +308,12 @@ function CollaborationDag({
             height={n.height}
             rx={4}
             fill={
-              n.id === "project-board"
+              n.id === "board"
                 ? tokens.fill.primary
                 : tokens.fill.secondary
             }
             stroke={
-              n.id === "project-board"
+              n.id === "board"
                 ? tokens.accent.primary
                 : tokens.stroke.primary
             }
@@ -375,7 +375,7 @@ export default function AgentBoardCollaborationCanvas() {
       <Callout tone="warning" title="Day-0 board shell (before day-to-day cards)">
         <Stack gap={6}>
           <Text>
-            /project-board + board-shell until board-bootstrap --check
+            /board + board-shell until board-bootstrap --check
             matches the Playground six-view default (Priority/Size/Estimate/Start
             date on Status board + Prioritized backlog).
           </Text>

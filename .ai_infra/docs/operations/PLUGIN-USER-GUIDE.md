@@ -89,8 +89,8 @@ This loads agents, skills, and rules into Cursor. Your project may only get `.cu
 | 2. Activate | Open **your app** → Agent chat → **`/workflow-activate`** → wait for **`VERIFY PASS`** |
 | 3. Identity | Edit `github.collaboration.yaml` → `display_name` + `github_user` → `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` |
 | 3b. GitHub auth | `gh auth status` — refresh Project scopes only if missing (`gh auth refresh -h github.com -s read:project,project`) |
-| 3c. Wire board | Agent chat **`/project-board`** + **Project URL + repo URL** → confirm proposed `project_ssot` ids → `project doctor` + `project status` |
-| 4. Board shell | **Minimal 2-view** ([Playground #3](https://github.com/users/SavinRazvan/projects/3)) or **six-view default** → `/project-board` CONSENT + TURN → `board-bootstrap --check` exit **0** |
+| 3c. Wire board | Agent chat **`/board`** + **Project URL + repo URL** → confirm proposed `project_ssot` ids → `project doctor` + `project status` |
+| 4. Board shell | **Minimal 2-view** ([Playground #3](https://github.com/users/SavinRazvan/projects/3)) or **six-view default** → `/board` CONSENT + TURN → `board-bootstrap --check` exit **0** |
 | 5. Build | **`/implementer`** · Entry = `python3 -m cursor_workflow project status` when board SSOT on |
 
 **Step 2 — in Agent chat (not the terminal):**
@@ -114,7 +114,7 @@ Install the **MAS Workflow Kit — Project SSOT** plugin, open **your app repo**
 - **Minimal 2-view overlay** — Prioritized backlog + Status board only ([Playground #3 reference](https://github.com/users/SavinRazvan/projects/3)); or
 - **Kit default** — six Playground views (no overlay).
 
-Wire-only (`/project-board` YAML + fields) is **not** full shell readiness.
+Wire-only (`/board` YAML + fields) is **not** full shell readiness.
 
 **Automation boundary:**
 
@@ -142,15 +142,15 @@ After API wiring + shell green, agents use claim/handoff/Tier-1 the same way as 
 | **Estimate** (number) | numeric field id (points) |
 | **Start date** (date) | date field id |
 
-Discover ids: manually via `gh project view <N> --owner <login>` / `gh project field-list <N> --owner <login>`, **or** after GitHub auth paste your **Project URL + app repo URL** in Agent chat and ask **`/project-board`** to propose YAML (you confirm before save). Optional field create: `python3 -m cursor_workflow project board-bootstrap --check --ensure-fields` (prints suggested YAML ids — human confirms before paste). After setup, run `python3 -m cursor_workflow project doctor` → `python3 -m cursor_workflow project board-bootstrap --check` → `python3 -m cursor_workflow project status` (views/README stay human-owned unless `--apply-readme`).
+Discover ids: manually via `gh project view <N> --owner <login>` / `gh project field-list <N> --owner <login>`, **or** after GitHub auth paste your **Project URL + app repo URL** in Agent chat and ask **`/board`** to propose YAML (you confirm before save). Optional field create: `python3 -m cursor_workflow project board-bootstrap --check --ensure-fields` (prints suggested YAML ids — human confirms before paste). After setup, run `python3 -m cursor_workflow project doctor` → `python3 -m cursor_workflow project board-bootstrap --check` → `python3 -m cursor_workflow project status` (views/README stay human-owned unless `--apply-readme`).
 
 | Step | Action |
 |------|--------|
 | 1. Install / activate | Agent chat: `/add-plugin …` then **`/workflow-activate`** in **your app repo** — wait for **`VERIFY PASS`**. |
 | 2. Collaboration YAML (identity) | Edit `.local/user_settings/github.collaboration.yaml`: set `owner.display_name`, `owner.github_user`, and (if using board SSOT) `project_ssot.enabled: true` + `sync_policy: board_only`. Board ids may stay empty until step 3b. |
 | 3. GitHub auth | `gh auth status` first — refresh only if Project scopes missing. See **§ GitHub CLI auth (Projects)** below. |
-| 3b. Wire board ids (agent-assisted) | Paste **Project URL** (`https://github.com/users/YOU/projects/N` or `…/orgs/ORG/projects/N`) **and** this **repo URL** in Agent chat → **`/project-board`** fills `name` / `number` / `owner` / `project_id` / `fields.*` / `default_repo` via `gh` (or you copy from `gh project view` / `field-list` yourself). Human confirms YAML before save. |
-| 4. Doctor + board shell | `project doctor` → optional **minimal overlay** (`board-shell.schema.minimal.yaml` → `.local/user_settings/board-shell.schema.yaml`) for **2 views** matching [Playground #3](https://github.com/users/SavinRazvan/projects/3), **or** six-view default without overlay. → **`/project-board`** CONSENT GATE + TURN PROTOCOL → `board-bootstrap --check` until **exit 0** → `project status`. |
+| 3b. Wire board ids (agent-assisted) | Paste **Project URL** (`https://github.com/users/YOU/projects/N` or `…/orgs/ORG/projects/N`) **and** this **repo URL** in Agent chat → **`/board`** fills `name` / `number` / `owner` / `project_id` / `fields.*` / `default_repo` via `gh` (or you copy from `gh project view` / `field-list` yourself). Human confirms YAML before save. |
+| 4. Doctor + board shell | `project doctor` → optional **minimal overlay** (`board-shell.schema.minimal.yaml` → `.local/user_settings/board-shell.schema.yaml`) for **2 views** matching [Playground #3](https://github.com/users/SavinRazvan/projects/3), **or** six-view default without overlay. → **`/board`** CONSENT GATE + TURN PROTOCOL → `board-bootstrap --check` until **exit 0** → `project status`. |
 | 5. First card | `python3 -m cursor_workflow project create-from-template --template slice --title "…" --priority p1 --size s --estimate 1 --agent implementer` (assigns `owner.github_user` on Issues) → `claim --last --agent implementer` (sets Start date). Prefer `project guide`. |
 | 6. Rate-limit buffer | Writes may **precheck** GraphQL quota (cached REST) or queue on throttle / Forbidden / 429. If a write returns **EXIT_QUEUED (6)**, do **not** retry-loop — continue local evidence; after quota recovers run `python3 -m cursor_workflow project outbox status` then `project outbox flush`. Configure `project_ssot.outbox` (`precheck_writes`, `dedupe_pending`, …) in collaboration YAML. Outbox is a local buffer, not a second Status SSOT. |
 
@@ -213,7 +213,7 @@ From `manifest.yaml` (default profile **`with_mcp`**):
 your-project/
 ├── AGENTS.md                      # thin router (not overwritten on re-activate)
 ├── .cursor/
-│   ├── agents/                    # 8 subagents (incl. project-board)
+│   ├── agents/                    # 8 subagents (incl. board)
 │   ├── skills/                    # protocols (activate, audit, integration, …)
 │   ├── rules/                     # always-applied governance
 │   └── mcp.json                   # with_mcp profile
@@ -324,7 +324,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | I want to… | Type in chat | Or run | Deep dive |
 |------------|--------------|--------|-----------|
 | **First-time setup** | `/workflow-activate` | `python3 -m cursor_workflow activate --directory .` | §2 above · [workflow-activate skill](../../.cursor/skills/workflow-activate/SKILL.md) |
-| **First-run board shell** *(SSOT on)* | `/project-board` | paste Project+repo URLs → wire YAML → `project doctor` → `board-bootstrap --check` | [board-shell](../../.cursor/skills/board-shell/SKILL.md) · checklist §3b–4 |
+| **First-run board shell** *(SSOT on)* | `/board` | paste Project+repo URLs → wire YAML → `project doctor` → `board-bootstrap --check` | [board-shell](../../.cursor/skills/board-shell/SKILL.md) · checklist §3b–4 |
 | **Implement a feature slice** | `/implementer` | — | [implementer-loop](../../.cursor/skills/implementer-loop/SKILL.md) |
 | **Run tests / coverage** | `/test-runner` | `pytest -q` | [workflow-complete.md](workflow-complete.md) §C |
 | **Verify a claim** | `/verifier` | — | Evidence-only checks |
@@ -349,8 +349,8 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | `/drift-guard` | `.cursor/agents/drift-guard.md` |
 | `/researcher` | `.cursor/agents/researcher.md` — **shipped/proven**; adaptive Brief; public/private GitHub (private needs `gh`/git auth); anti-loop ≤6 rounds; `research init\|fetch\|validate`; corpus opt-in after init |
 | `/integrator` | `.cursor/agents/integrator.md` |
-| `/project-board` | `.cursor/agents/project-board.md` + `board-ssot` + first-run `board-shell` |
-| `/board-shell` | `.cursor/skills/board-shell/` — first-run coach (also via `/project-board`) |
+| `/board` | `.cursor/agents/board.md` + `board-ssot` + first-run `board-shell` |
+| `/board-shell` | `.cursor/skills/board-shell/` — first-run coach (also via `/board`) |
 | `/review-pr`, `/prepare-pr`, `/merge-pr` | `.agents/skills/` |
 | `/integrator-protocol` | `.cursor/skills/integrator-protocol/` |
 | `/mcp-connect` | `.cursor/skills/mcp-connect/` |

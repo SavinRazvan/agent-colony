@@ -26,7 +26,7 @@
 
 ## What you get
 
-- **8 agents:** `implementer`, `test-runner`, `verifier`, `auditor`, `researcher`, `integrator`, `drift-guard`, `project-board`
+- **8 agents:** `implementer`, `test-runner`, `verifier`, `auditor`, `researcher`, `integrator`, `drift-guard`, `board`
 - **12 canonical skills** + maintainer PR slash skills (`/review-pr` → `/prepare-pr` → `/merge-pr`)
 - **Board Pattern A CLI:** `python3 -m cursor_workflow project …` (claim, handoff, Tier-1 fields, outbox)
 - **PR gates** via `prepare.py` · optional MCP (`workflow_mcp`) · research corpus under `_research_results/` (opt-in)
@@ -69,7 +69,7 @@ Wait for **`VERIFY PASS`** and all three planes **ready**. Activate is idempoten
 
 ### 3. Your identity, then wire the board (Project SSOT)
 
-**Order matters:** set identity → validate → (optional) `gh` check → **`/project-board`** wires YAML → shell UI.
+**Order matters:** set identity → validate → (optional) `gh` check → **`/board`** wires YAML → shell UI.
 
 #### 3a. Identity
 
@@ -107,20 +107,20 @@ gh auth refresh -h github.com -s read:project,project
 
 WSL / no browser: copy the one-time code → [github.com/login/device](https://github.com/login/device) → approve → return to terminal.
 
-#### 3c. Wire `project_ssot` (API slice) — use **`/project-board`**
+#### 3c. Wire `project_ssot` (API slice) — use **`/board`**
 
 After **`contributors validate`** passes, paste **both URLs** in Agent chat (same message):
 
 ```text
-/project-board
+/board
 
 Project: https://github.com/users/YOU/projects/N
 Repo:    https://github.com/YOU/your-app
 ```
 
-The **`/project-board`** agent uses `gh project view` / `field-list` to propose **`project_ssot`** (board ids, Status/Priority/Size/Estimate/Start date field ids) and **`default_repo`**. **Confirm before save.**
+The **`/board`** agent uses `gh project view` / `field-list` to propose **`project_ssot`** (board ids, Status/Priority/Size/Estimate/Start date field ids) and **`default_repo`**. **Confirm before save.**
 
-Day-to-day board protocol lives in the **`board-ssot`** skill; onboarding wiring + shell coach is always **`/project-board`**.
+Day-to-day board protocol lives in the **`board-ssot`** skill; onboarding wiring + shell coach is always **`/board`**.
 
 Then verify the API slice:
 
@@ -133,7 +133,7 @@ python3 -m cursor_workflow project status
 Expect:
 
 ```text
-board-onboard status: api=complete · shell=incomplete · views=ui-only · next=/project-board CONSENT+TURN
+board-onboard status: api=complete · shell=incomplete · views=ui-only · next=/board CONSENT+TURN
 ```
 
 **API slice done ≠ board ready.** Views and column visibility are **human UI only** (§4).
@@ -187,13 +187,13 @@ See table in §4B below — use when you do **not** copy the minimal overlay.
 | Check shell | Terminal | `python3 -m cursor_workflow project board-bootstrap --check` |
 | Create missing **fields** | Terminal (optional) | `… board-bootstrap --check --ensure-fields` |
 | Push Project **README** | Terminal (optional) | `… board-bootstrap --check --apply-readme` |
-| Create/rename **views** + **columns** | Browser + **`/project-board`** | CONSENT GATE + TURN PROTOCOL — **no view CLI** |
+| Create/rename **views** + **columns** | Browser + **`/board`** | CONSENT GATE + TURN PROTOCOL — **no view CLI** |
 | Day-to-day cards | After `--check` green | `/implementer` |
 
 #### A. Agent chat (copy/paste)
 
 ```text
-/project-board
+/board
 
 Using minimal 2-view overlay (or: Playground six-view default).
 board-bootstrap --check still FAIL — coach CONSENT GATE then TURN PROTOCOL:
@@ -281,7 +281,7 @@ python3 -m cursor_workflow project board-bootstrap --check   # still FAIL until 
 **Force** full overwrite of agents/skills/scripts (review diffs): `python3 -m cursor_workflow activate --directory . --force`  
 Details: [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md).
 
-**Board views are not fixed by a plugin update.** `board-bootstrap --check` FAIL on missing views only clears after you complete **step 4** (`/project-board` + human UI). Updating the plugin only refreshes docs/coaching text.
+**Board views are not fixed by a plugin update.** `board-bootstrap --check` FAIL on missing views only clears after you complete **step 4** (`/board` + human UI). Updating the plugin only refreshes docs/coaching text.
 
 ---
 

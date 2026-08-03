@@ -150,7 +150,7 @@ def test_print_post_activate_hints_board_first_when_enabled(
     activate_cli._print_post_activate_hints(tmp_path)
     out = capsys.readouterr().out
     assert "project doctor" in out
-    assert "/project-board" in out
+    assert "/board" in out
     assert "CONSENT GATE" in out
     assert "Project URL" in out
     assert "gh auth status" in out

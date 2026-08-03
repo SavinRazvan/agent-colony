@@ -2,7 +2,7 @@
   "name": "mas-workflow-kit-project-ssot",
   "displayName": "MAS Workflow Kit — Project SSOT",
   "version": "0.4.0",
-  "description": "Multi-agent Cursor workflow with GitHub Project as the only writable SSOT for backlog/status. CLI wires fields/YAML; six Playground views via human UI coach (/project-board TURN PROTOCOL) before /implementer. Local artifacts for PR gates and evidence.",
+  "description": "Multi-agent Cursor workflow with GitHub Project as the only writable SSOT for backlog/status. CLI wires fields/YAML; six Playground views via human UI coach (/board TURN PROTOCOL) before /implementer. Local artifacts for PR gates and evidence.",
   "author": {
     "name": "Savin Ionuț Răzvan",
     "email": "razvan.i.savin@gmail.com"
@@ -26,7 +26,7 @@
     "agents",
     "workflow",
     "governance",
-    "project-board",
+    "board",
     "maintainer"
   ]
 }

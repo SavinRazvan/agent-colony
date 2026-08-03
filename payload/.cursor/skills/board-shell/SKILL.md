@@ -7,7 +7,7 @@ File: SKILL.md
 Path: .cursor/skills/board-shell/SKILL.md
 Role: Guided first-time Project board shell setup against board-shell.schema.yaml.
 Used By:
- - .cursor/agents/project-board.md (first-run / shell mode)
+ - .cursor/agents/board.md (first-run / shell mode)
 Depends On:
  - .ai_infra/templates/project-board/board-shell.schema.yaml
  - .ai_infra/templates/project-board/views-setup.md
@@ -83,7 +83,7 @@ Only `proceed=yes` unlocks the rest of this skill.
 1. If board ids missing and human provided URLs: propose collaboration YAML, confirm, save. After wire, print:
 
 ```text
-board-onboard status: api=complete · shell=incomplete · views=ui-only · next=/project-board CONSENT+TURN
+board-onboard status: api=complete · shell=incomplete · views=ui-only · next=/board CONSENT+TURN
 ```
 
 **Automation boundary:** API automates YAML, field defs, README; **UI required** for six views + Tier-1 column visibility (GitHub has no public view mutation API).
@@ -219,7 +219,7 @@ Respect GraphQL quota / outbox — never retry-loop.
 ```bash
 python3 -m cursor_workflow project create-from-template \
   --title "[LIVE-SMOKE] board shell onboard" --template slice \
-  --status ready --priority p2 --size xs --estimate 0.5 --agent project-board
+  --status ready --priority p2 --size xs --estimate 0.5 --agent board
 python3 -m cursor_workflow project validate-item --last
 # cleanup: delete smoke item or set Done with Notes "smoke cleanup"
 ```

@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/project-board.md · board-ssot/SKILL.md · board-shell/SKILL.md · ADR-006";
+  ".cursor/agents/board.md · board-ssot/SKILL.md · board-shell/SKILL.md · ADR-006";
 
 const GOALS = [
   "Independent-governed helper for GitHub Project SSOT",
@@ -99,7 +99,7 @@ const PATTERNS = [
   ["Triage Tier-1", "set-field Priority/Size/Estimate (skill Size↔Estimate table)"],
   ["Promote", "promote-to-issue OR mention-pr auto (promote_to_issue_on_pr) before shippable PR"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
-  ["Attribution", "@owner.github_user/project-board via --agent"],
+  ["Attribution", "@owner.github_user/board via --agent"],
 ];
 
 const ARTIFACTS = [
@@ -191,7 +191,7 @@ export default function AgentProjectBoardCanvas() {
     <Stack gap={20} style={{ padding: 20, maxWidth: 980 }}>
       <Stack gap={8}>
         <Row gap={10} style={{ alignItems: "center" }}>
-          <H1 style={{ margin: 0 }}>project-board</H1>
+          <H1 style={{ margin: 0 }}>board</H1>
           <Pill tone="info" size="sm">
             kit agent
           </Pill>

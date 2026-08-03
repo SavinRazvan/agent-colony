@@ -40,7 +40,7 @@ Abbreviations: [`.ai_infra/docs/operations/abbreviations-notepad.md`](.ai_infra/
 
 **Resume every session:**
 
-1. If `project_ssot.enabled` → `python -m cursor_workflow project status` → board list/claim (`.cursor/skills/board-ssot/SKILL.md` § Continuation contract). Read card Notes for prior handoffs. **First-run only:** if `board-bootstrap --check` exits non-zero (views, Tier-1 columns, README) → `/project-board` + `board-shell` (**CONSENT GATE** + TURN PROTOCOL) before `/implementer` (audit is not day-0).
+1. If `project_ssot.enabled` → `python -m cursor_workflow project status` → board list/claim (`.cursor/skills/board-ssot/SKILL.md` § Continuation contract). Read card Notes for prior handoffs. **First-run only:** if `board-bootstrap --check` exits non-zero (views, Tier-1 columns, README) → `/board` + `board-shell` (**CONSENT GATE** + TURN PROTOCOL) before `/implementer` (audit is not day-0).
 2. Else → `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
 
 **After every agent part:** update board Status (`in_review` / `done` / Notes + next agent) so continuation is indexed on the Project — not chat-only. **Tier-1 fields are mandatory** on cards you create/own: Status, Priority (`p0|p1|p2`), Size/Estimate per skill **Size↔Estimate** table (points, not hours), Start date on first **In progress** (`claim` / `set-status` / `handoff --to in_progress`), Assignee (human — **create as Issue** via `item_kind_default: issue`), and Linked PR via `mention-pr` when a PR exists. Exit task lists use `[P0]`…`[P3]`. Notes attribution: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC). Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime. Ops: `.ai_infra/docs/operations/project-board-collaboration.md`. Canon: `.cursor/skills/board-ssot/SKILL.md` § Tier-1 card fields contract.
@@ -98,7 +98,7 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 | Root | Role |
 |------|------|
 | `.cursor/agents/` | Subagent cards (8) — Task delegation; **`model: auto`**; audit agents write `.local/` artifacts only |
-| `.cursor/skills/` | **Canonical protocols** (12 folders: audit, drift, implement loop, activate, project-board, board-shell, …) |
+| `.cursor/skills/` | **Canonical protocols** (12 folders: audit, drift, implement loop, activate, board, board-shell, …) |
 | `.agents/skills/` | **Maintainer slash skills** (5 folders: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `audit-alignment` stub → `auditor`) — additive in plugin sync |
 | `.cursor/rules/` | **7** `alwaysApply` rules in this product repo (6 kit + `project-ssot-precedence`) — high context cost by design |
 
@@ -116,8 +116,8 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 |------|--------|
 | Plugin activation | [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) or `workflow-activate` skill / `python3 -m cursor_workflow activate --directory .` |
 | Implement | `.cursor/agents/implementer.md` + `.cursor/skills/implementer-loop/SKILL.md` |
-| Project board SSOT | `.cursor/agents/project-board.md` + `.cursor/skills/board-ssot/SKILL.md` — `python -m cursor_workflow project …` |
-| Board shell first-run | `/project-board` + `.cursor/skills/board-shell/SKILL.md` + `board-shell.schema.yaml` |
+| Project board SSOT | `.cursor/agents/board.md` + `.cursor/skills/board-ssot/SKILL.md` — `python -m cursor_workflow project …` |
+| Board shell first-run | `/board` + `.cursor/skills/board-shell/SKILL.md` + `board-shell.schema.yaml` |
 | Integrate infrastructure | `.cursor/agents/integrator.md` + `.cursor/skills/integrator-protocol/SKILL.md` — validate with `python3 -m cursor_workflow integrate validate` |
 | Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-coverage/SKILL.md` |
 | Verify claims | `.cursor/agents/verifier.md` |

@@ -587,7 +587,7 @@ def test_agents_stub_and_view_pack_text() -> None:
     assert "Optional polish" in skill or "optional polish" in skill.lower()
     assert "Do not" in skill or "do not" in skill.lower()
     project_board_agent = (
-        REPO_ROOT / ".cursor" / "agents" / "project-board.md"
+        REPO_ROOT / ".cursor" / "agents" / "board.md"
     ).read_text(encoding="utf-8")
     assert "browser MCP" in project_board_agent
     assert "Browser assist map" in project_board_agent

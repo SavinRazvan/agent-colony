@@ -31,7 +31,7 @@ description: Disciplined implementation slices with trackers and Pattern A gates
 
 **Templates:** feature/`chore/` → `--template slice`; defect/`fix/` → `--template bug`; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
 
-**Board shell gate (SSOT on):** Day-0 requires the kit **default** board shell (`.ai_infra/templates/project-board/board-shell.schema.yaml`: six Playground views; Priority/Size/Estimate/Start date on Status board + Prioritized backlog). Run `project board-bootstrap --check`. On **exit 5** (view or Tier-1 column FAIL), do **not** claim work — hand the human to **`/project-board`** + `board-shell` (**CONSENT GATE** then **TURN PROTOCOL**; human UI per `views-setup.md`). Do not treat `/auditor` as day-0 setup.
+**Board shell gate (SSOT on):** Day-0 requires the kit **default** board shell (`.ai_infra/templates/project-board/board-shell.schema.yaml`: six Playground views; Priority/Size/Estimate/Start date on Status board + Prioritized backlog). Run `project board-bootstrap --check`. On **exit 5** (view or Tier-1 column FAIL), do **not** claim work — hand the human to **`/board`** + `board-shell` (**CONSENT GATE** then **TURN PROTOCOL**; human UI per `views-setup.md`). Do not treat `/auditor` as day-0 setup.
 
 **STANDALONE:** this product lives only in `mas-workflow-kit-project-ssot` — do not mutate or merge doctrine into upstream `mas-workflow-kit`.
 

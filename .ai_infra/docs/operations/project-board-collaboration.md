@@ -17,7 +17,7 @@ Notes:
 
 When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project is the only writable SSOT** for backlog, Status, and continuation. Local trackers are offline fallback only; read-only exports never compete with Status. Canonical skill: `.cursor/skills/board-ssot/SKILL.md`.
 
-**First-time consumer setup:** step-by-step checklist in [PLUGIN-USER-GUIDE.md § Consumer project_ssot onboarding](PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) (install → identity → `gh auth status` → **`/project-board`** wire → optional minimal 2-view overlay → CONSENT + TURN → `board-bootstrap --check` exit **0** → `project status` → first card → outbox flush).
+**First-time consumer setup:** step-by-step checklist in [PLUGIN-USER-GUIDE.md § Consumer project_ssot onboarding](PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) (install → identity → `gh auth status` → **`/board`** wire → optional minimal 2-view overlay → CONSENT + TURN → `board-bootstrap --check` exit **0** → `project status` → first card → outbox flush).
 
 ## Continuation (why agents update the board)
 
@@ -33,7 +33,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 
 - **Desired state:** `.ai_infra/templates/project-board/board-shell.schema.yaml` — **full Playground default** (six views + Tier-1 columns). **Or** copy `board-shell.schema.minimal.yaml` for **two views** ([Playground #3](https://github.com/users/SavinRazvan/projects/3)).
 - **Customize:** copy/edit `.local/user_settings/board-shell.schema.yaml` — `board-bootstrap --check` prefers the overlay when present. Do **not** remove Status / Priority / Size / Estimate / Start date, or hide **Priority** on Prioritized backlog.
-- **Coach:** `/project-board` + `.cursor/skills/board-shell/SKILL.md`.
+- **Coach:** `/board` + `.cursor/skills/board-shell/SKILL.md`.
 - **Verify:** `python3 -m cursor_workflow project board-bootstrap --check` (FAIL if a default Playground view is missing; **FAIL (exit 5)** on missing Tier-1 columns; WARN on leftover `View N` / layout mismatch).
 - **Optional API:** `--ensure-fields` (create missing field definitions + print suggested YAML ids); `--apply-readme` (push README). Views stay human UI (ADR-008).
 
@@ -47,7 +47,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Estimate | Yes (UI) | Triage + own card — `set-field --field estimate --to N` (points; Size↔Estimate table in skill) | — |
 | Promote Draft→Issue | Yes (UI) | `promote-to-issue --last --agent <name> [--repo owner/repo]` | GraphQL `convertProjectV2DraftIssueItemToIssue`; same `PVTI_`; Assignees + Linked PRs after promote; Notes `promoted to Issue #N`; fine-grained PAT caveat (`doctor` / `guide`); claim does **not** auto-promote |
 | Linked PRs | Yes (UI link) | `mention-pr --pr N` → Notes with PR URL; auto-promotes Draft when `promote_to_issue_on_pr` (default true) — FAIL if promote fails; WARN-only if false | GitHub **Linked pull requests** column derived from Issue↔PR (works after Issue) |
-| Create cards | Yes | project-board, implementer, integrator | — |
+| Create cards | Yes | board, implementer, integrator | — |
 | Ready prioritization | **Owner** | Consume; create agreed work | — |
 | Views / workflows / Insights / status updates | **Owner only** | Never mutate views | Insights auto |
 | Project README | **Owner** (paste) | Opt-in `board-bootstrap --apply-readme` only | — |
@@ -61,7 +61,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 
 | Agent | Entry | Exit (board) |
 |-------|-------|--------------|
-| **project-board** | status + list | Full triage; handoff to implementer |
+| **board** | status + list | Full triage; handoff to implementer |
 | **implementer** | status + `claim --agent implementer` | `handoff --agent implementer --next … --to in_review` or →Done |
 | **test-runner** | status + slice card | →In review or →Done; `--agent test-runner` |
 | **verifier** | status + related card | →Done or leave In review; `--agent verifier` |
@@ -90,8 +90,8 @@ All subcommands registered in `.ai_infra/install/cursor_workflow/project_parser.
 |------------|---------|---------------|
 | `status` | Show `project_ssot` config from user_settings | Any (Entry) |
 | `list` | List project items (optional `--status` filter) | Any (Entry) |
-| `create` | Create Issue (or Draft if `item_kind_default: draft`) | project-board, implementer, integrator |
-| `create-from-template` | Create Issue from slice/bug body template (default `item_kind_default: issue`) | project-board, implementer |
+| `create` | Create Issue (or Draft if `item_kind_default: draft`) | board, implementer, integrator |
+| `create-from-template` | Create Issue from slice/bug body template (default `item_kind_default: issue`) | board, implementer |
 | `set-status` | Set item Status from YAML option ids; gates `in_review`\|`done` on body (exit 5) | Power use (prefer `handoff --to`) |
 | `set-field` | Set Priority, Size, or Estimate | **Mandatory** on create/claim/own (`priority` + `size` + `estimate`); see skill § Tier-1 card fields contract |
 | `set-section` | Replace ## Acceptance or ## Rollback (Notes stay append-only) | implementer, integrator (before handoff) |
@@ -101,24 +101,24 @@ All subcommands registered in `.ai_infra/install/cursor_workflow/project_parser.
 | `mention-pr` | Notes with PR URL; auto-promote Draft when configured | implementer |
 | `promote-to-issue` | Convert DraftIssue → Issue (same `PVTI_`) | implementer (before shippable PR) |
 | `handoff` | Pattern A: Notes `next=@user/agent` + optional set-status; gates `in_review`\|`done` | Any (Exit) |
-| `validate-item` | Check body + Tier-1 fields + status-scoped Notes (exit 5 on fail) | verifier, project-board |
+| `validate-item` | Check body + Tier-1 fields + status-scoped Notes (exit 5 on fail) | verifier, board |
 | `last` | Print last saved item_id (after create/claim) | Any (with `--last` recipes) |
 | `guide` | Print safe recipes using `--last` (no placeholder ids) | Any (Entry) |
 | `doctor` | Validate project_ssot config, templates, and gh project access | Maintainer / human |
-| `board-bootstrap` | Schema-aware shell check (`--check`); opt-in `--ensure-fields` / `--apply-readme` | project-board first-run / human |
-| `set-assignee` | Assign GitHub human user (Issue-backed items) | project-board, implementer |
+| `board-bootstrap` | Schema-aware shell check (`--check`); opt-in `--ensure-fields` / `--apply-readme` | board first-run / human |
+| `set-assignee` | Assign GitHub human user (Issue-backed items) | board, implementer |
 | `find-by-pr` | Resolve project item id from PR number or URL | verifier, merge.py |
 | `export` | Read-only board snapshot (never mutates Status) | drift-guard, ICC |
 | `queue` | Enqueue a board op to local outbox (EXIT_QUEUED=6) | Any (rate-limit fallback) |
 | `outbox status` | Outbox counts + GraphQL remaining | Any |
-| `outbox flush` | Apply pending outbox ops when quota allows | implementer, project-board |
+| `outbox flush` | Apply pending outbox ops when quota allows | implementer, board |
 
 ## drift-guard specifically
 
 1. **Read board first** (`project status`, `list --status in_progress`) so dual-write checks compare board Status vs trackers.
 2. Run `drift validate` (includes DRIFT-009 / DRIFT-010 when board_only; refresh `project export` for DRIFT-010).
 3. Write `.local/workflow-artifacts/drift/*` (evidence stays local).
-4. **Update board:** close the drift-pass card; if dual-write Confirmed, add Notes on the offending card or ask project-board to queue a Ready fix — do not write competing `in_progress` into `work-tracker.md`.
+4. **Update board:** close the drift-pass card; if dual-write Confirmed, add Notes on the offending card or ask board to queue a Ready fix — do not write competing `in_progress` into `work-tracker.md`.
 
 ## Rate limits & outbox
 
@@ -134,7 +134,7 @@ GitHub GraphQL quota (~5000/hour) can block board writes. When `project_ssot.out
 
 Doctor and board-bootstrap already honor the quota cache and live-probe skips; do not wrap them in retry loops or repeated `project list` calls. For audits, prefer a single export / GraphQL dump, then flush outbox once with the configured `max_flush_per_run`.
 
-Who flushes: any agent/human after reset; prefer implementer or project-board at slice close. Pending outbox is **not** a DRIFT failure.
+Who flushes: any agent/human after reset; prefer implementer or board at slice close. Pending outbox is **not** a DRIFT failure.
 
 ### Assignee backfill (legacy cards)
 

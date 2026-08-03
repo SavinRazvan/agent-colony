@@ -24,7 +24,7 @@
 2. `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` (**must PASS**)
 3. If `project_ssot.enabled: true`:
    - `gh auth status` — if Project scopes missing: `gh auth refresh -h github.com -s read:project,project` ([PLUGIN-USER-GUIDE § GitHub CLI auth](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#github-cli-auth-projects))
-   - Agent chat **`/project-board`** + paste **Project URL** + **repo URL** → agent wires `project_ssot` ids + `default_repo` (confirm before save)
+   - Agent chat **`/board`** + paste **Project URL** + **repo URL** → agent wires `project_ssot` ids + `default_repo` (confirm before save)
    - `source .venv/bin/activate && python3 -m cursor_workflow project doctor` (expect **ok**)
    - **Minimal 2-view shell** (recommended — matches [Playground #3](https://github.com/users/SavinRazvan/projects/3)):
      ```bash
@@ -32,10 +32,10 @@
         .local/user_settings/board-shell.schema.yaml
      ```
      GitHub UI: **Prioritized backlog** (Table) + **Status board** (Board, group by Status) with Tier-1 columns on both.
-   - **`/project-board`** → **CONSENT GATE** + **TURN PROTOCOL** (one view per turn; [views-setup.md](.ai_infra/templates/project-board/views-setup.md))
+   - **`/board`** → **CONSENT GATE** + **TURN PROTOCOL** (one view per turn; [views-setup.md](.ai_infra/templates/project-board/views-setup.md))
    - Re-run `board-bootstrap --check` until **exit 0**
    - `source .venv/bin/activate && python3 -m cursor_workflow project status`
-   - Day-to-day board protocol: `board-ssot` skill (loaded automatically); wire + shell coach: **`/project-board`**
+   - Day-to-day board protocol: `board-ssot` skill (loaded automatically); wire + shell coach: **`/board`**
 4. If Project SSOT is disabled: read `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 5. **`/implementer`** when bootstrap is green (not day-0: `/auditor`)
 

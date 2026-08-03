@@ -28,7 +28,7 @@ const NODE_W = 128;
 const NODE_H = 40;
 
 type AgentId =
-  | "project-board"
+  | "board"
   | "implementer"
   | "verifier"
   | "test-runner"
@@ -40,7 +40,7 @@ type AgentId =
 
 const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
   {
-    id: "project-board",
+    id: "board",
     role: "Triage Ready; create cards; hand off work",
     lane: "Coordination",
   },
@@ -89,7 +89,7 @@ const RELATIONS: {
   when: string;
 }[] = [
   {
-    from: "project-board",
+    from: "board",
     to: "implementer",
     via: "handoff next=implementer",
     when: "After triage / create-from-template + claim",
@@ -114,7 +114,7 @@ const RELATIONS: {
   },
   {
     from: "drift-guard",
-    to: "project-board",
+    to: "board",
     via: "Ready / Notes remediation",
     when: "Confirmed dual-write — triage card",
   },
@@ -182,7 +182,7 @@ const RESEARCHER_REDIRECTS: [string, string][] = [
 ];
 
 const HAPPY_PATH = [
-  ["1", "project-board", "Ready card; Priority/Size/Estimate triage"],
+  ["1", "board", "Ready card; Priority/Size/Estimate triage"],
   ["2", "implementer", "claim → code/tests → promote or mention-pr"],
   ["3", "test-runner", "Optional: coverage on same card"],
   ["4", "verifier", "Evidence check → done or back to implementer"],
@@ -190,7 +190,7 @@ const HAPPY_PATH = [
 ];
 
 const LANES: [string, string][] = [
-  ["Coordination", "project-board"],
+  ["Coordination", "board"],
   ["Delivery", "implementer · test-runner · verifier"],
   ["Infrastructure", "integrator"],
   ["Quality", "auditor · drift-guard"],

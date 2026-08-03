@@ -42,7 +42,7 @@
       "file": "../../index-and-planning/current/work-tracker.md"
     },
     {
-      "id": "project-board",
+      "id": "board",
       "title": "Project Board",
       "file": "../../generated-data/project-board-snapshot.json",
       "format": "project-board-snapshot"

@@ -81,7 +81,7 @@ const LABELS: Record<string, string> = {
   board: "GitHub Project",
   merge: "merge.py",
   export: "project export",
-  snapshot: "board-snapshot.json",
+  snapshot: "project-board-snapshot.json",
 };
 
 const ABC_SLICES = [

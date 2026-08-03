@@ -97,7 +97,7 @@ const PATTERNS = [
   ["Write scope", "Drift artifacts only — no product-code"],
   ["Board lifecycle", "list --status in_progress; close drift-pass → done"],
   ["Tier-1", "Shared Board rights; no silent tracker dual-write"],
-  ["Dual-write remediation", "Notes or handoff to project-board / implementer via Ready"],
+  ["Dual-write remediation", "Notes or handoff to board / implementer via Ready"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/drift-guard via --agent"],
 ];
@@ -106,7 +106,7 @@ const ARTIFACTS = [
   [".local/workflow-artifacts/drift/drift-audit.md", "Exit", "Maintainers / implementer"],
   [".local/workflow-artifacts/drift/drift-todos.md", "Exit", "Maintainers / implementer"],
   ["history/updates-log.md", "Exit", "Continuity readers"],
-  ["Board drift-pass card Status", "done / in_review", "project-board / implementer"],
+  ["Board drift-pass card Status", "done / in_review", "board / implementer"],
   [
     ".local/generated-data/project-board-snapshot.json",
     "project export",
@@ -116,7 +116,7 @@ const ARTIFACTS = [
 ];
 
 const PEERS = [
-  ["Outbound", "project-board", "Dual-write remediation via Ready"],
+  ["Outbound", "board", "Dual-write remediation via Ready"],
   ["Outbound", "implementer", "Dual-write remediation via Ready"],
   ["Inbound", "implementer", "Invokes on P0/P1 after drift-validate"],
 ];
@@ -261,7 +261,7 @@ export default function AgentWorkflowDriftGuardCanvas() {
           </Text>
           <Text>
             5. drift-pass card done/in_review; dual-write → Notes or handoff to
-            project-board/implementer via Ready; updates-log.
+            board/implementer via Ready; updates-log.
           </Text>
         </Stack>
       </CollapsibleSection>
@@ -297,7 +297,7 @@ export default function AgentWorkflowDriftGuardCanvas() {
             </Text>
             <Text>
               Exit: drift-pass card Status done/in_review; dual-write findings → Notes
-              or handoff to project-board/implementer via Ready.
+              or handoff to board/implementer via Ready.
             </Text>
             <Text>
               Rate-limit: EXIT_QUEUED (6) → outbox status / flush; do not hammer
