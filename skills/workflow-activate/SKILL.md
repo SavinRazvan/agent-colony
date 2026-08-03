@@ -120,7 +120,7 @@ Optional: `integrate validate`, `health`. Add infrastructure later: **`/integrat
 
 ## Adding agents/skills/MCP later
 
-Invoke subagent **`/integrator-mas-agent`** with skill **`/mas-infrastructure-integration`** — not shell commands ([Subagents](https://cursor.com/docs/subagents), [Skills](https://cursor.com/docs/skills)).
+Invoke subagent **`/integrator-mas-agent`** with skill **`/integrator-protocol`** — not shell commands ([Subagents](https://cursor.com/docs/subagents), [Skills](https://cursor.com/docs/skills)).
 
 ## Success
 

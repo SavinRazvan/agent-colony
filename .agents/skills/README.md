@@ -16,8 +16,8 @@ Each skill: **`<skill-name>/SKILL.md`**.
 | Tests | `.cursor/skills/test-coverage/`, `.cursor/agents/test-runner.md` |
 | **Maintainer PR** | **`pr-workflow/`** + `review-pr` / `prepare-pr` / `merge-pr` (`PR_WORKFLOW.md` = legacy redirect) |
 | **Research corpus** | `RESEARCH_WORKFLOW.md` + `.cursor/skills/research-corpus/` |
-| **Enterprise audit** | `.cursor/skills/enterprise-architecture-audit/SKILL.md` + `.cursor/agents/enterprise-auditor.md` |
-| **Drift guard** | `.cursor/skills/workflow-drift-audit/SKILL.md` + `.cursor/agents/workflow-drift-guard.md` |
+| **Enterprise audit** | `.cursor/skills/auditor-protocol/SKILL.md` + `.cursor/agents/enterprise-auditor.md` |
+| **Drift guard** | `.cursor/skills/drift-audit/SKILL.md` + `.cursor/agents/workflow-drift-guard.md` |
 | **Audit orchestration** | `.cursor/skills/audit-orchestration/SKILL.md` |
 | Deprecated redirect | `audit-alignment/` → use `enterprise-auditor` |
 | Scripts | `.ai_infra/scripts/pr/review.py`, `prepare.py`, `merge.py`, `finalize.py` |

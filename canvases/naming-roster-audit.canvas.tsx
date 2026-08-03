@@ -89,7 +89,7 @@ const PLAN_ROWS: {
   {
     lane: "Infrastructure",
     agentNow: "integrator-mas-agent",
-    skillsNow: "PRIMARY mas-infrastructure-integration",
+    skillsNow: "PRIMARY integrator-protocol",
     agentNext: "integrator",
     skillsNext: "PRIMARY integrator-protocol",
     agentChange: "rename",
@@ -99,7 +99,7 @@ const PLAN_ROWS: {
     lane: "Quality",
     agentNow: "enterprise-auditor",
     skillsNow:
-      "PRIMARY enterprise-architecture-audit · ALSO audit-orchestration, audit-module-map",
+      "PRIMARY auditor-protocol · ALSO audit-orchestration, audit-module-map",
     agentNext: "auditor",
     skillsNext:
       "PRIMARY auditor-protocol · ALSO audit-orchestration, audit-module-map (keep)",
@@ -109,7 +109,7 @@ const PLAN_ROWS: {
   {
     lane: "Quality",
     agentNow: "workflow-drift-guard",
-    skillsNow: "PRIMARY workflow-drift-audit",
+    skillsNow: "PRIMARY drift-audit",
     agentNext: "drift-guard",
     skillsNext: "PRIMARY drift-audit",
     agentChange: "rename",
@@ -280,21 +280,21 @@ const AGENT_SCORES: ScoredName[] = [
   {
     id: "enterprise-auditor",
     kind: "agent",
-    primaryPair: "enterprise-architecture-audit",
+    primaryPair: "auditor-protocol",
     dims: { clarity: 4, brevity: 2, pairing: 3, convention: 4, uniqueness: 4 },
     note: "enterprise- brand noise; auditor vs architecture-audit",
   },
   {
     id: "workflow-drift-guard",
     kind: "agent",
-    primaryPair: "workflow-drift-audit",
+    primaryPair: "drift-audit",
     dims: { clarity: 3, brevity: 2, pairing: 3, convention: 4, uniqueness: 4 },
     note: "guard vs audit dual metaphor; workflow- redundant",
   },
   {
     id: "integrator-mas-agent",
     kind: "agent",
-    primaryPair: "mas-infrastructure-integration",
+    primaryPair: "integrator-protocol",
     dims: { clarity: 3, brevity: 1, pairing: 2, convention: 1, uniqueness: 3 },
     note: "Only -agent suffix; stem mismatch with skill",
   },
@@ -378,14 +378,14 @@ const SKILL_SCORES: ScoredName[] = [
     note: "execution suffix noise",
   },
   {
-    id: "enterprise-architecture-audit",
+    id: "auditor-protocol",
     kind: "skill-canonical",
     primaryPair: "enterprise-auditor",
     dims: { clarity: 4, brevity: 2, pairing: 3, convention: 3, uniqueness: 3 },
     note: "Long; stem ≠ auditor",
   },
   {
-    id: "workflow-drift-audit",
+    id: "drift-audit",
     kind: "skill-canonical",
     primaryPair: "workflow-drift-guard",
     dims: { clarity: 3, brevity: 2, pairing: 3, convention: 3, uniqueness: 3 },
@@ -399,7 +399,7 @@ const SKILL_SCORES: ScoredName[] = [
     note: "Prefer implementer-loop",
   },
   {
-    id: "mas-infrastructure-integration",
+    id: "integrator-protocol",
     kind: "skill-canonical",
     primaryPair: "integrator-mas-agent",
     dims: { clarity: 3, brevity: 1, pairing: 2, convention: 2, uniqueness: 3 },
@@ -531,7 +531,7 @@ const RENAME_ROWS: RenameRow[] = [
   },
   {
     layer: "skills",
-    current: "mas-infrastructure-integration",
+    current: "integrator-protocol",
     proposed: "integrator-protocol",
     action: "rename",
     priority: "P0",

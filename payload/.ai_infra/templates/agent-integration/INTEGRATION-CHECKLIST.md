@@ -3,7 +3,7 @@ File: INTEGRATION-CHECKLIST.md
 Path: .ai_infra/templates/agent-integration/INTEGRATION-CHECKLIST.md
 Role: Slice checklist for integrator-mas-agent; copy row into work-tracker.md.
 Used By:
- - .cursor/skills/mas-infrastructure-integration/SKILL.md
+ - .cursor/skills/integrator-protocol/SKILL.md
 Depends On:
  - .ai_infra/templates/agent-integration/AGENT.template.md
 Notes:

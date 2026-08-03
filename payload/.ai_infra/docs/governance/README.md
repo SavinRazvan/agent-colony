@@ -47,7 +47,7 @@ This folder defines **where kit docs live**, **who owns workflow truth** (script
 | `.local/` layout contract | [local-workspace-layout.md](../operations/local-workspace-layout.md) |
 | Doc maintenance | [documentation-maintenance-checklist.md](../operations/documentation-maintenance-checklist.md) |
 | Alignment audit schema | [alignment-audit-schema.md](../roadmap/alignment-audit-schema.md) |
-| Architecture-impacting audits | `enterprise-auditor` + [enterprise-architecture-audit/SKILL.md](../../../.cursor/skills/enterprise-architecture-audit/SKILL.md) |
+| Architecture-impacting audits | `enterprise-auditor` + [auditor-protocol/SKILL.md](../../../.cursor/skills/auditor-protocol/SKILL.md) |
 | ADR index | [decisions/README.md](../decisions/README.md) |
 
 ## Quick commands

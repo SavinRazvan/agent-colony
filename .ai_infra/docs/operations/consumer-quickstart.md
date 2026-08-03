@@ -75,7 +75,7 @@ Cursor lists **subagents**, **skills**, and **commands** in the same **`/`** men
 | Implement a slice | **`/implementer`** | `.cursor/agents/implementer.md` |
 | Run tests | **`/test-runner`** | `.cursor/agents/test-runner.md` |
 | PR review / prepare / merge | **`/review-pr`**, `/prepare-pr`, `/merge-pr` | `.agents/skills/` (loaded as skills) |
-| Extend agents/skills/MCP | **`/integrator-mas-agent`** + `/mas-infrastructure-integration` | agent + skill |
+| Extend agents/skills/MCP | **`/integrator-mas-agent`** + `/integrator-protocol` | agent + skill |
 | Attach a file or doc | **`@`** + pick context | — ([Prompting](https://cursor.com/docs/agent/prompting)) |
 
 Agent may also **auto-delegate** subagents or **auto-apply** skills when the task matches their `description` — explicit **`/name`** is the reliable manual path.
@@ -262,7 +262,7 @@ python3 -m cursor_workflow project status
 4. **`/implementer`** (or `/test-runner`, `/verifier`; `/enterprise-auditor` only for architecture-impacting / pre-merge audits — not day-0 onboarding)
 5. Dashboard (optional, **deprecated**): see [Control Center dashboards](#control-center-dashboards-deprecated) below
 
-**Add your own agent/skill/MCP:** **`/integrator-mas-agent`** + **`/mas-infrastructure-integration`**
+**Add your own agent/skill/MCP:** **`/integrator-mas-agent`** + **`/integrator-protocol`**
 
 ---
 
@@ -383,7 +383,7 @@ Full checklist: [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) §6 · [workflow-co
 
 For architecture-impacting work before merge prep:
 
-1. **`/enterprise-auditor`** with **`/enterprise-architecture-audit`**
+1. **`/enterprise-auditor`** with **`/auditor-protocol`**
 2. Outputs under `.local/workflow-artifacts/enterprise-architecture-audit/`
 
 Procedure: [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) §7 · [agent-workflow-procedures.md](agent-workflow-procedures.md) §1.

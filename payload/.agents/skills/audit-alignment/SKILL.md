@@ -9,7 +9,7 @@ disable-model-invocation: true
 **Do not use this file as the primary workflow.** The canonical audit agent is **`enterprise-auditor`**.
 
 - **Agent:** `.cursor/agents/enterprise-auditor.md`
-- **Protocol:** `.cursor/skills/enterprise-architecture-audit/SKILL.md`
+- **Protocol:** `.cursor/skills/auditor-protocol/SKILL.md`
 - **Merge-gate outputs (unchanged):** `.local/workflow-artifacts/alignment/alignment-audit.md`, `alignment-todos.md` per `.ai_infra/docs/roadmap/alignment-audit-schema.md`
 - **Rule:** `.cursor/rules/advisory-audit-alignment-enforcement.mdc`
 

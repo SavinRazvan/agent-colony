@@ -153,7 +153,7 @@ const FOLLOWUP_SLICES = [
     color: "blue" as const,
     items: [
       "audit-orchestration, workflow-activate",
-      "mas-infrastructure-integration, test-coverage",
+      "integrator-protocol, test-coverage",
       "review-pr board_only caveats",
       "DRIFT validate P0=0 P1=0 P2=0 — shipped on main",
     ],

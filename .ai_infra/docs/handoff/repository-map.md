@@ -147,13 +147,13 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 
 | Skill | Paired agent |
 |-------|----------------|
-| `enterprise-architecture-audit` | `enterprise-auditor` (full audit + **focused alignment pass**) |
+| `auditor-protocol` | `enterprise-auditor` (full audit + **focused alignment pass**) |
 | `audit-module-map` | `enterprise-auditor` (depth tool) |
 | `audit-orchestration` | Parent orchestration |
-| `workflow-drift-audit` | `workflow-drift-guard` |
+| `drift-audit` | `workflow-drift-guard` |
 | `implementer-loop` | `implementer` |
 | `test-coverage` | `test-runner` |
-| `mas-infrastructure-integration` | `integrator-mas-agent` |
+| `integrator-protocol` | `integrator-mas-agent` |
 | `board-ssot` | `project-board` (board Entry/Exit; ADR-008) |
 | `board-shell` | `project-board` (first-run shell coach) |
 | `workflow-activate` | Install / re-activate |
@@ -198,7 +198,7 @@ Product overlays: `overlays/rules/*.mdc` remains the source for domain overlays;
 
 | Path | Status | Use instead |
 |------|--------|-------------|
-| `.agents/skills/audit-alignment/` | Deprecated stub | `enterprise-auditor` + `enterprise-architecture-audit` |
+| `.agents/skills/audit-alignment/` | Deprecated stub | `enterprise-auditor` + `auditor-protocol` |
 | `skills/audit-alignment/` (repo root) | Same stub (generated) | Same |
 | `.agents/skills/PR_WORKFLOW.md` | Legacy redirect | `pr-workflow/SKILL.md` |
 | `project-rules/` | Deprecated alias | `overlays/rules/` |

@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-07-20";
 const SOURCES =
-  ".cursor/agents/integrator-mas-agent.md · mas-infrastructure-integration/SKILL.md · board-ssot/SKILL.md";
+  ".cursor/agents/integrator-mas-agent.md · integrator-protocol/SKILL.md · board-ssot/SKILL.md";
 
 const GOALS = [
   "Integrates new agents, skills, MCP, and infrastructure expansions",
@@ -86,7 +86,7 @@ const FALLBACK_LABELS: Record<string, string> = {
 };
 
 const READ_FIRST = [
-  [".cursor/skills/mas-infrastructure-integration/SKILL.md", "Integration canon"],
+  [".cursor/skills/integrator-protocol/SKILL.md", "Integration canon"],
   [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
   ["python3 -m cursor_workflow integrate validate", "Wire verification"],
   ["check_governance_consistency.py", "When policy docs change"],
@@ -238,7 +238,7 @@ export default function AgentIntegratorMasAgentCanvas() {
           title={mode === "board" ? "project_ssot.enabled" : "Offline / disabled"}
         >
           {mode === "board"
-            ? "Entry: project status + mas-infrastructure-integration skill; claim/create card."
+            ? "Entry: project status + integrator-protocol skill; claim/create card."
             : "Fallback: session-pointer. Resume board sync when available."}
         </Callout>
         <DagPanel mode={mode} tokens={tokens} />
@@ -287,7 +287,7 @@ export default function AgentIntegratorMasAgentCanvas() {
         <CardBody>
           <Stack gap={6}>
             <Text>
-              Entry: project status + mas-infrastructure-integration skill;
+              Entry: project status + integrator-protocol skill;
               claim/create card.
             </Text>
             <Text>

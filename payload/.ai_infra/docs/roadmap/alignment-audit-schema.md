@@ -3,7 +3,7 @@ File: alignment-audit-schema.md
 Path: .ai_infra/docs/roadmap/alignment-audit-schema.md
 Role: Required fields and taxonomy for advisory alignment audit findings (.local/workflow-artifacts/alignment/).
 Used By:
- - .cursor/skills/enterprise-architecture-audit/SKILL.md
+ - .cursor/skills/auditor-protocol/SKILL.md
  - enterprise-auditor alignment passes
  - .cursor/rules/advisory-audit-alignment-enforcement.mdc
 Depends On:
@@ -60,7 +60,7 @@ Standardize advisory audit findings so outputs from skills, rules checks, and ma
 - `.local/workflow-artifacts/alignment/alignment-audit.md`
 - `.local/workflow-artifacts/alignment/alignment-todos.md`
 
-**Focused alignment pass** (architecture-impacting PR, no full enterprise scorecard): `enterprise-auditor` writes only the two files above; scope is the PR's touched docs/code/tests. See `.cursor/skills/enterprise-architecture-audit/SKILL.md` § “Focused alignment pass”.
+**Focused alignment pass** (architecture-impacting PR, no full enterprise scorecard): `enterprise-auditor` writes only the two files above; scope is the PR's touched docs/code/tests. See `.cursor/skills/auditor-protocol/SKILL.md` § “Focused alignment pass”.
 
 ## Precedence Rule (When Sources Conflict)
 

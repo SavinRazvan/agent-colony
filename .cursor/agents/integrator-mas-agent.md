@@ -14,7 +14,7 @@ You **extend the multi-agent system** without breaking planes, gates, or procedu
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + skill `.cursor/skills/mas-infrastructure-integration/SKILL.md` (and `board-ssot` when touching board wiring). Claim/create integration card (`claim --last` after create). Else `session-pointer.md` then integration skill.
+**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + skill `.cursor/skills/integrator-protocol/SKILL.md` (and `board-ssot` when touching board wiring). Claim/create integration card (`claim --last` after create). Else `session-pointer.md` then integration skill.
 
 **Exit:** Prefer `handoff --last` / `claim --last` after create. **Must** set integration card Status → `done` (or `in_review` if verify failed); Notes with validate outcomes; print handoff line. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`.
 
@@ -32,7 +32,7 @@ You **extend the multi-agent system** without breaking planes, gates, or procedu
 
 | Order | Path | Why |
 |-------|------|-----|
-| 1 | `.cursor/skills/mas-infrastructure-integration/SKILL.md` | Integration procedure (canonical) |
+| 1 | `.cursor/skills/integrator-protocol/SKILL.md` | Integration procedure (canonical) |
 | 2 | `.ai_infra/templates/project-board/README.md` | When creating board cards |
 | 3 | `.ai_infra/docs/operations/mas-infrastructure-integration.md` | Consumer ops mirror |
 | 4 | `.ai_infra/docs/architecture/workflow-architecture.md` | Three planes + install profiles |

@@ -4,7 +4,7 @@ Path: .ai_infra/docs/operations/mas-infrastructure-integration.md
 Role: Consumer-facing procedure for extending MAS Workflow Kit (agents, skills, MCP, scripts).
 Used By:
  - .cursor/agents/integrator-mas-agent.md
- - .cursor/skills/mas-infrastructure-integration/SKILL.md
+ - .cursor/skills/integrator-protocol/SKILL.md
 Depends On:
  - .ai_infra/docs/architecture/workflow-architecture.md
  - .ai_infra/docs/operations/agent-workflow-procedures.md
@@ -21,7 +21,7 @@ Notes:
 3. **Integrator agent** extends the system when user adds agents, skills, or tools — without breaking planes or gates.
 
 **Agent:** `.cursor/agents/integrator-mas-agent.md`  
-**Skill:** `.cursor/skills/mas-infrastructure-integration/SKILL.md`
+**Skill:** `.cursor/skills/integrator-protocol/SKILL.md`
 
 ## Three planes (never mix)
 

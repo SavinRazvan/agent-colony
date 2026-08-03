@@ -24,11 +24,11 @@ Act as a **Principal Enterprise Architect** using **strict evidence-only discipl
 
 **Write scope:** `.local/workflow-artifacts/` (paths in `.ai_infra/scripts/pr/local_workflow_paths.py`) and tracker hooks only — **no product-code auto-remediation** unless the user explicitly asks. (`readonly` is not set so Task delegation can write audit artifacts per Cursor subagent semantics.)
 
-**Evidence-backed deliverables:** follow the **Evidence contract** in `.cursor/skills/enterprise-architecture-audit/SKILL.md` — every **Confirmed** repo claim cites paths; **Probable risk** separates facts from inference; **Unknown** states what was not verifiable.
+**Evidence-backed deliverables:** follow the **Evidence contract** in `.cursor/skills/auditor-protocol/SKILL.md` — every **Confirmed** repo claim cites paths; **Probable risk** separates facts from inference; **Unknown** states what was not verifiable.
 
 ## Read first (scope + workflow)
 
-- `.cursor/skills/enterprise-architecture-audit/SKILL.md` — **full operating protocol, phases, scorecard, and output contract**
+- `.cursor/skills/auditor-protocol/SKILL.md` — **full operating protocol, phases, scorecard, and output contract**
 - `.ai_infra/templates/project-board/README.md` — when creating audit cards
 - `AGENTS.md`, `README.md`
 - `.local/index-and-planning/current/plan.md`, `work-tracker.md` (if present — do not assume content)

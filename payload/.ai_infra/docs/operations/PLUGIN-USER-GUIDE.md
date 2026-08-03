@@ -331,7 +331,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | **Architecture audit** *(not day-0)* | `/enterprise-auditor` | — (subagent only; no dedicated MCP tool) | [agent-workflow-procedures.md](agent-workflow-procedures.md) §1 — after board shell |
 | **Operational drift** (plan ↔ tracker) | `/workflow-drift-guard` (optional) | `python3 -m cursor_workflow drift validate --profile consumer` on app projects | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) · [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
 | **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` `resolve_gates()` | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
-| **Add agents / skills / MCP** | `/integrator-mas-agent` + `/mas-infrastructure-integration` | `integrate validate` | [mas-infrastructure-integration.md](mas-infrastructure-integration.md) |
+| **Add agents / skills / MCP** | `/integrator-mas-agent` + `/integrator-protocol` | `integrate validate` | [mas-infrastructure-integration.md](mas-infrastructure-integration.md) |
 | **Connect external MCP** | `/mcp-connect` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
 | **Upgrade / refresh dashboards** | `/workflow-activate` | `python3 -m cursor_workflow activate --directory .` | [upgrade-kit.md](upgrade-kit.md) |
 | **Check install health** | — | `python3 -m cursor_workflow health` | [gate-matrix.md](gate-matrix.md) |
@@ -352,10 +352,10 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | `/project-board` | `.cursor/agents/project-board.md` + `board-ssot` + first-run `board-shell` |
 | `/board-shell` | `.cursor/skills/board-shell/` — first-run coach (also via `/project-board`) |
 | `/review-pr`, `/prepare-pr`, `/merge-pr` | `.agents/skills/` |
-| `/mas-infrastructure-integration` | `.cursor/skills/mas-infrastructure-integration/` |
+| `/integrator-protocol` | `.cursor/skills/integrator-protocol/` |
 | `/mcp-connect` | `.cursor/skills/mcp-connect/` |
-| `/enterprise-architecture-audit` | `.cursor/skills/enterprise-architecture-audit/` |
-| `/workflow-drift-audit` | `.cursor/skills/workflow-drift-audit/` |
+| `/auditor-protocol` | `.cursor/skills/auditor-protocol/` |
+| `/drift-audit` | `.cursor/skills/drift-audit/` |
 
 Cursor may also auto-delegate subagents when the task matches their `description` — explicit **`/name`** is the reliable manual path.
 
@@ -392,7 +392,7 @@ Full checklist: [workflow-complete.md](workflow-complete.md).
 
 For architecture-impacting work before merge prep:
 
-1. **`/enterprise-auditor`** with skill **`/enterprise-architecture-audit`**
+1. **`/enterprise-auditor`** with skill **`/auditor-protocol`**
 2. Outputs under `.local/workflow-artifacts/enterprise-architecture-audit/`
 3. Focused PR pass may write `.local/workflow-artifacts/alignment/` instead
 

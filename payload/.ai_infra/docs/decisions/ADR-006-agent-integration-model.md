@@ -7,7 +7,7 @@
 
 Consumers extend the MAS Workflow Kit by adding agents, skills, MCP servers, and scripts. Without a clear integration contract, new capability drifts from gates, PR pipelines, registry parity, and procedural discipline.
 
-The **integrator-mas-agent** and **mas-infrastructure-integration** skill proceduralize extension; this ADR records the architectural decision.
+The **integrator-mas-agent** and **integrator-protocol** skill proceduralize extension; this ADR records the architectural decision.
 
 ## Decision
 
@@ -58,5 +58,5 @@ Standalone agent for a narrow domain; not in default PR pipelines unless explici
 ## References
 
 - `.cursor/agents/integrator-mas-agent.md`
-- `.cursor/skills/mas-infrastructure-integration/SKILL.md`
+- `.cursor/skills/integrator-protocol/SKILL.md`
 - `.ai_infra/templates/agent-integration/INTEGRATION-CHECKLIST.md`

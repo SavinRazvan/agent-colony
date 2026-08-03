@@ -1,10 +1,10 @@
 ---
-name: enterprise-architecture-audit
+name: auditor-protocol
 description: Phased, evidence-only enterprise architecture audit for Python repos with weighted scorecard; writes .local workflow artifacts for downstream agents.
 ---
 <!--
 File: SKILL.md
-Path: .cursor/skills/enterprise-architecture-audit/SKILL.md
+Path: .cursor/skills/auditor-protocol/SKILL.md
 Role: Enterprise-grade, evidence-only repository architecture audit protocol and workflow hooks.
 Used By:
  - .cursor/agents/enterprise-auditor.md

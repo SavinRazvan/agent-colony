@@ -31,7 +31,7 @@ Notes:
 | Audit / dedup rules | `.ai_infra/docs/operations/agent-workflow-procedures.md` | Alignment + governance |
 | Maintainer doc sync checklist | `.ai_infra/docs/operations/documentation-maintenance-checklist.md` (kit-dev copy; excluded from consumer install) | Slice/PR doc updates |
 | Alignment finding shape | `.ai_infra/docs/roadmap/alignment-audit-schema.md` | `enterprise-auditor` focused pass |
-| Full enterprise audit outputs | `.cursor/skills/enterprise-architecture-audit/SKILL.md` → `.local/workflow-artifacts/enterprise-architecture-audit/` | Deep audits |
+| Full enterprise audit outputs | `.cursor/skills/auditor-protocol/SKILL.md` → `.local/workflow-artifacts/enterprise-architecture-audit/` | Deep audits |
 | Focused alignment outputs | Same skill § focused pass → `.local/workflow-artifacts/alignment/` | Architecture-impacting PRs |
 | Always-on enforcement | `.cursor/rules/*.mdc` | Cursor agents |
 | Git **commit** trailers | `.cursor/rules/commit-trailer-format.mdc` | `AGENTS.md` § Commits, implementer skills |

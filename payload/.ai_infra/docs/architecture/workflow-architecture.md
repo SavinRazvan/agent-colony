@@ -67,7 +67,7 @@ Drift validation: `make drift-validate` — see [gate-matrix.md](../operations/g
 
 | Root | Contents |
 |------|----------|
-| `.cursor/skills/` | Canonical protocols (**12**): `workflow-activate`, `board-ssot`, `board-shell`, `implementer-loop`, `enterprise-architecture-audit`, `workflow-drift-audit`, … — full list in [repository-map.md](../handoff/repository-map.md) |
+| `.cursor/skills/` | Canonical protocols (**12**): `workflow-activate`, `board-ssot`, `board-shell`, `implementer-loop`, `auditor-protocol`, `drift-audit`, … — full list in [repository-map.md](../handoff/repository-map.md) |
 | `.agents/skills/` | Maintainer slash skills: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `audit-alignment` (redirect) |
 
 Plugin bundle copies `.cursor/skills/` first; maintainer skills are **additive only** (no overwrite).
