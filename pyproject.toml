@@ -14,7 +14,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-mcp = ["mcp>=1.2"]
+# Pin <2: mcp 2.0 removed mcp.server.fastmcp (workflow_mcp still uses FastMCP 1.x API).
+mcp = ["mcp>=1.2,<2"]
 dev = ["pytest>=8.0", "pytest-cov>=4.0", "pyright>=1.1"]
 
 [project.scripts]
