@@ -54,7 +54,7 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 | `workflow-artifacts/release/` | Optional RC sign-off (`rc-signoff.md`) |
 | `workflow-artifacts/audit/` | `preflight.json`, `doc-facts-preflight.json` (verify-all / doc validate) |
 | `user_settings/` | Gitignored YAML worksheets: GitHub collaboration + MCP agent wiring (from kit exemplars) |
-| `generated-data/` | Coverage JSON, `board-snapshot.json` (read-only board export for ICC), and similar machine output |
+| `generated-data/` | Coverage JSON, `project-board-snapshot.json` (read-only board export for ICC), and similar machine output |
 
 ## Git commits vs `.local` markdown
 
@@ -81,7 +81,7 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 
 Copy from **`.ai_infra/templates/local-workspace/`** into `.local/` at scaffold (`exemplars/`, `artifact-stubs/`). Dashboard HTML, assets, `module-audit.html`, and `pages.json` refresh from templates on every scaffold/activate (idempotent re-activate included).
 
-**Implementation Control Center (deprecated HTML):** manifest tab **Project Board** (`format: board-snapshot`) renders `.local/generated-data/board-snapshot.json` via `local-board-snapshot.js`. Refresh snapshot with `python3 -m cursor_workflow project export`. The panel is **read-only** — it never writes GitHub Project Status. Prefer the live Project board when `project_ssot.enabled`.
+**Implementation Control Center (deprecated HTML):** manifest tab **Project Board** (`format: project-board-snapshot`) renders `.local/generated-data/project-board-snapshot.json` via `local-board-snapshot.js`. Refresh snapshot with `python3 -m cursor_workflow project export`. The panel is **read-only** — it never writes GitHub Project Status. Prefer the live Project board when `project_ssot.enabled`.
 
 **User settings:** copy from **`.ai_infra/templates/user-settings/exemplars/`** into **`.local/user_settings/`** (`github.collaboration.yaml`, `mcp.agents.yaml`). See [RENDERED-EXAMPLES.md](../../templates/user-settings/RENDERED-EXAMPLES.md).
 

@@ -108,7 +108,7 @@ const ARTIFACTS = [
   ["history/updates-log.md", "Exit", "Continuity readers"],
   ["Board drift-pass card Status", "done / in_review", "board / implementer"],
   [
-    ".local/generated-data/board-snapshot.json",
+    ".local/generated-data/project-board-snapshot.json",
     "project export",
     "DRIFT-010 · deprecated HTML ICC (EA-010) offline only",
   ],

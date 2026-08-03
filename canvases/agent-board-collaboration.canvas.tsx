@@ -209,7 +209,7 @@ const ARTIFACT_FLOWS = [
     "Local buffer — not a second Status SSOT",
   ],
   [
-    ".local/generated-data/board-snapshot.json",
+    ".local/generated-data/project-board-snapshot.json",
     "project export (read-only)",
     "DRIFT-010 refresh",
     "drift-guard · ICC (EA-010)",

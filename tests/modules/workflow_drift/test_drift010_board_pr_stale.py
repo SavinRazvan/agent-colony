@@ -57,7 +57,7 @@ def _scaffold(
     if write_snapshot and snapshot is not None:
         gen = tmp / ".local" / "generated-data"
         gen.mkdir(parents=True)
-        (gen / "board-snapshot.json").write_text(
+        (gen / "project-board-snapshot.json").write_text(
             json.dumps(snapshot), encoding="utf-8"
         )
     return tmp
@@ -81,7 +81,7 @@ def test_drift010_detects_merged_but_not_done(
     monkeypatch, tmp_path: Path
 ) -> None:
     snap = {
-        "schema": "board-snapshot/v1",
+        "schema": "project-board-snapshot/v1",
         "items": [
             {
                 "id": "PVTI_x",
@@ -104,7 +104,7 @@ def test_drift010_detects_merged_but_not_done(
 
 def test_drift010_passes_clean_board(monkeypatch, tmp_path: Path) -> None:
     snap = {
-        "schema": "board-snapshot/v1",
+        "schema": "project-board-snapshot/v1",
         "items": [
             {
                 "id": "PVTI_ok",

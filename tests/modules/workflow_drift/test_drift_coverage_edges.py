@@ -167,12 +167,12 @@ def test_load_board_snapshot_bad_json_and_non_object(tmp_path: Path) -> None:
     _planning(tmp_path)
     gen = tmp_path / ".local" / "generated-data"
     gen.mkdir(parents=True)
-    (gen / "board-snapshot.json").write_text("not-json", encoding="utf-8")
+    (gen / "project-board-snapshot.json").write_text("not-json", encoding="utf-8")
     data, detail = _load_board_snapshot(drift_paths(tmp_path))
     assert data is None
     assert "cannot read snapshot" in detail
 
-    (gen / "board-snapshot.json").write_text("[1,2]", encoding="utf-8")
+    (gen / "project-board-snapshot.json").write_text("[1,2]", encoding="utf-8")
     data, detail = _load_board_snapshot(drift_paths(tmp_path))
     assert data is None
     assert "not an object" in detail
@@ -246,7 +246,7 @@ def test_drift010_board_item_linked_via_pr_body(
     _write_collab(tmp_path)
     item = "PVTI_lAHOBl46-84A9KZxlinked1"
     snap = {
-        "schema": "board-snapshot/v1",
+        "schema": "project-board-snapshot/v1",
         "items": [
             {
                 "id": item,
@@ -258,7 +258,7 @@ def test_drift010_board_item_linked_via_pr_body(
     }
     gen = tmp_path / ".local" / "generated-data"
     gen.mkdir(parents=True)
-    (gen / "board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
+    (gen / "project-board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
     monkeypatch.setattr(
         drift_checks,
         "_open_pr_bodies",
@@ -284,7 +284,7 @@ def test_drift010_flags_in_review_without_open_pr(
     _planning(tmp_path)
     _write_collab(tmp_path)
     snap = {
-        "schema": "board-snapshot/v1",
+        "schema": "project-board-snapshot/v1",
         "items": [
             {
                 "id": "PVTI_lAHOBl46-84A9KZxinrev1",
@@ -297,7 +297,7 @@ def test_drift010_flags_in_review_without_open_pr(
     }
     gen = tmp_path / ".local" / "generated-data"
     gen.mkdir(parents=True)
-    (gen / "board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
+    (gen / "project-board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
     monkeypatch.setattr(
         drift_checks,
         "_open_pr_bodies",
@@ -317,7 +317,7 @@ def test_drift010_warns_when_no_open_prs(
     _planning(tmp_path)
     _write_collab(tmp_path)
     snap = {
-        "schema": "board-snapshot/v1",
+        "schema": "project-board-snapshot/v1",
         "items": [
             {
                 "id": "PVTI_lAHOBl46-84A9KZxwarn01",
@@ -329,7 +329,7 @@ def test_drift010_warns_when_no_open_prs(
     }
     gen = tmp_path / ".local" / "generated-data"
     gen.mkdir(parents=True)
-    (gen / "board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
+    (gen / "project-board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
     monkeypatch.setattr(drift_checks, "_open_pr_bodies", lambda repo: ([], None))
     result = check_drift010(drift_paths(tmp_path))
     assert not result.passed
@@ -342,7 +342,7 @@ def test_drift010_flags_stale_in_progress(
     _planning(tmp_path)
     _write_collab(tmp_path)
     snap = {
-        "schema": "board-snapshot/v1",
+        "schema": "project-board-snapshot/v1",
         "items": [
             {
                 "id": "PVTI_lAHOBl46-84A9KZxstale1",
@@ -354,7 +354,7 @@ def test_drift010_flags_stale_in_progress(
     }
     gen = tmp_path / ".local" / "generated-data"
     gen.mkdir(parents=True)
-    (gen / "board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
+    (gen / "project-board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
     monkeypatch.setattr(
         drift_checks,
         "_open_pr_bodies",
@@ -373,10 +373,10 @@ def test_drift010_skips_when_pr_list_fails(
 ) -> None:
     _planning(tmp_path)
     _write_collab(tmp_path)
-    snap = {"schema": "board-snapshot/v1", "items": []}
+    snap = {"schema": "project-board-snapshot/v1", "items": []}
     gen = tmp_path / ".local" / "generated-data"
     gen.mkdir(parents=True)
-    (gen / "board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
+    (gen / "project-board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
     monkeypatch.setattr(
         drift_checks, "_open_pr_bodies", lambda repo: ([], "network down")
     )
@@ -391,13 +391,13 @@ def test_drift010_repo_from_snapshot_project(
     _planning(tmp_path)
     _write_collab(tmp_path, default_repo="")
     snap = {
-        "schema": "board-snapshot/v1",
+        "schema": "project-board-snapshot/v1",
         "project": {"default_repo": "org/from-snap"},
         "items": [],
     }
     gen = tmp_path / ".local" / "generated-data"
     gen.mkdir(parents=True)
-    (gen / "board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
+    (gen / "project-board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
     seen: list[str] = []
 
     def capture(repo: str):
@@ -415,7 +415,7 @@ def test_drift010_skips_non_board_only(tmp_path: Path) -> None:
     _write_collab(tmp_path, policy="mirror")
     gen = tmp_path / ".local" / "generated-data"
     gen.mkdir(parents=True)
-    (gen / "board-snapshot.json").write_text(
+    (gen / "project-board-snapshot.json").write_text(
         json.dumps({"items": []}), encoding="utf-8"
     )
     result = check_drift010(drift_paths(tmp_path))
@@ -471,7 +471,7 @@ def test_drift004b_fails_status_mismatch(tmp_path: Path) -> None:
     }
     gen = tmp_path / ".local" / "generated-data"
     gen.mkdir(parents=True)
-    (gen / "board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
+    (gen / "project-board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
     result = check_drift004b(drift_paths(tmp_path))
     assert not result.passed
     assert "vs snapshot" in result.detail
@@ -499,7 +499,7 @@ def test_drift004b_passes_empty_pointer_status(tmp_path: Path) -> None:
     }
     gen = tmp_path / ".local" / "generated-data"
     gen.mkdir(parents=True)
-    (gen / "board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
+    (gen / "project-board-snapshot.json").write_text(json.dumps(snap), encoding="utf-8")
     result = check_drift004b(drift_paths(tmp_path))
     assert result.passed
 

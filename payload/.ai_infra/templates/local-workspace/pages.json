@@ -44,8 +44,8 @@
     {
       "id": "board",
       "title": "Project Board",
-      "file": "../../generated-data/board-snapshot.json",
-      "format": "board-snapshot"
+      "file": "../../generated-data/project-board-snapshot.json",
+      "format": "project-board-snapshot"
     },
     {
       "id": "pr-review",

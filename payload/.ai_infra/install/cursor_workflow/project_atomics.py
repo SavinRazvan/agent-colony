@@ -707,7 +707,7 @@ def build_export_snapshot(ssot: dict[str, Any], items: list[dict[str, Any]]) -> 
             }
         )
     return {
-        "schema": "board-snapshot/v1",
+        "schema": "project-board-snapshot/v1",
         "project": {
             "name": ssot.get("name"),
             "owner": ssot.get("owner"),

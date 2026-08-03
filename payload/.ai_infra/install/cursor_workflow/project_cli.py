@@ -1366,7 +1366,7 @@ def cmd_export(args: argparse.Namespace) -> int:
         print(text, end="")
         return EXIT_OK
     out_path = Path(args.output) if args.output else (
-        root / ".local" / "generated-data" / "board-snapshot.json"
+        root / ".local" / "generated-data" / "project-board-snapshot.json"
     )
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(text, encoding="utf-8")
