@@ -83,7 +83,7 @@ def _paths(root: Path) -> dict[str, Path]:
         "manifest": infra / "manifest.yaml",
         "ops_doc": infra / "docs" / "operations" / "mas-infrastructure-integration.md",
         "checklist": infra / "templates" / "agent-integration" / "INTEGRATION-CHECKLIST.md",
-        "plugin_integrator": root / "agents" / "integrator-mas-agent.md",
+        "plugin_integrator": root / "agents" / "integrator.md",
         "plugin_drift_guard": root / "agents" / "workflow-drift-guard.md",
     }
 
@@ -223,9 +223,9 @@ def _check_int009(root: Path, paths: dict[str, Path]) -> CheckResult:
         severity=Severity.P2,
         passed=exists,
         detail=(
-            "agents/integrator-mas-agent.md present"
+            "agents/integrator.md present"
             if exists
-            else "missing agents/integrator-mas-agent.md — run make sync-plugin"
+            else "missing agents/integrator.md — run make sync-plugin"
         ),
     )
 

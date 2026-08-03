@@ -119,7 +119,7 @@ const WHO_WRITES: string[][] = [
     "Never silent dual-write Status",
   ],
   [
-    "integrator-mas-agent",
+    "integrator",
     "Integration card → Done",
     "integrate validate evidence in Notes",
     "Escalate product/coverage/arch",

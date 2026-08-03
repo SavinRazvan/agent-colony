@@ -48,7 +48,7 @@ const AGENTS = [
       "Independent-governed helper — list/create/move GitHub Project SSOT cards via project_ssot CLI",
   },
   {
-    id: "integrator-mas-agent",
+    id: "integrator",
     description:
       "Integrates new agents, skills, MCP, and infrastructure expansions — procedural, evidence-only, Pattern A",
   },
@@ -65,7 +65,7 @@ const ROSTER_NODES = [
   { id: "verifier" },
   { id: "workflow-drift-guard" },
   { id: "enterprise-auditor" },
-  { id: "integrator-mas-agent" },
+  { id: "integrator" },
   { id: "test-runner" },
   { id: "researcher" },
 ];
@@ -77,9 +77,9 @@ const ROSTER_EDGES = [
   { from: "workflow-drift-guard", to: "project-board" },
   { from: "workflow-drift-guard", to: "implementer" },
   { from: "enterprise-auditor", to: "implementer" },
-  { from: "integrator-mas-agent", to: "implementer" },
-  { from: "integrator-mas-agent", to: "test-runner" },
-  { from: "integrator-mas-agent", to: "enterprise-auditor" },
+  { from: "integrator", to: "implementer" },
+  { from: "integrator", to: "test-runner" },
+  { from: "integrator", to: "enterprise-auditor" },
 ];
 
 const EDGE_LABELS: Record<string, string> = {
@@ -89,9 +89,9 @@ const EDGE_LABELS: Record<string, string> = {
   "workflow-drift-guard→project-board": "dual-write remediation",
   "workflow-drift-guard→implementer": "dual-write remediation",
   "enterprise-auditor→implementer": "Notes + artifact paths",
-  "integrator-mas-agent→implementer": "escalate product src/",
-  "integrator-mas-agent→test-runner": "escalate coverage",
-  "integrator-mas-agent→enterprise-auditor": "escalate architecture",
+  "integrator→implementer": "escalate product src/",
+  "integrator→test-runner": "escalate coverage",
+  "integrator→enterprise-auditor": "escalate architecture",
 };
 
 const RESEARCHER_REDIRECTS = [
@@ -274,7 +274,7 @@ export default function AgentRosterCanvas() {
               "Notes with artifact paths for implementer",
             ],
             [
-              "integrator-mas-agent",
+              "integrator",
               "implementer | test-runner | enterprise-auditor",
               "Escalation table on integrator card",
             ],

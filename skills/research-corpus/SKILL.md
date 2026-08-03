@@ -48,7 +48,7 @@ If only a link/path is given:
 - **question:** Map architecture, entrypoints, and patterns useful to our MAS kit; produce `AGENT_BRIEF` for implementer/integrator.
 - **lenses:** architecture, cli, agents, skills, tests, decisions, patterns
 - **slug:** repo (or directory) name, lowercase with hyphens
-- **consumers:** implementer, integrator-mas-agent (plus the requesting agent if known)
+- **consumers:** implementer, integrator (plus the requesting agent if known)
 - **rounds_max:** 6
 
 Refuse **only** when there is no source and no `mode: self` ask. Missing question → use default and state it in board Notes / chat.
@@ -71,7 +71,7 @@ source: github:owner/repo@ref | https://github.com/… | path:/abs/or/rel
 question: <what MAS / requesting agent needs>
 lenses: [architecture, cli, agents, skills, tests, decisions, patterns]
 rounds_max: 6
-consumers: [implementer, integrator-mas-agent, …]
+consumers: [implementer, integrator, …]
 slug: <derived or explicit>
 ```
 

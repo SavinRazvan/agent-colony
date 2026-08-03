@@ -21,7 +21,7 @@
 | **question** | (TBD) |
 | **lenses** | architecture, cli, agents, skills, tests, decisions, patterns |
 | **slug** | (TBD) |
-| **consumers** | implementer, integrator-mas-agent |
+| **consumers** | implementer, integrator |
 
 ## Notes
 

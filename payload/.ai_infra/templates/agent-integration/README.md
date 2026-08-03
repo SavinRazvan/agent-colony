@@ -1,6 +1,6 @@
 # Agent integration templates
 
-Copy from here when **`integrator-mas-agent`** adds agents or skills.
+Copy from here when **`integrator`** adds agents or skills.
 
 | File | Purpose |
 |------|---------|

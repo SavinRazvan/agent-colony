@@ -18,7 +18,7 @@ Integrate **new agents, skills, MCP servers, scripts, or docs** into the kit so 
 - User expands **manifest / install contract / plugin payload**
 - User asks to merge a **standalone agent** into the MAS pipeline (or keep independent but governed)
 
-**Agent card:** `.cursor/agents/integrator-mas-agent.md`
+**Agent card:** `.cursor/agents/integrator.md`
 
 ## Evidence contract
 
@@ -103,7 +103,7 @@ Copy and edit from **`.ai_infra/templates/agent-integration/`**:
 | 1 | Agent + skill with explicit **boundaries** (what it must not do) |
 | 2 | Registry: optional MCP servers scoped to that agent id only |
 | 3 | **Do not** add to core PR pipelines unless it owns a maintainer phase |
-| 4 | Document handoff to `implementer` / `integrator-mas-agent` when work crosses into kit infrastructure |
+| 4 | Document handoff to `implementer` / `integrator` when work crosses into kit infrastructure |
 
 ### C. External MCP server
 

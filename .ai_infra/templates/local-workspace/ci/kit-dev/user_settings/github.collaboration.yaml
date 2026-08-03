@@ -55,14 +55,14 @@ pr_collaboration:
     architecture_impacting:
       agents:
         - enterprise-auditor
-        - integrator-mas-agent
+        - integrator
         - review-pr
         - prepare-pr
         - merge-pr
       requires_alignment_artifacts: true
     infrastructure_integration:
       agents:
-        - integrator-mas-agent
+        - integrator
         - enterprise-auditor
         - review-pr
         - prepare-pr
@@ -71,7 +71,7 @@ pr_collaboration:
         - implementer
         - test-runner
         - verifier
-        - integrator-mas-agent
+        - integrator
         - review-pr
         - prepare-pr
       session_pointer: .local/index-and-planning/current/session-pointer.md

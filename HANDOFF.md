@@ -100,7 +100,7 @@ If the board is unavailable: `fallback: local_trackers` only, then resume board 
 | `test-runner` / `verifier` | Tests and claim verification |
 | `enterprise-auditor` | Alignment / scorecard → `.local/workflow-artifacts/` |
 | `workflow-drift-guard` | DRIFT-009/010; board on Exit |
-| `integrator-mas-agent` | Agents, skills, MCP, kit expansions |
+| `integrator` | Agents, skills, MCP, kit expansions |
 | `researcher` | Shipped/proven corpus researcher — adaptive Brief; packs under `_research_results/` (opt-in after `research init`); hard-stop on product code · live E2E Issue #74 |
 
 Do **not** publish marketplace releases from this repo against upstream `mas-workflow-kit`.

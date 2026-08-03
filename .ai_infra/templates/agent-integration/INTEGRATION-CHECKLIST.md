@@ -1,7 +1,7 @@
 <!--
 File: INTEGRATION-CHECKLIST.md
 Path: .ai_infra/templates/agent-integration/INTEGRATION-CHECKLIST.md
-Role: Slice checklist for integrator-mas-agent; copy row into work-tracker.md.
+Role: Slice checklist for integrator; copy row into work-tracker.md.
 Used By:
  - .cursor/skills/integrator-protocol/SKILL.md
 Depends On:
@@ -16,7 +16,7 @@ Notes:
 |-------|--------|
 | **Type** | agent \| skill \| mcp \| script \| doc |
 | **Mode** | MAS-integrated \| independent-governed |
-| **Owner** | integrator-mas-agent |
+| **Owner** | integrator |
 | **Status** | planned \| in_progress \| done |
 
 ## Intake

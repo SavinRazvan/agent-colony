@@ -13,11 +13,11 @@
 
 **Product:** installable **multi-agent workflow infrastructure** for any Cursor project (not a PyPI package, not an MCP-first product).
 
-**User journey:** plugin unpacks the full **consumer infrastructure** → user completes `.local/user_settings/` (GitHub + MCP worksheets) → **`/integrator-mas-agent`** extends agents/skills/MCP while preserving Pattern A, gates, and three-plane layout.
+**User journey:** plugin unpacks the full **consumer infrastructure** → user completes `.local/user_settings/` (GitHub + MCP worksheets) → **`/integrator`** extends agents/skills/MCP while preserving Pattern A, gates, and three-plane layout.
 
 **Optional add-on:** MCP server under `.ai_infra/mcp_servers/` — wraps the same scripts; agents do not require it.
 
-**Expansion path:** after install, use **`/integrator-mas-agent`** to add agents/skills/MCP. Machine checks: `python -m cursor_workflow integrate validate` (P0: agent sections, registry parity, pipeline names, user_settings schema). ADR-006 defines MAS-integrated vs independent-governed modes.
+**Expansion path:** after install, use **`/integrator`** to add agents/skills/MCP. Machine checks: `python -m cursor_workflow integrate validate` (P0: agent sections, registry parity, pipeline names, user_settings schema). ADR-006 defines MAS-integrated vs independent-governed modes.
 
 ---
 
@@ -54,11 +54,11 @@ flowchart LR
 | 2. Activate planes | Agent or human | `python -m cursor_workflow activate --directory .` |
 | 3. Personalize | Human | `.local/user_settings/github.collaboration.yaml` |
 | 4. Validate | Agent or human | `contributors validate` + `integrate validate` |
-| 5. Extend infra | Agent or human | **`/integrator-mas-agent`** in Agent chat (not shell) |
+| 5. Extend infra | Agent or human | **`/integrator`** in Agent chat (not shell) |
 
 **Source for activate:** plugin `payload/` directory. Set `WORKFLOW_KIT_PAYLOAD=/path/to/payload` when auto-detect fails.
 
-**Agents are not CLI commands.** Names like `integrator-mas-agent` are Cursor subagents — invoke with **`/integrator-mas-agent`** in Agent chat or via parent Agent Task delegation ([Subagents](https://cursor.com/docs/subagents)).
+**Agents are not CLI commands.** Names like `integrator` are Cursor subagents — invoke with **`/integrator`** in Agent chat or via parent Agent Task delegation ([Subagents](https://cursor.com/docs/subagents)).
 
 ---
 

@@ -57,11 +57,11 @@ runs — not before. Use **`/mcp-connect`** after activate.
 3. When board SSOT enabled: `python3 -m cursor_workflow project doctor` → **`/project-board`** + `board-shell` → `python3 -m cursor_workflow project board-bootstrap --check` until **default Playground shell** green → `python3 -m cursor_workflow project status`
 4. **`/implementer`** to start · audit (`/enterprise-auditor`) is later / architecture-impacting — not day-0.
 
-Optional: `integrate validate`, `health`. Add infrastructure later: **`/integrator-mas-agent`**.
+Optional: `integrate validate`, `health`. Add infrastructure later: **`/integrator`**.
 
 ## Adding agents/skills/MCP later
 
-Invoke subagent **`/integrator-mas-agent`** with skill **`/integrator-protocol`** — not shell commands.
+Invoke subagent **`/integrator`** with skill **`/integrator-protocol`** — not shell commands.
 
 ## Agent delegation
 
@@ -71,7 +71,7 @@ After plugin enable, parent agent or user should:
 1. Run **`workflow_activate`** or `cursor_workflow activate`
 2. Hand user to personalize `user_settings/` + `gh` Project scopes
 3. When SSOT on: **`/project-board`** (board-shell) until `board-bootstrap --check` green
-4. Point to **`/implementer`**; optionally delegate **`/integrator-mas-agent`** for extensions
+4. Point to **`/implementer`**; optionally delegate **`/integrator`** for extensions
 
 ## Success
 

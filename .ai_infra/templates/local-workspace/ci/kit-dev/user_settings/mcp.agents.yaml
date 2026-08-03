@@ -22,7 +22,7 @@ kit:
     - verifier
     - enterprise-auditor
     - researcher
-    - integrator-mas-agent
+    - integrator
     - workflow-drift-guard
   tools_hint:
     - workflow_run_prepare
@@ -83,7 +83,7 @@ agent_defaults:
   researcher:
     primary_servers: [workflow-kit]
     optional_servers: []
-  integrator-mas-agent:
+  integrator:
     primary_servers: [workflow-kit]
     optional_servers: []
 

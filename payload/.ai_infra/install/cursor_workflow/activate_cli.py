@@ -116,7 +116,7 @@ def _print_post_activate_hints(root: Path) -> None:
         print("\nOptional:")
         print("  source .venv/bin/activate && python3 -m cursor_workflow integrate validate")
         print("  source .venv/bin/activate && python3 -m cursor_workflow health")
-        print("Add agents/skills later: /integrator-mas-agent (subagent, not a shell command).")
+        print("Add agents/skills later: /integrator (subagent, not a shell command).")
 
 
 def _import_scaffold_refresh() -> object:

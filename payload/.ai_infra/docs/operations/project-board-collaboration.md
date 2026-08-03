@@ -65,7 +65,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | **implementer** | status + `claim --agent implementer` | `handoff --agent implementer --next … --to in_review` or →Done |
 | **test-runner** | status + slice card | →In review or →Done; `--agent test-runner` |
 | **verifier** | status + related card | →Done or leave In review; `--agent verifier` |
-| **integrator-mas-agent** | status + claim | →Done; `--agent integrator-mas-agent` |
+| **integrator** | status + claim | →Done; `--agent integrator` |
 | **enterprise-auditor** | status + audit card | →In review/Done; `--agent enterprise-auditor` + artifact paths |
 | **workflow-drift-guard** | **Must** status + list In progress | Drift card →Done; `--agent workflow-drift-guard`; remediation via Notes/Ready — no silent tracker edits |
 | **researcher** | status (+ research card) | Research card →Done; `--agent researcher` + `AGENT_BRIEF` / pack paths (adaptive intake from chat/Notes) |
