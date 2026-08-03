@@ -106,6 +106,17 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 
 Do not duplicate skill folder names across `.cursor/skills/` and `.agents/skills/`.
 
+### Cursor Task `subagent_type` (human sync)
+
+After agent renames, update the IDE/plugin Task registry so `subagent_type` matches **on-disk** agent ids:
+
+| Use | Retire (legacy) |
+|-----|-----------------|
+| `integrator`, `auditor`, `drift-guard`, `board` | `integrator-mas-agent`, `enterprise-auditor`, `workflow-drift-guard`, `project-board` |
+| Keep: `implementer`, `test-runner`, `researcher`, `verifier` | — |
+
+In-repo cards under `.cursor/agents/<id>.md` are the source of truth; Task enum is Cursor-side and is not updated by git merge.
+
 ## Branching
 
 Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After merge: sync `main` with `origin/main`, remove local + remote feature branch.
