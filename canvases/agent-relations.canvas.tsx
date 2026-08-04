@@ -22,7 +22,7 @@ import {
 
 const VERIFIED = "2026-08-03";
 const SOURCES =
-  ".cursor/agents/*.md PEERS · audit-orchestration Phase 3 · board-ssot § Continuation · agent-roster edges";
+  "agent-relations edges · audit-orchestration Phase 3 · board-ssot § Continuation · per-agent canvas PEERS";
 
 const NODE_W = 128;
 const NODE_H = 40;
@@ -41,42 +41,42 @@ type AgentId =
 const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
   {
     id: "board",
-    role: "Triage Ready; create cards; hand off work",
+    role: "board MAS-SSOT-KIT · skill board-ssot (+ board-shell)",
     lane: "Coordination",
   },
   {
     id: "implementer",
-    role: "Ship slices: code, tests, promote, PR path",
+    role: "implementer MAS-SSOT-KIT · skill implementer-loop",
     lane: "Delivery",
   },
   {
     id: "test-runner",
-    role: "Module tests / coverage on existing card",
+    role: "test-runner MAS-SSOT-KIT · skill test-coverage",
     lane: "Delivery",
   },
   {
     id: "verifier",
-    role: "Claims vs evidence; no implement",
+    role: "verifier MAS-SSOT-KIT · claims vs evidence (no primary skill folder)",
     lane: "Delivery",
   },
   {
     id: "integrator",
-    role: "Wire agents/skills/MCP into the kit",
+    role: "integrator MAS-SSOT-KIT · skill integrator-protocol",
     lane: "Infrastructure",
   },
   {
     id: "auditor",
-    role: "Evidence-only architecture audit artifacts",
+    role: "auditor MAS-SSOT-KIT · skill auditor-protocol",
     lane: "Quality",
   },
   {
     id: "drift-guard",
-    role: "Drift validate; dual-write remediation",
+    role: "drift-guard MAS-SSOT-KIT · skill drift-audit",
     lane: "Quality",
   },
   {
     id: "researcher",
-    role: "Shipped corpus researcher — packs under _research_results/ (opt-in)",
+    role: "researcher MAS-SSOT-KIT · skill research-corpus (opt-in packs)",
     lane: "Research (opt-in corpus)",
   },
 ];
@@ -175,10 +175,12 @@ const RELATIONS: {
 ];
 
 const RESEARCHER_REDIRECTS: [string, string][] = [
-  ["implementer", "Product code / commits / PRs"],
-  ["verifier", "Claims vs evidence checks"],
+  ["implementer", "Product code / commits"],
+  ["verifier", "Claims vs evidence"],
   ["auditor", "Architecture audits"],
   ["drift-guard", "Drift / tracker coherence"],
+  ["integrator", "Kit surface integration"],
+  ["pr-workflow", "Git commit/push/PR (maintainer skills)"],
 ];
 
 const HAPPY_PATH = [
@@ -333,14 +335,24 @@ export default function AgentRelationsCanvas() {
         <Row gap={10} style={{ alignItems: "center" }}>
           <H1 style={{ margin: 0 }}>Agent relations</H1>
           <Pill tone="info" size="sm">
+            hub · not an agent
+          </Pill>
+          <Pill tone="neutral" size="sm">
             8 agents
           </Pill>
         </Row>
         <Text tone="secondary">
-          How kit agents hand off work — edges from agent cards plus skill chain
-          (e.g. test-runner→verifier when tests gate the PR). Select an agent to
+          How kit agents hand off work — edges from agent cards plus
+          audit-orchestration Phase 3. Live ids only (post B-safe rename). Primary
+          skills: board-ssot, implementer-loop, test-coverage, integrator-protocol,
+          auditor-protocol, drift-audit, research-corpus. Select an agent to
           highlight its neighbors.
         </Text>
+        <Callout tone="info" title="Not old names">
+          Retired Task ids (enterprise-auditor, project-board, workflow-drift-guard,
+          integrator-mas-agent) do not appear here. Deeper per-agent hubs:
+          canvases/agent-*.canvas.tsx · overview: agent-roster.
+        </Callout>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED}
         </Text>

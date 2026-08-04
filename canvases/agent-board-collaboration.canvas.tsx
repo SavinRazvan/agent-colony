@@ -25,7 +25,7 @@ type FlowMode = "slice" | "side";
 
 const VERIFIED = "2026-08-03";
 const SOURCES =
-  "project-board-collaboration.md · board-ssot/SKILL.md · board-shell/SKILL.md · .cursor/agents/*.md · agent-roster edges";
+  "project-board-collaboration.md · board-ssot/SKILL.md · board-shell/SKILL.md · agent-relations · agent-roster · .cursor/agents/*.md";
 
 const STATUS_STEPS = ["Ready", "In progress", "In review", "Done"];
 
@@ -42,10 +42,14 @@ const ROSTER_NODES = [
 const ROSTER_EDGES = [
   { from: "board", to: "implementer" },
   { from: "implementer", to: "verifier" },
+  { from: "implementer", to: "test-runner" },
   { from: "implementer", to: "drift-guard" },
+  { from: "test-runner", to: "verifier" },
   { from: "drift-guard", to: "board" },
   { from: "drift-guard", to: "implementer" },
   { from: "auditor", to: "implementer" },
+  { from: "auditor", to: "drift-guard" },
+  { from: "auditor", to: "verifier" },
   { from: "integrator", to: "implementer" },
   { from: "integrator", to: "test-runner" },
   { from: "integrator", to: "auditor" },
@@ -54,10 +58,14 @@ const ROSTER_EDGES = [
 const EDGE_LABELS: Record<string, string> = {
   "board→implementer": "handoff next=implementer",
   "implementer→verifier": "Exit --next verifier",
+  "implementer→test-runner": "when tests/coverage gate PR",
   "implementer→drift-guard": "P0/P1 after drift-validate",
+  "test-runner→verifier": "tests gate the PR",
   "drift-guard→board": "dual-write remediation",
   "drift-guard→implementer": "dual-write remediation",
   "auditor→implementer": "Notes + artifact paths",
+  "auditor→drift-guard": "audit-orchestration Phase 3",
+  "auditor→verifier": "audit-orchestration Phase 3",
   "integrator→implementer": "escalate product src/",
   "integrator→test-runner": "escalate coverage",
   "integrator→auditor": "escalate architecture",
@@ -234,16 +242,16 @@ const NEXT_AGENT_STEPS = [
 
 const SLICE_FLOW = [
   "board: status + list → triage Ready → handoff next=implementer",
-  "implementer: claim --agent implementer → code + gates → handoff --next verifier (typical)",
-  "test-runner (when tests gate PR): status + slice card → test-index / test-plan → in_review",
+  "implementer: claim --agent implementer → code + prepare.py resolve_gates() → handoff --next verifier (or test-runner when tests gate)",
+  "test-runner (when tests gate PR): status + slice card → test-index / test-plan → in_review → verifier",
   "verifier: status + related card → evidence check → done or in_review with failure Notes",
 ];
 
 const SIDE_FLOW = [
-  "auditor: audit card → write .local/workflow-artifacts/… → Notes paths → implementer",
+  "auditor: audit card → write .local/workflow-artifacts/enterprise-architecture-audit/ + alignment/ → Notes paths → implementer (Phase 3: drift-guard / verifier)",
   "implementer: make drift-validate → P0/P1 → hand off drift-guard",
-  "drift-guard: must read board In progress → drift artifacts → drift card done; remediation via Notes/Ready to board or implementer",
-  "integrator: integration card → validate → escalate to implementer | test-runner | auditor",
+  "drift-guard: must read board In progress → .local/workflow-artifacts/drift/ → drift card done; remediation via Notes/Ready to board or implementer",
+  "integrator: integration card → integrate validate → escalate to implementer | test-runner | auditor",
 ];
 
 function CollaborationDag({
@@ -251,39 +259,38 @@ function CollaborationDag({
 }: {
   tokens: ReturnType<typeof useHostTheme>["tokens"];
 }) {
-  const layout = computeDAGLayout(ROSTER_NODES, ROSTER_EDGES, {
+  const nodeW = 130;
+  const nodeH = 40;
+  const layout = computeDAGLayout({
+    nodes: ROSTER_NODES,
+    edges: ROSTER_EDGES,
     direction: "horizontal",
-    nodeWidth: 130,
-    nodeHeight: 40,
+    nodeWidth: nodeW,
+    nodeHeight: nodeH,
     rankGap: 48,
     nodeGap: 20,
   });
-  const w = Math.max(...layout.nodes.map((n) => n.x + n.width)) + 24;
-  const h = Math.max(...layout.nodes.map((n) => n.y + n.height)) + 24;
-  const byId = Object.fromEntries(layout.nodes.map((n) => [n.id, n]));
 
   return (
-    <svg width="100%" viewBox={`0 0 ${w} ${h}`} style={{ maxWidth: 960 }}>
+    <svg
+      width="100%"
+      viewBox={`0 0 ${layout.width} ${layout.height}`}
+      style={{ maxWidth: 960 }}
+    >
       {layout.edges.map((e, i) => {
-        const a = byId[e.from];
-        const b = byId[e.to];
-        if (!a || !b) return null;
-        const x1 = a.x + a.width;
-        const y1 = a.y + a.height / 2;
-        const x2 = b.x;
-        const y2 = b.y + b.height / 2;
         const label = EDGE_LABELS[`${e.from}→${e.to}`] ?? "";
-        const mx = (x1 + x2) / 2;
-        const my = (y1 + y2) / 2 - 6;
+        const mx = (e.sourceX + e.targetX) / 2;
+        const my = (e.sourceY + e.targetY) / 2 - 6;
         return (
           <g key={i}>
             <line
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
+              x1={e.sourceX}
+              y1={e.sourceY}
+              x2={e.targetX}
+              y2={e.targetY}
               stroke={tokens.stroke.secondary}
               strokeWidth={1.5}
+              strokeDasharray={e.isBackEdge ? "4 3" : undefined}
             />
             {label ? (
               <text
@@ -304,8 +311,8 @@ function CollaborationDag({
           <rect
             x={n.x}
             y={n.y}
-            width={n.width}
-            height={n.height}
+            width={nodeW}
+            height={nodeH}
             rx={4}
             fill={
               n.id === "board"
@@ -319,8 +326,8 @@ function CollaborationDag({
             }
           />
           <text
-            x={n.x + n.width / 2}
-            y={n.y + n.height / 2 + 4}
+            x={n.x + nodeW / 2}
+            y={n.y + nodeH / 2 + 4}
             textAnchor="middle"
             fill={tokens.text.primary}
             fontSize={9}
@@ -341,7 +348,7 @@ export default function AgentBoardCollaborationCanvas() {
     <Stack gap={20} style={{ padding: 20, maxWidth: 980 }}>
       <Stack gap={8}>
         <Row gap={10} style={{ alignItems: "center" }}>
-          <H1 style={{ margin: 0 }}>Agent × Project board collaboration</H1>
+          <H1 style={{ margin: 0 }}>Agent × GitHub Project collaboration</H1>
           <Pill tone="info" size="sm">
             board SSOT
           </Pill>

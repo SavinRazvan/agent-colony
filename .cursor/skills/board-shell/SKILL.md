@@ -18,7 +18,7 @@ Notes:
  - Do not call undocumented GraphQL view mutations.
 -->
 
-# Board shell onboard (first-run coach)
+# Board shell
 
 ## When
 

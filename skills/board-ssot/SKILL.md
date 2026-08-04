@@ -24,7 +24,7 @@ Notes:
  - Continuation is board-anchored: every agent Entry reads the Project; Exit updates Status.
 -->
 
-# Project board SSOT
+# Board SSOT
 
 ## Goal
 

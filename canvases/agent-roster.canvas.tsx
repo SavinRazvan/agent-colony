@@ -74,10 +74,14 @@ const ROSTER_NODES = [
 const ROSTER_EDGES = [
   { from: "board", to: "implementer" },
   { from: "implementer", to: "verifier" },
+  { from: "implementer", to: "test-runner" },
   { from: "implementer", to: "drift-guard" },
+  { from: "test-runner", to: "verifier" },
   { from: "drift-guard", to: "board" },
   { from: "drift-guard", to: "implementer" },
   { from: "auditor", to: "implementer" },
+  { from: "auditor", to: "drift-guard" },
+  { from: "auditor", to: "verifier" },
   { from: "integrator", to: "implementer" },
   { from: "integrator", to: "test-runner" },
   { from: "integrator", to: "auditor" },
@@ -86,56 +90,61 @@ const ROSTER_EDGES = [
 const EDGE_LABELS: Record<string, string> = {
   "board→implementer": "handoff next=implementer",
   "implementer→verifier": "Exit --next verifier",
+  "implementer→test-runner": "when tests/coverage gate PR",
   "implementer→drift-guard": "P0/P1 after drift-validate",
+  "test-runner→verifier": "tests gate the PR",
   "drift-guard→board": "dual-write remediation",
   "drift-guard→implementer": "dual-write remediation",
   "auditor→implementer": "Notes + artifact paths",
+  "auditor→drift-guard": "audit-orchestration Phase 3",
+  "auditor→verifier": "audit-orchestration Phase 3",
   "integrator→implementer": "escalate product src/",
   "integrator→test-runner": "escalate coverage",
   "integrator→auditor": "escalate architecture",
 };
 
 const RESEARCHER_REDIRECTS = [
-  ["implementer", "Product code changes"],
+  ["implementer", "Product code / commits"],
   ["verifier", "Claims vs evidence"],
   ["auditor", "Architecture audits"],
-  ["pr-workflow", "Git commit/push/PR (not researcher)"],
+  ["drift-guard", "Drift / tracker coherence"],
+  ["integrator", "Kit surface integration"],
+  ["pr-workflow", "Git commit/push/PR (maintainer skills)"],
 ];
 
 function RosterDag({ tokens }: { tokens: ReturnType<typeof useHostTheme>["tokens"] }) {
-  const layout = computeDAGLayout(ROSTER_NODES, ROSTER_EDGES, {
+  const nodeW = 130;
+  const nodeH = 40;
+  const layout = computeDAGLayout({
+    nodes: ROSTER_NODES,
+    edges: ROSTER_EDGES,
     direction: "horizontal",
-    nodeWidth: 130,
-    nodeHeight: 40,
+    nodeWidth: nodeW,
+    nodeHeight: nodeH,
     rankGap: 48,
     nodeGap: 20,
   });
-  const w = Math.max(...layout.nodes.map((n) => n.x + n.width)) + 24;
-  const h = Math.max(...layout.nodes.map((n) => n.y + n.height)) + 24;
-  const byId = Object.fromEntries(layout.nodes.map((n) => [n.id, n]));
 
   return (
-    <svg width="100%" viewBox={`0 0 ${w} ${h}`} style={{ maxWidth: 960 }}>
+    <svg
+      width="100%"
+      viewBox={`0 0 ${layout.width} ${layout.height}`}
+      style={{ maxWidth: 960 }}
+    >
       {layout.edges.map((e, i) => {
-        const a = byId[e.from];
-        const b = byId[e.to];
-        if (!a || !b) return null;
-        const x1 = a.x + a.width;
-        const y1 = a.y + a.height / 2;
-        const x2 = b.x;
-        const y2 = b.y + b.height / 2;
         const label = EDGE_LABELS[`${e.from}→${e.to}`] ?? "";
-        const mx = (x1 + x2) / 2;
-        const my = (y1 + y2) / 2 - 6;
+        const mx = (e.sourceX + e.targetX) / 2;
+        const my = (e.sourceY + e.targetY) / 2 - 6;
         return (
           <g key={i}>
             <line
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
+              x1={e.sourceX}
+              y1={e.sourceY}
+              x2={e.targetX}
+              y2={e.targetY}
               stroke={tokens.stroke.secondary}
               strokeWidth={1.5}
+              strokeDasharray={e.isBackEdge ? "4 3" : undefined}
             />
             {label ? (
               <text
@@ -156,8 +165,8 @@ function RosterDag({ tokens }: { tokens: ReturnType<typeof useHostTheme>["tokens
           <rect
             x={n.x}
             y={n.y}
-            width={n.width}
-            height={n.height}
+            width={nodeW}
+            height={nodeH}
             rx={4}
             fill={
               n.id === "researcher"
@@ -167,8 +176,8 @@ function RosterDag({ tokens }: { tokens: ReturnType<typeof useHostTheme>["tokens
             stroke={tokens.stroke.primary}
           />
           <text
-            x={n.x + n.width / 2}
-            y={n.y + n.height / 2 + 4}
+            x={n.x + nodeW / 2}
+            y={n.y + nodeH / 2 + 4}
             textAnchor="middle"
             fill={tokens.text.primary}
             fontSize={9}
@@ -190,20 +199,28 @@ export default function AgentRosterCanvas() {
         <Row gap={10} style={{ alignItems: "center" }}>
           <H1 style={{ margin: 0 }}>Kit agent roster</H1>
           <Pill tone="info" size="sm">
+            hub · not an agent
+          </Pill>
+          <Pill tone="neutral" size="sm">
             8 agents
           </Pill>
         </Row>
         <Text tone="secondary">
-          Explicit handoff edges from agent cards (skill chain test-runner→verifier
-          when tests gate PR). researcher is shipped/proven and non-product —
-          corpus opt-in; redirects to product agents for code/PR.
+          Overview of all live agents (ids match .cursor/agents/*.md). This file is
+          a DOC-008 roster hub — there is no agent named &quot;roster&quot;. Deeper
+          graph: agent-relations. Per-agent Entry/Exit: agent-board-collaboration.
         </Text>
-        <Callout tone="info" title="Board lifecycle (all 8)">
+        <Callout tone="info" title="Live ids (post B-safe rename)">
+          auditor · board · drift-guard · implementer · integrator · researcher ·
+          test-runner · verifier — skills: board-ssot, implementer-loop,
+          test-coverage, auditor-protocol, drift-audit, integrator-protocol, …
+        </Callout>
+        <Callout tone="neutral" title="Board lifecycle (all 8)">
           Tier-1: Start date on claim or first In progress; Size↔Estimate points
-          table in board-ssot skill. Promote Draft→Issue via promote-to-issue or mention-pr (auto when
-          promote_to_issue_on_pr) before shippable PR — claim does not auto-promote.
-          Notes: @owner.github_user/&lt;agent&gt; · YYYY-MM-DDTHH:MM:SSZ · … via
-          append-notes --agent. See agent-board-collaboration canvas.
+          table in board-ssot skill. Promote Draft→Issue via promote-to-issue or
+          mention-pr (auto when promote_to_issue_on_pr) before shippable PR —
+          claim does not auto-promote. Notes: @owner.github_user/&lt;agent&gt; ·
+          YYYY-MM-DDTHH:MM:SSZ · … via append-notes --agent.
         </Callout>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only
@@ -239,10 +256,7 @@ export default function AgentRosterCanvas() {
       <Card>
         <CardHeader>researcher → use instead</CardHeader>
         <CardBody>
-          <Table
-            headers={["Agent", "When"]}
-            rows={RESEARCHER_REDIRECTS}
-          />
+          <Table headers={["Agent", "When"]} rows={RESEARCHER_REDIRECTS} />
           <Callout tone="info" title="Shipped non-product agent">
             researcher is fully functional (live E2E + verifier PASS 2026-07-19).
             Writes only _research_results/ after research init (opt-in corpus).
@@ -258,6 +272,8 @@ export default function AgentRosterCanvas() {
           headers={["From", "To", "Evidence"]}
           rows={[
             ["implementer", "verifier", "Exit recipe --next verifier"],
+            ["implementer", "test-runner", "When tests/coverage gate PR"],
+            ["test-runner", "verifier", "When tests gate the PR"],
             [
               "implementer",
               "drift-guard",
@@ -271,8 +287,8 @@ export default function AgentRosterCanvas() {
             ],
             [
               "auditor",
-              "implementer",
-              "Notes with artifact paths for implementer",
+              "implementer | drift-guard | verifier",
+              "Notes + audit-orchestration Phase 3",
             ],
             [
               "integrator",

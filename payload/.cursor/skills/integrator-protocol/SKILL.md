@@ -3,7 +3,7 @@ name: integrator-protocol
 description: Procedural integration of new agents, skills, MCP servers, and kit expansions into MAS Workflow Kit — templates, scripts, three-plane discipline.
 ---
 
-# MAS infrastructure integration
+# Integrator protocol
 
 ## Goal
 

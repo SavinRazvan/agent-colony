@@ -23,7 +23,7 @@ Quick reference for reading `README.md`, `AGENTS.md`, `HANDOFF.md`, and kit docs
 1. Install kit via `cursor_workflow activate` (plugin) or `cursor_workflow install` (kit clone).
 2. When `project_ssot.enabled` + `board_only`: Entry = board (`project status` / claim); Exit = Status + Notes. Local trackers = offline fallback only.
 3. Else: agents read `.local/` trackers (`session-pointer.md` → `plan.md` → `work-tracker.md`).
-4. Maintainer PR workflow runs via `.ai_infra/scripts/pr/*` (Pattern A + `prepare.py` GATES).
+4. Maintainer PR workflow runs via `.ai_infra/scripts/pr/*` (Pattern A + `prepare.py` `resolve_gates()`).
 5. Optional MCP (`workflow-kit`) wraps the same scripts.
 
 ## Core abbreviations
@@ -36,7 +36,7 @@ Quick reference for reading `README.md`, `AGENTS.md`, `HANDOFF.md`, and kit docs
 | CLI | Command-line interface — here mainly `python3 -m cursor_workflow …` and `gh` |
 | PR | Pull request — maintainer merge workflow (Pattern A) |
 | ADR | Architecture Decision Record — `.ai_infra/docs/decisions/` (ADR-001…008) |
-| GATES | Hardcoded subprocess list in `.ai_infra/scripts/pr/prepare.py` |
+| GATES | 2-gate back-compat alias in `.ai_infra/scripts/pr/prepare.py`; SSOT is `resolve_gates()` (kit-dev may append drift + doc facts) |
 | Pattern A | Script-first workflow; agents invoke **one** command per maintainer action |
 | YAML | Config format for `github.collaboration.yaml`, registries, manifests |
 | UTC / ISO-8601 | Board Notes timestamps (`YYYY-MM-DDTHH:MM:SSZ`); CLI stamps UTC |

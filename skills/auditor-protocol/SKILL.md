@@ -15,7 +15,7 @@ Notes:
  - Advisory-only: no auto-remediation during the audit pass unless the user explicitly asks for edits.
 -->
 
-# Enterprise Architecture Audit (Python, audit-grade)
+# Auditor protocol
 
 ## Goal
 

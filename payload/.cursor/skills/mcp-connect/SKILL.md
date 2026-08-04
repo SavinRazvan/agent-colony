@@ -3,7 +3,7 @@ name: mcp-connect
 description: Connect external MCP servers to MAS Workflow Kit agents via mcp.user.json and mcp.registry.yaml.
 ---
 
-# Connect external MCP
+# MCP connect
 
 ## When
 

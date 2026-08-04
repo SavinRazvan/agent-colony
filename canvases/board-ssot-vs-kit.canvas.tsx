@@ -328,11 +328,18 @@ export default function BoardSsotVsKitCanvas() {
   return (
     <Stack gap={24} style={{ padding: 24, maxWidth: 960 }}>
       <Stack gap={8}>
-        <H1>MAS Workflow Kit → Board SSOT (shipped)</H1>
+        <Row gap={10} style={{ alignItems: "center", flexWrap: "wrap" }}>
+          <H1 style={{ margin: 0 }}>MAS Workflow Kit → Board SSOT (shipped)</H1>
+          <Pill size="sm" tone="info">
+            hub · not an agent
+          </Pill>
+        </Row>
         <Text tone="secondary">
-          Before/after comparison for mas-workflow-kit-project-ssot as of {VERIFIED}.
-          PR #2 merged A→B→C on main; FIX-NOTES-DI, doc-drift residuals, EA-001/004,
-          and expanded tests (1190 collected) are shipped on main.
+          Before/after comparison for mas-workflow-kit-project-ssot (MAS-SSOT-KIT)
+          as of {VERIFIED}. PR #2 merged A→B→C on main; FIX-NOTES-DI, doc-drift
+          residuals, EA-001/004, and expanded tests (1190 collected) are shipped
+          on main. Live agents: board · implementer · test-runner · verifier ·
+          integrator · auditor · drift-guard · researcher.
         </Text>
       </Stack>
 
@@ -453,7 +460,7 @@ export default function BoardSsotVsKitCanvas() {
                 </Text>
                 <Text size="small">3. Implement → tests → update trackers</Text>
                 <Text size="small">
-                  4. PR Pattern A (prepare.py GATES) — merge is code-side only
+                  4. PR Pattern A (prepare.py resolve_gates()) — merge is code-side only
                 </Text>
               </Stack>
             </CardBody>
@@ -465,8 +472,9 @@ export default function BoardSsotVsKitCanvas() {
         <Stack gap={10}>
           <H2>Shipped — GitHub Project as only writable SSOT</H2>
           <Text tone="secondary">
-            Same agents and Pattern A gates. Coordination bus is board Status /
-            Notes. Solid edges = writable; dashed = read-only export for DRIFT-010.
+            Same agents and prepare.py resolve_gates(). Coordination bus is board
+            Status / Notes. Solid edges = writable; dashed = read-only export for
+            DRIFT-010.
           </Text>
           <Legend />
           <FlowDiagram mode="shipped" />
@@ -566,7 +574,11 @@ export default function BoardSsotVsKitCanvas() {
           ["Post-merge card", "Manual / tracker only", "merge.py → Done + Notes"],
           ["Dual writers", "Single (markdown)", "Forbidden — DRIFT-009"],
           ["Stale PR detection", "N/A", "DRIFT-010 + export snapshot"],
-          ["PR merge gates", "prepare.py Pattern A", "Unchanged (local_only)"],
+          [
+            "PR merge gates",
+            "prepare.py resolve_gates()",
+            "Unchanged (local_only)",
+          ],
           ["Offline / no gh", "N/A (always local)", "fallback: local_trackers"],
           [
             "Day-0 board shell",

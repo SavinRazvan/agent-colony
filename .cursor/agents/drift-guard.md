@@ -4,7 +4,7 @@ model: auto
 description: drift-guard MAS-SSOT-KIT — Operational workflow drift detection; plan/tracker/session coherence and handoff parity.
 ---
 
-# Workflow drift guard
+# Drift guard
 
 ## Anchor (mandatory)
 

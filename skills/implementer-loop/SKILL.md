@@ -3,7 +3,7 @@ name: implementer-loop
 description: Disciplined implementation slices with board SSOT continuation and Pattern A gates.
 ---
 
-# Implementation execution loop
+# Implementer loop
 
 ## When
 
