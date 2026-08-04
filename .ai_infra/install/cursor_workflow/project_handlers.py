@@ -289,6 +289,76 @@ def run_mention_pr(args: argparse.Namespace) -> int:
             print('mention-pr: find-by-pr — no other matches yet (Notes just written)')
     return pc.EXIT_OK
 
+def run_close_linked_issue(args: argparse.Namespace) -> int:
+    """
+    Best-effort close of the GitHub Issue linked to a merged PR's board item.
+
+    Opt-in via project_ssot.conventions.close_linked_issue_on_cleanup (default False).
+    Intended caller: full-pr-workflow's finalize.py, *after* branch cleanup succeeds —
+    never wired to set-status/claim/handoff so it can't race ahead of merge evidence.
+    All outcomes short of a hard usage error are non-fatal (SKIPPED/DEFERRED), since
+    this is additive evidence on top of an already-successful cleanup, not a gate.
+    """
+    import project_cli as pc
+    root = Path(args.directory).resolve()
+    ssot, code = pc._load_enabled_ssot(root, 'close-linked-issue')
+    if ssot is None:
+        return code
+    conventions = ssot.get('conventions') if isinstance(ssot.get('conventions'), dict) else {}
+    if not conventions.get('close_linked_issue_on_cleanup', False):
+        print('close-linked-issue: SKIPPED — close_linked_issue_on_cleanup convention is disabled')
+        return pc.EXIT_OK
+    pr_ref = (getattr(args, 'pr', None) or '').strip()
+    if not pr_ref:
+        return pc.fail('close-linked-issue', pc.EXIT_USAGE, '--pr required')
+    repo_arg = (getattr(args, 'repo', None) or '').strip()
+    dry_run = bool(getattr(args, 'dry_run', False))
+
+    item_id, _candidates, find_err = pc.resolve_item_id_for_pr(ssot, pr=pr_ref, repo=repo_arg or None)
+    if item_id is None:
+        print(f'close-linked-issue: SKIPPED — {find_err or "no linked project item"}')
+        return pc.EXIT_OK
+
+    kind, cid, meta, kerr = pc.resolve_item_content(ssot, item_id)
+    if kerr or kind != 'issue' or not cid:
+        print(f'close-linked-issue: SKIPPED — item {item_id} has no linked Issue ({kerr or kind})')
+        return pc.EXIT_OK
+
+    repo = repo_arg or str((meta or {}).get('repo') or ssot.get('default_repo') or '').strip()
+    issue_number = str(cid)
+
+    view_args = ['issue', 'view', issue_number, '--json', 'state']
+    if repo:
+        view_args.extend(['--repo', repo])
+    proc = pc.run_gh(view_args)
+    if proc.returncode != 0:
+        detail = (proc.stderr or proc.stdout or 'gh issue view failed').strip()
+        print(f'close-linked-issue: DEFERRED — issue #{issue_number} lookup failed: {detail}')
+        return pc.EXIT_GH
+    try:
+        state = str(json.loads(proc.stdout or '{}').get('state') or '').upper()
+    except json.JSONDecodeError:
+        print(f'close-linked-issue: DEFERRED — invalid gh issue view JSON for #{issue_number}')
+        return pc.EXIT_GH
+    if state == 'CLOSED':
+        print(f'close-linked-issue: SKIPPED — issue #{issue_number} already closed')
+        return pc.EXIT_OK
+
+    comment = f'Closed via full-pr-workflow cleanup (Board-Item: {item_id}, Status=Done, PR {pr_ref}).'
+    if dry_run:
+        print(f'close-linked-issue: DRY-RUN — would close issue #{issue_number} ({repo or "default repo"})')
+        return pc.EXIT_OK
+    close_args = ['issue', 'close', issue_number, '--comment', comment]
+    if repo:
+        close_args.extend(['--repo', repo])
+    proc = pc.run_gh(close_args)
+    if proc.returncode != 0:
+        detail = (proc.stderr or proc.stdout or 'gh issue close failed').strip()
+        print(f'close-linked-issue: DEFERRED — issue #{issue_number} close failed: {detail}')
+        return pc.EXIT_GH
+    print(f'close-linked-issue: PASS — closed issue #{issue_number} ({repo or "default repo"})')
+    return pc.EXIT_OK
+
 def run_promote_to_issue(args: argparse.Namespace) -> int:
     """Convert DraftIssue project item to Issue (same PVTI_); Notes + optional assignee."""
     import project_cli as pc

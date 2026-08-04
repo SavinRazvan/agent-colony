@@ -347,6 +347,19 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     )
     assignee_cmd.set_defaults(func=pc.cmd_set_assignee)
 
+    close_issue_cmd = project_sub.add_parser(
+        "close-linked-issue",
+        help="Best-effort close of Issue linked to a merged PR's board item "
+        "(opt-in via conventions.close_linked_issue_on_cleanup; caller: full-pr-workflow finalize.py)",
+    )
+    close_issue_cmd.add_argument("--directory", type=Path, default=".")
+    close_issue_cmd.add_argument("--pr", required=True, help="PR number or URL")
+    close_issue_cmd.add_argument("--repo", default="", help="owner/repo (defaults to project_ssot.default_repo)")
+    close_issue_cmd.add_argument(
+        "--dry-run", action="store_true", help="Print planned action without closing the Issue"
+    )
+    close_issue_cmd.set_defaults(func=pc.cmd_close_linked_issue)
+
     find_cmd = project_sub.add_parser(
         "find-by-pr", help="Resolve project item id from PR (Board-Item or body scan)"
     )

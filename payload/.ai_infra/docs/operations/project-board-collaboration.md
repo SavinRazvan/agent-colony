@@ -55,6 +55,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Card Notes (`append-notes --agent`) | Yes | Yes — `@user/agent · YYYY-MM-DDTHH:MM:SSZ · …`; `next=@user/agent` | — |
 | PR / audits / secrets | Local | Local | — |
 | Post-merge Status → Done | — | Via `merge.py` (Pattern A); Notes `@user/merge.py` | — |
+| Linked Issue close (opt-in) | — | `full-pr-workflow` finalize.py → `close-linked-issue --pr N`, after branch cleanup; gated by `conventions.close_linked_issue_on_cleanup` (default false) | Board `Status=Done` and Issue `open`/`closed` are independent by default — this is the opt-in bridge, not a second Status writer (ADR-008 §10) |
 | Read-only board export | Consume | `project export` (never writes Status) | — |
 
 ## Per-agent Entry / Exit

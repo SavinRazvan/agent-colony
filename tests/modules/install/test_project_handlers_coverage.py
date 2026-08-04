@@ -603,3 +603,224 @@ def test_run_doctor_prints_tier1_field_ids(
     out = capsys.readouterr().out
     assert "tier1.start_date: PVTF_start" in out
     assert "tier1.estimate: PVTF_estimate" in out
+
+
+def test_run_close_linked_issue_flag_disabled(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(
+        project_cli,
+        "_load_enabled_ssot",
+        lambda root, cmd: (_ssot(conventions={"close_linked_issue_on_cleanup": False}), []),
+    )
+    args = argparse.Namespace(directory=tmp_path, pr="162", repo="", dry_run=False)
+    assert project_handlers.run_close_linked_issue(args) == project_cli.EXIT_OK
+    assert "SKIPPED" in capsys.readouterr().out
+
+
+def test_run_close_linked_issue_ssot_disabled(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        project_cli,
+        "_load_enabled_ssot",
+        lambda root, cmd: (None, project_cli.EXIT_USAGE),
+    )
+    args = argparse.Namespace(directory=tmp_path, pr="162", repo="", dry_run=False)
+    assert project_handlers.run_close_linked_issue(args) == project_cli.EXIT_USAGE
+
+
+def test_run_close_linked_issue_missing_pr(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        project_cli,
+        "_load_enabled_ssot",
+        lambda root, cmd: (_ssot(conventions={"close_linked_issue_on_cleanup": True}), []),
+    )
+    args = argparse.Namespace(directory=tmp_path, pr="", repo="", dry_run=False)
+    assert project_handlers.run_close_linked_issue(args) == project_cli.EXIT_USAGE
+
+
+def test_run_close_linked_issue_no_linked_item(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(
+        project_cli,
+        "_load_enabled_ssot",
+        lambda root, cmd: (_ssot(conventions={"close_linked_issue_on_cleanup": True}), []),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_id_for_pr",
+        lambda ssot, pr, repo=None, limit=100: (None, [], "no project item found for this PR"),
+    )
+    args = argparse.Namespace(directory=tmp_path, pr="162", repo="", dry_run=False)
+    assert project_handlers.run_close_linked_issue(args) == project_cli.EXIT_OK
+    assert "SKIPPED" in capsys.readouterr().out
+
+
+def test_run_close_linked_issue_no_linked_issue_content(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(
+        project_cli,
+        "_load_enabled_ssot",
+        lambda root, cmd: (_ssot(conventions={"close_linked_issue_on_cleanup": True}), []),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_id_for_pr",
+        lambda ssot, pr, repo=None, limit=100: (VALID_PVTI, [VALID_PVTI], None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_content",
+        lambda ssot, item_id: ("draft", "DI_x", {"title": "Draft-only"}, None),
+    )
+    args = argparse.Namespace(directory=tmp_path, pr="162", repo="", dry_run=False)
+    assert project_handlers.run_close_linked_issue(args) == project_cli.EXIT_OK
+    assert "SKIPPED" in capsys.readouterr().out
+
+
+def test_run_close_linked_issue_already_closed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(
+        project_cli,
+        "_load_enabled_ssot",
+        lambda root, cmd: (_ssot(conventions={"close_linked_issue_on_cleanup": True}), []),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_id_for_pr",
+        lambda ssot, pr, repo=None, limit=100: (VALID_PVTI, [VALID_PVTI], None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_content",
+        lambda ssot, item_id: ("issue", "84", {"repo": "org/repo"}, None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "run_gh",
+        lambda *a, **k: SimpleNamespace(returncode=0, stdout='{"state": "CLOSED"}', stderr=""),
+    )
+    args = argparse.Namespace(directory=tmp_path, pr="162", repo="", dry_run=False)
+    assert project_handlers.run_close_linked_issue(args) == project_cli.EXIT_OK
+    assert "already closed" in capsys.readouterr().out
+
+
+def test_run_close_linked_issue_view_fails_deferred(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(
+        project_cli,
+        "_load_enabled_ssot",
+        lambda root, cmd: (_ssot(conventions={"close_linked_issue_on_cleanup": True}), []),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_id_for_pr",
+        lambda ssot, pr, repo=None, limit=100: (VALID_PVTI, [VALID_PVTI], None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_content",
+        lambda ssot, item_id: ("issue", "84", {"repo": "org/repo"}, None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "run_gh",
+        lambda *a, **k: SimpleNamespace(returncode=1, stdout="", stderr="rate limited"),
+    )
+    args = argparse.Namespace(directory=tmp_path, pr="162", repo="", dry_run=False)
+    assert project_handlers.run_close_linked_issue(args) == project_cli.EXIT_GH
+    assert "DEFERRED" in capsys.readouterr().out
+
+
+def test_run_close_linked_issue_dry_run_open_issue(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(
+        project_cli,
+        "_load_enabled_ssot",
+        lambda root, cmd: (_ssot(conventions={"close_linked_issue_on_cleanup": True}), []),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_id_for_pr",
+        lambda ssot, pr, repo=None, limit=100: (VALID_PVTI, [VALID_PVTI], None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_content",
+        lambda ssot, item_id: ("issue", "84", {"repo": "org/repo"}, None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "run_gh",
+        lambda *a, **k: SimpleNamespace(returncode=0, stdout='{"state": "OPEN"}', stderr=""),
+    )
+    args = argparse.Namespace(directory=tmp_path, pr="162", repo="", dry_run=True)
+    assert project_handlers.run_close_linked_issue(args) == project_cli.EXIT_OK
+    assert "DRY-RUN" in capsys.readouterr().out
+
+
+def test_run_close_linked_issue_closes_open_issue(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(
+        project_cli,
+        "_load_enabled_ssot",
+        lambda root, cmd: (_ssot(conventions={"close_linked_issue_on_cleanup": True}), []),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_id_for_pr",
+        lambda ssot, pr, repo=None, limit=100: (VALID_PVTI, [VALID_PVTI], None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_content",
+        lambda ssot, item_id: ("issue", "84", {"repo": "org/repo"}, None),
+    )
+    calls: list[list[str]] = []
+
+    def _fake_run_gh(cmd_args: list[str]) -> SimpleNamespace:
+        calls.append(cmd_args)
+        if cmd_args[:2] == ["issue", "view"]:
+            return SimpleNamespace(returncode=0, stdout='{"state": "OPEN"}', stderr="")
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(project_cli, "run_gh", _fake_run_gh)
+    args = argparse.Namespace(directory=tmp_path, pr="162", repo="", dry_run=False)
+    assert project_handlers.run_close_linked_issue(args) == project_cli.EXIT_OK
+    assert "PASS" in capsys.readouterr().out
+    assert any(c[:2] == ["issue", "close"] for c in calls)
+
+
+def test_run_close_linked_issue_close_fails_deferred(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(
+        project_cli,
+        "_load_enabled_ssot",
+        lambda root, cmd: (_ssot(conventions={"close_linked_issue_on_cleanup": True}), []),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_id_for_pr",
+        lambda ssot, pr, repo=None, limit=100: (VALID_PVTI, [VALID_PVTI], None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_content",
+        lambda ssot, item_id: ("issue", "84", {"repo": "org/repo"}, None),
+    )
+
+    def _fake_run_gh(cmd_args: list[str]) -> SimpleNamespace:
+        if cmd_args[:2] == ["issue", "view"]:
+            return SimpleNamespace(returncode=0, stdout='{"state": "OPEN"}', stderr="")
+        return SimpleNamespace(returncode=1, stdout="", stderr="permission denied")
+
+    monkeypatch.setattr(project_cli, "run_gh", _fake_run_gh)
+    args = argparse.Namespace(directory=tmp_path, pr="162", repo="", dry_run=False)
+    assert project_handlers.run_close_linked_issue(args) == project_cli.EXIT_GH
+    assert "DEFERRED" in capsys.readouterr().out
