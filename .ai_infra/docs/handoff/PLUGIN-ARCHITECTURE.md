@@ -112,7 +112,7 @@ my-app/
 │   ├── scripts/pr|architecture|integration|workflow|install/
 │   ├── install/cursor_workflow/
 │   ├── docs/operations|governance|roadmap|decisions|architecture/
-│   ├── templates/local-workspace|user-settings|agent-integration/
+│   ├── templates/local-workspace|user-settings|agent-integration|project-board|research-corpus/
 │   ├── mcp_servers/workflow_mcp/   # with_mcp profile
 │   └── workflows/
 ├── overlays/                 # product rules source (copy → .cursor/rules/)

@@ -133,6 +133,33 @@ def test_payload_install_dry_run(tmp_path: Path) -> None:
     assert "SCAFFOLD DONE" in joined
 
 
+def test_sync_payload_excludes_maintainer_only_fixtures(tmp_path: Path) -> None:
+    """Consumer payload must not ship kit-dev-only ci/ fixtures or maintainer docs.
+
+    Covers AA-test-001: exclusion filters in consumer_bundle_paths.py
+    (ignore_local_workspace_ci, ignore_operations_maintainer) were only
+    covered indirectly by scaffold/purity tests; assert the concrete
+    excluded paths directly here.
+    """
+    mod = _load_sync()
+    plugin_dir = tmp_path / "plugin"
+    payload_dir = tmp_path / "payload"
+    mod.sync_plugin_surface(plugin_dir)
+    mod.sync_payload(payload_dir, plugin_dir, profile="with_mcp")
+
+    local_workspace = payload_dir / ".ai_infra" / "templates" / "local-workspace"
+    assert local_workspace.is_dir()
+    assert not (local_workspace / "ci").exists(), (
+        "kit-dev-only ci/ fixtures must not ship to consumer payload"
+    )
+
+    operations = payload_dir / ".ai_infra" / "docs" / "operations"
+    assert operations.is_dir()
+    assert not (operations / "documentation-maintenance-checklist.md").exists(), (
+        "maintainer-only documentation-maintenance-checklist.md must not ship to consumer payload"
+    )
+
+
 def test_plugin_canonical_skills_not_overwritten_by_stubs(tmp_path: Path) -> None:
     mod = _load_sync()
     plugin_dir = tmp_path / "plugin"
