@@ -39,6 +39,7 @@ def _seed_mcp_layout(root: Path) -> None:
     )
     user = {
         "mcpServers": {
+            "deepwiki": {"url": "https://mcp.deepwiki.com/mcp"},
             "my-custom-server": {"command": "echo", "args": ["ok"]},
         }
     }

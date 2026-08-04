@@ -5,7 +5,7 @@ Role: MCP server (stdio) — P0 tools wrap `.ai_infra/scripts/pr/*` and read tra
 Used By:
  - workflow_mcp/__main__.py
 Depends On:
- - mcp.server.fastmcp
+ - mcp.server.mcpserver
  - workflow_mcp/gates.py, runner.py, workspace.py
 Notes:
  - Does not reimplement GATES; full prepare uses prepare.py subprocess.
@@ -18,7 +18,7 @@ import io
 from contextlib import redirect_stdout
 from pathlib import Path
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 
 from workflow_mcp.gates import load_gates
 from workflow_mcp.resources import (
@@ -34,7 +34,7 @@ from workflow_mcp.resources import (
 from workflow_mcp.runner import run_cmd, run_script
 from workflow_mcp.workspace import workspace_root
 
-mcp = FastMCP("workflow-kit")
+mcp = MCPServer("workflow-kit")
 
 _TRACKER_NAMES = frozenset(
     {

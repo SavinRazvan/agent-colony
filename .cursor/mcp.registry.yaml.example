@@ -6,6 +6,11 @@ servers:
     agents: [implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard]
     tools_hint: [workflow_run_prepare, workflow_get_tracker, workflow_list_mcp_registry, workflow_integrate_validate, workflow_drift_validate]
   # User adds keys matching mcp.json mcpServers:
+  deepwiki:
+    tier: external
+    description: Public GitHub repo docs/Q&A (no auth) — Cognition DeepWiki
+    agents: [researcher, implementer, auditor]
+    tools_hint: [read_wiki_structure, read_wiki_contents, ask_question]
   my-custom-server:
     tier: external
     description: "Fill in — e.g. database, Slack, GitHub"

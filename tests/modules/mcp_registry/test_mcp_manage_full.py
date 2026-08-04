@@ -198,6 +198,32 @@ def test_validate_registry_all_pass(tmp_path: Path) -> None:
     assert mcp_manage.validate_registry(tmp_path) == []
 
 
+def test_validate_registry_url_based_server_passes(tmp_path: Path) -> None:
+    """URL-based (remote) servers like DeepWiki have no `command`/`args` — must still validate."""
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    (cursor / "mcp.registry.yaml").write_text(
+        yaml.safe_dump({"servers": {"deepwiki": {"agents": ["researcher"]}}}), encoding="utf-8"
+    )
+    (cursor / "mcp.json").write_text(
+        json.dumps({"mcpServers": {"deepwiki": {"url": "https://mcp.deepwiki.com/mcp"}}}), encoding="utf-8"
+    )
+    assert mcp_manage.validate_registry(tmp_path) == []
+
+
+def test_write_merged_mcp_with_url_based_user_server(tmp_path: Path) -> None:
+    """merge_mcp_configs/write_merged_mcp treat server specs generically — no `command` required."""
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    (cursor / "mcp.json.kit.example").write_text(json.dumps({"mcpServers": {}}), encoding="utf-8")
+    (cursor / "mcp.user.json").write_text(
+        json.dumps({"mcpServers": {"deepwiki": {"url": "https://mcp.deepwiki.com/mcp"}}}), encoding="utf-8"
+    )
+    dest = mcp_manage.write_merged_mcp(tmp_path)
+    data = json.loads(dest.read_text(encoding="utf-8"))
+    assert data["mcpServers"]["deepwiki"] == {"url": "https://mcp.deepwiki.com/mcp"}
+
+
 # ---------------------------------------------------------------------------
 # link_user_server
 # ---------------------------------------------------------------------------

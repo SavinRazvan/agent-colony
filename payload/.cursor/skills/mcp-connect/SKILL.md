@@ -28,6 +28,11 @@ cursor-workflow mcp validate
 
 6. Enable MCP in Cursor settings for the workspace.
 
+**Fastest way to validate this end-to-end:** the `deepwiki` entry already shipped in both
+example files is a free, zero-auth, remote server — copy the examples as-is (no secrets to
+fill in) and skip straight to step 5. Full walkthrough:
+`.ai_infra/docs/operations/connect-external-mcp.md` § Worked example: DeepWiki.
+
 ## Success
 
 - `cursor-workflow mcp validate` exits 0

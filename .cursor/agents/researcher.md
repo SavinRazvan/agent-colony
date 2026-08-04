@@ -126,7 +126,7 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 | Tier | Server | Use when |
 |------|--------|----------|
 | Kit | `workflow-kit` | PR scripts, trackers, gates — prefer over re-running shell |
-| External | See `.cursor/mcp.registry.yaml` | Only servers listed for this agent id |
+| External | `deepwiki` (worked example, zero-auth) — see `.cursor/mcp.registry.yaml` | GitHub repo docs/Q&A (`read_wiki_structure`, `read_wiki_contents`, `ask_question`); other listed servers only if connected for this agent id |
 
 Before **CallMcpTool**: read tool descriptor schema. Do not invent tool names.
 User setup: `.ai_infra/docs/operations/connect-external-mcp.md`
