@@ -1,3 +1,3 @@
-# workflow_mcp server — FastMCP is mcp.server.fastmcp (official MCP SDK 1.x).
-# Cap <2: mcp 2.0 removed that import path; migrate FastMCP before lifting the pin.
-mcp>=1.2,<2
+# workflow_mcp server — MCPServer is mcp.server.mcpserver (official MCP SDK 2.x).
+# Cap <3: pin to the 2.x line; re-evaluate the migration when 3.x ships.
+mcp>=2.0,<3

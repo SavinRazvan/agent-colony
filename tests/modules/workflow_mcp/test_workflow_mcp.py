@@ -291,6 +291,17 @@ def test_workflow_verify_all(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "summary:" in text
 
 
+def test_server_imports_mcp_sdk_v2() -> None:
+    """Guard against re-pinning mcp to <2 (server.py uses SDK v2's MCPServer)."""
+    pytest.importorskip("mcp")
+    from mcp.server.mcpserver import MCPServer
+
+    from workflow_mcp.server import mcp as server_instance
+
+    assert isinstance(server_instance, MCPServer)
+    assert server_instance.name == "workflow-kit"
+
+
 def test_workflow_contributors_validate() -> None:
     _env_root()
     from workflow_mcp.server import workflow_contributors_validate

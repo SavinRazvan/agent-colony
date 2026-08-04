@@ -51,36 +51,54 @@ external_servers:
         required: false
     registry_notes: "Set tier: external in mcp.registry.yaml"
 
-  # - id: github-mcp
+  - id: deepwiki
+    enabled: true
+    tier: external
+    description: Public GitHub repo docs/Q&A (no auth) — Cognition DeepWiki
+    agents:
+      - researcher
+      - implementer
+      - auditor
+    tools_hint:
+      - read_wiki_structure
+      - read_wiki_contents
+      - ask_question
+    # ── Copy into mcp.user.json → mcpServers.deepwiki ──
+    transport:
+      url: https://mcp.deepwiki.com/mcp
+    secrets_checklist: []                 # zero-auth, remote — no token needed
+    registry_notes: "Set tier: external in mcp.registry.yaml (see worked example in connect-external-mcp.md)"
+
+  # Stretch/secondary example — GitHub's official remote MCP server (OAuth/Copilot seat or PAT)
+  # - id: github-remote
   #   enabled: false
   #   tier: external
-  #   description: Issues and PRs from the agent
+  #   description: Official GitHub remote MCP server — Issues, PRs, code search
   #   agents: [implementer, researcher]
-  #   tools_hint: [list_issues, create_pull_request]
+  #   tools_hint: [list_issues, create_pull_request, search_code]
   #   transport:
-  #     command: npx
-  #     args: ["-y", "@modelcontextprotocol/server-github"]
-  #     env:
-  #       GITHUB_PERSONAL_ACCESS_TOKEN: "${GITHUB_TOKEN}"
+  #     url: https://api.githubcopilot.com/mcp/
+  #     headers:
+  #       Authorization: "Bearer ${GITHUB_TOKEN}"
   #   secrets_checklist:
   #     - name: GITHUB_TOKEN
-  #       where: "GitHub PAT with repo scope"
+  #       where: "GitHub PAT with repo scope, or Copilot-seat OAuth token"
   #       required: true
 
 # Agent quick reference — which servers each agent should prefer
 agent_defaults:
   implementer:
     primary_servers: [workflow-kit]
-    optional_servers: []
+    optional_servers: [deepwiki]
   test-runner:
     primary_servers: [workflow-kit]
     optional_servers: []
   auditor:
     primary_servers: [workflow-kit]
-    optional_servers: []
+    optional_servers: [deepwiki]
   researcher:
     primary_servers: [workflow-kit]
-    optional_servers: []
+    optional_servers: [deepwiki]
   integrator:
     primary_servers: [workflow-kit]
     optional_servers: []

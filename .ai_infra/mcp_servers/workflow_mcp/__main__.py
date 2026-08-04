@@ -6,6 +6,8 @@ Used By:
  - Cursor .cursor/mcp.json
 Depends On:
  - workflow_mcp/server.py
+Notes:
+ - mcp.run() defaults to transport="stdio" (unchanged in SDK v2).
 """
 
 from workflow_mcp.server import mcp
