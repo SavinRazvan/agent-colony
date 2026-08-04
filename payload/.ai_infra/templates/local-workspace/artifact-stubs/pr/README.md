@@ -7,5 +7,6 @@
 | `review.md` | `.ai_infra/scripts/pr/review.py` |
 | `prep.md` | `.ai_infra/scripts/pr/prepare.py` |
 | `merge.md` | `.ai_infra/scripts/pr/merge.py` |
+| `finalize.md` | `.ai_infra/scripts/pr/finalize.py` |
 
 Created on first script run. See `.ai_infra/docs/operations/local-workspace-layout.md`.

@@ -130,24 +130,36 @@ def test_finish_real_pass(finalize_module, capsys: pytest.CaptureFixture[str]) -
 # ---------------------------------------------------------------------------
 
 
-def test_main_blocks_empty_branch(finalize_module, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_blocks_empty_branch(
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(sys, "argv", ["finalize.py", "--branch", "   "])
     assert finalize_module.main() == 1
 
 
-def test_main_blocks_main_branch(finalize_module, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_blocks_main_branch(
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(sys, "argv", ["finalize.py", "--branch", "main"])
     assert finalize_module.main() == 1
 
 
-def test_main_checkout_fails(finalize_module, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_checkout_fails(
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(finalize_module, "_current_branch", lambda: "other-branch")
     monkeypatch.setattr(finalize_module, "_run", lambda cmd: (1, "checkout failed"))
     monkeypatch.setattr(sys, "argv", ["finalize.py", "--branch", "feature/x"])
     assert finalize_module.main() == 1
 
 
-def test_main_pull_fails(finalize_module, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_pull_fails(
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
 
     def _fake_run(cmd: list[str]):
@@ -160,7 +172,10 @@ def test_main_pull_fails(finalize_module, monkeypatch: pytest.MonkeyPatch) -> No
     assert finalize_module.main() == 1
 
 
-def test_main_fetch_prune_fails(finalize_module, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_fetch_prune_fails(
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
 
     def _fake_run(cmd: list[str]):
@@ -173,7 +188,10 @@ def test_main_fetch_prune_fails(finalize_module, monkeypatch: pytest.MonkeyPatch
     assert finalize_module.main() == 1
 
 
-def test_main_full_dry_run_with_delete_merged_local(finalize_module, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_full_dry_run_with_delete_merged_local(
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
     monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
     monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda b: True)
@@ -190,8 +208,9 @@ def test_main_full_dry_run_with_delete_merged_local(finalize_module, monkeypatch
 
 
 def test_main_local_and_remote_still_exist_after_non_dry_run(
-    finalize_module, monkeypatch: pytest.MonkeyPatch
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
     monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
     monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda b: True)
@@ -200,10 +219,50 @@ def test_main_local_and_remote_still_exist_after_non_dry_run(
     assert finalize_module.main() == 1
 
 
-def test_main_local_and_remote_absent_logs_info(finalize_module, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_local_and_remote_absent_logs_info(
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
     monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
     monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda b: False)
     monkeypatch.setattr(finalize_module, "_remote_branch_exists", lambda b: False)
     monkeypatch.setattr(sys, "argv", ["finalize.py", "--branch", "feature/x", "--dry-run"])
     assert finalize_module.main() == 0
+
+
+def test_main_writes_finalize_md_pass(
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
+    monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
+    monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda _b: False)
+    monkeypatch.setattr(finalize_module, "_remote_branch_exists", lambda _b: False)
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "finalize.py",
+            "--pr",
+            "123",
+            "--branch",
+            "feature/x",
+            "--actor",
+            "Example Author",
+            "--agents",
+            "full-pr-workflow",
+        ],
+    )
+    assert finalize_module.main() == 0
+
+    finalize_md = (
+        tmp_path / ".local" / "workflow-artifacts" / "pr" / "finalize.md"
+    )
+    assert finalize_md.is_file()
+    text = finalize_md.read_text(encoding="utf-8")
+    assert "Finalize Artifact (123)" in text
+    assert "## Attribution" in text
+    assert "Action-By: Example Author" in text
+    assert "## Cleanup Results" in text

@@ -140,6 +140,10 @@ def test_merge_script_writes_actor_attribution(tmp_path: Path, monkeypatch) -> N
     assert "Merged-By: Example Author" in content
     assert f"GitHub-User: {paths.DEFAULT_GITHUB_USER}" in content
     assert "Agent/s: review-pr | prepare-pr | merge-pr" in content
+    assert "## Cleanup" in content
+    assert "DEFERRED" in content
+    assert "full-pr-workflow" in content
+    assert "finalize.md" in content
 
 
 def test_verify_publish_script_passes_when_upstream_and_remote_exist(monkeypatch) -> None:

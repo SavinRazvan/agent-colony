@@ -1,6 +1,6 @@
 ---
 name: merge-pr
-description: Final checks, merge via gh, merge.md, finalize git state.
+description: Final checks + merge via gh; cleanup is handled by full-pr-workflow.
 disable-model-invocation: true
 ---
 
@@ -24,6 +24,6 @@ disable-model-invocation: true
    When `project_ssot.enabled`, this sets the card → **Done** and appends Notes (`Merged: <PR URL> @ <sha>`). Failure is a **warn** only — merge artifact still writes.  
    Prefer PR body line `- Board-Item: <item_id>` under Collaboration (from `project last` or create output) so `find-by-pr` resolves without `--item-id`.  
    (same `--arch-impacting` if used above). Enrich `merge.md` with method + follow-ups.
-8. **Finalize:** `git checkout main`; `python .ai_infra/scripts/pr/finalize.py --branch <branch>`; prune remotes; confirm feature branch gone on origin.
+8. **Post-merge:** stays on cleanup-optional contract. If you want branch deletion + sync, run **`full-pr-workflow`** (which invokes `finalize.py`).
 
 **Detail:** `.agents/skills/pr-workflow/SKILL.md`.

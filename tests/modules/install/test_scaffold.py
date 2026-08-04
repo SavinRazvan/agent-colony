@@ -133,6 +133,7 @@ def test_scaffold_artifact_tab_placeholders(tmp_path: Path) -> None:
     log: list[str] = []
     mod._scaffold_artifact_readme_stubs(ui_root, target, False, log, ("pr", "alignment", "drift"))
     assert (target / ".local" / "workflow-artifacts" / "pr" / "review.md").is_file()
+    assert (target / ".local" / "workflow-artifacts" / "pr" / "finalize.md").is_file()
     assert (target / ".local" / "workflow-artifacts" / "alignment" / "alignment-audit.md").is_file()
     assert (target / ".local" / "workflow-artifacts" / "drift" / "drift-audit.md").is_file()
     assert any("review.md" in line for line in log)
