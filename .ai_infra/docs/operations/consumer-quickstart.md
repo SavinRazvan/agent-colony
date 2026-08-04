@@ -375,6 +375,8 @@ This overwrites kit-managed dashboard files with the latest templates from the p
 3. **`/prepare-pr`** (runs `prepare.py` → `resolve_gates()`)
 4. **`/merge-pr`** (staged — stop here; branches may remain) · optional **`/full-pr-workflow`** → sync `main`, delete branch + `finalize.md`
 
+Want the linked GitHub Issue closed automatically once cleanup finishes? Set `conventions.close_linked_issue_on_cleanup: true` in `.local/user_settings/github.collaboration.yaml` (default `false` — off unless you opt in; see `board-ssot` skill § "Issue state vs board Status").
+
 Full checklist: [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) §6 · [workflow-complete.md](workflow-complete.md) §A.
 
 ---

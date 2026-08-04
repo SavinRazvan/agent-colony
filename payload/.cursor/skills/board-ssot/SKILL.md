@@ -197,7 +197,7 @@ Board `Status=Done` and the linked GitHub Issue's own `open`/`closed` state are 
 
 - **Opt-in bridge:** `conventions.close_linked_issue_on_cleanup` (default `false`). When `true`, `full-pr-workflow`'s `finalize.py` best-effort closes the Issue linked to the merged PR's board item, **after** branch cleanup succeeds — never on `set-status`/`claim`/`handoff`, so it can't race ahead of merge/cleanup evidence.
 - **CLI:** `project close-linked-issue --pr N [--dry-run]` — resolves the item via `find-by-pr`, skips silently (no error) when there's no linked Issue, the flag is off, or the Issue is already closed; a `gh` error is `DEFERRED` (non-blocking, printed but never fails cleanup).
-- **Evidence:** outcome recorded in `finalize.md § Linked Issue Closure` (`PASS` / `SKIPPED` / `DEFERRED`).
+- **Evidence:** outcome recorded in `finalize.md § Linked Issue Closure` (`PASS` / `SKIPPED` / `DEFERRED` / `DRY-RUN` when `finalize.py --dry-run` is used).
 
 ### Rules
 

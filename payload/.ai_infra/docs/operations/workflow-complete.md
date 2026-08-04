@@ -46,7 +46,7 @@ Notes:
 
 Use this when you want branch deletion + deterministic cleanup evidence.
 
-1. Run `/full-pr-workflow` after `/merge-pr` has created `merge.md`.
+1. Run `python .ai_infra/scripts/pr/finalize.py --branch <feature-branch> --pr <n>` after `/merge-pr` has created `merge.md` (this is what `/full-pr-workflow` calls — invoke either the skill or the script directly; don't re-run `/full-pr-workflow`'s earlier review/prepare/merge steps if they're already done).
 2. Verify `.local/workflow-artifacts/pr/finalize.md` exists and reflects the cleanup outcome.
 3. If `conventions.close_linked_issue_on_cleanup: true`, `finalize.py` also best-effort closes the GitHub Issue linked to the merged PR's board item (after branch cleanup succeeds; never blocks exit code) — check `finalize.md § Linked Issue Closure` for `PASS`/`SKIPPED`/`DEFERRED`. Default `false`; board `Status=Done` and Issue `open`/`closed` stay independent otherwise (ADR-008 §10).
 
