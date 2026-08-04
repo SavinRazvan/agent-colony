@@ -11,11 +11,14 @@ Depends On:
  - subprocess
  - local_workflow_paths.FINALIZE_MD
  - user_settings (optional attribution)
+ - cursor_workflow project close-linked-issue (opt-in Issue closure; best-effort subprocess)
 Notes:
  - Safe no-op when target branches are already removed.
  - Prunes stale remote-tracking refs to avoid branch-list drift.
  - Supports --dry-run for safe workflow validation without state changes.
  - Writes `.local/workflow-artifacts/pr/finalize.md` best-effort (does not block cleanup).
+ - After branch cleanup succeeds, best-effort closes the Issue linked to --pr's board item
+   when conventions.close_linked_issue_on_cleanup is true (default false); never blocks exit code.
 """
 
 from __future__ import annotations
@@ -86,6 +89,42 @@ def _run_step(
         failures.append(f"{step_name} failed (exit={code})")
         return False
     return True
+
+
+def _maybe_close_linked_issue(
+    *,
+    pr_ref: str | None,
+    dry_run: bool,
+    cleanup_ok: bool,
+) -> tuple[str, str]:
+    """
+    Best-effort, non-blocking closure of the Issue linked to the merged PR's board item.
+
+    Delegates all opt-in/lookup/state logic to `project close-linked-issue` (single source
+    of truth: conventions.close_linked_issue_on_cleanup). Never raises and never affects the
+    branch-cleanup exit code — this is additive evidence layered on top of already-successful
+    cleanup, not a gate. Returns (status, detail) for the finalize.md artifact.
+    """
+    pr_head = (pr_ref or "").strip()
+    if not pr_head or pr_head == "unknown":
+        return "SKIPPED", "no --pr provided to finalize.py"
+    if not cleanup_ok:
+        return "SKIPPED", "branch cleanup did not fully succeed; issue closure deferred to next run"
+    cmd = [sys.executable, "-m", "cursor_workflow", "project", "close-linked-issue", "--pr", pr_head]
+    if dry_run:
+        cmd.append("--dry-run")
+    try:
+        code, out = _run(cmd)
+    except Exception as exc:  # noqa: BLE001 - best-effort, must not block cleanup
+        return "DEFERRED", f"close-linked-issue invocation failed: {exc}"
+    detail = out or "(no output)"
+    if code != 0:
+        return "DEFERRED", detail
+    if "SKIPPED" in detail:
+        return "SKIPPED", detail
+    if "DRY-RUN" in detail:
+        return "DRY-RUN", detail
+    return "PASS", detail
 
 
 def _finish(logs: list[str], failures: list[str], dry_run: bool = False) -> int:
@@ -222,6 +261,12 @@ def main() -> int:
         dry_run=args.dry_run,
     )
 
+    # Opt-in, best-effort — runs only after branch cleanup above; never blocks finalize exit code.
+    issue_status, issue_detail = _maybe_close_linked_issue(
+        pr_ref=args.pr, dry_run=args.dry_run, cleanup_ok=not failures
+    )
+    logs.append(f"[STEP] close-linked-issue: {issue_status} — {issue_detail}")
+
     # Always try to write finalize artifact as best-effort evidence for other agents.
     _write_finalize_artifact(
         finalize_md=FINALIZE_MD,
@@ -238,6 +283,8 @@ def main() -> int:
         agents=args.agents,
         pipeline=args.pipeline,
         agents_from_session=args.agents_from_session,
+        issue_closure_status=issue_status,
+        issue_closure_detail=issue_detail,
     )
 
     return _finish(logs, failures, dry_run=args.dry_run)
@@ -288,6 +335,8 @@ def _write_finalize_artifact(
     agents: str | None,
     pipeline: str | None,
     agents_from_session: bool,
+    issue_closure_status: str = "SKIPPED",
+    issue_closure_detail: str = "",
 ) -> None:
     try:
         ensure_workflow_artifacts_dir()
@@ -357,6 +406,12 @@ def _write_finalize_artifact(
                     f"- delete remote branch ({branch}): {remote_delete_status}",
                     f"- delete-merged-local: {delete_merged_local}",
                     f"- dry-run: {dry_run}",
+                    "",
+                    "## Linked Issue Closure",
+                    f"- Status: {issue_closure_status}",
+                    f"- Detail: {issue_closure_detail}",
+                    "- Opt-in via conventions.close_linked_issue_on_cleanup (default false); "
+                    "see project close-linked-issue --help",
                     "",
                     "## Evidence (compact logs)",
                     "```text",

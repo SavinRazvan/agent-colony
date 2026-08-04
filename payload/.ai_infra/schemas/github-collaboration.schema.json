@@ -135,6 +135,10 @@
               "type": "boolean",
               "description": "When true (default), mention-pr auto-promotes Draft via convertProjectV2DraftIssueItemToIssue; FAIL if promote fails. WARN-only when false."
             },
+            "close_linked_issue_on_cleanup": {
+              "type": "boolean",
+              "description": "Opt-in (default false). When true, full-pr-workflow's finalize.py best-effort closes the GitHub Issue linked to the merged PR's board item, after branch cleanup succeeds — never wired to set-status/claim/handoff so it cannot race ahead of merge/cleanup evidence. SKIPPED when no linked Issue or already closed; DEFERRED (non-blocking) on gh API errors."
+            },
             "attribution_format": {
               "type": "string",
               "description": "Template for Notes prefix; rendered as @github_user/agent"

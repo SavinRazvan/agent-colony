@@ -231,6 +231,113 @@ def test_main_local_and_remote_absent_logs_info(
     assert finalize_module.main() == 0
 
 
+# ---------------------------------------------------------------------------
+# _maybe_close_linked_issue
+# ---------------------------------------------------------------------------
+
+
+def test_maybe_close_linked_issue_skips_no_pr(finalize_module) -> None:
+    status, detail = finalize_module._maybe_close_linked_issue(
+        pr_ref=None, dry_run=False, cleanup_ok=True
+    )
+    assert status == "SKIPPED"
+    assert "no --pr" in detail
+
+
+def test_maybe_close_linked_issue_skips_unknown_pr(finalize_module) -> None:
+    status, detail = finalize_module._maybe_close_linked_issue(
+        pr_ref="unknown", dry_run=False, cleanup_ok=True
+    )
+    assert status == "SKIPPED"
+
+
+def test_maybe_close_linked_issue_skips_cleanup_failed(finalize_module) -> None:
+    status, detail = finalize_module._maybe_close_linked_issue(
+        pr_ref="123", dry_run=False, cleanup_ok=False
+    )
+    assert status == "SKIPPED"
+    assert "cleanup did not fully succeed" in detail
+
+
+def test_maybe_close_linked_issue_deferred_on_nonzero_exit(
+    finalize_module, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(finalize_module, "_run", lambda cmd: (1, "boom"))
+    status, detail = finalize_module._maybe_close_linked_issue(
+        pr_ref="123", dry_run=False, cleanup_ok=True
+    )
+    assert status == "DEFERRED"
+    assert detail == "boom"
+
+
+def test_maybe_close_linked_issue_deferred_on_exception(
+    finalize_module, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def _boom(cmd: list[str]) -> tuple[int, str]:
+        raise RuntimeError("subprocess exploded")
+
+    monkeypatch.setattr(finalize_module, "_run", _boom)
+    status, detail = finalize_module._maybe_close_linked_issue(
+        pr_ref="123", dry_run=False, cleanup_ok=True
+    )
+    assert status == "DEFERRED"
+    assert "invocation failed" in detail
+
+
+def test_maybe_close_linked_issue_skipped_from_cli_output(
+    finalize_module, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        finalize_module,
+        "_run",
+        lambda cmd: (0, "close-linked-issue: SKIPPED — flag disabled"),
+    )
+    status, _detail = finalize_module._maybe_close_linked_issue(
+        pr_ref="123", dry_run=False, cleanup_ok=True
+    )
+    assert status == "SKIPPED"
+
+
+def test_maybe_close_linked_issue_dry_run_from_cli_output(
+    finalize_module, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        finalize_module,
+        "_run",
+        lambda cmd: (0, "close-linked-issue: DRY-RUN — would close issue #1"),
+    )
+    status, _detail = finalize_module._maybe_close_linked_issue(
+        pr_ref="123", dry_run=True, cleanup_ok=True
+    )
+    assert status == "DRY-RUN"
+
+
+def test_maybe_close_linked_issue_pass_from_cli_output(
+    finalize_module, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[list[str]] = []
+
+    def _fake_run(cmd: list[str]) -> tuple[int, str]:
+        calls.append(cmd)
+        return 0, "close-linked-issue: PASS — closed issue #1 (org/repo)"
+
+    monkeypatch.setattr(finalize_module, "_run", _fake_run)
+    status, detail = finalize_module._maybe_close_linked_issue(
+        pr_ref="123", dry_run=False, cleanup_ok=True
+    )
+    assert status == "PASS"
+    assert "closed issue #1" in detail
+    assert calls[0] == [
+        calls[0][0],
+        "-m",
+        "cursor_workflow",
+        "project",
+        "close-linked-issue",
+        "--pr",
+        "123",
+    ]
+
+
 def test_main_writes_finalize_md_pass(
     finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -266,3 +373,22 @@ def test_main_writes_finalize_md_pass(
     assert "## Attribution" in text
     assert "Action-By: Example Author" in text
     assert "## Cleanup Results" in text
+    assert "## Linked Issue Closure" in text
+
+
+def test_main_writes_finalize_md_issue_closure_skipped_no_pr(
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
+    monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
+    monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda _b: False)
+    monkeypatch.setattr(finalize_module, "_remote_branch_exists", lambda _b: False)
+    monkeypatch.setattr(sys, "argv", ["finalize.py", "--branch", "feature/x"])
+    assert finalize_module.main() == 0
+
+    finalize_md = tmp_path / ".local" / "workflow-artifacts" / "pr" / "finalize.md"
+    text = finalize_md.read_text(encoding="utf-8")
+    assert "## Linked Issue Closure" in text
+    assert "- Status: SKIPPED" in text
+    assert "no --pr provided" in text

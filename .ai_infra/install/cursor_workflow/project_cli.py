@@ -1327,6 +1327,9 @@ def cmd_outbox_flush(args: argparse.Namespace) -> int:
 def cmd_doctor(args: argparse.Namespace) -> int:
     from project_handlers import run_doctor
     return run_doctor(args)
+def cmd_close_linked_issue(args: argparse.Namespace) -> int:
+    from project_handlers import run_close_linked_issue
+    return run_close_linked_issue(args)
 def cmd_find_by_pr(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     ssot, code = _load_enabled_ssot(root, "find-by-pr")

@@ -204,7 +204,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy review (2026-07-07, archival):** Verified `plugin.json` `description`, the Description row above, and README consumer sections against `IMPLEMENTATION-STATUS.md` on `main` at that date — counts superseded by refreshes below; feature counts at that date (8 agents, **11** skills, 5 PR skills, 7 rules) — **superseded** (skills are **12** since board-shell).
 
-**Listing copy refresh (2026-08-04 drift/auditor quality):** Re-verified against filesystem + `IMPLEMENTATION-STATUS.md` — **1194** tests; agent/skill/rule counts (**8** / **12** / **7**); B-safe rename shipped; agent descriptions prefixed `{name} MAS-SSOT-KIT`.
+**Listing copy refresh (2026-08-04 drift/auditor quality):** Re-verified against filesystem + `IMPLEMENTATION-STATUS.md` — **1213** tests; agent/skill/rule counts (**8** / **12** / **7**); B-safe rename shipped; agent descriptions prefixed `{name} MAS-SSOT-KIT`.
 
 **Listing copy refresh (2026-07-18 WORKSPACE-CLEAN, archival):** Re-verified README/AGENTS.md/repository-map/canvases against shipped tree at that date — **931** tests collected (DOC-008 added), **5352** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow` per `IMPLEMENTATION-STATUS.md`; agent/skill/rule counts unchanged (8 / 11 / 7). Superseded by 2026-07-19 refreshes below.
 
