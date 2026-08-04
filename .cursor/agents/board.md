@@ -31,7 +31,7 @@ Own **board triage and Status transitions** for the product Project SSOT (`mas-w
 - `.ai_infra/templates/project-board/board-shell.schema.yaml` — kit **default** desired state (six Playground views)
 - `.ai_infra/templates/project-board/README.md` — when creating cards
 - `.local/user_settings/github.collaboration.yaml` (`project_ssot`)
-- `HANDOFF.md` (STANDALONE product + board SSOT north star)
+- `AGENTS.md` (STANDALONE product + board SSOT north star)
 - `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`
 
 ## Loop

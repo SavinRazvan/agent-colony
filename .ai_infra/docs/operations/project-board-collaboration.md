@@ -5,7 +5,7 @@ Role: Ops mirror — Project surfaces + per-agent Entry/Exit continuation on the
 Used By:
  - .cursor/skills/board-ssot/SKILL.md
  - .cursor/agents/*.md
- - AGENTS.md / HANDOFF.md
+ - AGENTS.md
 Depends On:
  - github.collaboration.yaml project_ssot
  - ADR-008

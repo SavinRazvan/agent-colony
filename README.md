@@ -20,7 +20,7 @@
 | Audience | Start here |
 |----------|------------|
 | **Consumer** — install into *your* app repo | [§ Install in your project](#install-in-your-project-consumers) → [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) |
-| **Kit maintainer / agent** — develop *this* repo | [§ Work in this repository](#work-in-this-repository-kit-dev) → **[HANDOFF.md](HANDOFF.md)** (read first) → [AGENTS.md](AGENTS.md) |
+| **Kit maintainer / agent** — develop *this* repo | [§ Work in this repository](#work-in-this-repository-kit-dev) → **[AGENTS.md](AGENTS.md)** (read first) |
 
 ---
 
@@ -295,7 +295,7 @@ pip install -e ".[dev,mcp]"
 ```
 
 1. Open the folder in Cursor.
-2. Read **[HANDOFF.md](HANDOFF.md)** first, then [AGENTS.md](AGENTS.md).
+2. Read **[AGENTS.md](AGENTS.md)** first.
 3. Confirm collaboration YAML under `.local/user_settings/` (owner + `project_ssot`).
 4. Start:
 
@@ -313,8 +313,7 @@ Maintainer gates: `make gates` · `make drift-validate` · `make doc-validate` �
 
 | Doc | Audience |
 |-----|----------|
-| [HANDOFF.md](HANDOFF.md) | Kit-dev agents & maintainers (identity, north star) |
-| [AGENTS.md](AGENTS.md) | Day-to-day agent execution |
+| [AGENTS.md](AGENTS.md) | Kit-dev front door — identity, north star, execution roster |
 | [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) | Consumers — install, activate, board onboarding |
 | [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md) | 5-minute consumer path |
 | [Docs index](.ai_infra/docs/README.md) | Full `.ai_infra/docs/` navigation |
