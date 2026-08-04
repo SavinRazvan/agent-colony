@@ -99,7 +99,7 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 |------|------|
 | `.cursor/agents/` | Subagent cards (8) — Task delegation; **`model: auto`**; audit agents write `.local/` artifacts only |
 | `.cursor/skills/` | **Canonical protocols** (12 folders: `auditor-protocol`, `audit-orchestration`, `audit-module-map`, `board-ssot`, `board-shell`, `drift-audit`, `implementer-loop`, `integrator-protocol`, `mcp-connect`, `research-corpus`, `test-coverage`, `workflow-activate`) — see [repository-map](.ai_infra/docs/handoff/repository-map.md) |
-| `.agents/skills/` | **Maintainer slash skills** (5 folders: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `audit-alignment` stub → `auditor`) — additive in plugin sync |
+| `.agents/skills/` | **Maintainer slash skills** (6 folders: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `full-pr-workflow`, `audit-alignment` stub → `auditor`) — additive in plugin sync |
 | `.cursor/rules/` | **7** `alwaysApply` rules in this product repo (6 kit + `project-ssot-precedence`) — high context cost by design |
 
 **Plugin sync:** `.cursor/skills/` wins; `.agents/skills/` never overwrites same folder name (`sync_plugin_bundle.py`).
@@ -119,7 +119,7 @@ In-repo cards under `.cursor/agents/<id>.md` are the source of truth; Task enum 
 
 ## Branching
 
-Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After merge: sync `main` with `origin/main`, remove local + remote feature branch.
+Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. Staged `/merge-pr` stops at merge (branches may remain for review). Optional cleanup: `/full-pr-workflow` (or `finalize.py`) syncs `main` and removes local + remote feature branch, writing `finalize.md`.
 
 ## Skills and agents (where to look)
 
@@ -136,7 +136,7 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 | Deep / periodic architecture + CHK-* (security/perf/granularity/docs) | **`auditor`** — `.cursor/agents/auditor.md` + `.cursor/skills/auditor-protocol/SKILL.md` — not continuous plan pulse |
 | Audit orchestration | `.cursor/skills/audit-orchestration/SKILL.md` — parent runs verify-all + Task delegation (no dedicated agent) |
 | Audit module map | `.cursor/skills/audit-module-map/SKILL.md` — optional deep map; invoke via **`auditor`** |
-| Maintainer PR | `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` → `merge-pr` |
+| Maintainer PR | `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` → `merge-pr` (staged) → `full-pr-workflow` → `finalize.py` (cleanup + `finalize.md` evidence) |
 | Research corpus (shipped; opt-in packs) | `.cursor/agents/researcher.md` — adaptive Brief from chat/agents; HTTPS/`github:`/`path:`; `research init\|fetch\|validate`; packs in `_research_results/sources/<slug>/`; live E2E proven 2026-07-19 |
 | MCP | `.ai_infra/mcp_servers/workflow_mcp/` — `python -m workflow_mcp`; [`.cursor/mcp.json.kit.example`](.cursor/mcp.json.kit.example) + [mcp-connect](.ai_infra/docs/operations/connect-external-mcp.md) |
 

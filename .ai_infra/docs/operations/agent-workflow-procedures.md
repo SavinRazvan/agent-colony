@@ -32,9 +32,11 @@ Notes:
 
 ## 2) Maintainer PR workflow (phases)
 
-**Order:** `review-pr` → `prepare-pr` → `merge-pr` → **`finalize.py`**.
+**Order (staged):** `review-pr` → `prepare-pr` → `merge-pr`.
 
-**Canonical narrative:** **`.agents/skills/pr-workflow/SKILL.md`** (redirect stub: `PR_WORKFLOW.md`)  
+**Order (full):** `review-pr` → `prepare-pr` → `merge-pr` → **`finalize.py`** (via `full-pr-workflow`).
+
+**Canonical narrative:** **`.agents/skills/pr-workflow/SKILL.md`** (staged; redirect stub: `PR_WORKFLOW.md`) + **`full-pr-workflow`** (full cleanup).
 **Executable stubs:** **`.ai_infra/scripts/pr/`** (`prepare.py`, `merge.py`, `review.py`, `finalize.py`, `verify_publish.py`)
 
 ---
@@ -68,7 +70,8 @@ When **`resolve_gates()`** / **`GATES`** in `prepare.py` change, update in the *
 | Always-applied rule | `.cursor/rules/pr-workflow-enforcement.mdc` |
 | Onboarding | `README.md`, `AGENTS.md` |
 | Checklist | `.ai_infra/docs/operations/workflow-complete.md` |
-| Maintainer skills | `.agents/skills/pr-workflow/SKILL.md`, `prepare-pr/SKILL.md`, `review-pr/SKILL.md`, `merge-pr/SKILL.md` |
+| Maintainer skills | `.agents/skills/pr-workflow/SKILL.md`, `prepare-pr/SKILL.md`, `review-pr/SKILL.md`, `merge-pr/SKILL.md`, `full-pr-workflow/SKILL.md` |
+| Post-merge cleanup | `.ai_infra/scripts/pr/finalize.py` (via `full-pr-workflow`) |
 
 Do not paste full gate blocks into **`updates-log.md`** — log *gate list synced per §4*.
 

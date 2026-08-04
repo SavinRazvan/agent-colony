@@ -14,7 +14,7 @@ This skill is the **merge path** only: **review → prepare → merge** (slash s
 
 1. `review-pr` — findings only; optional **`make drift-validate`** before review when trackers/board status changed. When scope is architecture-impacting, run **`auditor`** and write alignment artifacts per `.cursor/rules/advisory-audit-alignment-enforcement.mdc`.
 2. `prepare-pr` — board Status (or tracker sync only if offline fallback) + `prepare.py` (`resolve_gates()` — **4** steps on kit-dev: testing artifacts, pytest, drift, doc facts).
-3. `merge-pr` — `merge.py` check, `gh pr merge`, `merge.py --merge-sha` (sets board card → Done when SSOT on), finalize repo state.
+3. `merge-pr` — `merge.py` check, `gh pr merge`, `merge.py --merge-sha` (sets board card → Done when SSOT on), writes `merge.md`.
 
 Per-step detail: `.agents/skills/review-pr/`, `prepare-pr/`, `merge-pr/`.
 
@@ -36,11 +36,13 @@ Tier 1 buckets are scaffolded at install; Tier 2 files are written during work. 
 | Review | `workflow-artifacts/pr/review.md` |
 | Prepare | `workflow-artifacts/pr/prep.md` |
 | Merge | `workflow-artifacts/pr/merge.md` |
+| Cleanup (optional for staged) | `workflow-artifacts/pr/finalize.md` |
 | Alignment | `workflow-artifacts/alignment/alignment-audit.md`, `alignment-todos.md` |
 
-## After merge
+## After merge (staged path)
 
 1. `git checkout main` && `git fetch --prune origin`
-2. `python .ai_infra/scripts/pr/finalize.py --branch <feature-branch>`
+2. **Cleanup is optional**:
+   - If you want branch deletion + sync, run **`full-pr-workflow`** (or run `python .ai_infra/scripts/pr/finalize.py --branch <feature-branch>` manually).
 
 Durable checklist: `.ai_infra/docs/operations/workflow-complete.md`. Legacy redirect: `PR_WORKFLOW.md`.

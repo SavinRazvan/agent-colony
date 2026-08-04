@@ -22,7 +22,7 @@ Notes:
 | PR artifact **paths** | `.ai_infra/scripts/pr/local_workflow_paths.py` | `review.py`, `prepare.py`, `merge.py`, rules |
 | PR publish verification | `.ai_infra/scripts/pr/verify_publish.py` | Pre-PR branch health |
 | Merge preconditions | `.ai_infra/scripts/pr/merge.py` | `merge-pr` skill |
-| Post-merge cleanup | `.ai_infra/scripts/pr/finalize.py` | `merge-pr` skill |
+| Post-merge cleanup | `.ai_infra/scripts/pr/finalize.py` | `full-pr-workflow` skill |
 | Maintainer narrative order | `.agents/skills/pr-workflow/SKILL.md` (slash `/pr-workflow`; redirect stub: `PR_WORKFLOW.md`) | Humans |
 | Canonical Cursor skills | `.cursor/skills/` (12 folders) | Plugin sync, agents |
 | Maintainer slash skills | `.agents/skills/` (5 folders; no name overlap with `.cursor/skills/`) | Plugin sync additive merge |

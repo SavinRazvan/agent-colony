@@ -34,10 +34,20 @@ Notes:
    - `.local/workflow-artifacts/pr/review.md` — `python .ai_infra/scripts/pr/review.py --pr <id|url> --actor "<name>" --agents "review-pr"` then edit findings.
    - `.local/workflow-artifacts/pr/prep.md` — `python .ai_infra/scripts/pr/prepare.py --pr ... --actor "..." --agents "review-pr | prepare-pr"` (runs gates unless `--skip-gates`).
    - `.local/workflow-artifacts/pr/merge.md` — produced via `merge-pr` / `.ai_infra/scripts/pr/merge.py` when ready.
-8. **Finalize after merge** (mandatory):
+8. **After merge**:
    - `git checkout main` && sync with `origin`
-   - `python .ai_infra/scripts/pr/finalize.py --branch <feature-branch>` (optional `--delete-merged-local`)
-   - `git fetch --prune origin` and confirm remote branch gone if policy requires it.
+   - Cleanup is **optional** on the staged path (default `/merge-pr`).
+     If you want repo tidiness + branch deletion with evidence, run:
+     - `/full-pr-workflow` (preferred), or
+     - `python .ai_infra/scripts/pr/finalize.py --branch <feature-branch>`
+     This writes `.local/workflow-artifacts/pr/finalize.md`.
+
+## A2) Full PR slice (cleanup + evidence)
+
+Use this when you want branch deletion + deterministic cleanup evidence.
+
+1. Run `/full-pr-workflow` after `/merge-pr` has created `merge.md`.
+2. Verify `.local/workflow-artifacts/pr/finalize.md` exists and reflects the cleanup outcome.
 
 ## B) Architecture-impacting PRs (extra gates)
 
@@ -104,7 +114,7 @@ When landing a stack of dependent PRs:
 
 1. Merge the **bottom** PR into `main` first.
 2. **Retarget** the next PR’s base to `main` (or merge `main` into its head and push) **before** deleting the parent remote branch.
-3. Only then run `finalize.py` / remote branch delete for the parent.
+3. Only then run `/full-pr-workflow` (or `finalize.py`) / remote branch delete for the parent.
 4. Prefer **not** `--skip-gates` unless the **same SHA** just ran `resolve_gates()`; prefer **not** `--skip-board-sync` when `board-bootstrap --check` is green (else Notes + outbox later).
 5. Pattern A artifacts (`review.md` / `prep.md` / `merge.md`) are tip-of-session files under `.local/workflow-artifacts/pr/` — they overwrite per PR; optional dated copies under `pr/archive/` only if you need an audit trail.
 

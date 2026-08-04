@@ -77,7 +77,7 @@ DASHBOARD_ASSETS = (
     "local-board-snapshot.js",
 )
 ARTIFACT_TAB_STUBS: dict[str, tuple[str, ...]] = {
-    "pr": ("review.md", "prep.md", "merge.md"),
+    "pr": ("review.md", "prep.md", "merge.md", "finalize.md"),
     "alignment": ("alignment-audit.md", "alignment-todos.md"),
     "drift": ("drift-audit.md", "drift-todos.md"),
     "enterprise-architecture-audit": (

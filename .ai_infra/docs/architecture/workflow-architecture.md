@@ -35,7 +35,8 @@ See [PLUGIN-USER-GUIDE.md](../operations/PLUGIN-USER-GUIDE.md) §1 for the plugi
 
 ## Pattern A (maintainer PR)
 
-Hub: `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` (`prepare.py` `resolve_gates()`) → `merge-pr` → `finalize.py`
+Hub: `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` (`prepare.py` `resolve_gates()`) → `merge-pr` (staged).
+Optional cleanup: `full-pr-workflow` → `finalize.py`.
 
 Gate order: read `.ai_infra/scripts/pr/prepare.py` only — do not duplicate here.
 
@@ -68,7 +69,7 @@ Drift validation: `make drift-validate` — see [gate-matrix.md](../operations/g
 | Root | Contents |
 |------|----------|
 | `.cursor/skills/` | Canonical protocols (**12**): `workflow-activate`, `board-ssot`, `board-shell`, `implementer-loop`, `auditor-protocol`, `drift-audit`, … — full list in [repository-map.md](../handoff/repository-map.md) |
-| `.agents/skills/` | Maintainer slash skills: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `audit-alignment` (redirect) |
+| `.agents/skills/` | Maintainer slash skills: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `full-pr-workflow`, `audit-alignment` (redirect) |
 
 Plugin bundle copies `.cursor/skills/` first; maintainer skills are **additive only** (no overwrite).
 
