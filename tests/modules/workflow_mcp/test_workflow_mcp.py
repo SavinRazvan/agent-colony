@@ -83,7 +83,8 @@ def test_read_skill() -> None:
     from workflow_mcp.resources import read_skill
 
     body = read_skill(REPO_ROOT, "implementer-loop")
-    assert "implementation execution loop" in body.lower()
+    assert "implementer loop" in body.lower()
+    assert "board ssot" in body.lower()
 
 
 def test_read_pr_artifact_invalid_phase() -> None:
