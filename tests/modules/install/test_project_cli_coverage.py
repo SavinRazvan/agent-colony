@@ -895,7 +895,15 @@ def test_cmd_set_assignee_paths(
         lambda *a, **k: (False, "DraftIssue has no GitHub Assignees"),
     )
     assert project_cli.cmd_set_assignee(args) == project_cli.EXIT_VALIDATION
-    ssot_outbox = {**ssot, "outbox": {"enabled": True, "path": "outbox/q.jsonl"}}
+    ssot_outbox = {
+        **ssot,
+        "outbox": {
+            **ssot.get("outbox", {}),
+            "enabled": True,
+            "path": "outbox/q.jsonl",
+            "precheck_writes": False,
+        },
+    }
     _patch_ssot(monkeypatch, ssot_outbox)
     monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
     monkeypatch.setattr(
@@ -1380,7 +1388,17 @@ def test_cmd_claim_fetch_queued_and_status_gh_fail(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     ssot = _ssot()
-    ssot_out = {**ssot, "outbox": {"enabled": True, "path": "outbox/c.jsonl"}}
+    # Preserve SAMPLE_SSOT precheck_writes=False — replacing outbox wholesale
+    # re-enables live GraphQL quota precheck and flakes under low remaining.
+    ssot_out = {
+        **ssot,
+        "outbox": {
+            **ssot.get("outbox", {}),
+            "enabled": True,
+            "path": "outbox/c.jsonl",
+            "precheck_writes": False,
+        },
+    }
     _ensure_pr_scripts(tmp_path)
     _write_collab(tmp_path, ssot_out)
     _patch_ssot(monkeypatch, ssot_out)
@@ -1428,7 +1446,15 @@ def test_cmd_handoff_ssot_id_and_fetch_queue(
         limit=50,
     )
     assert project_cli.cmd_handoff(argparse.Namespace(**base)) == project_cli.EXIT_USAGE
-    ssot_out = {**_ssot(), "outbox": {"enabled": True, "path": "outbox/h2.jsonl"}}
+    ssot_out = {
+        **_ssot(),
+        "outbox": {
+            **_ssot().get("outbox", {}),
+            "enabled": True,
+            "path": "outbox/h2.jsonl",
+            "precheck_writes": False,
+        },
+    }
     _ensure_pr_scripts(tmp_path)
     _write_collab(tmp_path, ssot_out)
     _patch_ssot(monkeypatch, ssot_out)
@@ -1926,7 +1952,15 @@ def test_cmd_handoff_not_found_and_queued_paths(
 ) -> None:
     ssot = _ssot()
     _ensure_pr_scripts(tmp_path)
-    ssot_out = {**ssot, "outbox": {"enabled": True, "path": "outbox/h.jsonl"}}
+    ssot_out = {
+        **ssot,
+        "outbox": {
+            **ssot.get("outbox", {}),
+            "enabled": True,
+            "path": "outbox/h.jsonl",
+            "precheck_writes": False,
+        },
+    }
     _write_collab(tmp_path, ssot_out)
     _patch_ssot(monkeypatch, ssot_out)
     monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
