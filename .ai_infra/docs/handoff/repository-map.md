@@ -73,7 +73,7 @@ Deep dive: [PLUGIN-ARCHITECTURE.md](PLUGIN-ARCHITECTURE.md).
 | `.cursor/rules/*.mdc` | 7 kit-dev rules | **Here** |
 | `.cursor/skills/*/` | 12 canonical protocols | **Here** |
 | `.agents/skills/*/` | Maintainer slash skills | **Here** |
-| `agents/`, `rules/`, `skills/` (repo root) | Marketplace discovery (17 skill folders = 12 canonical + 5 maintainer PR slash skills) | `make sync-plugin` from `.cursor/` + `.agents/skills/` |
+| `agents/`, `rules/`, `skills/` (repo root) | Marketplace discovery (18 skill folders = 12 canonical + 6 maintainer PR slash skills, incl. `full-pr-workflow`) | `make sync-plugin` from `.cursor/` + `.agents/skills/` |
 | `payload/` | Consumer install bundle | `make sync-plugin` from above + manifest |
 | `skills/audit-alignment/` | Deprecated stub in merged `skills/` | `.agents/skills/audit-alignment/` |
 
@@ -90,12 +90,12 @@ my-app/
 │   ├── agents/                     8 agents (from payload; incl. board)
 │   ├── rules/                      7 rules (6 kit + project-ssot-precedence)
 │   └── skills/                     12 canonical skills only (no repo-root skills/ merge)
-├── .agents/skills/                 5 maintainer slash folders (+ audit-alignment stub)
+├── .agents/skills/                 6 maintainer slash folders (incl. full-pr-workflow; + audit-alignment stub)
 ├── .ai_infra/                      Slim bundle (manifest copy_ai_infra only)
 │   ├── scripts/pr|architecture|integration|workflow|install/
 │   ├── install/cursor_workflow/
 │   ├── docs/operations|governance|roadmap|decisions|architecture/
-│   ├── templates/local-workspace|user-settings|agent-integration/
+│   ├── templates/local-workspace|user-settings|agent-integration|project-board|research-corpus/
 │   ├── workflows/                  PR lane hub (shipped — see workflows/README.md)
 │   └── mcp_servers/workflow_mcp/   (with_mcp profile)
 ├── cursor_workflow/                CLI entrypoint
@@ -168,13 +168,14 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `review-pr` | Active | |
 | `prepare-pr` | Active | |
 | `merge-pr` | Active | |
+| `full-pr-workflow` | Active | Optional cleanup path: `pr-workflow` + `finalize.py` (branch cleanup, `finalize.md`) |
 | **`audit-alignment`** | **Deprecated stub** | Redirect → `auditor`; outputs unchanged (`alignment-audit.md`, `alignment-todos.md`) |
 
 Also under `.agents/skills/`: `README.md`, `PR_WORKFLOW.md` (legacy redirect), `RESEARCH_WORKFLOW.md` (research hub pointer).
 
 ### Repo-root `skills/` — Marketplace plugin mirror only
 
-Cursor loads repo-root `agents/`, `rules/`, and `skills/` from the GitHub plugin URL. Those trees are **generated mirrors** of `.cursor/` + `.agents/skills/` (via `sync_plugin_bundle.py`) — **not** a second authoring SSOT. Edit canonical `.cursor/skills/` (12) and `.agents/skills/` (5); then `make sync-plugin`. Consumers receive skills under `.cursor/skills/` and `.agents/skills/` via `payload/` after activate — never as a single root `skills/` tree on disk.
+Cursor loads repo-root `agents/`, `rules/`, and `skills/` from the GitHub plugin URL. Those trees are **generated mirrors** of `.cursor/` + `.agents/skills/` (via `sync_plugin_bundle.py`) — **not** a second authoring SSOT. Edit canonical `.cursor/skills/` (12) and `.agents/skills/` (6); then `make sync-plugin`. Consumers receive skills under `.cursor/skills/` and `.agents/skills/` via `payload/` after activate — never as a single root `skills/` tree on disk.
 
 ---
 
