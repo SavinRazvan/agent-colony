@@ -132,8 +132,8 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. After mer
 | Integrate infrastructure | `.cursor/agents/integrator.md` + `.cursor/skills/integrator-protocol/SKILL.md` — validate with `python3 -m cursor_workflow integrate validate` |
 | Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-coverage/SKILL.md` |
 | Verify claims | `.cursor/agents/verifier.md` |
-| Operational drift | **`drift-guard`** — `.cursor/agents/drift-guard.md` + `.cursor/skills/drift-audit/SKILL.md` — validate with `python3 -m cursor_workflow drift validate` |
-| Audits (canonical) | **`auditor`** — `.cursor/agents/auditor.md` + `.cursor/skills/auditor-protocol/SKILL.md` |
+| Continuous goal/plan/agent-doctrine coherence + DRIFT scripts | **`drift-guard`** — `.cursor/agents/drift-guard.md` + `.cursor/skills/drift-audit/SKILL.md` — `python3 -m cursor_workflow drift validate` (incl. DRIFT-011) |
+| Deep / periodic architecture + CHK-* (security/perf/granularity/docs) | **`auditor`** — `.cursor/agents/auditor.md` + `.cursor/skills/auditor-protocol/SKILL.md` — not continuous plan pulse |
 | Audit orchestration | `.cursor/skills/audit-orchestration/SKILL.md` — parent runs verify-all + Task delegation (no dedicated agent) |
 | Audit module map | `.cursor/skills/audit-module-map/SKILL.md` — optional deep map; invoke via **`auditor`** |
 | Maintainer PR | `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` → `merge-pr` |

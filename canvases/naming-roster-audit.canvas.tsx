@@ -13,6 +13,7 @@
  *  - Concept hub (not agent-*). Excluded from DOC-008 roster scan like board-ssot-vs-kit.
  *  - B-safe rename SHIPPED 2026-08-03 (#140, #146–#149); Plan/Scores/Stack = live roster.
  *  - Renames tab = historical old→live ledger only (not current Task subagent_type).
+ *  - Roster scorecard 2026-08-04 (AA-ROSTER-001…008) mirrored on Stack/Future views.
  *  - Intentional non-renames: artifact dir enterprise-architecture-audit/, ops doc
  *    project-board-collaboration.md, snapshot project-board-snapshot.json.
  *  - Avoid "star-slash" globs in this block comment — they terminate the comment early.
@@ -39,7 +40,7 @@ import {
   useCanvasState,
 } from "cursor/canvas";
 
-const AUDIT_DATE = "2026-08-03";
+const AUDIT_DATE = "2026-08-04";
 
 type View = "plan" | "scores" | "stack" | "renames" | "future";
 
@@ -498,20 +499,78 @@ const FUTURE_EXAMPLES: {
     proposed: "releaser",
     skill: "releaser-protocol",
     dims: { clarity: 5, brevity: 5, pairing: 5, convention: 5, uniqueness: 4 },
-    verdict: "PASS — admit if lane gap is real",
+    verdict:
+      "AA-ROSTER-002 deferred P2 — admit when release pain repeats (not this slice)",
   },
   {
-    proposed: "ci-fixer-agent",
-    skill: "ci-fix-execution-loop",
-    dims: { clarity: 3, brevity: 2, pairing: 2, convention: 1, uniqueness: 3 },
-    verdict: "FAIL — drop -agent; prefer ci-fixer + ci-fixer-protocol",
+    proposed: "ci-fixer",
+    skill: "ci-fixer-protocol",
+    dims: { clarity: 4, brevity: 4, pairing: 4, convention: 5, uniqueness: 4 },
+    verdict:
+      "AA-ROSTER-003 deferred P3 — prefer absorb into implementer (no new agent)",
   },
   {
     proposed: "enterprise-security-auditor",
     skill: "enterprise-security-architecture-audit",
     dims: { clarity: 3, brevity: 1, pairing: 3, convention: 2, uniqueness: 2 },
-    verdict: "FAIL — collide with auditor lane; extend auditor skill instead",
+    verdict:
+      "AA-ROSTER-004 reject — collide with auditor; extend auditor-protocol",
   },
+];
+
+/** Roster scorecard 2026-08-04 — mirror of alignment-audit AA-ROSTER-* */
+const SCORECARD_KEEP_AGENTS: string[][] = [
+  ["implementer", "22", "implementer-loop", "KEEP"],
+  ["verifier", "22", "(none — optional verify-claims later)", "KEEP"],
+  ["researcher", "22", "research-corpus", "KEEP"],
+  ["test-runner", "21", "test-coverage", "KEEP"],
+  ["board", "20", "board-ssot (+ board-shell)", "KEEP"],
+  ["integrator", "20", "integrator-protocol", "KEEP"],
+  ["auditor", "17", "auditor-protocol", "KEEP"],
+  ["drift-guard", "16", "drift-audit", "KEEP"],
+];
+
+const SCORECARD_ADD: string[][] = [
+  [
+    "releaser",
+    "releaser-protocol",
+    "P2 deferred",
+    "AA-ROSTER-002 — release lane gap; admit when pain repeats",
+  ],
+  [
+    "ci-fixer",
+    "ci-fixer-protocol",
+    "P3 absorb",
+    "AA-ROSTER-003 — prefer implementer; do not ship agent now",
+  ],
+];
+
+const SCORECARD_REMOVE: string[][] = [
+  ["(none)", "—", "AA-ROSTER-001 — all 8 agents kept; low scores = naming debt"],
+];
+
+const SCORECARD_RETIRE_SKILLS: string[][] = [
+  [
+    "audit-alignment",
+    "Retire when safe",
+    "AA-ROSTER-005 open — DEPRECATED stub → auditor (11/25)",
+  ],
+  [
+    "verify-claims (new)",
+    "Optional later",
+    "AA-ROSTER-006 deferred — skill for verifier, not a new agent",
+  ],
+];
+
+const SCORECARD_REJECT: string[][] = [
+  [
+    "enterprise-security-auditor",
+    "AA-ROSTER-004",
+    "Collides with auditor lane",
+  ],
+  ["onboarder", "AA-ROSTER-004", "Overlap board + board-shell + workflow-activate"],
+  ["mcp-agent", "AA-ROSTER-004", "mcp-connect is skill-only by design"],
+  ["documenter", "AA-ROSTER-004", "Doc-sync belongs to implementer"],
 ];
 
 type RenameRow = {
@@ -1055,16 +1114,22 @@ export default function NamingRosterAuditCanvas() {
             ])}
             striped
           />
-          <Callout tone="success" title="B-safe rename debt closed">
+          <Callout tone="success" title="B-safe rename debt closed · AA-ROSTER-001">
             Live ids: board · implementer · test-runner · verifier · integrator ·
-            auditor · drift-guard · researcher. Primary skills match STACK above.
-            Residual score debt (drift-guard / auditor still &lt;18 on pairing/
-            brevity) is advisory only — not a reopen of rename appetite.
+            auditor · drift-guard · researcher. KEEP all 8 — residual score debt
+            (drift-guard 16 / auditor 17) is naming debt, not redundancy.
           </Callout>
+          <H2>Scorecard keep (agent /25)</H2>
+          <Table
+            headers={["Agent", "/25", "Primary skill", "Verdict"]}
+            rows={SCORECARD_KEEP_AGENTS}
+            striped
+          />
           <Callout tone="neutral" title="Intentional path keeps">
             enterprise-architecture-audit/ (artifact dir) ·
             project-board-collaboration.md (ops) · project-board-snapshot.json —
-            not agent or skill folder names.
+            not agent or skill folder names. Evidence: alignment-audit.md § Roster
+            scorecard 2026-08-04.
           </Callout>
         </Stack>
       ) : null}
@@ -1127,6 +1192,49 @@ export default function NamingRosterAuditCanvas() {
 
       {view === "future" ? (
         <Stack gap={16}>
+          <Callout tone="info" title="Roster scorecard 2026-08-04 (AA-ROSTER)">
+            Advisory only — no new agents for security/perf/infra/docs/
+            granularity (AA-ROSTER-004). Retire = audit-alignment stub kept
+            RETIRE-PENDING until DOC/count integrator slice (AA-ROSTER-005).
+            Full tables: .local/workflow-artifacts/alignment/alignment-audit.md
+          </Callout>
+
+          <Stack gap={8}>
+            <H2>Agents to add (advisory)</H2>
+            <Table
+              headers={["Candidate", "Skill", "Priority", "Finding"]}
+              rows={SCORECARD_ADD}
+              striped
+            />
+          </Stack>
+
+          <Stack gap={8}>
+            <H2>Agents to remove</H2>
+            <Table
+              headers={["Agent", "Action", "Rationale"]}
+              rows={SCORECARD_REMOVE}
+              striped
+            />
+          </Stack>
+
+          <Stack gap={8}>
+            <H2>Skills to retire / optional add</H2>
+            <Table
+              headers={["Skill", "Action", "Finding"]}
+              rows={SCORECARD_RETIRE_SKILLS}
+              striped
+            />
+          </Stack>
+
+          <Stack gap={8}>
+            <H2>Do not add (rejected)</H2>
+            <Table
+              headers={["Candidate", "Finding", "Why"]}
+              rows={SCORECARD_REJECT}
+              striped
+            />
+          </Stack>
+
           <Callout tone="info" title="Admission gate for new agents">
             Before merge, score the proposed agent id + primary skill with the same
             rubric. Require total ≥18/25 and FG-1…FG-6 green. Prefer extending an
@@ -1255,9 +1363,9 @@ export default function NamingRosterAuditCanvas() {
 
       <Divider />
       <Text tone="tertiary" size="small">
-        Live truth: .cursor/agents/*.md · .cursor/skills/*/SKILL.md · Evidence:
-        .local/workflow-artifacts/alignment/alignment-audit.md · verified{" "}
-        {AUDIT_DATE}
+        Live truth: .cursor/agents/*.md · .cursor/skills/*/SKILL.md · Roster
+        scorecard: .local/workflow-artifacts/alignment/alignment-audit.md §
+        2026-08-04 · AA-ROSTER-001…008 · verified {AUDIT_DATE}
       </Text>
     </Stack>
   );

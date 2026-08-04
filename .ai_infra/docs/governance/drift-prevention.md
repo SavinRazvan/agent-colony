@@ -45,21 +45,21 @@ Additionally when changing governance, workflows, `.cursor/`, `.agents/`, or tra
 
 Follow **`agent-workflow-procedures.md` §3b**. Includes **`AGENTS.md`**, **`rules-overlap-matrix.md`**, **`workflow-source-owners.md`**, PR scripts, and mirrored `.cursor/` / `.agents/` skills. Run **`check_governance_consistency.py`** when tracked policy paths change.
 
-## Operational drift (drift-guard)
+## Operational drift + goal pulse (drift-guard)
 
-Script-first checks for plan ↔ tracker ↔ session-pointer coherence and handoff doc parity. See [ADR-007](../decisions/ADR-007-workflow-drift-guard.md).
+Script-first checks for plan ↔ tracker ↔ session-pointer coherence, handoff doc parity, and **falsifiable goal/doctrine pulse** (DRIFT-011 roster ids). Prose goal pulse (board Acceptance vs plan vs `AGENTS.md`) lives in drift artifacts — not in `auditor`. See [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) § Goal pulse vs EA audit.
 
 **Kit-dev PR prep:** `prepare.py` `resolve_gates()` auto-runs `drift validate` before merge (with doc facts). Optional: Task **`drift-guard`** after pass to refresh `.local/workflow-artifacts/drift/` artifacts.
 
 | Concern | Owner | Do NOT duplicate in drift |
 |---------|-------|---------------------------|
 | Bare paths, brand terms | `check_governance_consistency.py`, `check_debrand.py` | Path/brand scans |
-| Agent Anchor/MCP, registry parity | `integrate validate` INT-001…014 | Agent file structure |
+| Agent Anchor/MCP, registry parity | `integrate validate` INT-001…014 | Full agent file structure (DRIFT-011 is id set only) |
 | Canonical doc facts (roster, counts) | `check_doc_facts.py` / INT-013 | Path/brand scans |
 | test-plan/index existence | `check_testing_artifacts.py` | File exists checks |
 | Plugin/payload SHA drift | `sync_plugin_bundle.py --check` | Bundle sync |
 | Slice claim verification | `verifier` | Subjective verification |
-| Architecture scorecard | `auditor` | Module deep-dive |
+| Architecture / security / perf scorecard (CHK-*) | `auditor` | Module deep-dive / EA phases |
 
 **Command:** `python -m cursor_workflow drift validate --directory .` or `make drift-validate`.
 

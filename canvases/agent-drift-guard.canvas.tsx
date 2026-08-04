@@ -23,14 +23,14 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-03";
+const VERIFIED = "2026-08-04";
 const SOURCES =
-  ".cursor/agents/drift-guard.md · drift-audit/SKILL.md · board-ssot/SKILL.md";
+  ".cursor/agents/drift-guard.md · drift-audit/SKILL.md · board-ssot/SKILL.md · ADR-007";
 
 const GOALS = [
-  "Operational workflow drift detection",
-  "Plan/tracker/session coherence and handoff parity",
-  "Write drift artifacts only — no product code",
+  "Continuous goal/plan/agent-doctrine/docs coherence (+ DRIFT scripts)",
+  "DRIFT-001…011 script-first; goal pulse prose in drift artifacts",
+  "Write drift/ only — no product code; remediations via Notes/Ready",
 ];
 
 const BOARD_NODES = [
@@ -86,10 +86,10 @@ const FALLBACK_LABELS: Record<string, string> = {
 };
 
 const READ_FIRST = [
-  [".cursor/skills/drift-audit/SKILL.md", "Drift audit canon"],
+  [".cursor/skills/drift-audit/SKILL.md", "Drift audit + goal pulse"],
   [".cursor/skills/board-ssot/SKILL.md", "Board SSOT when enabled"],
   ["python3 -m cursor_workflow drift validate", "CLI entry"],
-  ["DRIFT-009 / DRIFT-010", "Board vs tracker checks"],
+  ["DRIFT-009 / 010 / 011", "Board + agent roster pulse"],
   ["project export", "DRIFT-010 evidence"],
 ];
 
@@ -205,8 +205,9 @@ export default function AgentDriftGuardCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          drift-guard MAS-SSOT-KIT — Operational workflow drift detection;
-          plan/tracker/session coherence and handoff parity.
+          drift-guard MAS-SSOT-KIT — Continuous goal/plan/agent-doctrine/docs
+          coherence + DRIFT-001…011; remediations via Notes/Ready (not auditor
+          deep scorecard).
         </Text>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only
@@ -215,7 +216,7 @@ export default function AgentDriftGuardCanvas() {
 
       <Grid columns={3} gap={12}>
         <Stat value="MUST status" label="Entry when board on" />
-        <Stat value="DRIFT-009/010" label="Board vs tracker" />
+        <Stat value="DRIFT-009…011" label="Board + roster pulse" />
         <Stat value="EXIT_QUEUED" label="Outbox on rate-limit" tone="warning" />
       </Grid>
 

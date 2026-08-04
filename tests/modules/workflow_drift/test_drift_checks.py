@@ -22,6 +22,7 @@ if str(WORKFLOW_DIR) not in sys.path:
 from drift_checks import (  # noqa: E402
     _parse_owned_test_paths,
     _path_exists,
+    LIVE_KIT_AGENT_IDS,
     check_drift001,
     check_drift002,
     check_drift003,
@@ -30,6 +31,7 @@ from drift_checks import (  # noqa: E402
     check_drift006,
     check_drift007,
     check_drift008,
+    check_drift011,
     detect_profile,
     drift_paths,
 )
@@ -357,3 +359,36 @@ def test_drift_validate_passes_p0_on_kit_repo() -> None:
     p0_failures = [r for r in results if not r.passed and r.severity.value == "P0"]
     assert not p0_failures, "\n".join(f"{r.check_id}: {r.detail}" for r in p0_failures)
     assert check_drift.exit_code_for(results) == 0
+    drift011 = next(r for r in results if r.check_id == "DRIFT-011")
+    assert drift011.passed, drift011.detail
+
+
+def test_drift011_passes_with_live_roster(tmp_path: Path) -> None:
+    agents = tmp_path / ".cursor" / "agents"
+    agents.mkdir(parents=True)
+    for name in LIVE_KIT_AGENT_IDS:
+        (agents / f"{name}.md").write_text(f"# {name}\n", encoding="utf-8")
+    result = check_drift011(drift_paths(tmp_path))
+    assert result.passed
+    assert result.check_id == "DRIFT-011"
+
+
+def test_drift011_fails_when_agent_missing(tmp_path: Path) -> None:
+    agents = tmp_path / ".cursor" / "agents"
+    agents.mkdir(parents=True)
+    for name in LIVE_KIT_AGENT_IDS - {"researcher"}:
+        (agents / f"{name}.md").write_text(f"# {name}\n", encoding="utf-8")
+    result = check_drift011(drift_paths(tmp_path))
+    assert not result.passed
+    assert "missing=researcher" in result.detail
+
+
+def test_drift011_fails_on_extra_agent(tmp_path: Path) -> None:
+    agents = tmp_path / ".cursor" / "agents"
+    agents.mkdir(parents=True)
+    for name in LIVE_KIT_AGENT_IDS:
+        (agents / f"{name}.md").write_text(f"# {name}\n", encoding="utf-8")
+    (agents / "ghost-agent.md").write_text("# ghost\n", encoding="utf-8")
+    result = check_drift011(drift_paths(tmp_path))
+    assert not result.passed
+    assert "extra=ghost-agent" in result.detail
