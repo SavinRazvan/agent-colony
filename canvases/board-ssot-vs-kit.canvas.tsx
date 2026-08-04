@@ -91,7 +91,7 @@ const ABC_SLICES = [
     title: "A — Writable SSOT docs",
     color: "blue" as const,
     items: [
-      "HANDOFF / ADR-008 / overlay / skills: only writable SSOT",
+      "AGENTS.md / ADR-008 / overlay / skills: only writable SSOT",
       "Continuation contract: Entry read board, Exit Status + Notes",
       "Local trackers = offline fallback; no dual-mirror",
       "DRIFT-009 dual-write guard",
@@ -683,7 +683,7 @@ export default function BoardSsotVsKitCanvas() {
       </Callout>
 
       <Text size="small" tone="tertiary">
-        Source: HANDOFF §1 · ADR-008 · STANDALONE 2026-07-18 · PR #2/#3 merged ·
+        Source: AGENTS.md · ADR-008 · STANDALONE 2026-07-18 · PR #2/#3 merged ·
         drift validate green · verified {VERIFIED} · 1193 tests · COV-100 7089 stmts
       </Text>
     </Stack>

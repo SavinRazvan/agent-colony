@@ -5,7 +5,6 @@ Role: Glossary for MAS Workflow Kit workflow terminology.
 Used By:
  - README.md
  - AGENTS.md
- - HANDOFF.md
 Depends On:
  - .ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md
  - .ai_infra/docs/decisions/README.md
@@ -16,7 +15,7 @@ Notes:
 
 # Abbreviations Notepad
 
-Quick reference for reading `README.md`, `AGENTS.md`, `HANDOFF.md`, and kit docs.
+Quick reference for reading `README.md`, `AGENTS.md`, and kit docs.
 
 ## MAS Workflow Kit flow (plain language)
 
@@ -77,7 +76,7 @@ Quick reference for reading `README.md`, `AGENTS.md`, `HANDOFF.md`, and kit docs
 |---|---|---|
 | DRIFT-NNN | Operational drift check id (plan/tracker/board coherence) | ADR-007; `drift validate` |
 | INT-NNN | Integrate / registry parity check id | `integrate validate` |
-| EA-NNN | Enterprise-architecture finding / backlog id | auditor artifacts / HANDOFF |
+| EA-NNN | Enterprise-architecture finding / backlog id | auditor artifacts / board |
 | DOC-NNN | Documentation fact / validate check id | `make doc-validate` / doc facts |
 | COV-NNN | Coverage readiness claim / slice label | IMPLEMENTATION-STATUS / coverage evidence |
 | P0 / P1 / P2 / P3 | Priority — board uses `p0\|p1\|p2`; chat P3 → board `p2` + Notes `deferred` | `board-ssot` skill |

@@ -41,7 +41,7 @@ Does **not** replace `auditor` (CHK-* scorecard) or `verifier`.
 1. Board (when enabled): `project status` + `list --status in_progress` — read Acceptance / Notes on In progress cards.
 2. Plan pointers: `.local/index-and-planning/current/plan.md` (or board card body as SSOT) — Current focus / goals.
 3. Doctrine: `AGENTS.md` skills/agents table vs `.cursor/agents/*.md` (script: DRIFT-011).
-4. Docs freshness vs goals: note Probable if HANDOFF / IMPLEMENTATION-STATUS look stale relative to Current focus (prose only).
+4. Docs freshness vs goals: note Probable if AGENTS.md / IMPLEMENTATION-STATUS look stale relative to Current focus (prose only).
 
 ## Steps
 

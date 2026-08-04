@@ -7,7 +7,7 @@
 
 Classic MAS Workflow Kit used local markdown trackers under `.local/index-and-planning/current/` as session SSOT. Collaborators cannot share that state. **This repository is the product** — already separated from upstream `mas-workflow-kit` — and configures a GitHub Project in `.local/user_settings/github.collaboration.yaml` → `project_ssot`, driven via `python3 -m cursor_workflow project`. Local artifacts remain for PR gates, audits, and evidence.
 
-Related: [ADR-006](ADR-006-agent-integration-model.md), [HANDOFF.md](../../../HANDOFF.md).
+Related: [ADR-006](ADR-006-agent-integration-model.md), [AGENTS.md](../../../AGENTS.md).
 
 ## Decision
 

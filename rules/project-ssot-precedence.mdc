@@ -17,7 +17,7 @@ alwaysApply: true
 - Prefer Pattern A recipes (`claim --last`, `handoff --last`, `guide`) over raw multi-step claim.
 - PR Pattern A (`prepare.py` `resolve_gates()`), post-merge board close (`merge.py`), PR/audit artifacts, secrets, and user_settings stay local (`project_ssot.local_only`).
 - Humans own Project views, workflows, Insights, README, status updates, Ready prioritization.
-- Canon: `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`, `.ai_infra/docs/operations/project-board-collaboration.md`, `HANDOFF.md`.
+- Canon: `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`, `.ai_infra/docs/operations/project-board-collaboration.md`, `AGENTS.md`.
 - This product lives only in `mas-workflow-kit-project-ssot`. Do not mutate upstream `mas-workflow-kit`. Board = only writable SSOT; local = evidence/fallback.
 - Multi-collaborator Notes: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC; user → their agents) via `append-notes --agent`. Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime.
 - Prefer board Pattern A recipes (`claim` / `handoff` / `create-from-template`) over multi-step atomics; never paste Project settings UI into a shell.

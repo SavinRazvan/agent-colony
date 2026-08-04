@@ -188,7 +188,7 @@ Map each checklist into the matching phase. In the written report (or focused al
 | `CHK-SEC-CODE` | 3 | Secrets handling, injection/trust boundaries in kit scripts / app code in scope |
 | `CHK-SEC-AGENT` | 1 / 3 | Agent write-scope, hard-stops, MCP `.cursor/mcp.registry.yaml` allowlists, no product auto-fix — **contract compliance**, not LLM jailbreak proof |
 | `CHK-INFRA-KIT` | 1 / 3 | Three planes, install/activate, `integrate validate` clues — **not** consumer cloud infra product |
-| `CHK-DOCS` | 5 | Stated goals vs docs; stale HANDOFF / AGENTS / IMPLEMENTATION-STATUS |
+| `CHK-DOCS` | 5 | Stated goals vs docs; stale AGENTS / IMPLEMENTATION-STATUS |
 
 ### PHASE 1 — Repository inventory (descriptive only)
 

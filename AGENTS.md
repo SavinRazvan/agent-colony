@@ -2,9 +2,25 @@
 
 ## Project intent
 
-**MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) — this repository **is** the product: installable multi-agent workflow infrastructure with a **GitHub Project** as the **only writable SSOT** for backlog, Status, and multi-agent continuation when `project_ssot.enabled` and `sync_policy: board_only`. **Local artifacts** (PR Pattern A, audits, gates, secrets) stay on disk as evidence — never a second Status writer under `board_only`. Agents call **one script command** per maintainer action; merge gate order lives in `.ai_infra/scripts/pr/prepare.py` **`resolve_gates()`** (`GATES` = 2-gate back-compat alias). **Consumer install:** plugin + `/workflow-activate` in the app repo installs the full kit; consumers wire only identity + board YAML — see [PLUGIN-USER-GUIDE § Product promise](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
+**MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) — this repository **is** the product: installable multi-agent workflow infrastructure with a **GitHub Project** as the only writable coordination SSOT when `project_ssot.enabled` and `sync_policy: board_only`.
 
-**Continuation:** Entry reads the board (`python3 -m cursor_workflow project status`); Exit updates Status and Notes (see `.cursor/skills/board-ssot/SKILL.md` § Collaboration, ADR-008, `overlays/rules/project-ssot-precedence.mdc`). Ops: `.ai_infra/docs/operations/project-board-collaboration.md`. Offline fallback trackers only when board unavailable. Rate-limit / precheck / Forbidden throttle: EXIT_QUEUED (6) → `project outbox` (do not retry-loop; local buffer, not a second SSOT). **STANDALONE:** permanently decoupled from upstream `mas-workflow-kit` (lineage only — do not merge doctrine back). Read [`HANDOFF.md`](HANDOFF.md) first.
+| Surface | Role |
+|---------|------|
+| **GitHub Project** | Backlog, Status, Priority/Size, multi-agent continuation. **Entry** = read board; **Exit** = update Status + Notes. |
+| **Local `.local/`** | Evidence only (PR Pattern A, audits, gates, secrets, coverage, outbox). Never a second Status writer under `board_only`. |
+
+**Non-negotiables**
+
+- **No dual-write** of Status to `work-tracker.md` / `session-pointer.md` when `board_only`.
+- **No merge** of this product’s board doctrine back into upstream `mas-workflow-kit`.
+- **STANDALONE:** permanently decoupled from upstream `mas-workflow-kit` (lineage only).
+- Create shippable cards as **Issues** (`item_kind_default: issue`). Draft is scratch-only.
+- Fill **Tier-1** fields (Status, Priority, Size/Estimate, Start date on first In progress, Assignee, Linked PR via `mention-pr`).
+- GraphQL throttle / Forbidden / precheck low quota → **EXIT_QUEUED (6)** / `project outbox` (do not retry-loop); outbox is not SSOT.
+
+**Consumer install:** plugin + `/workflow-activate` in the app repo installs the full kit; consumers wire only identity + board YAML — see [PLUGIN-USER-GUIDE § Product promise](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
+
+**Continuation:** Entry reads the board (`python3 -m cursor_workflow project status`); Exit updates Status and Notes (see [board-ssot skill](.cursor/skills/board-ssot/SKILL.md) § Collaboration, [ADR-008](.ai_infra/docs/decisions/ADR-008-project-board-ssot.md), and [project-board-collaboration ops](.ai_infra/docs/operations/project-board-collaboration.md)). Offline fallback trackers only when board unavailable. Rate-limit / precheck / Forbidden throttle: EXIT_QUEUED (6) → `project outbox` (do not retry-loop; local buffer, not a second SSOT).
 
 ## First reads (onboarding)
 

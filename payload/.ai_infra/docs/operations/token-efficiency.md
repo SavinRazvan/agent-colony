@@ -37,7 +37,7 @@ Notes:
 | 4 | `test-plan.md`, `test-index.md` | When tests change |
 | 5 | `workflow-artifacts/pr/*.md` | Only when phase = review \| prepare \| merge |
 
-**Skip:** `.local/generated-data/**`, `history/archive/**`, full `updates-log.md` body, root handoff megadocs unless explicitly tasked.
+**Skip:** `.local/generated-data/**`, `history/archive/**`, full `updates-log.md` body, full `AGENTS.md` unless explicitly tasked.
 
 ## Write set (slice close)
 

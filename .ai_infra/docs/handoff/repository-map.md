@@ -246,7 +246,7 @@ Contract: [local-workspace-layout.md](../operations/local-workspace-layout.md) �
 
 | Audience | Start here |
 |----------|------------|
-| **Kit maintainer** | This file → [PLUGIN-ARCHITECTURE.md](PLUGIN-ARCHITECTURE.md) → [IMPLEMENTATION-STATUS.md](IMPLEMENTATION-STATUS.md) → [Docs index](../README.md) |
+| **Kit maintainer** | This file → [PLUGIN-ARCHITECTURE.md](PLUGIN-ARCHITECTURE.md) → [IMPLEMENTATION-STATUS.md](IMPLEMENTATION-STATUS.md) → [AGENTS.md](../../AGENTS.md) |
 | **Consumer app dev** | [consumer-quickstart.md](../operations/consumer-quickstart.md) → [PLUGIN-USER-GUIDE.md](../operations/PLUGIN-USER-GUIDE.md) → [workflow-architecture.md](../architecture/workflow-architecture.md) |
 | **`.local/` layout** | [local-workspace-layout.md](../operations/local-workspace-layout.md) (shipped — universal) |
 | **Three planes** | [folder-charter.md](../governance/folder-charter.md) (shipped — universal) |

@@ -450,7 +450,7 @@ Auto-detect defaults to **`kit-dev`** unless `work-tracker.md` contains `STARTER
 
 | Check (consumer profile) | Meaning |
 |--------------------------|---------|
-| **DRIFT-005** | Maintainer handoff doc test count — **not shipped to consumer installs** |
+| **DRIFT-005** | IMPLEMENTATION-STATUS test count — **not shipped to consumer installs** |
 | **DRIFT-008** | Scaffold trackers (`session-pointer`, `plan`, `work-tracker`) present |
 
 ### DRIFT-005 FAIL — kit bug (not your app)
