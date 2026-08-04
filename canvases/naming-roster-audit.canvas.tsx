@@ -11,7 +11,10 @@
  *  - .agents/skills (maintainer SKILL.md folders)
  * Notes:
  *  - Concept hub (not agent-*). Excluded from DOC-008 roster scan like board-ssot-vs-kit.
- *  - B-safe rename SHIPPED 2026-08-03 (#140, #146–#149); plan table is historical → keep/keep.
+ *  - B-safe rename SHIPPED 2026-08-03 (#140, #146–#149); Plan/Scores/Stack = live roster.
+ *  - Renames tab = historical old→live ledger only (not current Task subagent_type).
+ *  - Intentional non-renames: artifact dir enterprise-architecture-audit/, ops doc
+ *    project-board-collaboration.md, snapshot project-board-snapshot.json.
  *  - Avoid "star-slash" globs in this block comment — they terminate the comment early.
  */
 
@@ -128,19 +131,19 @@ const PLAN_ROWS: {
 
 const SHARED_SKILLS = [
   [
-    "board-ssot (shipped)",
+    "board-ssot",
     "Shared by ALL agents for board Entry/Exit — not one agent's exclusive skill",
   ],
   [
-    "workflow-activate (keep)",
+    "workflow-activate",
     "Skill-only — consumer install; no agent twin",
   ],
   [
-    "mcp-connect (shipped)",
+    "mcp-connect",
     "Skill-only — MCP wiring",
   ],
   [
-    "review-pr / prepare-pr / merge-pr / pr-workflow (keep)",
+    "review-pr / prepare-pr / merge-pr / pr-workflow",
     "Maintainer slash namespace (.agents/skills) — not Task agents",
   ],
   [
@@ -282,21 +285,21 @@ const AGENT_SCORES: ScoredName[] = [
     kind: "agent",
     primaryPair: "auditor-protocol",
     dims: { clarity: 4, brevity: 2, pairing: 3, convention: 4, uniqueness: 4 },
-    note: "enterprise- brand noise; auditor vs architecture-audit",
+    note: "Live id auditor; residual: auditor vs architecture-audit artifact path",
   },
   {
     id: "drift-guard",
     kind: "agent",
     primaryPair: "drift-audit",
     dims: { clarity: 3, brevity: 2, pairing: 3, convention: 4, uniqueness: 4 },
-    note: "guard vs audit dual metaphor; workflow- redundant",
+    note: "Live id drift-guard; residual: guard vs audit metaphor (score <18)",
   },
   {
     id: "integrator",
     kind: "agent",
     primaryPair: "integrator-protocol",
-    dims: { clarity: 3, brevity: 1, pairing: 2, convention: 1, uniqueness: 3 },
-    note: "Only -agent suffix; stem mismatch with skill",
+    dims: { clarity: 5, brevity: 4, pairing: 3, convention: 4, uniqueness: 4 },
+    note: "Live id integrator; residual pairing debt with integrator-protocol",
   },
 ];
 
@@ -355,55 +358,55 @@ const SKILL_SCORES: ScoredName[] = [
     kind: "skill-canonical",
     primaryPair: "board",
     dims: { clarity: 4, brevity: 3, pairing: 4, convention: 4, uniqueness: 4 },
-    note: "onboard is mode noise; could be board-shell",
+    note: "Shipped board-shell; residual -shell vs onboard mnemonic",
   },
   {
     id: "test-coverage",
     kind: "skill-canonical",
     primaryPair: "test-runner",
     dims: { clarity: 4, brevity: 3, pairing: 3, convention: 4, uniqueness: 4 },
-    note: "Prefer test-coverage to pair with test-runner",
+    note: "Shipped test-coverage; runner↔coverage stem gap remains",
   },
   {
     id: "mcp-connect",
     kind: "skill-canonical",
     dims: { clarity: 4, brevity: 2, pairing: 4, convention: 3, uniqueness: 4 },
-    note: "Prefer mcp-connect",
+    note: "Shipped mcp-connect; brevity still weak",
   },
   {
     id: "research-corpus",
     kind: "skill-canonical",
     primaryPair: "researcher",
     dims: { clarity: 4, brevity: 2, pairing: 3, convention: 3, uniqueness: 4 },
-    note: "execution suffix noise",
+    note: "Shipped research-corpus; former -execution suffix retired",
   },
   {
     id: "auditor-protocol",
     kind: "skill-canonical",
     primaryPair: "auditor",
     dims: { clarity: 4, brevity: 2, pairing: 3, convention: 3, uniqueness: 3 },
-    note: "Long; stem ≠ auditor",
+    note: "Shipped auditor-protocol; long stem vs short agent id",
   },
   {
     id: "drift-audit",
     kind: "skill-canonical",
     primaryPair: "drift-guard",
     dims: { clarity: 3, brevity: 2, pairing: 3, convention: 3, uniqueness: 3 },
-    note: "guard/audit split; prefer drift-audit",
+    note: "Shipped drift-audit; guard vs audit metaphor remains",
   },
   {
     id: "implementer-loop",
     kind: "skill-canonical",
     primaryPair: "implementer",
     dims: { clarity: 3, brevity: 2, pairing: 2, convention: 3, uniqueness: 3 },
-    note: "Prefer implementer-loop",
+    note: "Shipped implementer-loop; loop suffix still long",
   },
   {
     id: "integrator-protocol",
     kind: "skill-canonical",
     primaryPair: "integrator",
     dims: { clarity: 3, brevity: 1, pairing: 2, convention: 2, uniqueness: 3 },
-    note: "Worst skill pairing; prefer integrator-protocol",
+    note: "Worst pairing on roster (short agent / long skill)",
   },
   {
     id: "audit-alignment",
@@ -523,59 +526,35 @@ type RenameRow = {
 const RENAME_ROWS: RenameRow[] = [
   {
     layer: "agents",
-    current: "integrator",
+    current: "integrator-mas-agent",
     proposed: "integrator",
     action: "rename",
-    priority: "P0",
-    rationale: "Only -agent suffix",
-  },
-  {
-    layer: "skills",
-    current: "integrator-protocol",
-    proposed: "integrator-protocol",
-    action: "rename",
-    priority: "P0",
-    rationale: "Pair with integrator",
+    priority: "P2",
+    rationale: "SHIPPED #147 — live id integrator",
   },
   {
     layer: "agents",
-    current: "auditor",
+    current: "enterprise-auditor",
     proposed: "auditor",
     action: "rename",
-    priority: "P1",
-    rationale: "Drop enterprise- noise",
+    priority: "P2",
+    rationale: "SHIPPED #148 — live id auditor",
   },
   {
     layer: "agents",
-    current: "drift-guard",
+    current: "workflow-drift-guard",
     proposed: "drift-guard",
     action: "rename",
-    priority: "P1",
-    rationale: "Align with drift-audit",
+    priority: "P2",
+    rationale: "SHIPPED #148 — live id drift-guard",
   },
   {
     layer: "agents",
-    current: "board",
+    current: "project-board",
     proposed: "board",
     action: "rename",
-    priority: "P1",
-    rationale: "Shorter Notes stamp",
-  },
-  {
-    layer: "skills",
-    current: "implementer-loop",
-    proposed: "implementer-loop",
-    action: "rename",
-    priority: "P1",
-    rationale: "Agent stem",
-  },
-  {
-    layer: "skills",
-    current: "test-coverage",
-    proposed: "test-coverage",
-    action: "rename",
-    priority: "P1",
-    rationale: "Pair with test-runner",
+    priority: "P2",
+    rationale: "SHIPPED #149 — live id board",
   },
   {
     layer: "agents",
@@ -583,7 +562,7 @@ const RENAME_ROWS: RenameRow[] = [
     proposed: "implementer",
     action: "keep",
     priority: "P2",
-    rationale: "Excellent score",
+    rationale: "unchanged (never renamed)",
   },
   {
     layer: "agents",
@@ -591,7 +570,7 @@ const RENAME_ROWS: RenameRow[] = [
     proposed: "verifier",
     action: "keep",
     priority: "P2",
-    rationale: "Excellent score",
+    rationale: "unchanged (never renamed)",
   },
   {
     layer: "agents",
@@ -599,7 +578,7 @@ const RENAME_ROWS: RenameRow[] = [
     proposed: "researcher",
     action: "keep",
     priority: "P2",
-    rationale: "Excellent score",
+    rationale: "unchanged (never renamed)",
   },
   {
     layer: "agents",
@@ -607,7 +586,80 @@ const RENAME_ROWS: RenameRow[] = [
     proposed: "test-runner",
     action: "keep",
     priority: "P2",
-    rationale: "Good; polish skill only",
+    rationale: "unchanged (never renamed)",
+  },
+  {
+    layer: "skills",
+    current: "mas-infrastructure-integration",
+    proposed: "integrator-protocol",
+    action: "rename",
+    priority: "P2",
+    rationale: "SHIPPED #146 — live skill integrator-protocol",
+  },
+  {
+    layer: "skills",
+    current: "enterprise-architecture-audit",
+    proposed: "auditor-protocol",
+    action: "rename",
+    priority: "P2",
+    rationale:
+      "SHIPPED #146 — live skill auditor-protocol (artifact dir path kept)",
+  },
+  {
+    layer: "skills",
+    current: "workflow-drift-audit",
+    proposed: "drift-audit",
+    action: "rename",
+    priority: "P2",
+    rationale: "SHIPPED #146 — live skill drift-audit",
+  },
+  {
+    layer: "skills",
+    current: "implementation-execution-loop",
+    proposed: "implementer-loop",
+    action: "rename",
+    priority: "P2",
+    rationale: "SHIPPED #140 — live skill implementer-loop",
+  },
+  {
+    layer: "skills",
+    current: "test-module-coverage",
+    proposed: "test-coverage",
+    action: "rename",
+    priority: "P2",
+    rationale: "SHIPPED #140 — live skill test-coverage",
+  },
+  {
+    layer: "skills",
+    current: "project-board-ssot",
+    proposed: "board-ssot",
+    action: "rename",
+    priority: "P2",
+    rationale: "SHIPPED #140 — live skill board-ssot",
+  },
+  {
+    layer: "skills",
+    current: "board-shell-onboard",
+    proposed: "board-shell",
+    action: "rename",
+    priority: "P2",
+    rationale: "SHIPPED #140 — live skill board-shell",
+  },
+  {
+    layer: "skills",
+    current: "connect-external-mcp",
+    proposed: "mcp-connect",
+    action: "rename",
+    priority: "P2",
+    rationale: "SHIPPED #140 — live skill mcp-connect",
+  },
+  {
+    layer: "skills",
+    current: "research-corpus-execution",
+    proposed: "research-corpus",
+    action: "rename",
+    priority: "P2",
+    rationale: "SHIPPED #140 — live skill research-corpus",
   },
 ];
 
@@ -704,7 +756,7 @@ function changeTone(
 }
 
 export default function NamingRosterAuditCanvas() {
-  const [view, setView] = useCanvasState<View>("view", "plan");
+  const [view, setView] = useCanvasState<View>("view", "stack");
   const [layer, setLayer] = useCanvasState<Layer>("layer", "all");
 
   const agentAvg =
@@ -720,6 +772,9 @@ export default function NamingRosterAuditCanvas() {
         10,
     ) / 10;
   const below18 = AGENT_SCORES.filter((a) => total(a.dims) < 18).length;
+  const lowestAgent = [...AGENT_SCORES].sort(
+    (a, b) => total(a.dims) - total(b.dims),
+  )[0]!;
   const sortedAgents = [...AGENT_SCORES].sort(
     (a, b) => total(b.dims) - total(a.dims),
   );
@@ -731,10 +786,22 @@ export default function NamingRosterAuditCanvas() {
   return (
     <Stack gap={20} style={{ padding: 20, maxWidth: 1140 }}>
       <Stack gap={6}>
-        <H1>Naming roster — scores & stack</H1>
+        <Row gap={10} style={{ alignItems: "center", flexWrap: "wrap" }}>
+          <H1 style={{ margin: 0 }}>Naming roster — live stack</H1>
+          <Pill tone="info" size="sm">
+            hub · not an agent
+          </Pill>
+          <Pill tone="success" size="sm">
+            B-safe SHIPPED
+          </Pill>
+          <Pill tone="neutral" size="sm">
+            8 agents · 12 skills
+          </Pill>
+        </Row>
         <Text tone="secondary" size="small">
-          Verified {AUDIT_DATE} · Dimensions Clarity+Brevity+Pairing+Convention+Uniqueness
-          (/25) · Advisory only
+          Verified {AUDIT_DATE} · Clarity+Brevity+Pairing+Convention+Uniqueness
+          (/25) · Advisory. Default view = live Target stack. Plan/Scores use live
+          ids. Renames tab = historical old→live ledger only (not Task types).
         </Text>
       </Stack>
 
@@ -748,19 +815,19 @@ export default function NamingRosterAuditCanvas() {
             tone={below18 > 0 ? "warning" : "success"}
           />
           <Stat
-            value={String(total(AGENT_SCORES.find((a) => a.id === "integrator")!.dims))}
-            label="Worst agent (integrator)"
-            tone="danger"
+            value={String(total(lowestAgent.dims))}
+            label={`Lowest agent (${lowestAgent.id})`}
+            tone={total(lowestAgent.dims) < 18 ? "danger" : "warning"}
           />
         </Grid>
         <Select
           value={view}
           onChange={(v) => setView(v as View)}
           options={[
-            { value: "plan", label: "Plan table" },
+            { value: "stack", label: "Target stack (live)" },
+            { value: "plan", label: "Plan table (live)" },
             { value: "scores", label: "Scores" },
-            { value: "stack", label: "Target stack" },
-            { value: "renames", label: "Renames" },
+            { value: "renames", label: "Old→live ledger" },
             { value: "future", label: "Future agents" },
           ]}
         />
@@ -769,24 +836,24 @@ export default function NamingRosterAuditCanvas() {
       {view === "plan" ? (
         <Stack gap={16}>
           <Callout tone="success" title="B-safe rename SHIPPED — 2026-08-03">
-            Agent/skill renames landed via #140 + #146–#149 (tip before CI: 333321d;
-            descriptions later prefixed MAS-SSOT-KIT in #153). Plan rows below are
-            keep/keep historical record — filesystem roster is current truth
-            (8 agents / 12 skills / 7 rules). Shared board-ssot remains Entry/Exit for all agents.
+            Live filesystem roster: 8 agents / 12 canonical skills / 7 rules.
+            Agent descriptions prefixed MAS-SSOT-KIT (#153). Shared board-ssot is
+            Entry/Exit for all agents. Plan rows below are keep/keep against the
+            shipped names — not a pending rename plan.
           </Callout>
 
           <Stack gap={8}>
-            <H2>Agent ↔ skill roster (shipped)</H2>
+            <H2>Agent ↔ skill roster (live)</H2>
             <Text tone="secondary" size="small">
-              Column meaning: agent · skills · same (post-rename) · change = keep
+              Columns are live ids (post-rename). Δ keep = no further rename planned.
             </Text>
             <Table
               headers={[
                 "Lane",
-                "Agent now",
-                "Skills now",
-                "Suggested agent",
-                "Suggested skills",
+                "Agent (live)",
+                "Skills (live)",
+                "Agent (same)",
+                "Skills (same)",
                 "Δ agent",
                 "Δ skill",
               ]}
@@ -820,11 +887,18 @@ export default function NamingRosterAuditCanvas() {
           <Stack gap={8}>
             <H2>Shared / skill-only (not owned by one agent)</H2>
             <Table
-              headers={["Skill (now → suggested)", "Role"]}
+              headers={["Skill (live)", "Role"]}
               rows={SHARED_SKILLS.map(([a, b]) => [a, b])}
               striped
             />
           </Stack>
+
+          <Callout tone="neutral" title="Intentional non-renames">
+            Artifact dir .local/workflow-artifacts/enterprise-architecture-audit/
+            · ops doc project-board-collaboration.md · snapshot
+            project-board-snapshot.json — paths kept on purpose (not agent/skill
+            ids).
+          </Callout>
 
           <Card>
             <CardHeader>Confidence</CardHeader>
@@ -834,11 +908,11 @@ export default function NamingRosterAuditCanvas() {
                   Sure about current primary pairings — taken from agent cards.
                 </Text>
                 <Text size="small">
-                  Sure about suggested stems as a clarity target (scores + pairing).
+                  Residual score debt (pairing/brevity) remains advisory — rename
+                  appetite for B-safe is closed.
                 </Text>
                 <Text size="small">
-                  Not sure you should rename agents in one PR — blast radius is high;
-                  skill-only renames (appetite A lite) are safer first.
+                  Historical: skills #140 then agents #146–#149 — B-safe SHIPPED.
                 </Text>
               </Stack>
             </CardBody>
@@ -971,7 +1045,7 @@ export default function NamingRosterAuditCanvas() {
 
       {view === "stack" ? (
         <Stack gap={12}>
-          <H2>Target stack (recommended)</H2>
+          <H2>Live stack (shipped roster)</H2>
           <Table
             headers={["Lane", "Agent", "Primary skill"]}
             rows={STACK.map(([lane, agent, skill]) => [
@@ -981,17 +1055,29 @@ export default function NamingRosterAuditCanvas() {
             ])}
             striped
           />
-          <Callout tone="success" title="Post-rename scores (shipped roster)">
-            Current ids score at or above admission bar: integrator / auditor /
-            drift-guard / board / implementer↔implementer-loop — rename debt closed.
+          <Callout tone="success" title="B-safe rename debt closed">
+            Live ids: board · implementer · test-runner · verifier · integrator ·
+            auditor · drift-guard · researcher. Primary skills match STACK above.
+            Residual score debt (drift-guard / auditor still &lt;18 on pairing/
+            brevity) is advisory only — not a reopen of rename appetite.
+          </Callout>
+          <Callout tone="neutral" title="Intentional path keeps">
+            enterprise-architecture-audit/ (artifact dir) ·
+            project-board-collaboration.md (ops) · project-board-snapshot.json —
+            not agent or skill folder names.
           </Callout>
         </Stack>
       ) : null}
 
       {view === "renames" ? (
         <Stack gap={12}>
+          <Callout tone="warning" title="Historical ledger — not live Task ids">
+            Old = pre-rename id (retired). Live = today’s id after B-safe (#140,
+            #146–#149). Action rename = completed rename; keep = never renamed.
+            Do not treat Old as today’s subagent_type.
+          </Callout>
           <Row gap={12} align="center" justify="space-between">
-            <H2>Current → proposed</H2>
+            <H2>Old → live (SHIPPED)</H2>
             <Select
               value={layer}
               onChange={(v) => setLayer(v as Layer)}
@@ -999,13 +1085,11 @@ export default function NamingRosterAuditCanvas() {
                 { value: "all", label: "All" },
                 { value: "agents", label: "Agents" },
                 { value: "skills", label: "Skills" },
-                { value: "rules", label: "Rules" },
-                { value: "canvases", label: "Canvases" },
               ]}
             />
           </Row>
           <Table
-            headers={["Pri", "Layer", "Current", "Proposed", "Action", "Why"]}
+            headers={["Pri", "Layer", "Old (retired)", "Live (shipped)", "Action", "Why"]}
             rows={filteredRenames.map((r) => [
               <Pill tone={priorityTone(r.priority)} size="sm">
                 {r.priority}
@@ -1023,14 +1107,18 @@ export default function NamingRosterAuditCanvas() {
             striped
           />
           <Card>
-            <CardHeader>Rename appetite</CardHeader>
+            <CardHeader>Rename appetite (closed)</CardHeader>
             <CardBody>
               <Stack gap={6}>
-                <Text size="small">A) P0 only — integrator + integrator-protocol</Text>
                 <Text size="small">
-                  B) A+B — also auditor / drift-guard / board + skill pairs
+                  B-safe SHIPPED 2026-08-03 — this tab is the audit trail only.
                 </Text>
-                <Text size="small">C) Full — include rules *-policy</Text>
+                <Text size="small">
+                  Was B) A+B — auditor / drift-guard / board + skill pairs (done)
+                </Text>
+                <Text size="small">
+                  Was C) Full — rules *-policy (deferred / not in B-safe)
+                </Text>
               </Stack>
             </CardBody>
           </Card>
@@ -1167,8 +1255,9 @@ export default function NamingRosterAuditCanvas() {
 
       <Divider />
       <Text tone="tertiary" size="small">
-        Evidence: .local/workflow-artifacts/audits/naming-roster-audit-2026-08-03.md ·
-        alignment-audit.md
+        Live truth: .cursor/agents/*.md · .cursor/skills/*/SKILL.md · Evidence:
+        .local/workflow-artifacts/alignment/alignment-audit.md · verified{" "}
+        {AUDIT_DATE}
       </Text>
     </Stack>
   );

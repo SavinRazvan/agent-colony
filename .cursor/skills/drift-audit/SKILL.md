@@ -15,7 +15,7 @@ Notes:
  - Advisory-only: no auto-remediation unless user explicitly asks.
 -->
 
-# Workflow drift audit
+# Drift audit
 
 ## Goal
 

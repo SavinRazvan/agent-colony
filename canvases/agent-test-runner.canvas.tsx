@@ -80,7 +80,7 @@ const BOARD_LABELS: Record<string, string> = {
   coverage: "coverage.json",
   artifacts: "test-plan + change-index",
   handoff: "handoff",
-  next: "next agent",
+  next: "verifier (if tests gate)",
 };
 
 const FALLBACK_LABELS: Record<string, string> = {
@@ -113,7 +113,7 @@ const PATTERNS = [
 ];
 
 const ARTIFACTS = [
-  ["tests/modules/<module>/", "Implementation / regression", "CI / prepare.py"],
+  ["tests/modules/<module>/", "Implementation / regression", "CI / prepare.py resolve_gates()"],
   ["coverage.json", "Coverage evidence run", "test-runner / DOC-006"],
   ["coverage-index.md", "After meaningful coverage / 100% closure", "test-runner / implementer"],
   ["IMPLEMENTATION-STATUS.md", "After scoped 100% / count change", "DOC-006 / maintainers"],
@@ -125,7 +125,8 @@ const ARTIFACTS = [
 ];
 
 const PEERS = [
-  ["Outbound", "next (generic)", "handoff format per card"],
+  ["Outbound", "verifier", "When tests gate the PR — handoff --to in_review"],
+  ["Outbound", "next (generic)", "handoff format per card when not gating"],
   ["Inbound", "implementer", "Handoff when tests/coverage needed before merge"],
   ["Inbound", "integrator", "Escalates coverage work to test-runner"],
 ];
@@ -140,53 +141,50 @@ function DagPanel({
   const nodes = mode === "board" ? BOARD_NODES : FALLBACK_NODES;
   const edges = mode === "board" ? BOARD_EDGES : FALLBACK_EDGES;
   const labels = mode === "board" ? BOARD_LABELS : FALLBACK_LABELS;
-  const layout = computeDAGLayout(nodes, edges, {
+  const nodeW = 118;
+  const nodeH = 36;
+  const layout = computeDAGLayout({
+    nodes,
+    edges,
     direction: "horizontal",
-    nodeWidth: 118,
-    nodeHeight: 36,
+    nodeWidth: nodeW,
+    nodeHeight: nodeH,
     rankGap: 36,
     nodeGap: 16,
   });
-  const w = Math.max(...layout.nodes.map((n) => n.x + n.width)) + 16;
-  const h = Math.max(...layout.nodes.map((n) => n.y + n.height)) + 16;
-  const byId = Object.fromEntries(layout.nodes.map((n) => [n.id, n]));
 
   return (
-    <svg width="100%" viewBox={`0 0 ${w} ${h}`} style={{ maxWidth: 920 }}>
-      {layout.edges.map((e, i) => {
-        const a = byId[e.from];
-        const b = byId[e.to];
-        if (!a || !b) return null;
-        const x1 = a.x + a.width;
-        const y1 = a.y + a.height / 2;
-        const x2 = b.x;
-        const y2 = b.y + b.height / 2;
-        return (
-          <line
-            key={i}
-            x1={x1}
-            y1={y1}
-            x2={x2}
-            y2={y2}
-            stroke={tokens.stroke.secondary}
-            strokeWidth={1.5}
-          />
-        );
-      })}
+    <svg
+      width="100%"
+      viewBox={`0 0 ${layout.width} ${layout.height}`}
+      style={{ maxWidth: 920 }}
+    >
+      {layout.edges.map((e, i) => (
+        <line
+          key={i}
+          x1={e.sourceX}
+          y1={e.sourceY}
+          x2={e.targetX}
+          y2={e.targetY}
+          stroke={tokens.stroke.secondary}
+          strokeWidth={1.5}
+          strokeDasharray={e.isBackEdge ? "4 3" : undefined}
+        />
+      ))}
       {layout.nodes.map((n) => (
         <g key={n.id}>
           <rect
             x={n.x}
             y={n.y}
-            width={n.width}
-            height={n.height}
+            width={nodeW}
+            height={nodeH}
             rx={4}
             fill={tokens.fill.secondary}
             stroke={tokens.stroke.primary}
           />
           <text
-            x={n.x + n.width / 2}
-            y={n.y + n.height / 2 + 4}
+            x={n.x + nodeW / 2}
+            y={n.y + nodeH / 2 + 4}
             textAnchor="middle"
             fill={tokens.text.primary}
             fontSize={10}
@@ -216,7 +214,8 @@ export default function AgentTestRunnerCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          Module-focused tests, regressions, coverage.
+          test-runner MAS-SSOT-KIT — Module-focused tests, regressions, coverage.
+          Primary skill: test-coverage.
         </Text>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only
@@ -325,8 +324,9 @@ export default function AgentTestRunnerCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP">
-        Kit server workflow-kit for PR scripts/gates — prefer cursor_workflow project
-        for board. External: only servers listed for this agent in mcp.registry.yaml.
+        Kit server workflow-kit for PR scripts / prepare.py resolve_gates() —
+        prefer cursor_workflow project for board. External: only servers listed
+        for this agent in mcp.registry.yaml.
       </Callout>
 
       <Text tone="tertiary" size="small">

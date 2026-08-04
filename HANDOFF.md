@@ -123,4 +123,4 @@ Mirrored from `mas-workflow-kit` on 2026-07-17 (`1cb6dd7`). Board SSOT, Pattern 
 
 ---
 
-**Last updated:** 2026-07-19 · **Next:** `project status` → claim Ready (or schedule deferred Backlog, e.g. EA-019 live Marketplace when ready)
+**Last updated:** 2026-08-03 · **Next:** `project status` → claim Ready (see IMPLEMENTATION-STATUS for B-safe rename ship / board SSOT; schedule deferred Backlog e.g. EA-019 live Marketplace when ready)

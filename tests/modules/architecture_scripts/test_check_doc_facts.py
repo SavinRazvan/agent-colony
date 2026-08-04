@@ -82,7 +82,7 @@ def test_missing_agent_in_roster_hub_fails_doc008(tmp_path: Path) -> None:
     needle = (
         '  {\n'
         '    id: "researcher",\n'
-        '    role: "Shipped corpus researcher — packs under _research_results/ (opt-in)",\n'
+        '    role: "researcher MAS-SSOT-KIT · skill research-corpus (opt-in packs)",\n'
         '    lane: "Research (opt-in corpus)",\n'
         "  },\n"
     )

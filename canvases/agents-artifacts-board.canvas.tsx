@@ -103,19 +103,19 @@ const WHO_WRITES: string[][] = [
   [
     "verifier",
     "Done or In review + failure Notes",
-    "verification-*.md under workflow-artifacts",
+    ".local/workflow-artifacts/pr/ (claims vs evidence Notes)",
     "Claims vs evidence",
   ],
   [
     "auditor",
     "Audit card Status + artifact paths in Notes",
-    "auditor-protocol/ · alignment/",
+    ".local/workflow-artifacts/enterprise-architecture-audit/ · alignment/",
     "Evidence-only — no product fixes",
   ],
   [
     "drift-guard",
     "Drift-pass card Done; remediation via Ready",
-    "drift/drift-audit.md · drift-todos.md",
+    ".local/workflow-artifacts/drift/drift-audit.md · drift-todos.md",
     "Never silent dual-write Status",
   ],
   [
@@ -149,7 +149,7 @@ const ARTIFACT_LANES: string[][] = [
     "PR Pattern A (local evidence)",
     ".local/workflow-artifacts/pr/{review,prep,merge}.md",
     "review-pr · prepare-pr · merge-pr",
-    "Gates in prepare.py — not a second Status",
+    "prepare.py resolve_gates() — not a second Status",
   ],
   [
     "Audit / alignment",
@@ -337,10 +337,17 @@ export default function AgentsArtifactsBoardCanvas() {
   return (
     <Stack gap={20} style={{ padding: 20, maxWidth: 1040 }}>
       <Stack gap={6}>
-        <H1>Agents · artifacts · board</H1>
+        <Row gap={10} style={{ alignItems: "center", flexWrap: "wrap" }}>
+          <H1 style={{ margin: 0 }}>Agents · artifacts · board</H1>
+          <Pill size="sm" tone="info">
+            hub · not an agent
+          </Pill>
+        </Row>
         <Text tone="secondary">
           Whole picture for board_only SSOT — who writes Status, who writes
-          evidence, and how they meet on Exit.
+          evidence, and how they meet on Exit. Live agent ids only (board ·
+          implementer · test-runner · verifier · integrator · auditor ·
+          drift-guard · researcher).
         </Text>
         <Row gap={8} style={{ flexWrap: "wrap" }}>
           <Pill size="sm" tone="neutral" active>

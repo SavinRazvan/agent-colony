@@ -73,7 +73,7 @@ const BOARD_LABELS: Record<string, string> = {
   claim: "claim / create card",
   intake: "Intake → Plan",
   wire: "templates → wire",
-  verify: "validate + gates",
+  verify: "integrate validate + resolve_gates()",
   handoff: "escalate / close",
 };
 
@@ -81,7 +81,7 @@ const FALLBACK_LABELS: Record<string, string> = {
   session: "session-pointer.md",
   intake: "Intake → Plan",
   wire: "templates → wire",
-  verify: "validate + gates",
+  verify: "integrate validate + resolve_gates()",
   handoff: "escalate / close",
 };
 
@@ -89,6 +89,7 @@ const READ_FIRST = [
   [".cursor/skills/integrator-protocol/SKILL.md", "Integration canon"],
   [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
   ["python3 -m cursor_workflow integrate validate", "Wire verification"],
+  ["prepare.py resolve_gates()", "PR / kit-dev gate SSOT"],
   ["check_governance_consistency.py", "When policy docs change"],
 ];
 
@@ -96,6 +97,7 @@ const PATTERNS = [
   ["Pattern A", "claim --last / handoff --last / create-from-template"],
   ["Promote before PR", "promote-to-issue OR mention-pr when shipping integration"],
   ["Tier-1", "claim/set-status→In progress Start date; Size/Estimate per skill table"],
+  ["Verify", "integrate validate + prepare.py resolve_gates() + governance when needed"],
   ["STANDALONE", "Product lives only in mas-workflow-kit-project-ssot"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/integrator via --agent"],
@@ -109,10 +111,10 @@ const ARTIFACTS = [
 ];
 
 const PEERS = [
-  ["Escalation", "auditor", "Architecture-impacting integration"],
-  ["Escalation", "test-runner", "Coverage work"],
-  ["Escalation", "implementer", "Product src/ handoff"],
-  ["Escalation", "PR maintainer skills", "pr-workflow pipeline"],
+  ["Escalation", "auditor", "Architecture-impacting → auditor-protocol"],
+  ["Escalation", "test-runner", "Coverage → test-coverage"],
+  ["Escalation", "implementer", "Product src/ → implementer-loop"],
+  ["Escalation", "pr-workflow", "Maintainer PR pipeline (.agents/skills)"],
 ];
 
 function DagPanel({
@@ -125,53 +127,50 @@ function DagPanel({
   const nodes = mode === "board" ? BOARD_NODES : FALLBACK_NODES;
   const edges = mode === "board" ? BOARD_EDGES : FALLBACK_EDGES;
   const labels = mode === "board" ? BOARD_LABELS : FALLBACK_LABELS;
-  const layout = computeDAGLayout(nodes, edges, {
+  const nodeW = 118;
+  const nodeH = 36;
+  const layout = computeDAGLayout({
+    nodes,
+    edges,
     direction: "horizontal",
-    nodeWidth: 118,
-    nodeHeight: 36,
+    nodeWidth: nodeW,
+    nodeHeight: nodeH,
     rankGap: 36,
     nodeGap: 16,
   });
-  const w = Math.max(...layout.nodes.map((n) => n.x + n.width)) + 16;
-  const h = Math.max(...layout.nodes.map((n) => n.y + n.height)) + 16;
-  const byId = Object.fromEntries(layout.nodes.map((n) => [n.id, n]));
 
   return (
-    <svg width="100%" viewBox={`0 0 ${w} ${h}`} style={{ maxWidth: 920 }}>
-      {layout.edges.map((e, i) => {
-        const a = byId[e.from];
-        const b = byId[e.to];
-        if (!a || !b) return null;
-        const x1 = a.x + a.width;
-        const y1 = a.y + a.height / 2;
-        const x2 = b.x;
-        const y2 = b.y + b.height / 2;
-        return (
-          <line
-            key={i}
-            x1={x1}
-            y1={y1}
-            x2={x2}
-            y2={y2}
-            stroke={tokens.stroke.secondary}
-            strokeWidth={1.5}
-          />
-        );
-      })}
+    <svg
+      width="100%"
+      viewBox={`0 0 ${layout.width} ${layout.height}`}
+      style={{ maxWidth: 920 }}
+    >
+      {layout.edges.map((e, i) => (
+        <line
+          key={i}
+          x1={e.sourceX}
+          y1={e.sourceY}
+          x2={e.targetX}
+          y2={e.targetY}
+          stroke={tokens.stroke.secondary}
+          strokeWidth={1.5}
+          strokeDasharray={e.isBackEdge ? "4 3" : undefined}
+        />
+      ))}
       {layout.nodes.map((n) => (
         <g key={n.id}>
           <rect
             x={n.x}
             y={n.y}
-            width={n.width}
-            height={n.height}
+            width={nodeW}
+            height={nodeH}
             rx={4}
             fill={tokens.fill.secondary}
             stroke={tokens.stroke.primary}
           />
           <text
-            x={n.x + n.width / 2}
-            y={n.y + n.height / 2 + 4}
+            x={n.x + nodeW / 2}
+            y={n.y + nodeH / 2 + 4}
             textAnchor="middle"
             fill={tokens.text.primary}
             fontSize={10}
@@ -184,7 +183,7 @@ function DagPanel({
   );
 }
 
-export default function AgentIntegratorMasAgentCanvas() {
+export default function AgentIntegratorCanvas() {
   const { tokens } = useHostTheme();
   const [mode, setMode] = useCanvasState<SsotMode>("ssotMode", "board");
 
@@ -201,8 +200,9 @@ export default function AgentIntegratorMasAgentCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          Integrates new agents, skills, MCP, and infrastructure expansions —
-          procedural, evidence-only, Pattern A.
+          integrator MAS-SSOT-KIT — Integrates new agents, skills, MCP, and
+          infrastructure expansions into the MAS Workflow Kit — procedural,
+          evidence-only, Pattern A compliant.
         </Text>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only
@@ -250,8 +250,8 @@ export default function AgentIntegratorMasAgentCanvas() {
           <Text>2. Plan: board card with scope and acceptance criteria.</Text>
           <Text>3. Templates → wire agents/skills/MCP into kit structure.</Text>
           <Text>
-            4. Verify: contributors validate, gates, governance consistency,
-            integrate validate.
+            4. Verify: integrate validate; prepare.py resolve_gates(); contributors
+            validate; check_governance_consistency when policy docs change.
           </Text>
           <Text>
             5. Handoff: Status done or in_review if verify failed; Notes with

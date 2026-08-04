@@ -3,7 +3,7 @@ name: test-coverage
 description: Module-focused tests and coverage evidence for workflow scripts and project code.
 ---
 
-# Test module coverage
+# Test coverage
 
 ## When
 

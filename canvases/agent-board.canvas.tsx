@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-08-03";
 const SOURCES =
-  ".cursor/agents/board.md · board-ssot/SKILL.md · board-shell/SKILL.md · ADR-006";
+  ".cursor/agents/board.md · board-ssot/SKILL.md · board-shell/SKILL.md · ADR-006 · ADR-008";
 
 const GOALS = [
   "Independent-governed helper for GitHub Project SSOT",
@@ -90,6 +90,7 @@ const READ_FIRST = [
   [".local/user_settings/github.collaboration.yaml", "project_ssot block"],
   [".ai_infra/templates/project-board/README.md", "Card templates"],
   ["ADR-006", "Independent-governed agent"],
+  ["ADR-008", "Project board SSOT (board_only)"],
 ];
 
 const PATTERNS = [
@@ -124,53 +125,50 @@ function DagPanel({
   const nodes = mode === "board" ? BOARD_NODES : FALLBACK_NODES;
   const edges = mode === "board" ? BOARD_EDGES : FALLBACK_EDGES;
   const labels = mode === "board" ? BOARD_LABELS : FALLBACK_LABELS;
-  const layout = computeDAGLayout(nodes, edges, {
+  const nodeW = 118;
+  const nodeH = 36;
+  const layout = computeDAGLayout({
+    nodes,
+    edges,
     direction: "horizontal",
-    nodeWidth: 118,
-    nodeHeight: 36,
+    nodeWidth: nodeW,
+    nodeHeight: nodeH,
     rankGap: 36,
     nodeGap: 16,
   });
-  const w = Math.max(...layout.nodes.map((n) => n.x + n.width)) + 16;
-  const h = Math.max(...layout.nodes.map((n) => n.y + n.height)) + 16;
-  const byId = Object.fromEntries(layout.nodes.map((n) => [n.id, n]));
 
   return (
-    <svg width="100%" viewBox={`0 0 ${w} ${h}`} style={{ maxWidth: 920 }}>
-      {layout.edges.map((e, i) => {
-        const a = byId[e.from];
-        const b = byId[e.to];
-        if (!a || !b) return null;
-        const x1 = a.x + a.width;
-        const y1 = a.y + a.height / 2;
-        const x2 = b.x;
-        const y2 = b.y + b.height / 2;
-        return (
-          <line
-            key={i}
-            x1={x1}
-            y1={y1}
-            x2={x2}
-            y2={y2}
-            stroke={tokens.stroke.secondary}
-            strokeWidth={1.5}
-          />
-        );
-      })}
+    <svg
+      width="100%"
+      viewBox={`0 0 ${layout.width} ${layout.height}`}
+      style={{ maxWidth: 920 }}
+    >
+      {layout.edges.map((e, i) => (
+        <line
+          key={i}
+          x1={e.sourceX}
+          y1={e.sourceY}
+          x2={e.targetX}
+          y2={e.targetY}
+          stroke={tokens.stroke.secondary}
+          strokeWidth={1.5}
+          strokeDasharray={e.isBackEdge ? "4 3" : undefined}
+        />
+      ))}
       {layout.nodes.map((n) => (
         <g key={n.id}>
           <rect
             x={n.x}
             y={n.y}
-            width={n.width}
-            height={n.height}
+            width={nodeW}
+            height={nodeH}
             rx={4}
             fill={tokens.fill.secondary}
             stroke={tokens.stroke.primary}
           />
           <text
-            x={n.x + n.width / 2}
-            y={n.y + n.height / 2 + 4}
+            x={n.x + nodeW / 2}
+            y={n.y + nodeH / 2 + 4}
             textAnchor="middle"
             fill={tokens.text.primary}
             fontSize={10}
@@ -183,7 +181,7 @@ function DagPanel({
   );
 }
 
-export default function AgentProjectBoardCanvas() {
+export default function AgentBoardCanvas() {
   const { tokens } = useHostTheme();
   const [mode, setMode] = useCanvasState<SsotMode>("ssotMode", "board");
 
@@ -200,8 +198,8 @@ export default function AgentProjectBoardCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          Independent-governed helper — list/create/move GitHub Project SSOT cards via
-          project_ssot CLI.
+          board MAS-SSOT-KIT — Independent-governed helper — list/create/move
+          GitHub Project SSOT cards via project_ssot CLI.
         </Text>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only
@@ -294,7 +292,7 @@ export default function AgentProjectBoardCanvas() {
               Rate-limit: EXIT_QUEUED (6) → outbox status / flush; do not hammer
               GraphQL.
             </Text>
-            <Text>CLI helper: project guide. ADR-006 independent-governed.</Text>
+            <Text>CLI helper: project guide. ADR-006 independent-governed · ADR-008 board_only SSOT.</Text>
           </Stack>
         </CardBody>
       </Card>

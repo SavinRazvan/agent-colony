@@ -19,13 +19,13 @@ import {
 /**
  * Inventory of GitHub API hammering / safety protections in MAS Workflow Kit.
  * Source: project_outbox.py, project_cli/handlers, agent Board-rights, ADR-008.
- * Verified: 2026-08-03 — post rename ship + docs/canvas reality align; API safety content unchanged (agent ids: auditor/board/drift-guard/integrator)
+ * Verified: 2026-08-03 — post rename + canvas reality; G1 wording aligned to GraphQL remaining via REST cache (agent ids: auditor/board/drift-guard/integrator)
  */
 
 const FIXED = [
   {
     id: "G1",
-    what: "Cached REST rate_limit precheck (TTL 45s) before Pattern A writes — EXIT_QUEUED without GraphQL",
+    what: "Cached GraphQL remaining via REST rate_limit (TTL 45s) before Pattern A writes — EXIT_QUEUED without GraphQL mutation",
   },
   {
     id: "G2",
@@ -163,8 +163,8 @@ const GAPS = [
 const CONFIG = [
   ["outbox.enabled", "true", "Master switch"],
   ["min_graphql_remaining", "200", "Flush + precheck gate"],
-  ["precheck_writes", "true", "Cached REST before Pattern A writes"],
-  ["quota_cache_ttl_seconds", "45", "REST cache TTL"],
+  ["precheck_writes", "true", "Cached GraphQL remaining before Pattern A writes"],
+  ["quota_cache_ttl_seconds", "45", "REST→GraphQL quota cache TTL"],
   ["quota_cache_path", ".local/…/graphql-quota-cache.json", "Cache file"],
   ["dedupe_pending", "true", "One pending row per fingerprint"],
   ["max_flush_per_run", "10", "Ops per flush"],
@@ -181,8 +181,10 @@ export default function GithubApiSafetyCanvas() {
           <Pill tone="success">G1–G5 done</Pill>
         </Row>
         <Text tone="secondary">
-          How MAS Workflow Kit limits API hammering on Project writes — hard
-          (code), soft (policy), and accepted residual gaps. Post G1–G5.
+          How MAS-SSOT-KIT limits API hammering on Project writes — hard (code),
+          soft (policy), and accepted residual gaps. Post G1–G5. Soft layer
+          binds all 8 live agents (auditor · board · drift-guard · implementer ·
+          integrator · researcher · test-runner · verifier).
         </Text>
       </Stack>
 
@@ -192,11 +194,13 @@ export default function GithubApiSafetyCanvas() {
         <Stat value="CODE=6" label="Do not retry" />
       </Grid>
 
-      <Callout tone="info">
-        Verdict: Pattern A writes use cached precheck + Forbidden/429 queue +
-        pending dedupe. Safe when agents use{" "}
+      <Callout tone="info" title="Verdict">
+        Pattern A writes use cached precheck + Forbidden/429 queue + pending
+        dedupe. Safe when agents use{" "}
         <Text weight="semibold">python3 -m cursor_workflow project …</Text> and
-        treat EXIT_QUEUED (6) as soft-success (no retry loop).
+        treat EXIT_QUEUED (6) as soft-success (no retry loop). Ops doc path
+        project-board-collaboration.md is intentional (not the retired
+        project-board agent id).
       </Callout>
 
       <H2>Fixed (G1–G5)</H2>

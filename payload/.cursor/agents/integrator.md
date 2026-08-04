@@ -4,7 +4,7 @@ model: auto
 description: integrator MAS-SSOT-KIT — Integrates new agents, skills, MCP, and infrastructure expansions into the MAS Workflow Kit — procedural, evidence-only, Pattern A compliant.
 ---
 
-# MAS infrastructure integrator
+# Integrator
 
 ## Role
 

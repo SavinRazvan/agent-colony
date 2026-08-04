@@ -3,7 +3,7 @@ name: research-corpus
 description: Brief-driven multi-round research into _research_results packs (external GitHub/local or host self).
 ---
 
-# Research corpus execution
+# Research corpus
 
 ## When
 
