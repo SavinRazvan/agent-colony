@@ -1,7 +1,7 @@
 """
 File: drift_checks.py
 Path: .ai_infra/scripts/workflow/drift_checks.py
-Role: Individual DRIFT-001…010 (+004b) check functions for workflow drift validation.
+Role: Individual DRIFT-001…011 (+004b) check functions for workflow drift validation.
 Used By:
  - .ai_infra/scripts/workflow/check_drift.py
 Depends On:
@@ -19,6 +19,11 @@ import time
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+
+_AI_INFRA = Path(__file__).resolve().parents[2]
+if str(_AI_INFRA) not in sys.path:
+    sys.path.insert(0, str(_AI_INFRA))
+from paths import resolve_project_python  # noqa: E402
 
 
 class Severity(str, Enum):
@@ -133,8 +138,6 @@ def _parse_implementation_test_count(text: str) -> int | None:
 
 
 def _collect_pytest_count(root: Path) -> int:
-    from paths import resolve_project_python
-
     proc = subprocess.run(
         [resolve_project_python(root), "-m", "pytest", "--collect-only", "-q"],
         cwd=root,
@@ -809,6 +812,57 @@ def check_drift010(paths: DriftPaths) -> CheckResult:
     )
 
 
+# Live kit agent ids (post B-safe rename). Keep in sync with AGENTS.md / DOC-008.
+LIVE_KIT_AGENT_IDS: frozenset[str] = frozenset(
+    {
+        "auditor",
+        "board",
+        "drift-guard",
+        "implementer",
+        "integrator",
+        "researcher",
+        "test-runner",
+        "verifier",
+    }
+)
+
+
+def check_drift011(paths: DriftPaths) -> CheckResult:
+    """
+    Goal/doctrine pulse (falsifiable): `.cursor/agents/*.md` basenames must equal
+    the eight live kit agent ids. Missing/extra agents = doctrine drift.
+    """
+    agents_dir = paths.root / ".cursor" / "agents"
+    if not agents_dir.is_dir():
+        return CheckResult(
+            check_id="DRIFT-011",
+            severity=Severity.P1,
+            passed=False,
+            detail=".cursor/agents/ missing — cannot verify agent roster",
+        )
+    on_disk = {p.stem for p in agents_dir.glob("*.md") if p.is_file()}
+    missing = sorted(LIVE_KIT_AGENT_IDS - on_disk)
+    extra = sorted(on_disk - LIVE_KIT_AGENT_IDS)
+    if not missing and not extra:
+        return CheckResult(
+            check_id="DRIFT-011",
+            severity=Severity.P1,
+            passed=True,
+            detail=f"agent roster coherent ({len(LIVE_KIT_AGENT_IDS)} live ids)",
+        )
+    parts: list[str] = []
+    if missing:
+        parts.append(f"missing={','.join(missing)}")
+    if extra:
+        parts.append(f"extra={','.join(extra)}")
+    return CheckResult(
+        check_id="DRIFT-011",
+        severity=Severity.P1,
+        passed=False,
+        detail="; ".join(parts),
+    )
+
+
 KIT_DEV_CHECKS = (
     check_drift001,
     check_drift002,
@@ -821,6 +875,7 @@ KIT_DEV_CHECKS = (
     check_drift008,
     check_drift009,
     check_drift010,
+    check_drift011,
 )
 
 CONSUMER_CHECKS = (

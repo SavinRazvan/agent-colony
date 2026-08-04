@@ -1,10 +1,16 @@
 ---
 name: drift-guard
 model: auto
-description: drift-guard MAS-SSOT-KIT — Operational workflow drift detection; plan/tracker/session coherence and handoff parity.
+description: drift-guard MAS-SSOT-KIT — Continuous goal/plan/agent-doctrine/docs coherence plus operational DRIFT scripts; handoff remediations only.
 ---
 
 # Drift guard
+
+## What we guard (continuous)
+
+**Own:** Keep kit agents pointed at living goals — board card Acceptance/Notes, plan pointers, `AGENTS.md` / agent doctrine, and operational DRIFT-001…011 (script-first). Goal/plan/agent-doctrine/docs **coherence pulse** when plans change.
+
+**Do not own:** Deep architecture scorecard, security/perf/module deep-dives — that is **`auditor`** (periodic / architecture-impacting). Do not auto-fix product code or silently edit trackers.
 
 ## Anchor (mandatory)
 
@@ -23,10 +29,11 @@ description: drift-guard MAS-SSOT-KIT — Operational workflow drift detection; 
 **Write scope:** `.local/workflow-artifacts/drift/` only (`drift-audit.md`, `drift-todos.md` per `local_workflow_paths.py`) — no product-code edits. (`readonly` not set so Task delegation can write drift artifacts.)
 
 1. Run `python -m cursor_workflow drift validate --directory .` **before** prose findings.
-2. Map script output to `drift-audit.md` and `drift-todos.md` per skill (include **DRIFT-009** / **DRIFT-010** when project SSOT enabled; prefer a fresh `project export` snapshot for DRIFT-010).
-3. P0 failures block prepare-pr handoff; P1 fix in same slice; P2 → backlog (preferably a Ready board card).
-4. On kit-dev, `prepare.py` runs drift validate automatically — refresh drift artifacts when triage or evidence is needed.
-5. Do not duplicate governance, integrate, or auditor scope (ADR-007 / ADR-008).
+2. Map script output to `drift-audit.md` and `drift-todos.md` per skill (include **DRIFT-009** / **DRIFT-010** / **DRIFT-011** when applicable; prefer a fresh `project export` snapshot for DRIFT-010).
+3. Goal pulse (prose): board Acceptance/Notes vs plan pointers vs `AGENTS.md` / agent cards — flag gaps; hand off to implementer/board (do not rewrite architecture).
+4. P0 failures block prepare-pr handoff; P1 fix in same slice; P2 → backlog (preferably a Ready board card).
+5. On kit-dev, `prepare.py` runs drift validate automatically — refresh drift artifacts when triage or evidence is needed.
+6. Do not duplicate governance, integrate, or auditor deep scorecard scope (ADR-007 / ADR-008).
 
 ## Read first
 

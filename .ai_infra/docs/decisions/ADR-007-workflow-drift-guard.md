@@ -9,6 +9,15 @@ MAS Workflow Kit enforces infrastructure parity via `integrate validate`, govern
 
 The **drift-guard** capability closes that gap without duplicating architecture audits (`auditor`) or claim verification (`verifier`).
 
+### Goal pulse vs EA audit (ownership split)
+
+| Loop | Owner | Cadence | Question |
+|------|-------|---------|----------|
+| **Goal / plan / agent-doctrine / docs coherence** + DRIFT scripts | `drift-guard` + `drift-audit` | Continuous (slice closure / prepare) | Are we still pointed at living goals? |
+| **Architecture / security / perf / granularity / docs quality** | `auditor` + `auditor-protocol` (CHK-*) | Periodic or architecture-impacting PR | Is the system sound and evidenced? |
+
+Drift does **not** rewrite architecture; auditor does **not** own continuous plan-pulse prose.
+
 ## Decision
 
 Introduce a script-first drift validator and MAS-integrated agent per [ADR-006](ADR-006-agent-integration-model.md).
@@ -28,7 +37,7 @@ Introduce a script-first drift validator and MAS-integrated agent per [ADR-006](
 
 | Profile | When | Checks |
 |---------|------|--------|
-| `kit-dev` | Default for `mas-workflow-kit-project-ssot` (kit product repo) | DRIFT-001…010 + 004b (full set; 004b/009–010 when `board_only`) |
+| `kit-dev` | Default for `mas-workflow-kit-project-ssot` (kit product repo) | DRIFT-001…011 + 004b (full set; 004b/009–011 when applicable) |
 | `consumer` | `work-tracker.md` contains exemplar `STARTER-001` | DRIFT-005, DRIFT-008 (relaxed tracker rules) |
 
 Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
@@ -48,6 +57,7 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 | DRIFT-008 | P2 | consumer | Scaffold trackers present |
 | DRIFT-009 | P1 | kit-dev | When `project_ssot.sync_policy: board_only`, no competing `in_progress` in work-tracker Active (ADR-008) |
 | DRIFT-010 | P1 | kit-dev | When `board_only`, board Status vs open PRs / stale In progress / merged-but-not-Done (uses read-only `project export` snapshot; skips offline) |
+| DRIFT-011 | P1 | kit-dev | Agent roster coherence: `.cursor/agents/*.md` basenames match the eight live kit agent ids (goal/doctrine pulse — falsifiable) |
 
 **Exit policy:** exit code 1 on any P0 failure; P1/P2 advisory in output (same as `integrate validate`). Pending `project_ssot.outbox` ops are **not** a drift failure — cite `project outbox status` in artifacts when relevant.
 

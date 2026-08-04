@@ -23,14 +23,14 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-03";
+const VERIFIED = "2026-08-04";
 const SOURCES =
   ".cursor/agents/auditor.md · auditor-protocol/SKILL.md · board-ssot/SKILL.md";
 
 const GOALS = [
-  "Evidence-only enterprise architecture audit",
-  "Writes workflow artifacts and tracker hooks for other agents",
-  "Propose edits in audit-actions; implementer applies",
+  "Deep/periodic evidence architecture audit (CHK-* checklists)",
+  "Security/perf/granularity/docs/agent-contracts — not continuous plan pulse",
+  "Artifacts only; implementer applies Ready cards from actions/todos",
 ];
 
 const BOARD_NODES = [
@@ -83,9 +83,9 @@ const FALLBACK_LABELS: Record<string, string> = {
 };
 
 const READ_FIRST = [
-  [".cursor/skills/auditor-protocol/SKILL.md", "Audit canon"],
+  [".cursor/skills/auditor-protocol/SKILL.md", "CHK-* checklists + phases"],
   [".cursor/skills/audit-module-map/SKILL.md", "Optional deep map"],
-  [".cursor/skills/audit-orchestration/SKILL.md", "Optional orchestration"],
+  [".cursor/skills/audit-orchestration/SKILL.md", "Quarterly vs PR cadence"],
   [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
   [".ai_infra/docs/roadmap/alignment-audit-schema.md", "Alignment schema"],
 ];
@@ -133,7 +133,7 @@ const ARTIFACTS = [
 
 const PEERS = [
   ["Outbound", "implementer", "Continue from Notes with artifact paths"],
-  ["Outbound", "drift-guard", "audit-orchestration Phase 3 — P0/P1 drift artifacts"],
+  ["Outbound", "drift-guard", "orch Phase 3 — goal pulse + DRIFT validate"],
   ["Outbound", "verifier", "audit-orchestration Phase 3 — spot-check top claims"],
 ];
 
@@ -220,8 +220,9 @@ export default function AgentAuditorCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          auditor MAS-SSOT-KIT — Evidence-only enterprise architecture audit;
-          writes workflow artifacts and tracker hooks for other agents.
+          auditor MAS-SSOT-KIT — Deep/periodic evidence architecture audit
+          (CHK-* security/perf/granularity/docs); continuous plan pulse is
+          drift-guard. Writes workflow artifacts for other agents.
         </Text>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only
@@ -266,7 +267,11 @@ export default function AgentAuditorCanvas() {
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
           <Text>1. project status; create [AUDIT] slice card if needed; claim.</Text>
-          <Text>2. Evidence-only audit per auditor-protocol/SKILL.md.</Text>
+          <Text>
+            2. Evidence-only audit per auditor-protocol — tick CHK-ARCH /
+            GRANULARITY / PERF / SEC-CODE / SEC-AGENT / INFRA-KIT / DOCS (full or
+            focused table for touched surfaces).
+          </Text>
           <Text>
             3. Write .local/workflow-artifacts/enterprise-architecture-audit/
             enterprise-architecture-audit.md + enterprise-audit-actions.md
@@ -276,7 +281,8 @@ export default function AgentAuditorCanvas() {
           <Text>4. Propose tracker edits in audit-actions — implementer applies.</Text>
           <Text>
             5. Exit: artifacts + change-index + updates-log; Status in_review/done;
-            Notes with artifact paths for implementer.
+            Notes with artifact paths; orch Phase 3 → drift-guard goal pulse /
+            verifier as needed.
           </Text>
         </Stack>
       </CollapsibleSection>

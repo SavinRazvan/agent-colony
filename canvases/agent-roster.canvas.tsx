@@ -16,8 +16,8 @@ import {
   useHostTheme,
 } from "cursor/canvas";
 
-const VERIFIED = "2026-08-03";
-const SOURCES = "Aggregated from .cursor/agents/*.md";
+const VERIFIED = "2026-08-04";
+const SOURCES = "Aggregated from .cursor/agents/*.md (post goal-pulse / CHK-*)";
 
 const AGENTS = [
   {
@@ -36,12 +36,12 @@ const AGENTS = [
   {
     id: "drift-guard",
     description:
-      "drift-guard MAS-SSOT-KIT — Operational workflow drift detection; plan/tracker/session coherence and handoff parity.",
+      "drift-guard MAS-SSOT-KIT — Continuous goal/plan/agent-doctrine/docs coherence plus operational DRIFT scripts; handoff remediations only.",
   },
   {
     id: "auditor",
     description:
-      "auditor MAS-SSOT-KIT — Evidence-only enterprise architecture audit; writes workflow artifacts and tracker hooks for other agents.",
+      "auditor MAS-SSOT-KIT — Deep/periodic evidence architecture audit (CHK-* security/perf/granularity/docs); not continuous plan pulse.",
   },
   {
     id: "board",
@@ -91,12 +91,12 @@ const EDGE_LABELS: Record<string, string> = {
   "board→implementer": "handoff next=implementer",
   "implementer→verifier": "Exit --next verifier",
   "implementer→test-runner": "when tests/coverage gate PR",
-  "implementer→drift-guard": "P0/P1 after drift-validate",
+  "implementer→drift-guard": "P0/P1 after drift-validate / goal pulse",
   "test-runner→verifier": "tests gate the PR",
-  "drift-guard→board": "dual-write remediation",
-  "drift-guard→implementer": "dual-write remediation",
-  "auditor→implementer": "Notes + artifact paths",
-  "auditor→drift-guard": "audit-orchestration Phase 3",
+  "drift-guard→board": "remediation Notes/Ready",
+  "drift-guard→implementer": "remediation Notes/Ready",
+  "auditor→implementer": "CHK-* artifacts → Ready",
+  "auditor→drift-guard": "orch Phase 3 goal pulse",
   "auditor→verifier": "audit-orchestration Phase 3",
   "integrator→implementer": "escalate product src/",
   "integrator→test-runner": "escalate coverage",
@@ -213,7 +213,12 @@ export default function AgentRosterCanvas() {
         <Callout tone="info" title="Live ids (post B-safe rename)">
           auditor · board · drift-guard · implementer · integrator · researcher ·
           test-runner · verifier — skills: board-ssot, implementer-loop,
-          test-coverage, auditor-protocol, drift-audit, integrator-protocol, …
+          test-coverage, auditor-protocol (CHK-*), drift-audit (goal pulse +
+          DRIFT-001…011), integrator-protocol, …
+        </Callout>
+        <Callout tone="neutral" title="Quality lane split (2026-08-04)">
+          Continuous plan/agent/docs coherence → drift-guard. Deep
+          security/perf/granularity/docs scorecard → auditor. No extra agents.
         </Callout>
         <Callout tone="neutral" title="Board lifecycle (all 8)">
           Tier-1: Start date on claim or first In progress; Size↔Estimate points

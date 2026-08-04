@@ -100,7 +100,9 @@ When the **maintainer workflow** requires alignment files for `--arch-impacting`
   - `.local/workflow-artifacts/alignment/alignment-todos.md`
 - Use **`.ai_infra/docs/roadmap/alignment-audit-schema.md`** for finding shape and P0/P1/P2 handling.
 - Scope: compare **touched** roadmap/plan/strategy docs, rules/skills/agents, `src/` + `tests/modules/` relevant to the PR — not a whole-repo scorecard.
+- Include a short **CHK-*** tick table (below) for dimensions that touch the PR; mark N/A for untouched dimensions.
 - **Optional:** note in `alignment-audit.md` that a full enterprise scorecard was deferred.
+- Continuous plan/agent-doctrine pulse remains **`drift-guard`** — do not duplicate DRIFT-011 prose here.
 
 ---
 
@@ -174,6 +176,20 @@ Python-specific analysis mode: ON
 
 ## Mandatory phases (execute in order; show phase boundaries in the written report)
 
+### Named checklists (CHK-*) — mandatory coverage
+
+Map each checklist into the matching phase. In the written report (or focused alignment), include a **CHK tick table**: id · status (Pass / Gap / N/A / Unknown) · evidence paths. **Do not** invent new skill folders for these dimensions.
+
+| Id | Phase | Must cite |
+|----|-------|-----------|
+| `CHK-ARCH` | 2 | Style, dependency direction, cycles |
+| `CHK-GRANULARITY` | 2 / 4 | God modules, blurred boundaries vs `.ai_infra/docs/governance/module-boundaries.md` (kit planes) or consumer `src/` modules |
+| `CHK-PERF` | 3 | Hot paths, N+1/queue clues; **Unknown** if none observable |
+| `CHK-SEC-CODE` | 3 | Secrets handling, injection/trust boundaries in kit scripts / app code in scope |
+| `CHK-SEC-AGENT` | 1 / 3 | Agent write-scope, hard-stops, MCP `.cursor/mcp.registry.yaml` allowlists, no product auto-fix — **contract compliance**, not LLM jailbreak proof |
+| `CHK-INFRA-KIT` | 1 / 3 | Three planes, install/activate, `integrate validate` clues — **not** consumer cloud infra product |
+| `CHK-DOCS` | 5 | Stated goals vs docs; stale HANDOFF / AGENTS / IMPLEMENTATION-STATUS |
+
 ### PHASE 1 — Repository inventory (descriptive only)
 
 Establish facts: Python version(s), dependency tooling, frameworks, entry points, main packages, workers/jobs, APIs/CLI/scripts, data stores, messaging, infra/deployment clues, test layout, docs/ADRs/config.  
@@ -181,22 +197,22 @@ Establish facts: Python version(s), dependency tooling, frameworks, entry points
 
 ### PHASE 2 — Implemented architecture
 
-Infer **actual** style (monolith, layered monolith, modular monolith, services, event-driven, hybrid, etc.), boundaries, dependency direction, layering, shared core, framework leakage, god modules/cycles.  
+Infer **actual** style (monolith, layered monolith, modular monolith, services, event-driven, hybrid, etc.), boundaries, dependency direction, layering, shared core, framework leakage, god modules/cycles. Complete **CHK-ARCH** and start **CHK-GRANULARITY**.  
 **Output:** detected profile, boundary analysis, layering assessment, risks visible from structure.
 
 ### PHASE 3 — Python engineering and runtime
 
-Assess: packaging/layout, import discipline, typing and contracts, data access/ORM patterns, async/concurrency/jobs, config/secrets, performance/scaling clues, reliability/operability, security.  
+Assess: packaging/layout, import discipline, typing and contracts, data access/ORM patterns, async/concurrency/jobs, config/secrets, performance/scaling clues, reliability/operability, security. Complete **CHK-PERF**, **CHK-SEC-CODE**, **CHK-SEC-AGENT**, **CHK-INFRA-KIT**.  
 **Output:** evidence-backed findings only; label Confirmed / Probable risk / Unknown.
 
 ### PHASE 4 — Module-by-module audit
 
-For each **major** module/package under `src/` (and analogous roots): name, purpose, evidence of responsibility, public surfaces, dependencies, boundary quality (Clear / Blurred / Violated), coupling/cohesion, layer placement, framework leakage, data ownership clues, perf/security/ops concerns, test clues, recommendation (Keep / Refactor / Split / Merge / Extract / Defer), why, effort, priority (Now / Next / Later).  
+For each **major** module/package under `src/` (and analogous roots): name, purpose, evidence of responsibility, public surfaces, dependencies, boundary quality (Clear / Blurred / Violated), coupling/cohesion, layer placement, framework leakage, data ownership clues, perf/security/ops concerns, test clues, recommendation (Keep / Refactor / Split / Merge / Extract / Defer), why, effort, priority (Now / Next / Later). Finish **CHK-GRANULARITY**.  
 Use **Unknown** where needed. **Do not skip** module-level sections for major roots.
 
 ### PHASE 5 — Goal and plan alignment
 
-For each stated goal/roadmap/architecture intent found in repo docs: alignment (Strong / Partial / Weak), evidence, gaps, risks, recommended action (Preserve / Improve / Simplify / Postpone / Redesign). Tie to evidence, not generic advice.
+For each stated goal/roadmap/architecture intent found in repo docs: alignment (Strong / Partial / Weak), evidence, gaps, risks, recommended action (Preserve / Improve / Simplify / Postpone / Redesign). Tie to evidence, not generic advice. Complete **CHK-DOCS**. Continuous plan pulse when plans change is **`drift-guard`** — reference drift artifacts if present; do not re-run DRIFT scripts as a substitute for this phase.
 
 ### PHASE 6 — Recommended direction
 
@@ -258,6 +274,7 @@ Write `enterprise-architecture-audit.md` with these sections:
 
 1. Executive Summary  
 2. Audit Method (must satisfy the **Evidence contract**: sources, searches, commands, scope limits)  
+2b. **CHK-* tick table** (all seven ids: Pass / Gap / N/A / Unknown + evidence)  
 3. Repository Inventory  
 4. Detected Architecture Profile  
 5. Python-Specific Engineering Assessment  
@@ -333,7 +350,8 @@ Deliverables: full report + enterprise-audit-actions.md under .local/workflow-ar
 ## Exit criteria
 
 - Phases 1–6 completed in order in the written report; no early recommendation dump.  
+- **CHK-*** tick table present (full audit) or scoped tick table (focused alignment).  
 - **Evidence contract** satisfied: §2 lists reproducible sources/commands; Confirmed claims and scorecard categories cite paths; no finding in §7 or actions file without **Evidence** paths (or explicit **Unknown**).  
 - Scorecard populated with evidence and confidence; no score without justification.  
-- `enterprise-audit-actions.md` exists with prioritized, repo-tied items.  
+- `enterprise-audit-actions.md` exists with prioritized, repo-tied items (full audit).  
 - Unknowns and human-validation items explicitly listed.

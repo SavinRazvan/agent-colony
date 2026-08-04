@@ -83,7 +83,7 @@ Quick reference for reading `README.md`, `AGENTS.md`, `HANDOFF.md`, and kit docs
 | P0 / P1 / P2 / P3 | Priority — board uses `p0\|p1\|p2`; chat P3 → board `p2` + Notes `deferred` | `board-ssot` skill |
 | xs…xl | Size options on the board (Tier-1) | Size↔Estimate table in skill |
 
-High-signal drift ids you will see often: **DRIFT-009** (no competing tracker `in_progress` under `board_only`), **DRIFT-010** (board Status vs PRs / stale In progress; uses read-only `project export`).
+High-signal drift ids you will see often: **DRIFT-009** (no competing tracker `in_progress` under `board_only`), **DRIFT-010** (board Status vs PRs / stale In progress; uses read-only `project export`), **DRIFT-011** (`.cursor/agents` basenames == eight live kit agent ids — goal/doctrine pulse).
 
 ## Planes
 
