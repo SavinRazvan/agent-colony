@@ -252,14 +252,15 @@ export default function AgentDriftGuardCanvas() {
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
           <Text>1. project status + list in_progress (board required when on).</Text>
-          <Text>2. Run drift validate; check DRIFT-009 / DRIFT-010.</Text>
-          <Text>3. project export for DRIFT-010 evidence when needed.</Text>
+          <Text>2. Run drift validate; check DRIFT-009 / 010 / 011 (kit-dev).</Text>
+          <Text>3. Goal pulse: board Acceptance/Notes + plan pointers + roster.</Text>
+          <Text>4. project export for DRIFT-010 evidence when needed.</Text>
           <Text>
-            4. Write drift-audit.md + drift-todos.md under
+            5. Write drift-audit.md + drift-todos.md under
             .local/workflow-artifacts/drift/.
           </Text>
           <Text>
-            5. drift-pass card done/in_review; dual-write → Notes or handoff to
+            6. drift-pass card done/in_review; gaps → Notes or handoff to
             board/implementer via Ready; updates-log.
           </Text>
         </Stack>

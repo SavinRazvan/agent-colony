@@ -26,7 +26,7 @@ import {
 
 type Mode = "classic" | "shipped" | "compare";
 
-const VERIFIED = "2026-08-03";
+const VERIFIED = "2026-08-04";
 
 const CLASSIC_NODES = [
   { id: "agent" },
@@ -112,12 +112,13 @@ const ABC_SLICES = [
   {
     id: "c",
     card: "BOARD-EXPORT-006",
-    title: "C — Export + DRIFT-010",
+    title: "C — Export + DRIFT-010 (+ kit DRIFT-011)",
     color: "purple" as const,
     items: [
       "project export → read-only snapshot",
       ".local/generated-data/project-board-snapshot.json",
       "Never writes Status — DRIFT-010 stale PR / board drift",
+      "Kit-dev: DRIFT-011 agent roster coherence (goal pulse)",
       "Deprecated HTML ICC Project Board tab (EA-010) — offline export only; prefer live board + Open Canvas",
     ],
   },
@@ -574,6 +575,7 @@ export default function BoardSsotVsKitCanvas() {
           ["Post-merge card", "Manual / tracker only", "merge.py → Done + Notes"],
           ["Dual writers", "Single (markdown)", "Forbidden — DRIFT-009"],
           ["Stale PR detection", "N/A", "DRIFT-010 + export snapshot"],
+          ["Agent roster pulse", "N/A", "DRIFT-011 kit-dev (.cursor/agents)"],
           [
             "PR merge gates",
             "prepare.py resolve_gates()",
@@ -682,7 +684,7 @@ export default function BoardSsotVsKitCanvas() {
 
       <Text size="small" tone="tertiary">
         Source: HANDOFF §1 · ADR-008 · STANDALONE 2026-07-18 · PR #2/#3 merged ·
-        drift validate green · verified {VERIFIED} · 1190 tests · COV-100 7089 stmts
+        drift validate green · verified {VERIFIED} · 1193 tests · COV-100 7089 stmts
       </Text>
     </Stack>
   );

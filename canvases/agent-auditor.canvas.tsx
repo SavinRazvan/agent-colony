@@ -133,7 +133,7 @@ const ARTIFACTS = [
 
 const PEERS = [
   ["Outbound", "implementer", "Continue from Notes with artifact paths"],
-  ["Outbound", "drift-guard", "audit-orchestration Phase 3 — P0/P1 drift artifacts"],
+  ["Outbound", "drift-guard", "orch Phase 3 — goal pulse + DRIFT validate"],
   ["Outbound", "verifier", "audit-orchestration Phase 3 — spot-check top claims"],
 ];
 
@@ -267,7 +267,11 @@ export default function AgentAuditorCanvas() {
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
           <Text>1. project status; create [AUDIT] slice card if needed; claim.</Text>
-          <Text>2. Evidence-only audit per auditor-protocol/SKILL.md.</Text>
+          <Text>
+            2. Evidence-only audit per auditor-protocol — tick CHK-ARCH /
+            GRANULARITY / PERF / SEC-CODE / SEC-AGENT / INFRA-KIT / DOCS (full or
+            focused table for touched surfaces).
+          </Text>
           <Text>
             3. Write .local/workflow-artifacts/enterprise-architecture-audit/
             enterprise-architecture-audit.md + enterprise-audit-actions.md
@@ -277,7 +281,8 @@ export default function AgentAuditorCanvas() {
           <Text>4. Propose tracker edits in audit-actions — implementer applies.</Text>
           <Text>
             5. Exit: artifacts + change-index + updates-log; Status in_review/done;
-            Notes with artifact paths for implementer.
+            Notes with artifact paths; orch Phase 3 → drift-guard goal pulse /
+            verifier as needed.
           </Text>
         </Stack>
       </CollapsibleSection>

@@ -23,9 +23,9 @@ import {
 
 type FlowMode = "slice" | "side";
 
-const VERIFIED = "2026-08-03";
+const VERIFIED = "2026-08-04";
 const SOURCES =
-  "project-board-collaboration.md · board-ssot/SKILL.md · board-shell/SKILL.md · agent-relations · agent-roster · .cursor/agents/*.md";
+  "project-board-collaboration.md · board-ssot/SKILL.md · board-shell/SKILL.md · agent-relations · agent-roster · .cursor/agents/*.md · ADR-007";
 
 const STATUS_STEPS = ["Ready", "In progress", "In review", "Done"];
 
@@ -59,12 +59,12 @@ const EDGE_LABELS: Record<string, string> = {
   "board→implementer": "handoff next=implementer",
   "implementer→verifier": "Exit --next verifier",
   "implementer→test-runner": "when tests/coverage gate PR",
-  "implementer→drift-guard": "P0/P1 after drift-validate",
+  "implementer→drift-guard": "P0/P1 after drift-validate / goal pulse",
   "test-runner→verifier": "tests gate the PR",
-  "drift-guard→board": "dual-write remediation",
-  "drift-guard→implementer": "dual-write remediation",
-  "auditor→implementer": "Notes + artifact paths",
-  "auditor→drift-guard": "audit-orchestration Phase 3",
+  "drift-guard→board": "remediation Notes/Ready",
+  "drift-guard→implementer": "remediation Notes/Ready",
+  "auditor→implementer": "CHK-* artifacts → Ready",
+  "auditor→drift-guard": "orch Phase 3 goal pulse",
   "auditor→verifier": "audit-orchestration Phase 3",
   "integrator→implementer": "escalate product src/",
   "integrator→test-runner": "escalate coverage",
@@ -100,12 +100,12 @@ const PER_AGENT_ENTRY_EXIT = [
   [
     "auditor",
     "status + audit card",
-    "→In review/Done; --agent auditor + artifact paths",
+    "→In review/Done; --agent auditor + CHK-* / alignment artifact paths",
   ],
   [
     "drift-guard",
     "Must status + list In progress",
-    "Drift card →Done; --agent drift-guard; remediation via Notes/Ready — no silent tracker edits",
+    "Drift card →Done; goal pulse + DRIFT-001…011; remediation via Notes/Ready — no silent tracker edits",
   ],
   [
     "researcher",
@@ -219,7 +219,7 @@ const ARTIFACT_FLOWS = [
   [
     ".local/generated-data/project-board-snapshot.json",
     "project export (read-only)",
-    "DRIFT-010 refresh",
+    "DRIFT-010 refresh (+ kit-dev DRIFT-011 roster in validate)",
     "drift-guard · ICC (EA-010)",
     "Read-only export; never writes Status",
   ],
@@ -248,9 +248,9 @@ const SLICE_FLOW = [
 ];
 
 const SIDE_FLOW = [
-  "auditor: audit card → write .local/workflow-artifacts/enterprise-architecture-audit/ + alignment/ → Notes paths → implementer (Phase 3: drift-guard / verifier)",
-  "implementer: make drift-validate → P0/P1 → hand off drift-guard",
-  "drift-guard: must read board In progress → .local/workflow-artifacts/drift/ → drift card done; remediation via Notes/Ready to board or implementer",
+  "auditor: audit card → CHK-* / enterprise-architecture-audit/ + alignment/ → Notes paths → implementer (Phase 3: drift-guard goal pulse / verifier)",
+  "implementer: make drift-validate → P0/P1 or goal-pulse gaps → hand off drift-guard",
+  "drift-guard: board In progress + Acceptance/Notes → drift validate (DRIFT-001…011 kit-dev) → .local/workflow-artifacts/drift/ → card done; remediation via Notes/Ready",
   "integrator: integration card → integrate validate → escalate to implementer | test-runner | auditor",
 ];
 

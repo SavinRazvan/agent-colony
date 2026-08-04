@@ -20,9 +20,9 @@ import {
   useHostTheme,
 } from "cursor/canvas";
 
-const VERIFIED = "2026-08-03";
+const VERIFIED = "2026-08-04";
 const SOURCES =
-  "agent-relations edges · audit-orchestration Phase 3 · board-ssot § Continuation · per-agent canvas PEERS";
+  "agent-relations edges · audit-orchestration (quarterly CHK-* vs PR focused) · board-ssot § Continuation · per-agent canvas PEERS";
 
 const NODE_W = 128;
 const NODE_H = 40;
@@ -66,12 +66,12 @@ const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
   },
   {
     id: "auditor",
-    role: "auditor MAS-SSOT-KIT · skill auditor-protocol",
+    role: "auditor MAS-SSOT-KIT · auditor-protocol (CHK-* deep/periodic)",
     lane: "Quality",
   },
   {
     id: "drift-guard",
-    role: "drift-guard MAS-SSOT-KIT · skill drift-audit",
+    role: "drift-guard MAS-SSOT-KIT · drift-audit (goal pulse + DRIFT-001…011)",
     lane: "Quality",
   },
   {
@@ -110,31 +110,31 @@ const RELATIONS: {
     from: "implementer",
     to: "drift-guard",
     via: "invoke after drift-validate",
-    when: "P0/P1 findings need drift artifacts",
+    when: "P0/P1 findings or goal-pulse gaps need drift artifacts",
   },
   {
     from: "drift-guard",
     to: "board",
     via: "Ready / Notes remediation",
-    when: "Confirmed dual-write — triage card",
+    when: "Dual-write or roster/goal pulse — triage card",
   },
   {
     from: "drift-guard",
     to: "implementer",
     via: "Ready / Notes remediation",
-    when: "Confirmed dual-write — fix in slice",
+    when: "Dual-write or goal pulse — fix in slice",
   },
   {
     from: "auditor",
     to: "implementer",
-    via: "Notes + artifact paths",
-    when: "Audit card closed; implementer applies actions",
+    via: "Notes + CHK-* artifact paths",
+    when: "Audit/alignment closed; implementer applies Ready cards",
   },
   {
     from: "auditor",
     to: "drift-guard",
     via: "audit-orchestration Phase 3",
-    when: "After tracker/doc edits; P0/P1 drift findings",
+    when: "After tracker/doc edits; run goal pulse + DRIFT validate",
   },
   {
     from: "auditor",
@@ -343,15 +343,16 @@ export default function AgentRelationsCanvas() {
         </Row>
         <Text tone="secondary">
           How kit agents hand off work — edges from agent cards plus
-          audit-orchestration Phase 3. Live ids only (post B-safe rename). Primary
-          skills: board-ssot, implementer-loop, test-coverage, integrator-protocol,
-          auditor-protocol, drift-audit, research-corpus. Select an agent to
-          highlight its neighbors.
+          audit-orchestration (full CHK-* quarterly; focused alignment on
+          arch-impacting PRs; Phase 3 → drift-guard goal pulse). Live ids only.
+          Primary skills: board-ssot, implementer-loop, test-coverage,
+          integrator-protocol, auditor-protocol, drift-audit, research-corpus.
+          Select an agent to highlight its neighbors.
         </Text>
-        <Callout tone="info" title="Not old names">
-          Retired Task ids (enterprise-auditor, project-board, workflow-drift-guard,
-          integrator-mas-agent) do not appear here. Deeper per-agent hubs:
-          canvases/agent-*.canvas.tsx · overview: agent-roster.
+        <Callout tone="info" title="Quality lane (no trash agents)">
+          drift-guard = continuous goal/plan/agent-doctrine pulse + DRIFT scripts.
+          auditor = deep CHK-* (sec/perf/granularity/docs). Retired Task ids
+          (enterprise-auditor, workflow-drift-guard, …) do not appear here.
         </Callout>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED}

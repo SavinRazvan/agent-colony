@@ -26,9 +26,9 @@ import {
  * Not an agent-* canvas — excluded from DOC-008 roster scan (same as board-ssot-vs-kit).
  */
 
-const VERIFIED = "2026-08-03";
+const VERIFIED = "2026-08-04";
 const SOURCES =
-  "ADR-008 · board-ssot/SKILL.md · project-board-collaboration.md · agent cards · HYGIENE post-COV100";
+  "ADR-008 · ADR-007 · board-ssot/SKILL.md · project-board-collaboration.md · agent cards · drift/auditor quality split";
 
 const NODE_W = 118;
 const NODE_H = 36;
@@ -108,15 +108,15 @@ const WHO_WRITES: string[][] = [
   ],
   [
     "auditor",
-    "Audit card Status + artifact paths in Notes",
+    "Audit card Status + CHK-* / alignment paths in Notes",
     ".local/workflow-artifacts/enterprise-architecture-audit/ · alignment/",
-    "Evidence-only — no product fixes",
+    "Deep/periodic — no product fixes; not continuous plan pulse",
   ],
   [
     "drift-guard",
     "Drift-pass card Done; remediation via Ready",
     ".local/workflow-artifacts/drift/drift-audit.md · drift-todos.md",
-    "Never silent dual-write Status",
+    "Goal pulse + DRIFT scripts; never silent dual-write Status",
   ],
   [
     "integrator",
@@ -161,7 +161,7 @@ const ARTIFACT_LANES: string[][] = [
     "Drift",
     ".local/workflow-artifacts/drift/",
     "drift-guard",
-    "DRIFT-009 watches dual-write",
+    "Goal pulse + DRIFT-009…011 (011 kit-dev roster)",
   ],
   [
     "Release / smoke",
@@ -441,13 +441,14 @@ export default function AgentsArtifactsBoardCanvas() {
       <CollapsibleSection title="Side paths (audit / drift)">
         <Stack gap={8}>
           <Text size="small">
-            auditor → .local audit artifacts → Notes paths →
-            implementer Ready cards. Does not mutate product code during audit.
+            auditor → CHK-* / .local audit + alignment artifacts → Notes paths →
+            implementer Ready cards (deep/periodic; not continuous plan pulse).
+            Does not mutate product code during audit.
           </Text>
           <Text size="small">
-            implementer makes drift-validate → P0/P1 → drift-guard writes
-            drift artifacts → remediation via Notes/Ready (never silent tracker
-            Status).
+            implementer makes drift-validate → P0/P1 or goal-pulse gaps →
+            drift-guard writes drift artifacts (DRIFT-001…011 kit-dev) →
+            remediation via Notes/Ready (never silent tracker Status).
           </Text>
           <Text size="small">
             Rate-limit EXIT_QUEUED (6) → board-outbox.jsonl → project outbox flush
