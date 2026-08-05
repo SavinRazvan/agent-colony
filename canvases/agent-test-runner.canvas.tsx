@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-03";
+const VERIFIED = "2026-08-05";
 const SOURCES =
   ".cursor/agents/test-runner.md · test-coverage/SKILL.md · board-ssot/SKILL.md";
 
@@ -98,6 +98,7 @@ const READ_FIRST = [
   [".local/index-and-planning/current/test-index.md", "When tests change"],
   [".local/index-and-planning/current/test-plan.md", "When tests change"],
   ["check_testing_artifacts.py", "Before PR path"],
+  [".cursor/skills/canvas-artifacts/SKILL.md", "ADR-010 canvas/plan tiers"],
 ];
 
 const PATTERNS = [
@@ -122,6 +123,16 @@ const ARTIFACTS = [
   ["change-index.md", "Exit", "Next agents / humans"],
   ["Board Status + Notes", "Exit", "Next agent"],
   [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
+  [
+    ".local/plans/",
+    "plan snapshot|list (history)",
+    "Agents execute; humans plan open",
+  ],
+  [
+    ".local/canvases/",
+    "canvas save (session evidence)",
+    "canvas-artifacts skill",
+  ],
 ];
 
 const PEERS = [

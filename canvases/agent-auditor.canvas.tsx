@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-04";
+const VERIFIED = "2026-08-05";
 const SOURCES =
   ".cursor/agents/auditor.md · auditor-protocol/SKILL.md · board-ssot/SKILL.md";
 
@@ -88,6 +88,7 @@ const READ_FIRST = [
   [".cursor/skills/audit-orchestration/SKILL.md", "Quarterly vs PR cadence"],
   [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
   [".ai_infra/docs/roadmap/alignment-audit-schema.md", "Alignment schema"],
+  [".cursor/skills/canvas-artifacts/SKILL.md", "ADR-010 canvas/plan tiers"],
 ];
 
 const PATTERNS = [
@@ -129,6 +130,16 @@ const ARTIFACTS = [
     "Deprecated HTML ICC (EA-010) — offline only; prefer board + Open Canvas",
   ],
   [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
+  [
+    ".local/plans/",
+    "plan snapshot|list (history)",
+    "Agents execute; humans plan open",
+  ],
+  [
+    ".local/canvases/",
+    "canvas save (session evidence)",
+    "canvas-artifacts skill",
+  ],
 ];
 
 const PEERS = [

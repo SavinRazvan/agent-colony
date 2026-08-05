@@ -23,13 +23,13 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-04";
+const VERIFIED = "2026-08-05";
 const SOURCES =
   ".cursor/agents/drift-guard.md · drift-audit/SKILL.md · board-ssot/SKILL.md · ADR-007";
 
 const GOALS = [
   "Continuous goal/plan/agent-doctrine/docs coherence (+ DRIFT scripts)",
-  "DRIFT-001…011 script-first; goal pulse prose in drift artifacts",
+  "DRIFT-001…012 script-first; goal pulse prose in drift artifacts",
   "Write drift/ only — no product code; remediations via Notes/Ready",
 ];
 
@@ -89,8 +89,10 @@ const READ_FIRST = [
   [".cursor/skills/drift-audit/SKILL.md", "Drift audit + goal pulse"],
   [".cursor/skills/board-ssot/SKILL.md", "Board SSOT when enabled"],
   ["python3 -m cursor_workflow drift validate", "CLI entry"],
-  ["DRIFT-009 / 010 / 011", "Board + agent roster pulse"],
+  ["DRIFT-009 / 010 / 011 / 012", "Board + agent roster pulse"],
   ["project export", "DRIFT-010 evidence"],
+  [".local/plans/", "DRIFT-012 snapshot-only under board_only"],
+  [".cursor/skills/canvas-artifacts/SKILL.md", "ADR-010 canvas/plan tiers"],
 ];
 
 const PATTERNS = [
@@ -206,7 +208,7 @@ export default function AgentDriftGuardCanvas() {
         </Row>
         <Text tone="secondary">
           drift-guard MAS-SSOT-KIT — Continuous goal/plan/agent-doctrine/docs
-          coherence + DRIFT-001…011; remediations via Notes/Ready (not auditor
+          coherence + DRIFT-001…012; remediations via Notes/Ready (not auditor
           deep scorecard).
         </Text>
         <Text tone="tertiary" size="small">
@@ -216,7 +218,7 @@ export default function AgentDriftGuardCanvas() {
 
       <Grid columns={3} gap={12}>
         <Stat value="MUST status" label="Entry when board on" />
-        <Stat value="DRIFT-009…011" label="Board + roster pulse" />
+        <Stat value="DRIFT-009…012" label="Board + roster pulse" />
         <Stat value="EXIT_QUEUED" label="Outbox on rate-limit" tone="warning" />
       </Grid>
 
@@ -252,7 +254,7 @@ export default function AgentDriftGuardCanvas() {
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
           <Text>1. project status + list in_progress (board required when on).</Text>
-          <Text>2. Run drift validate; check DRIFT-009 / 010 / 011 (kit-dev).</Text>
+          <Text>2. Run drift validate; check DRIFT-009 / 010 / 011 / 012 (kit-dev).</Text>
           <Text>3. Goal pulse: board Acceptance/Notes + plan pointers + roster.</Text>
           <Text>4. project export for DRIFT-010 evidence when needed.</Text>
           <Text>

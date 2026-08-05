@@ -74,6 +74,19 @@ def test_scaffold_creates_workflow_artifact_buckets(tmp_path: Path) -> None:
         assert (target / ".local" / "workflow-artifacts" / bucket / "README.md").is_file()
 
 
+def test_scaffold_creates_local_canvas_plan_buckets(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    lwp = mod._load_local_workflow_paths(REPO_ROOT)
+    assert (target / lwp.LOCAL_CANVASES_DIR).is_dir()
+    assert (target / lwp.LOCAL_PLANS_DIR).is_dir()
+    assert (target / lwp.LOCAL_CANVASES_INDEX).is_file()
+    assert (target / lwp.LOCAL_PLANS_INDEX).is_file()
+    assert (target / lwp.LOCAL_CANVASES_DIR / "README.md").is_file()
+    assert (target / lwp.LOCAL_PLANS_DIR / "README.md").is_file()
+
+
 def test_scaffold_creates_agents_md(tmp_path: Path) -> None:
     mod = _load_scaffold()
     target = tmp_path / "project"

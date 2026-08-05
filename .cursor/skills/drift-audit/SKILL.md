@@ -25,6 +25,7 @@ Detect **operational workflow drift** and a **falsifiable goal/doctrine pulse**:
 - plan ↔ tracker ↔ session-pointer incoherence
 - **DRIFT-004b** session Board vs export; **DRIFT-009** dual-write; **DRIFT-010** board vs PRs
 - **DRIFT-011** `.cursor/agents` basenames == eight live kit agent ids
+- **DRIFT-012** `.local/plans/` snapshot-only under `board_only` (no live/current plan SSOT in that dir)
 - Prose goal pulse: board Acceptance/Notes vs plan pointers vs `AGENTS.md` / agent cards (flag gaps; hand off — do not rewrite architecture)
 
 Does **not** replace `auditor` (CHK-* scorecard) or `verifier`.
@@ -46,7 +47,7 @@ Does **not** replace `auditor` (CHK-* scorecard) or `verifier`.
 ## Steps
 
 1. **Board first (when enabled):** `python -m cursor_workflow project status` and `project list --status in_progress` — cite board Status in artifacts. Optionally refresh the read-only snapshot: `python -m cursor_workflow project export` (never writes Status).
-2. **Script:** `python -m cursor_workflow drift validate --directory .` (or `make drift-validate`). On **consumer app projects**, use `--profile consumer`. Include **DRIFT-004b** / **DRIFT-009** / **DRIFT-010** / **DRIFT-011** when kit-dev / board_only as applicable (ADR-007/008).
+2. **Script:** `python -m cursor_workflow drift validate --directory .` (or `make drift-validate`). On **consumer app projects**, use `--profile consumer`. Include **DRIFT-004b** / **DRIFT-009** / **DRIFT-010** / **DRIFT-011** / **DRIFT-012** when kit-dev / board_only as applicable (ADR-007/008/010).
 3. Capture profile, check IDs, severities, and details from output.
 4. Add prose **Goal pulse** section in drift-audit.md (board/plan/AGENTS gaps). Fuzzy “vision mismatch” stays Probable — not CI.
 5. Write artifacts under `.local/workflow-artifacts/drift/` only.

@@ -32,6 +32,7 @@ import paths  # noqa: E402
 import contributors_cli  # noqa: E402
 import drift_cli  # noqa: E402
 import integrate_cli  # noqa: E402
+import mcp_cli  # noqa: E402
 import mcp_manage  # noqa: E402
 
 
@@ -344,13 +345,13 @@ def _write_mcp_fixture(root: Path) -> None:
 def test_cmd_mcp_validate_pass(tmp_path: Path) -> None:
     _write_mcp_fixture(tmp_path)
     args = argparse.Namespace(directory=tmp_path)
-    assert cli.cmd_mcp_validate(args) == 0
+    assert mcp_cli.cmd_mcp_validate(args) == 0
 
 
 def test_cmd_mcp_validate_fail_missing_fragment(tmp_path: Path) -> None:
     (tmp_path / ".cursor").mkdir()
     args = argparse.Namespace(directory=tmp_path)
-    assert cli.cmd_mcp_validate(args) == 1
+    assert mcp_cli.cmd_mcp_validate(args) == 1
 
 
 def test_cmd_mcp_validate_fail_registry_mismatch(tmp_path: Path) -> None:
@@ -361,7 +362,7 @@ def test_cmd_mcp_validate_fail_registry_mismatch(tmp_path: Path) -> None:
         yaml.safe_dump({"servers": {"missing-server": {"agents": []}}}), encoding="utf-8"
     )
     args = argparse.Namespace(directory=tmp_path)
-    assert cli.cmd_mcp_validate(args) == 1
+    assert mcp_cli.cmd_mcp_validate(args) == 1
 
 
 def test_cmd_mcp_link_success(tmp_path: Path) -> None:
@@ -369,7 +370,7 @@ def test_cmd_mcp_link_success(tmp_path: Path) -> None:
     fragment = tmp_path / "fragment.json"
     fragment.write_text(json.dumps({"mcpServers": {"new-server": {"command": "bar"}}}), encoding="utf-8")
     args = argparse.Namespace(directory=tmp_path, name="new-server", file=fragment)
-    assert cli.cmd_mcp_link(args) == 0
+    assert mcp_cli.cmd_mcp_link(args) == 0
     assert (tmp_path / ".gitignore").is_file()
 
 
@@ -379,7 +380,7 @@ def test_cmd_mcp_link_failure(tmp_path: Path) -> None:
     fragment = tmp_path / "fragment.json"
     fragment.write_text(json.dumps({"mcpServers": {}}), encoding="utf-8")
     args = argparse.Namespace(directory=tmp_path, name="whatever", file=fragment)
-    assert cli.cmd_mcp_link(args) == 1
+    assert mcp_cli.cmd_mcp_link(args) == 1
 
 
 # ---------------------------------------------------------------------------

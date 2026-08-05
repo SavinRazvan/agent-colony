@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-03";
+const VERIFIED = "2026-08-05";
 const SOURCES =
   ".cursor/agents/integrator.md · integrator-protocol/SKILL.md · board-ssot/SKILL.md";
 
@@ -91,6 +91,9 @@ const READ_FIRST = [
   ["python3 -m cursor_workflow integrate validate", "Wire verification"],
   ["prepare.py resolve_gates()", "PR / kit-dev gate SSOT"],
   ["check_governance_consistency.py", "When policy docs change"],
+  [".cursor/skills/canvas-artifacts/SKILL.md", "ADR-010 canvas/plan tiers"],
+  [".local/plans/", "Snapshot history when touching plans"],
+  [".local/canvases/", "canvas sync/save when touching canvases"],
 ];
 
 const PATTERNS = [
@@ -108,6 +111,8 @@ const ARTIFACTS = [
   ["history/updates-log.md", "Exit", "Continuity readers"],
   ["Board Status + Notes", "Exit (validate outcomes)", "implementer / escalations"],
   [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
+  [".local/plans/", "plan snapshot when touching plans", "History only (DRIFT-012)"],
+  [".local/canvases/", "canvas save / sync", "Session evidence (ADR-010)"],
 ];
 
 const PEERS = [

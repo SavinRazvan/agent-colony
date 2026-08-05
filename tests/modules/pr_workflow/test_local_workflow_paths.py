@@ -45,3 +45,11 @@ def test_workflow_artifact_buckets_count() -> None:
     assert len(mod.WORKFLOW_ARTIFACT_BUCKETS) == 6
     assert len(mod.ARTIFACT_STUB_BUCKET_NAMES) == 6
     assert mod.ARTIFACT_STUB_BUCKET_NAMES == tuple(p.name for p in mod.WORKFLOW_ARTIFACT_BUCKETS)
+
+
+def test_ensure_local_artifact_tree_creates_canvas_and_plans(tmp_path: Path) -> None:
+    mod = _load_local_workflow_paths()
+    mod.ensure_local_artifact_tree(root=tmp_path)
+    for directory in mod.LOCAL_ARTIFACT_DIRS:
+        assert (tmp_path / directory).is_dir(), f"missing: {directory}"
+    assert (tmp_path / mod.WORKFLOW_CANVAS_DIR).is_dir()

@@ -863,6 +863,76 @@ def check_drift011(paths: DriftPaths) -> CheckResult:
     )
 
 
+def check_drift012(paths: DriftPaths) -> CheckResult:
+    """Advisory: .local/plans/ must not host live/current plan SSOT under board_only."""
+    collab = paths.root / ".local" / "user_settings" / "github.collaboration.yaml"
+    if not collab.is_file():
+        return CheckResult(
+            check_id="DRIFT-012",
+            severity=Severity.P2,
+            passed=True,
+            detail="no github.collaboration.yaml — skipped",
+        )
+    try:
+        import yaml
+    except ImportError:
+        return CheckResult(
+            check_id="DRIFT-012",
+            severity=Severity.P2,
+            passed=True,
+            detail="PyYAML missing — skipped",
+        )
+    try:
+        data = yaml.safe_load(collab.read_text(encoding="utf-8")) or {}
+    except Exception as exc:  # noqa: BLE001
+        return CheckResult(
+            check_id="DRIFT-012",
+            severity=Severity.P2,
+            passed=False,
+            detail=f"cannot parse collab YAML: {exc}",
+        )
+    ssot = data.get("project_ssot") if isinstance(data, dict) else None
+    if not isinstance(ssot, dict) or not ssot.get("enabled"):
+        return CheckResult(
+            check_id="DRIFT-012",
+            severity=Severity.P2,
+            passed=True,
+            detail="project_ssot disabled — skipped",
+        )
+    if str(ssot.get("sync_policy") or "") != "board_only":
+        return CheckResult(
+            check_id="DRIFT-012",
+            severity=Severity.P2,
+            passed=True,
+            detail="sync_policy not board_only — skipped",
+        )
+
+    plans_dir = paths.root / ".local" / "plans"
+    issues: list[str] = []
+    if plans_dir.is_dir():
+        for path in plans_dir.iterdir():
+            if path.is_file() and "current" in path.name.lower():
+                issues.append(f"live-plan filename: {path.name}")
+        index = plans_dir / "index.md"
+        if index.is_file():
+            for line in index.read_text(encoding="utf-8").splitlines():
+                lower = line.lower()
+                if lower.startswith("|") and " active " in f" {lower} ":
+                    issues.append("index row marks plan as active")
+
+    passed = not issues
+    return CheckResult(
+        check_id="DRIFT-012",
+        severity=Severity.P2,
+        passed=passed,
+        detail=(
+            "board_only: .local/plans/ is snapshot-only"
+            if passed
+            else "; ".join(issues)
+        ),
+    )
+
+
 KIT_DEV_CHECKS = (
     check_drift001,
     check_drift002,
@@ -876,6 +946,7 @@ KIT_DEV_CHECKS = (
     check_drift009,
     check_drift010,
     check_drift011,
+    check_drift012,
 )
 
 CONSUMER_CHECKS = (
@@ -888,4 +959,5 @@ CONSUMER_BOARD_CHECKS = (
     check_drift008,
     check_drift009,
     check_drift010,
+    check_drift012,
 )

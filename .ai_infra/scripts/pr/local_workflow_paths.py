@@ -54,6 +54,19 @@ ARTIFACT_STUB_BUCKET_NAMES: tuple[str, ...] = tuple(p.name for p in WORKFLOW_ART
 # Default live planning trackers (index-and-planning/current/)
 PLANNING_CURRENT_DIR = Path(".local/index-and-planning/current")
 
+# Canvas / plan local evidence (ADR-010; gitignored Tier-2 runtime)
+LOCAL_CANVASES_DIR = Path(".local/canvases")
+LOCAL_PLANS_DIR = Path(".local/plans")
+LOCAL_CANVASES_INDEX = LOCAL_CANVASES_DIR / "index.md"
+LOCAL_PLANS_INDEX = LOCAL_PLANS_DIR / "index.md"
+REPO_CANVASES_DIR = Path("canvases")
+WORKFLOW_CANVAS_DIR = WORKFLOW_ARTIFACTS_DIR / "canvas"
+
+LOCAL_ARTIFACT_DIRS: tuple[Path, ...] = (
+    LOCAL_CANVASES_DIR,
+    LOCAL_PLANS_DIR,
+)
+
 # Fallback when `.local/user_settings/github.collaboration.yaml` is missing or incomplete.
 # Prefer resolve_github_user() from user_settings.py in PR scripts.
 DEFAULT_GITHUB_USER = "@YourGitHubHandle"
@@ -69,3 +82,11 @@ def ensure_workflow_artifacts_tree(*, root: Path | None = None) -> None:
 def ensure_workflow_artifacts_dir() -> None:
     """Create workflow artifact subdirectories if missing (cwd-relative)."""
     ensure_workflow_artifacts_tree()
+
+
+def ensure_local_artifact_tree(*, root: Path | None = None) -> None:
+    """Create `.local/canvases/` and `.local/plans/` if missing."""
+    base = Path(".") if root is None else root
+    for directory in LOCAL_ARTIFACT_DIRS:
+        (base / directory).mkdir(parents=True, exist_ok=True)
+    (base / WORKFLOW_CANVAS_DIR).mkdir(parents=True, exist_ok=True)

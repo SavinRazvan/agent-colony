@@ -84,9 +84,8 @@ def is_placeholder_section_content(text: str) -> bool:
     stripped = str(text or "").strip()
     if not stripped:
         return True
+    # After .strip(), every remaining line that survives ln.strip() is non-empty.
     lines = [ln.strip() for ln in stripped.splitlines() if ln.strip()]
-    if not lines:
-        return True
 
     def _line_is_tbd(line: str) -> bool:
         s = line.casefold()
@@ -594,7 +593,7 @@ def ensure_start_date_if_starting(
         return True, "skipped: fields.start_date.field_id missing", False
     snapshot = item
     if snapshot is None:
-        items, err = _cli().fetch_project_items(ssot, limit=100)
+        items, err = _cli().fetch_project_items(ssot, limit=200)
         if not err:
             snapshot = _cli().find_item_by_id(items, item_id)
     existing = item_start_date_value(snapshot if isinstance(snapshot, dict) else None)

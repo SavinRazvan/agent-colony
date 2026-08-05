@@ -623,6 +623,76 @@ def test_set_item_assignee_draft_hint(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "DraftIssue" in detail
 
 
+def test_fetch_project_item_by_id_empty_item_id() -> None:
+    """Line 427: return None, 'empty item id' when iid is blank."""
+    item, err = gha.fetch_project_item_by_id(SAMPLE_SSOT, "")
+    assert item is None
+    assert "empty item id" in (err or "")
+
+
+def test_fetch_project_item_by_id_graphql_errors_dict(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Lines 453-454: errors[0] is a dict with 'message'."""
+    payload = json.dumps({"errors": [{"message": "Node not accessible"}]})
+    monkeypatch.setattr(project_cli, "run_gh", lambda *a, **k: _gh_ok(payload))
+    item, err = gha.fetch_project_item_by_id(SAMPLE_SSOT, VALID_PVTI)
+    assert item is None
+    assert err == "Node not accessible"
+
+
+def test_fetch_project_item_by_id_graphql_errors_non_dict(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Lines 453-454: errors[0] is not a dict → str(errors)."""
+    payload = json.dumps({"errors": ["some string error"]})
+    monkeypatch.setattr(project_cli, "run_gh", lambda *a, **k: _gh_ok(payload))
+    item, err = gha.fetch_project_item_by_id(SAMPLE_SSOT, VALID_PVTI)
+    assert item is None
+    assert err is not None
+
+
+def test_fetch_project_item_by_id_non_dict_field_node(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Line 478: non-dict entries in fieldValues.nodes are skipped via continue."""
+    payload = json.dumps({
+        "data": {
+            "node": {
+                "id": VALID_PVTI,
+                "content": {"__typename": "Issue", "body": ""},
+                "fieldValues": {
+                    "nodes": [
+                        None,
+                        "bad-string",
+                        42,
+                    ]
+                },
+            }
+        }
+    })
+    monkeypatch.setattr(project_cli, "run_gh", lambda *a, **k: _gh_ok(payload))
+    item, err = gha.fetch_project_item_by_id(SAMPLE_SSOT, VALID_PVTI)
+    assert item is not None
+    assert err is None
+
+
+def test_fetch_project_item_by_id_empty_field_name(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Line 484: entries where field_name resolves to empty string are skipped."""
+    payload = json.dumps({
+        "data": {
+            "node": {
+                "id": VALID_PVTI,
+                "content": {"__typename": "Issue", "body": ""},
+                "fieldValues": {
+                    "nodes": [
+                        {"__typename": "text", "text": "val", "field": {"name": ""}},
+                        {"__typename": "text", "text": "val2", "field": None},
+                    ]
+                },
+            }
+        }
+    })
+    monkeypatch.setattr(project_cli, "run_gh", lambda *a, **k: _gh_ok(payload))
+    item, err = gha.fetch_project_item_by_id(SAMPLE_SSOT, VALID_PVTI)
+    assert item is not None
+    assert err is None
+
+
 def test_promote_post_mutation_resolve_not_issue(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

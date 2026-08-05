@@ -21,8 +21,9 @@ Registry maps agent ids → server keys → tool hints. Agents read registry bef
 ## Consequences
 
 - `cursor_workflow mcp link` / `mcp validate` CLI (Phase 5b)
+- Pattern A transport: `mcp doctor|list-tools|call|auth|smoke` — see [ADR-009](ADR-009-mcp-pattern-a-cli.md)
 - `mcp-connect` skill and ops doc
-- Secrets in `.cursor/mcp.user.json` (gitignored)
+- Transport in `.cursor/mcp.user.json` (gitignored); auth secrets in `.local/user_settings/mcp.secrets.yaml`
 
 ## Reference implementation
 

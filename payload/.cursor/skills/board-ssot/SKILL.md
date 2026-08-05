@@ -34,6 +34,15 @@ When `project_ssot.enabled` and `sync_policy: board_only`, use the GitHub Projec
 **Ops mirror:** `.ai_infra/docs/operations/project-board-collaboration.md`  
 **ADR:** `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`
 
+## Two-tier plans (ADR-010)
+
+| Tier | Location | Role |
+|------|----------|------|
+| **Live** | Board card body (`board_only`) or `.local/index-and-planning/current/plan.md` (offline) | Acceptance, scope, rollback — only writable plan SSOT |
+| **History** | `.local/plans/` (`plan snapshot`, `plan list`, `plan open` for human Build) | Dated snapshots + `index.md` — **never** competing Status or live plan under `board_only` (**DRIFT-012**) |
+
+Agents: `plan list` → read snapshot → execute. Exit: `plan snapshot --slug … --board-item …`. See `.cursor/skills/canvas-artifacts/SKILL.md`.
+
 ## First-run (board shell) — before day-to-day cards
 
 Day-0 requires the kit **default** shell: `.ai_infra/templates/project-board/board-shell.schema.yaml` (six Playground views; Priority/Size/Estimate/Start date on Status board + Prioritized backlog). Overlay: `.local/user_settings/board-shell.schema.yaml` when present.

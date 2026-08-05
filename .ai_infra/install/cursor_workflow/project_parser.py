@@ -41,7 +41,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         default="",
         help="Filter: backlog|ready|in_progress|in_review|done",
     )
-    list_cmd.add_argument("--limit", type=int, default=100)
+    list_cmd.add_argument("--limit", type=int, default=200)
     list_cmd.add_argument("--json", action="store_true")
     list_cmd.set_defaults(func=pc.cmd_list)
 
@@ -168,7 +168,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     get_cmd = project_sub.add_parser("get", help="Get one project item by id")
     get_cmd.add_argument("--directory", type=Path, default=".")
     _add_id_or_last(get_cmd)
-    get_cmd.add_argument("--limit", type=int, default=100)
+    get_cmd.add_argument("--limit", type=int, default=200)
     get_cmd.add_argument("--json", action="store_true")
     get_cmd.set_defaults(func=pc.cmd_get)
 
@@ -184,7 +184,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         default="",
         help="Agent id for attribution (required when require_attribution_on_exit)",
     )
-    notes_cmd.add_argument("--limit", type=int, default=100)
+    notes_cmd.add_argument("--limit", type=int, default=200)
     notes_cmd.set_defaults(func=pc.cmd_append_notes)
 
     set_section = project_sub.add_parser(
@@ -208,7 +208,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         default="",
         help="Optional: append Notes audit line set-section Acceptance|Rollback",
     )
-    set_section.add_argument("--limit", type=int, default=100)
+    set_section.add_argument("--limit", type=int, default=200)
     set_section.set_defaults(func=pc.cmd_set_section)
 
     claim_cmd = project_sub.add_parser(
@@ -219,7 +219,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     _add_id_or_last(claim_cmd)
     claim_cmd.add_argument("--agent", required=True, help="Agent id for @user/agent Notes")
     claim_cmd.add_argument("--text", default="claimed", help="Notes text after attribution")
-    claim_cmd.add_argument("--limit", type=int, default=100)
+    claim_cmd.add_argument("--limit", type=int, default=200)
     claim_cmd.set_defaults(func=pc.cmd_claim)
 
     mention_cmd = project_sub.add_parser(
@@ -230,7 +230,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     _add_id_or_last(mention_cmd)
     mention_cmd.add_argument("--pr", required=True, help="PR number or URL")
     mention_cmd.add_argument("--agent", required=True)
-    mention_cmd.add_argument("--limit", type=int, default=100)
+    mention_cmd.add_argument("--limit", type=int, default=200)
     mention_cmd.set_defaults(func=pc.cmd_mention_pr)
 
     promote_cmd = project_sub.add_parser(
@@ -245,7 +245,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         default="",
         help="owner/repo (defaults to project_ssot.default_repo)",
     )
-    promote_cmd.add_argument("--limit", type=int, default=100)
+    promote_cmd.add_argument("--limit", type=int, default=200)
     promote_cmd.set_defaults(func=pc.cmd_promote_to_issue)
 
     handoff_cmd = project_sub.add_parser(
@@ -258,7 +258,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     handoff_cmd.add_argument("--next", required=True, help="Next agent name (no @user/ needed)")
     handoff_cmd.add_argument("--to", default="", help="Optional status: in_review|done|…")
     handoff_cmd.add_argument("--text", default="", help="Optional extra Notes text")
-    handoff_cmd.add_argument("--limit", type=int, default=100)
+    handoff_cmd.add_argument("--limit", type=int, default=200)
     handoff_cmd.set_defaults(func=pc.cmd_handoff)
 
     val_cmd = project_sub.add_parser(
@@ -267,7 +267,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     )
     val_cmd.add_argument("--directory", type=Path, default=".")
     _add_id_or_last(val_cmd)
-    val_cmd.add_argument("--limit", type=int, default=100)
+    val_cmd.add_argument("--limit", type=int, default=200)
     val_cmd.set_defaults(func=pc.cmd_validate_item)
 
     last_cmd = project_sub.add_parser("last", help="Print last saved item_id (after create/claim)")
@@ -366,7 +366,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     find_cmd.add_argument("--directory", type=Path, default=".")
     find_cmd.add_argument("--pr", required=True, help="PR number or URL")
     find_cmd.add_argument("--repo", default="", help="owner/repo (defaults to project_ssot.default_repo)")
-    find_cmd.add_argument("--limit", type=int, default=100)
+    find_cmd.add_argument("--limit", type=int, default=200)
     find_cmd.add_argument("--json", action="store_true")
     find_cmd.set_defaults(func=pc.cmd_find_by_pr)
 
@@ -380,7 +380,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         default=None,
         help="Output path (default: .local/generated-data/project-board-snapshot.json)",
     )
-    export_cmd.add_argument("--limit", type=int, default=100)
+    export_cmd.add_argument("--limit", type=int, default=200)
     export_cmd.add_argument("--json", action="store_true", help="Also print JSON to stdout")
     export_cmd.add_argument("--stdout", action="store_true", help="Print JSON only (no file write)")
     export_cmd.set_defaults(func=pc.cmd_export)
@@ -429,5 +429,5 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         default=None,
         help="Override max_flush_per_run from settings",
     )
-    ob_flush.add_argument("--limit", type=int, default=100)
+    ob_flush.add_argument("--limit", type=int, default=200)
     ob_flush.set_defaults(func=pc.cmd_outbox_flush)

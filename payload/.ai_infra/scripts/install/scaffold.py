@@ -242,6 +242,41 @@ def _scaffold_artifact_readme_stubs(
                 _copy_file_if_missing(tab_src, tab_dst, dry_run, log)
 
 
+def _scaffold_local_canvas_plan_buckets(
+    ui_root: Path,
+    target: Path,
+    dry_run: bool,
+    log: list[str],
+    lwp: object,
+) -> None:
+    """Create .local/canvases and .local/plans with index stubs (ADR-010)."""
+    exemplars = ui_root / "exemplars"
+    stubs_root = ui_root / "artifact-stubs"
+    if dry_run:
+        for directory in lwp.LOCAL_ARTIFACT_DIRS:  # type: ignore[attr-defined]
+            _log(log, f"DRY-RUN mkdir {target / directory}")
+        _log(log, f"DRY-RUN mkdir {target / lwp.WORKFLOW_CANVAS_DIR}")  # type: ignore[attr-defined]
+        return
+    lwp.ensure_local_artifact_tree(root=target)  # type: ignore[attr-defined]
+    _copy_file_if_missing(
+        exemplars / "local-canvases-index.md",
+        target / lwp.LOCAL_CANVASES_INDEX,  # type: ignore[attr-defined]
+        dry_run,
+        log,
+    )
+    _copy_file_if_missing(
+        exemplars / "local-plans-index.md",
+        target / lwp.LOCAL_PLANS_INDEX,  # type: ignore[attr-defined]
+        dry_run,
+        log,
+    )
+    for bucket in ("canvases", "plans"):
+        src = stubs_root / bucket / "README.md"
+        dst = target / ".local" / bucket / "README.md"
+        if src.is_file():
+            _copy_file_if_missing(src, dst, dry_run, log)
+
+
 def _scaffold_dashboards(ui_root: Path, target: Path, dry_run: bool, log: list[str]) -> None:
     """Copy kit-managed dashboard shells; always refresh from templates on each scaffold/activate."""
     dash = target / ".local" / "agents-control-center" / "dashboards"
@@ -353,6 +388,7 @@ def _scaffold_local(source: Path, target: Path, dry_run: bool, log: list[str]) -
     _scaffold_artifact_readme_stubs(
         ui_root, target, dry_run, log, lwp.ARTIFACT_STUB_BUCKET_NAMES
     )
+    _scaffold_local_canvas_plan_buckets(ui_root, target, dry_run, log, lwp)
 
     for name in EXEMPLAR_TRACKERS:
         _copy_file_if_missing(exemplars / name, current / name, dry_run, log)

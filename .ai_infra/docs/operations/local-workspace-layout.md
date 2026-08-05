@@ -55,6 +55,9 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 | `workflow-artifacts/audit/` | `preflight.json`, `doc-facts-preflight.json` (verify-all / doc validate) |
 | `user_settings/` | Gitignored YAML worksheets: GitHub collaboration + MCP agent wiring (from kit exemplars) |
 | `generated-data/` | Coverage JSON, `project-board-snapshot.json` (read-only board export for ICC), and similar machine output |
+| `canvases/` | Ephemeral session canvases (gitignored); index at `index.md`; sync via `cursor_workflow canvas` |
+| `plans/` | Dated plan-mode snapshots only (not live SSOT under `board_only`); index at `index.md` |
+| `workflow-artifacts/canvas/` | Optional `canvas doctor` reports (ADR-010) |
 
 ## Git commits vs `.local` markdown
 

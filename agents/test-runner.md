@@ -38,8 +38,12 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 
 | Tier | Server | Use when |
 |------|--------|----------|
-| Kit | `workflow-kit` | PR scripts, trackers, gates — prefer over re-running shell |
+| Kit | `workflow-kit` | PR scripts, trackers, gates — prefer Pattern A CLI over re-running shell |
 | External | See `.cursor/mcp.registry.yaml` | Only servers listed for this agent id |
 
-Before **CallMcpTool**: read tool descriptor schema. Do not invent tool names.
+**Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
+
+Cursor **CallMcpTool** is optional when the IDE host loads the same server. Discover tools with `mcp list-tools --server <id>`; do not invent tool names.
 User setup: `.ai_infra/docs/operations/connect-external-mcp.md`
+
+**Canvas / plan (ADR-010):** Test evidence stays under `.local/`; board/card Notes may pointer-only cite paths — see `.cursor/skills/canvas-artifacts/SKILL.md`.

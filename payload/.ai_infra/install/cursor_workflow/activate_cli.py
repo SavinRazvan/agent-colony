@@ -107,6 +107,8 @@ def _print_post_activate_hints(root: Path) -> None:
         print("     Until shell green (2-view overlay or six-view default; Tier-1 columns on both primary views).")
         print("  9. Run: source .venv/bin/activate && python3 -m cursor_workflow project status")
         print(" 10. In Agent chat: /implementer — local trackers are offline fallback under board_only.")
+        print(" 11. Canvas preview: python3 -m cursor_workflow canvas doctor")
+        print("     (sync repo canvases: canvas sync --missing)")
     else:
         print("\nYou're almost done — 3 quick steps:")
         print(f"  1. Edit {yaml_path}")
@@ -116,6 +118,7 @@ def _print_post_activate_hints(root: Path) -> None:
         print("\nOptional:")
         print("  source .venv/bin/activate && python3 -m cursor_workflow integrate validate")
         print("  source .venv/bin/activate && python3 -m cursor_workflow health")
+        print("  source .venv/bin/activate && python3 -m cursor_workflow canvas doctor")
         print("Add agents/skills later: /integrator (subagent, not a shell command).")
 
 

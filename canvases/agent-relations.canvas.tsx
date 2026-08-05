@@ -20,7 +20,7 @@ import {
   useHostTheme,
 } from "cursor/canvas";
 
-const VERIFIED = "2026-08-04";
+const VERIFIED = "2026-08-05";
 const SOURCES =
   "agent-relations edges · audit-orchestration (quarterly CHK-* vs PR focused) · board-ssot § Continuation · per-agent canvas PEERS";
 
@@ -71,7 +71,7 @@ const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
   },
   {
     id: "drift-guard",
-    role: "drift-guard MAS-SSOT-KIT · drift-audit (goal pulse + DRIFT-001…011)",
+    role: "drift-guard MAS-SSOT-KIT · drift-audit (goal pulse + DRIFT-001…012)",
     lane: "Quality",
   },
   {

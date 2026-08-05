@@ -33,3 +33,5 @@ _temp_kit_installation/**
 
 # Editor
 .DS_Store
+.cursor/mcp.user.json
+.local/user_settings/mcp.secrets.yaml

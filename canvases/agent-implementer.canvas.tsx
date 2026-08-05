@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-03";
+const VERIFIED = "2026-08-05";
 const SOURCES =
   ".cursor/agents/implementer.md · implementer-loop/SKILL.md · board-shell · board-ssot § Continuation";
 
@@ -111,6 +111,9 @@ const READ_FIRST = [
   [".local/index-and-planning/current/architecture.md", "Architecture stub"],
   ["session-pointer / plan / work-tracker", "Fallback only"],
   ["test-plan.md / test-index.md", "When tests or ownership change"],
+  [".cursor/skills/canvas-artifacts/SKILL.md", "ADR-010 canvas/plan tiers"],
+  [".local/plans/", "Agent Path A — plan list → execute"],
+  [".local/canvases/", "canvas save session evidence"],
 ];
 
 const ARTIFACTS = [
@@ -143,6 +146,16 @@ const ARTIFACTS = [
     ".local/generated-data/board-outbox.jsonl",
     "EXIT_QUEUED (6)",
     "Later flush (any agent/human)",
+  ],
+  [
+    ".local/plans/",
+    "Exit — plan snapshot",
+    "Agents + verifier",
+  ],
+  [
+    ".local/canvases/",
+    "canvas save when used",
+    "Session evidence (ADR-010)",
   ],
 ];
 

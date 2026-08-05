@@ -26,7 +26,7 @@ import {
 
 type Mode = "classic" | "shipped" | "compare";
 
-const VERIFIED = "2026-08-04";
+const VERIFIED = "2026-08-05";
 
 const CLASSIC_NODES = [
   { id: "agent" },
@@ -122,6 +122,16 @@ const ABC_SLICES = [
       "Deprecated HTML ICC Project Board tab (EA-010) — offline export only; prefer live board + Open Canvas",
     ],
   },
+];
+
+
+const CANVAS_PLAN_TIERS: string[][] = [
+  ["Repo canvases/", "git SSOT", "canvases/*.canvas.tsx"],
+  ["canvas sync", "IDE managed preview", "~/.cursor/projects/.../canvases/"],
+  [".local/canvases/", "session evidence", "canvas save (ADR-010)"],
+  ["Board card body", "live plan SSOT", "board_only Acceptance/scope"],
+  [".local/plans/", "snapshot history", "plan snapshot|list; agents execute; humans plan open"],
+  ["DRIFT-012", "guard", ".local/plans/ must not host live plan under board_only"],
 ];
 
 const FOLLOWUP_SLICES = [
@@ -551,6 +561,18 @@ export default function BoardSsotVsKitCanvas() {
         </Card>
       </Grid>
 
+      <Divider />
+      <H2>Canvas / plan tiers (ADR-010)</H2>
+      <Text size="small" tone="secondary">
+        Shipped three-tier canvases + two-tier plans. Live plan stays on the board under board_only.
+      </Text>
+      <Spacer height={8} />
+      <Table
+        headers={["Tier", "Role", "Path / CLI"]}
+        rows={CANVAS_PLAN_TIERS}
+        columnAlign={["left", "left", "left"]}
+      />
+
       <H2>Classic vs shipped</H2>
       <Table
         headers={["Concern", "Classic kit", "STANDALONE product"]}
@@ -576,6 +598,7 @@ export default function BoardSsotVsKitCanvas() {
           ["Dual writers", "Single (markdown)", "Forbidden — DRIFT-009"],
           ["Stale PR detection", "N/A", "DRIFT-010 + export snapshot"],
           ["Agent roster pulse", "N/A", "DRIFT-011 kit-dev (.cursor/agents)"],
+          ["Plan snapshot guard", "N/A", "DRIFT-012 .local/plans snapshot-only"],
           [
             "PR merge gates",
             "prepare.py resolve_gates()",

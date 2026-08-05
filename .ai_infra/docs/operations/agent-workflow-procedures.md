@@ -70,6 +70,7 @@ When **`resolve_gates()`** / **`GATES`** in `prepare.py` change, update in the *
 | Always-applied rule | `.cursor/rules/pr-workflow-enforcement.mdc` |
 | Onboarding | `README.md`, `AGENTS.md` |
 | Checklist | `.ai_infra/docs/operations/workflow-complete.md` |
+| Canvas / plan artifacts | `.cursor/skills/canvas-artifacts/SKILL.md` (ADR-010) |
 | Maintainer skills | `.agents/skills/pr-workflow/SKILL.md`, `prepare-pr/SKILL.md`, `review-pr/SKILL.md`, `merge-pr/SKILL.md`, `full-pr-workflow/SKILL.md` |
 | Post-merge cleanup | `.ai_infra/scripts/pr/finalize.py` (via `full-pr-workflow`) |
 

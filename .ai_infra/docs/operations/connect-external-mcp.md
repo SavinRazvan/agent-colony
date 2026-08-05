@@ -45,7 +45,20 @@ cursor-workflow mcp validate
 | Kit | `mcp.json.kit.example` → merged into `mcp.json` | `workflow-kit` tools (PR, trackers, gates) |
 | User | `mcp.user.json` + registry YAML | External servers per agent |
 
-See [ADR-004](../decisions/ADR-004-user-mcp-registry.md).
+See [ADR-004](../decisions/ADR-004-user-mcp-registry.md) and [ADR-009](../decisions/ADR-009-mcp-pattern-a-cli.md) (Pattern A CLI).
+
+## Pattern A CLI (canonical agent transport)
+
+```bash
+python3 -m cursor_workflow mcp doctor
+python3 -m cursor_workflow mcp validate [--strict]
+python3 -m cursor_workflow mcp list-tools --server workflow-kit
+python3 -m cursor_workflow mcp call --server workflow-kit --tool workflow_gate_count
+python3 -m cursor_workflow mcp auth --server my-api --token-env MY_TOKEN
+python3 -m cursor_workflow mcp smoke --server workflow-kit
+```
+
+Cursor IDE MCP loading is optional. Registry YAML is the allowlist for `call` / `list-tools`.
 
 ## Worked example: DeepWiki (zero auth)
 
@@ -74,29 +87,44 @@ servers:
     tools_hint: [read_wiki_structure, read_wiki_contents, ask_question]
 ```
 
-3. **Merge + validate, then reload Cursor MCP:**
+4. **Pattern A smoke (preferred — no Cursor host required):**
 
 ```bash
-cursor-workflow mcp validate
+python3 -m cursor_workflow mcp doctor
+python3 -m cursor_workflow mcp smoke --server deepwiki
+python3 -m cursor_workflow mcp call --server deepwiki --tool ask_question \
+  --args-json '{"repo":"cloudflare/workers-sdk","question":"What are Workers KV limits?"}'
 ```
 
-4. **Try it** — ask an agent (e.g. `researcher`) to read the wiki structure or ask a question
-   about any public GitHub repo; no secrets, no local process, no `secrets_checklist` entry
-   needed in `.local/user_settings/mcp.agents.yaml`.
+Optional: reload Cursor MCP so `CallMcpTool` also works when the IDE host loads the server.
+
+5. **Try it in chat** — ask an agent (e.g. `researcher`) to use Pattern A CLI or CallMcpTool;
+   no secrets, no local process, no `secrets_checklist` entry needed in
+   `.local/user_settings/mcp.agents.yaml` for DeepWiki.
 
 Both example files (`.cursor/mcp.registry.yaml.example`, `.cursor/mcp.user.example.json`) already
 ship this entry alongside the command-based `my-custom-server` example, so you can see the
 URL-based and command-based transport shapes side by side.
+
+### Auth (Pattern A)
+
+```bash
+python3 -m cursor_workflow mcp auth --server my-api --token-env MY_API_TOKEN
+# stores under .local/user_settings/mcp.secrets.yaml (gitignored)
+```
+
+See [ADR-009](../decisions/ADR-009-mcp-pattern-a-cli.md).
 
 ### Stretch: GitHub official remote MCP
 
 GitHub's official remote MCP server (`https://api.githubcopilot.com/mcp/`) is documented as a
 secondary/stretch example in `.local/user_settings/mcp.agents.yaml` (commented `github-remote`
 block). It is **not** zero-auth: it requires either a Copilot seat (OAuth) or a personal access
-token sent as a `Bearer` header, so it is not wired live in the kit demo to avoid auth friction —
-uncomment and fill in a token to try it yourself.
+token sent as a `Bearer` header — use `mcp auth --server github-remote --token-env GITHUB_TOKEN`.
 
 ## Troubleshooting
 
 - `mcp validate` fails: ensure every registry `servers` key exists in merged `mcp.json` `mcpServers`
-- Secrets: never commit `mcp.user.json` — scaffold adds it to `.gitignore`
+- `mcp validate --strict` fails without a live `.cursor/mcp.registry.yaml` — copy the example when enforcing user tier
+- `mcp doctor` shows configured but NOT host-loaded: expected until Cursor enables project `mcp.json`; use Pattern A CLI anyway
+- Secrets: never commit `mcp.user.json` or `.local/user_settings/mcp.secrets.yaml` — `mcp link` / `mcp auth` update `.gitignore`

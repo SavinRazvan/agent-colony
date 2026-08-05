@@ -260,7 +260,8 @@ python3 -m cursor_workflow project status
 2. Claim/update the board card (Status + Notes `@user/agent · <ISO-8601-UTC> · …`); local `plan.md` / `work-tracker.md` only as offline fallback under `board_only`; optional `history/continuity-index.md` (≥3-day local rollup)
 3. If board writes hit GraphQL rate-limit (EXIT_QUEUED): `project outbox status` / later `outbox flush` — enable `project_ssot.outbox` defaults after activate
 4. **`/implementer`** (or `/test-runner`, `/verifier`; `/auditor` only for architecture-impacting / pre-merge audits — not day-0 onboarding)
-5. Dashboard (optional, **deprecated**): see [Control Center dashboards](#control-center-dashboards-deprecated) below
+5. Canvas/plan (ADR-010): `canvas doctor` · `canvas sync --name <stem>` · `plan snapshot|list|open` — see [canvas-artifacts](../../.cursor/skills/canvas-artifacts/SKILL.md)
+6. Dashboard (optional, **deprecated**): see [Control Center dashboards](#control-center-dashboards-deprecated) below
 
 **Add your own agent/skill/MCP:** **`/integrator`** + **`/integrator-protocol`**
 
