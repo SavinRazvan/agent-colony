@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "example-external": {
+      "command": "echo",
+      "args": ["external-mcp-stub"]
+    }
+  }
+}

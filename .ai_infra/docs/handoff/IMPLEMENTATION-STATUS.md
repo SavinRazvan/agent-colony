@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (MAS Workflow Kit — Project SSOT)
 
-**Last updated:** 2026-08-05 (cursor_workflow install COV-100; 1411 tests)
-**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1411
+**Last updated:** 2026-08-05 (consumer activate MCP fix; 1412 tests)
+**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1412
 
 ## Shipped (confirmed in repo)
 
@@ -54,7 +54,7 @@ Notes:
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Researcher agent (corpus) | **Shipped / proven** — adaptive Brief; anti-loop ≤6; CLI `research init\|fetch\|validate`; live E2E flexiai-toolsmith (18 curated, validate PASS) + verifier Claim A+B VERIFIED 2026-07-19; corpus **opt-in** after first `research init` | `.cursor/agents/researcher.md` · `research-corpus` · `canvases/agent-researcher.canvas.tsx` · Issue #74 |
 | Kit version on install | `kit_version` 0.4.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 1411 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1412 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

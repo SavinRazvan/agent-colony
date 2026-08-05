@@ -10,6 +10,7 @@ Depends On:
  - .ai_infra/bootstrap.py
 Notes:
  - Default profile: .cursor, .agents, slim .ai_infra, .local exemplars, AGENTS stub.
+ - MCP merge loads mcp_manage with install/cursor_workflow on sys.path (cursor_host_paths).
 """
 
 from __future__ import annotations
@@ -479,6 +480,28 @@ def _apply_overlay_rules(source: Path, target: Path, rel_overlay: str, dry_run: 
         _copy_file(mdc, dest / mdc.name, dry_run, log)
 
 
+def _load_mcp_manage(source: Path) -> Any | None:
+    """Load mcp_manage from the install package with sibling imports resolvable.
+
+    Scaffold runs as a standalone script; pytest's pythonpath does not apply.
+    mcp_manage imports cursor_host_paths from the same directory.
+    """
+    import importlib.util
+
+    mcp_manage_path = source / ".ai_infra" / "install" / "cursor_workflow" / "mcp_manage.py"
+    if not mcp_manage_path.is_file():
+        return None
+    cw_dir = str(mcp_manage_path.parent)
+    if cw_dir not in sys.path:
+        sys.path.insert(0, cw_dir)
+    spec_mod = importlib.util.spec_from_file_location("mcp_manage", mcp_manage_path)
+    if spec_mod is None or spec_mod.loader is None:
+        return None
+    mcp_manage = importlib.util.module_from_spec(spec_mod)
+    spec_mod.loader.exec_module(mcp_manage)
+    return mcp_manage
+
+
 def _sanity_check(target: Path, log: list[str], *, with_tests: bool = False) -> list[str]:
     errors: list[str] = []
     agents = target / ".cursor" / "agents"
@@ -640,14 +663,8 @@ def scaffold(
         if dry_run:
             _log(log, "DRY-RUN merge .cursor/mcp.json from kit + user fragments")
         else:
-            mcp_manage_path = source / ".ai_infra" / "install" / "cursor_workflow" / "mcp_manage.py"
-            if mcp_manage_path.is_file():
-                import importlib.util
-
-                spec_mod = importlib.util.spec_from_file_location("mcp_manage", mcp_manage_path)
-                assert spec_mod is not None and spec_mod.loader is not None
-                mcp_manage = importlib.util.module_from_spec(spec_mod)
-                spec_mod.loader.exec_module(mcp_manage)
+            mcp_manage = _load_mcp_manage(source)
+            if mcp_manage is not None:
                 dest = mcp_manage.write_merged_mcp(target)
                 mcp_manage.ensure_mcp_gitignore(target)
                 _log(log, f"WRITE merged MCP config {dest}")

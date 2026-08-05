@@ -46,6 +46,12 @@ def test_sync_builds_plugin_and_payload(tmp_path: Path) -> None:
     assert (payload_dir / ".cursor" / "agents" / "implementer.md").is_file()
     assert (payload_dir / "LICENSE").is_file()
     assert (payload_dir / "NOTICE").is_file()
+    assert (payload_dir / ".cursor" / "mcp.json.kit.example").is_file()
+    assert (payload_dir / ".cursor" / "mcp.registry.yaml.example").is_file()
+    assert (payload_dir / ".cursor" / "mcp.user.example.json").is_file()
+    assert (payload_dir / ".cursor" / "MCP-CONFIG.md").is_file()
+    assert (payload_dir / ".cursor" / "mcp.d" / "user.example.json").is_file()
+    assert (payload_dir / ".cursor" / "mcp.d" / "README.md").is_file()
 
 
 def test_check_bundle_passes_after_sync(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
