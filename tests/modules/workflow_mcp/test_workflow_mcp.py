@@ -32,15 +32,14 @@ def test_load_gates_matches_prepare() -> None:
     from workflow_mcp.gates import load_gates
 
     gates = load_gates(REPO_ROOT)
-    assert len(gates) == 4
+    assert len(gates) == 5
     assert gates[0][-1].endswith("check_testing_artifacts.py")
     assert gates[1][-2:] == ["pytest", "-q"]
     joined = " ".join(" ".join(cmd) for cmd in gates)
     assert "drift" in joined
     assert "check_doc_facts" in joined
-
-
-def test_list_agents_tool() -> None:
+    assert "sync_plugin_bundle" in joined
+    assert "--check" in joined
     os.environ["WORKFLOW_KIT_ROOT"] = str(REPO_ROOT)
     from workflow_mcp.server import workflow_list_agents
 
@@ -61,7 +60,7 @@ def test_gate_count() -> None:
     os.environ["WORKFLOW_KIT_ROOT"] = str(REPO_ROOT)
     from workflow_mcp.server import workflow_gate_count
 
-    assert workflow_gate_count() == "4"
+    assert workflow_gate_count() == "5"
 
 
 def test_build_inventory() -> None:
@@ -69,7 +68,7 @@ def test_build_inventory() -> None:
 
     raw = build_inventory(REPO_ROOT)
     assert "implementer" in raw
-    assert '"gate_count": 4' in raw or '"gate_count": 4,' in raw
+    assert '"gate_count": 5' in raw or '"gate_count": 5,' in raw
 
 
 def test_read_agent() -> None:
