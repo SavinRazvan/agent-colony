@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -221,6 +222,38 @@ def test_cmd_gates_fallback_arch_dir_line_reached(monkeypatch: pytest.MonkeyPatc
 def test_cmd_health_pass_on_kit_repo() -> None:
     args = argparse.Namespace(directory=REPO_ROOT)
     assert cli.cmd_health(args) == 0
+
+
+def test_cmd_health_pass_without_mcp_user_fragment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """CI has no gitignored mcp.user.json — kit-tier registry must still health-pass."""
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    shutil.copy(REPO_ROOT / ".cursor" / "mcp.json.kit.example", cursor / "mcp.json.kit.example")
+    (cursor / "mcp.registry.yaml").write_text(
+        "version: 1\nservers:\n  workflow-kit:\n    tier: kit\n    agents: [implementer]\n",
+        encoding="utf-8",
+    )
+    (tmp_path / ".ai_infra" / "scripts" / "pr").mkdir(parents=True)
+    (tmp_path / ".ai_infra" / "scripts" / "pr" / "prepare.py").write_text("# stub\n", encoding="utf-8")
+    (tmp_path / ".ai_infra" / ".kit-version").write_text("0.4.0\n", encoding="utf-8")
+    (tmp_path / ".cursor" / "agents").mkdir(parents=True)
+    (tmp_path / ".cursor" / "agents" / "implementer.md").write_text("# implementer\n", encoding="utf-8")
+    (tmp_path / ".local" / "index-and-planning" / "current").mkdir(parents=True)
+    (tmp_path / ".local" / "index-and-planning" / "current" / "session-pointer.md").write_text(
+        "pointer\n", encoding="utf-8"
+    )
+    fake_us = SimpleNamespace(validate_github_collaboration=lambda root: [])
+    monkeypatch.setattr(contributors_cli, "_import_user_settings", lambda root: fake_us)
+    empty_checks = SimpleNamespace(run_checks=lambda root: [])
+    monkeypatch.setattr(integrate_cli, "_import_validate", lambda root: empty_checks)
+    monkeypatch.setattr(drift_cli, "_import_check_drift", lambda root: empty_checks)
+    args = argparse.Namespace(directory=tmp_path)
+    assert cli.cmd_health(args) == 0
+    merged = json.loads((cursor / "mcp.json").read_text(encoding="utf-8"))["mcpServers"]
+    assert "workflow-kit" in merged
+    assert "deepwiki" not in merged
 
 
 def test_cmd_health_missing_required_file(tmp_path: Path) -> None:
