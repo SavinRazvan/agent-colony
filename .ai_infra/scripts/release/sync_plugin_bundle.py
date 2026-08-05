@@ -58,6 +58,17 @@ CONNECT_SKILL_SRC = (
     ai_infra_dir() / "templates" / "plugin" / "skills" / "mcp-connect" / "SKILL.md"
 )
 LICENSE_FILES = ("LICENSE", "NOTICE")
+# Consumer MCP worksheets for /mcp-connect (examples only — never live mcp.json /
+# mcp.user.json / mcp.registry.yaml with kit-dev secrets or local servers).
+MCP_PAYLOAD_EXAMPLES = (
+    "mcp.json.kit.example",
+    "mcp.registry.yaml.example",
+    "mcp.user.example.json",
+)
+MCP_D_PAYLOAD_FILES = (
+    "README.md",
+    "user.example.json",
+)
 
 _SKIP_DIR_NAMES = frozenset({"__pycache__", ".pytest_cache", ".mypy_cache"})
 _SKIP_FILE_SUFFIXES = (".pyc", ".pyo")
@@ -219,9 +230,20 @@ def sync_payload(payload_dir: Path, plugin_dir: Path, profile: str = "with_mcp")
     # loading — do not copy merged skills/ into payload or install --verify fails governance.
     _copy_tree(KIT_ROOT / ".cursor" / "skills", payload_dir / ".cursor" / "skills")
 
-    mcp_kit = KIT_ROOT / ".cursor" / "mcp.json.kit.example"
-    if mcp_kit.is_file() and profile == "with_mcp":
-        _copy_file(mcp_kit, payload_dir / ".cursor" / "mcp.json.kit.example")
+    if profile == "with_mcp":
+        cursor_src = KIT_ROOT / ".cursor"
+        cursor_dst = payload_dir / ".cursor"
+        for name in MCP_PAYLOAD_EXAMPLES:
+            src = cursor_src / name
+            if src.is_file():
+                _copy_file(src, cursor_dst / name)
+        mcp_d_src = cursor_src / "mcp.d"
+        if mcp_d_src.is_dir():
+            mcp_d_dst = cursor_dst / "mcp.d"
+            for name in MCP_D_PAYLOAD_FILES:
+                src = mcp_d_src / name
+                if src.is_file():
+                    _copy_file(src, mcp_d_dst / name)
 
     _copy_tree(CURSOR_WORKFLOW_SRC, payload_dir / "cursor_workflow")
 

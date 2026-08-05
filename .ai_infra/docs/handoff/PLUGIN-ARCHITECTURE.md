@@ -104,7 +104,7 @@ Maintainer megadocs live under `.ai_infra/docs/maintainer/` (not copied to consu
 ```text
 my-app/
 ├── AGENTS.md                 # thin router
-├── .cursor/                  # agents, rules, skills
+├── .cursor/                  # agents, rules, skills + MCP examples (with_mcp)
 ├── .agents/                  # maintainer slash skills
 ├── .ai_infra/                # slim infrastructure bundle
 │   ├── manifest.yaml
@@ -115,8 +115,8 @@ my-app/
 │   ├── templates/local-workspace|user-settings|agent-integration|project-board|research-corpus/
 │   ├── mcp_servers/workflow_mcp/   # with_mcp profile
 │   └── workflows/
-├── overlays/                 # product rules source (copy → .cursor/rules/)
-└── .local/                   # scaffolded trackers
+├── cursor_workflow/          # CLI entry
+└── .local/                   # scaffolded trackers + canvases/ + plans/
 ```
 
 **Not installed by default:** kit full `tests/`, `Makefile`, `docs/handoff/`, CI/release scripts, maintainer megadocs under `docs/maintainer/`.
@@ -137,10 +137,10 @@ The path `.ai_infra/templates/local-workspace/ci/kit-dev/` holds **kit-repositor
 | Profile    | Adds                                                                             |
 | ---------- | -------------------------------------------------------------------------------- |
 | `default`  | `.cursor/`, `.agents/`, slim `.ai_infra/`, `.local/` exemplars, `AGENTS.md` stub |
-| `with_mcp` | `.ai_infra/mcp_servers/workflow_mcp/`, `requirements-mcp.txt`, `mcp.json`        |
+| `with_mcp` | `.ai_infra/mcp_servers/workflow_mcp/`, `requirements-mcp.txt`, merged `.cursor/mcp.json`, MCP worksheets (`mcp.*.example`, `.cursor/mcp.d/`) |
 
 
-Product rules: copy `overlays/rules/*.mdc` into `.cursor/rules/` after install (not a separate profile).
+Product rules already ship in `.cursor/rules/` via activate. Optional `overlays/rules/*.mdc` remain kit-dev / install-time extras — not a separate consumer profile.
 
 **Skill merge policy:**
 

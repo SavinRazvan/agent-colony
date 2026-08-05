@@ -11,8 +11,10 @@ Depends On:
 from __future__ import annotations
 
 import importlib.util
+import os
 import runpy
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -244,6 +246,33 @@ def test_scaffold_with_mcp_json_uses_mcp_manage(tmp_path: Path) -> None:
     target = tmp_path / "project"
     mod.scaffold(target, REPO_ROOT, with_mcp_json=True)
     assert (target / ".cursor" / "mcp.json").is_file()
+
+
+def test_scaffold_subprocess_with_mcp_json_resolves_cursor_host_paths(tmp_path: Path) -> None:
+    """Regression: real activate runs scaffold as a script without pytest pythonpath."""
+    target = tmp_path / "consumer"
+    target.mkdir()
+    env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+    env["PYTHONPATH"] = ""
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(SCAFFOLD_PATH),
+            "--target",
+            str(target),
+            "--source",
+            str(REPO_ROOT),
+            "--with-mcp-json",
+        ],
+        cwd=str(tmp_path),
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr or result.stdout
+    assert (target / ".cursor" / "mcp.json").is_file()
+    assert "cursor_host_paths" not in (result.stderr or "")
 
 
 def test_scaffold_with_mcp_json_fallback_to_example(
