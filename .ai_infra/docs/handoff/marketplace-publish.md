@@ -195,7 +195,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 | Organization handle | `savin-razvan` (or `mas-workflow-kit-project-ssot`) |
 | Contact email | razvan.i.savin@gmail.com |
 | Logotype URL | `https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit-project-ssot/main/assets/logo.png` |
-| Description | MAS Workflow Kit — Project SSOT installs multi-agent workflow into any Cursor project (8 agents, 12 skills, 7 rules): GitHub Project as writable backlog/status SSOT, PR lifecycle scripts, `.local/` evidence, optional MCP. Run **`/workflow-activate`**, then first-run **`/board`** (Playground board shell) before **`/implementer`**. Pattern A: one script per maintainer action. |
+| Description | MAS Workflow Kit — Project SSOT installs multi-agent workflow into any Cursor project (8 agents, 13 skills, 7 rules): GitHub Project as writable backlog/status SSOT, PR lifecycle scripts, `.local/` evidence, optional MCP. Run **`/workflow-activate`**, then first-run **`/board`** (Playground board shell) before **`/implementer`**. Pattern A: one script per maintainer action. |
 | GitHub repository | https://github.com/SavinRazvan/mas-workflow-kit-project-ssot |
 | Owner | Individual · razvan.i.savin@gmail.com |
 | Website URL | https://razvansavin.com/ |
@@ -216,11 +216,13 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-07-20 DOC-ONBOARD / board-shell, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` + `ls .cursor/skills/` — **1166** tests collected, **7089** stmts / **100%** coverage; agent/skill/rule counts (**8** / **12** / **7**) including `board-shell`; kit version **0.4.0**. Superseded by completeness refresh below.
 
-**Listing copy refresh (2026-07-21 consumer board onboarding):** Tier-1 column FAIL gate + onboarding automation boundary docs; **1180** tests collected.
+**Listing copy refresh (2026-07-21 consumer board onboarding, archival):** Tier-1 column FAIL gate + onboarding automation boundary docs; **1180** tests collected. Superseded by 2026-08-05 alignment refresh below.
+
+**Listing copy refresh (2026-08-05 audit #178 alignment):** Re-verified against `IMPLEMENTATION-STATUS.md` + filesystem — **1413** tests; agent/skill/rule counts (**8** / **13** / **7**) canonical `.cursor/skills` (+6 maintainer slash skills under `.agents/skills`); kit version **0.4.0**. Description row updated to **8 / 13 / 7**.
 
 **Listing copy refresh (2026-07-20 DOC-CANVAS-ALIGN):** Canvases re-aligned to live CLI (**22** leaves incl. `board-bootstrap`), board-shell day-0 story, test-runner `coverage.json` + post-100% doc sync, VERIFIED **2026-07-20**; metrics unchanged (**1178** / **7089** / **100%**; **8** / **12** / **7**).
 
-**Listing copy refresh (2026-07-20 DOC-ALIGN secondary + marketplace description):** Description row + `plugin.json` now mention Project SSOT / Playground board shell / **8 / 12 / 7**; archival stamps above remain historical.
+**Listing copy refresh (2026-07-20 DOC-ALIGN secondary + marketplace description, archival):** Description row + `plugin.json` mentioned Project SSOT / Playground board shell / **8 / 12 / 7** at that date; superseded by 2026-08-05 alignment refresh (8 / 13 / 7).
 
 **Consumer smoke (2026-07-08):** Real app **Smart-Notes** — `/add-plugin` + chat **`/workflow-activate`**, `health`/`gates`/`integrate`/`mcp validate` PASS, kit smoke **1** of **120** pytest during gates. Local evidence file was not retained in this workspace; recreate with `make smoke-consumer` and write under `.local/workflow-artifacts/release/smoke-consumer-<app>-<date>.md` on the next consumer run.
 

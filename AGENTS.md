@@ -83,7 +83,7 @@ Full handoff checklist: [`.ai_infra/docs/operations/workflow-complete.md`](.ai_i
 
 ## Quality gates (single source of truth)
 
-**Default merge gate order** is `resolve_gates()` in **`.ai_infra/scripts/pr/prepare.py`** — **two** subprocesses in universal core (`check_testing_artifacts.py`, `pytest -q`). Kit-dev repos auto-append drift validate + doc facts (**four** total). Append gates at consumer install as needed. `prepare.py` does **not** run governance consistency by default.
+**Default merge gate order** is `resolve_gates()` in **`.ai_infra/scripts/pr/prepare.py`** — **two** subprocesses in universal core (`check_testing_artifacts.py`, `pytest -q`). Kit-dev repos auto-append drift validate + doc facts + plugin bundle `--check` (**five** / **5** total). Append gates at consumer install as needed. `prepare.py` does **not** run governance consistency by default.
 
 **Additionally** run **`python3 .ai_infra/scripts/architecture/check_governance_consistency.py`** and **`python3 .ai_infra/scripts/architecture/check_debrand.py`** when changing governance, workflows, `.cursor/`, `.agents/`, or tracked policy docs.
 

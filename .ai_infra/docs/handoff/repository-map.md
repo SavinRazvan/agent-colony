@@ -52,7 +52,7 @@ mas-workflow-kit-project-ssot/
 ├── cursor_workflow/            SSOT — thin CLI shim (also copied to consumer)
 ├── schemas/                    Legacy gate.json stub (`resolve_gates()` in prepare.py; `GATES` = alias)
 ├── .local/                     Kit-dev runtime (gitignored); CI seed fixture — not consumer exemplars
-├── tests/                      Kit-dev only — full pytest suite (1180; see IMPLEMENTATION-STATUS)
+├── tests/                      Kit-dev only — full pytest suite (1413; see IMPLEMENTATION-STATUS)
 ├── Makefile, pyproject.toml    Kit-dev only
 ├── overlays/                   Optional product rules source (`overlays/rules/project-ssot-precedence.mdc`); this product payload ships **7** rules (6 kit + SSOT precedence)
 ├── project-rules/              Deprecated alias → use overlays/rules/

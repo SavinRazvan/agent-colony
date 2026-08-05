@@ -15,7 +15,7 @@ Notes:
 
 # Implementation status (MAS Workflow Kit — Project SSOT)
 
-**Last updated:** 2026-08-05 (kit-dev MCP health CI + consumer worksheets; 1413 tests)
+**Last updated:** 2026-08-05 (audit #178 alignment: prepare check-plugin + doc counts; 1413 tests)
 **Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1413
 
 ## Shipped (confirmed in repo)
@@ -90,6 +90,12 @@ cursor-workflow mcp validate
 pytest -m live tests/modules/workflow_mcp/test_workflow_mcp.py::test_workflow_mcp_stdio_initialize_smoke
 cursor-workflow drift validate
 ```
+
+| Command | Behavior |
+|---------|----------|
+| `make check-plugin` / CI (`kit-quality.yml`) | Regenerates mirrors to a temp tree and diffs against **committed** `agents/` / `rules/` / `skills/` / `payload/` — fails if stale (no prior sync) |
+| `make verify-all` | Runs **sync-plugin first**, then `--check` — refreshes the working tree; does **not** by itself prove committed trees were already green |
+| Kit-dev `prepare.py` | Includes the same strict `--check` as CI (see [gate-matrix.md](../operations/gate-matrix.md)) |
 
 ## Not yet shipped
 
