@@ -64,6 +64,7 @@ MCP_PAYLOAD_EXAMPLES = (
     "mcp.json.kit.example",
     "mcp.registry.yaml.example",
     "mcp.user.example.json",
+    "MCP-CONFIG.md",
 )
 MCP_D_PAYLOAD_FILES = (
     "README.md",
