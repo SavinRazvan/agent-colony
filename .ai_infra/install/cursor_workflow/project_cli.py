@@ -376,7 +376,7 @@ def cmd_create_from_template(args: argparse.Namespace) -> int:
             guess_note = "Size/Estimate guessed (default s/1)"
             if agent:
                 n_ok, n_detail, _n_code = append_notes_helper(
-                    root, ssot, item_id, agent=agent, text=guess_note, limit=100
+                    root, ssot, item_id, agent=agent, text=guess_note, limit=200
                 )
                 if not n_ok:
                     print(
@@ -811,7 +811,7 @@ def cmd_set_status(args: argparse.Namespace) -> int:
             queue_payload["start_date"] = utc_today_iso()
     # Body gate before precheck/queue so EXIT_VALIDATION never enqueues a doomed close.
     if _normalize_status(str(args.to)) in BODY_GATE_STATUSES:
-        items, list_err = fetch_project_items(ssot, limit=100)
+        items, list_err = fetch_project_items(ssot, limit=200)
         if list_err:
             return fail("set-status", EXIT_GH, list_err)
         item = find_item_by_id(items, item_id)

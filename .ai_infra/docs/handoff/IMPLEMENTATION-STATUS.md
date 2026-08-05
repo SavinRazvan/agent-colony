@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (MAS Workflow Kit — Project SSOT)
 
-**Last updated:** 2026-08-04 (MCP SDK v2 migration + DeepWiki demo wiring; 1218 tests)
-**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1218
+**Last updated:** 2026-08-05 (cursor_workflow install COV-100; 1411 tests)
+**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1411
 
 ## Shipped (confirmed in repo)
 
@@ -24,13 +24,13 @@ Notes:
 |------|--------|----------|
 | Universal rules | 7 `.mdc` | `.cursor/rules/` **and** `payload/.cursor/rules/` (6 kit + `project-ssot-precedence`) |
 | Agents | 8 core; `model: auto`; audit agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` |
-| Canonical skills | 12 folders | `.cursor/skills/` |
+| Canonical skills | 13 folders | `.cursor/skills/` |
 | Maintainer skills | 6 folders (additive plugin merge; includes `full-pr-workflow`) | `.agents/skills/` |
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
 | PR scripts + prepare gates | Pattern A — **2** universal; **4** on kit-dev (drift + doc facts) | `.ai_infra/scripts/pr/prepare.py` |
 | Governance + debrand scanners | CI-ready | `.ai_infra/scripts/architecture/` |
-| Workflow drift validate | ADR-007 (+ DRIFT-004b, DRIFT-011 roster pulse) | `.ai_infra/scripts/workflow/check_drift.py` |
+| Workflow drift validate | ADR-007 (+ DRIFT-004b, DRIFT-011 roster, DRIFT-012 plan snapshots) | `.ai_infra/scripts/workflow/check_drift.py` |
 | Timestamped board Notes (CONT-TS) | `@user/agent · <ISO-8601-UTC> · …` via CLI (`claim`/`handoff`/`append-notes`) | `project_recipes.py` / `project_cli.py` + skill § Notes |
 | Tier-1 Size/Estimate + Start date | Size↔Estimate **points** table in skill; Start date on claim / `set-status` / `handoff` → `in_progress`; `create-from-template --priority` required | `board-ssot` skill · `project_atomics.ensure_start_date_if_starting` · PR #70 |
 | Local continuity-index | Rolling ≥3-day UTC rows; board Notes = full card lifetime | `history/continuity-index.md` (+ exemplar) |
@@ -46,25 +46,30 @@ Notes:
 | Install scaffold + contract | `install-contract.json`; idempotent trackers/`AGENTS.md`/`pages.json` on re-activate | `.ai_infra/scripts/install/scaffold.py` |
 | Local artifact tiers | Tier 1 scaffold: all `workflow-artifacts/*` buckets + README stubs; SSOT `local_workflow_paths.py` | `.ai_infra/templates/local-workspace/`, `pages.json` |
 | Integrate validate | INT-001…014; INT-009/011 plugin parity **kit-dev only** | `.ai_infra/scripts/integration/validate.py` |
-| Install CLI | install, **activate**, gates, health, mcp, contributors, integrate, drift, doc, verify, **project**, **research** | `.ai_infra/install/cursor_workflow/cli.py` |
+| Canvas / plan CLI | ADR-010 Pattern A — `canvas doctor|sync|save`, `plan snapshot|list|open` | `.ai_infra/install/cursor_workflow/canvas_cli.py`, `plan_cli.py` · `canvas-artifacts` skill |
+| Install CLI | install, **activate**, gates, health, mcp, contributors, integrate, drift, doc, verify, **project**, **research**, **canvas**, **plan** | `.ai_infra/install/cursor_workflow/cli.py` |
 | Editable install | `pyproject.toml` — `pip install -e ".[dev,mcp]"` | repo root |
 | Three-plane activate | Idempotent plugin consumer setup | `.ai_infra/install/cursor_workflow/activate_cli.py`, `plane_status.py` |
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Researcher agent (corpus) | **Shipped / proven** — adaptive Brief; anti-loop ≤6; CLI `research init\|fetch\|validate`; live E2E flexiai-toolsmith (18 curated, validate PASS) + verifier Claim A+B VERIFIED 2026-07-19; corpus **opt-in** after first `research init` | `.cursor/agents/researcher.md` · `research-corpus` · `canvases/agent-researcher.canvas.tsx` · Issue #74 |
 | Kit version on install | `kit_version` 0.4.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 1218 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1411 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 
-`pytest --cov=.ai_infra --cov=cursor_workflow` measures the **import surface** of the
-installable kit (CLI, scripts invoked in-process, MCP server). As of 2026-07-20
-(COV-100 closure): **7089 statements, 100.00%** on a full suite pass (**1218
-collected** as of DRIFT-011 goal pulse; intentional live-smoke skips only). One import-order `sys.path` bootstrap in
+Two metrics (do not conflate):
+
+| Metric | Command | As of 2026-08-05 |
+|--------|---------|------------------|
+| **(A) Install package** | `pytest tests/modules/ -q --cov=.ai_infra/install/cursor_workflow --cov-report=term-missing` | **5199 statements, 100.00%, Miss=0** (all 27 modules) |
+| **(B) Broader kit import surface** | `pytest --cov=.ai_infra --cov=cursor_workflow` | **8650 statements, 99% (23 miss)** — honest post-COV-CW; not claimed 100% when only install package is closed |
+
+Metric (A) is the trust gate for Pattern A CLI (`project`, `mcp`, `canvas`, `plan`). Metric (B) tracks the installable kit import surface (CLI, scripts invoked in-process, MCP server). One import-order `sys.path` bootstrap in
 `merge.py` is `# pragma: no cover` (justified — import-order bootstrap only).
 Subprocess-only maintainer scanners (`check_governance_consistency.py`,
 `check_debrand.py`, `check_consumer_purity.py`, `check_file_headers.py`) have
-dedicated module tests but are excluded from this metric by design — they are
+dedicated module tests but are excluded from metric (B) by design — they are
 launched via `subprocess` / `make gates`, not imported by the coverage run.
 Running `--cov=.` (tests included) reports higher because of order-dependent
 branches in test-helper cleanup code; scope shipped source for readiness claims.

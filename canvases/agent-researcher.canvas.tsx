@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-03";
+const VERIFIED = "2026-08-05";
 const SOURCES =
   ".cursor/agents/researcher.md · research-corpus/SKILL.md · research_cli.py · .agents/skills/RESEARCH_WORKFLOW.md · live pack flexiai-toolsmith + verifier";
 
@@ -104,6 +104,7 @@ const READ_FIRST = [
   [".cursor/skills/research-corpus/SKILL.md", "Intake + rounds canon"],
   ["_research_results/RESEARCH_BOUNDARIES.md", "Hard-stop boundaries"],
   [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
+  [".cursor/skills/canvas-artifacts/SKILL.md", "ADR-010 canvas/plan tiers"],
 ];
 
 const PATTERNS = [
@@ -122,6 +123,16 @@ const ARTIFACTS = [
   ["_research_results/sources/<slug>/", "Pack + AGENT_BRIEF", "implementer / integrator"],
   ["Board Status + Notes", "Research card done + pack paths", "Next / requesting agent"],
   [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
+  [
+    ".local/plans/",
+    "plan snapshot|list (history)",
+    "Agents execute; humans plan open",
+  ],
+  [
+    ".local/canvases/",
+    "canvas save (session evidence)",
+    "canvas-artifacts skill",
+  ],
 ];
 
 const PEERS = [

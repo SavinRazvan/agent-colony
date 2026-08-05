@@ -29,6 +29,8 @@ New or continued `feature/` | `fix/` | `chore/` work; recovery from blocked slic
 5. **Commits:** trailers per `.cursor/rules/commit-trailer-format.mdc` (`Author`, `GitHub-User`; `Assisted-by:` when applicable; no `Made-with:`).
 6. **Close (board-indexed):** when a PR exists → `mention-pr --pr N`; ensure Assignee via claim/`set-assignee --login` (Issue-at-create); `set-status --to in_review|done`; print `item_id=… · Status=… · Priority=p? · Size=? · Estimate=? · next=…` and `Tasks: [P…]…`. Do **not** dual-write `work-tracker.md` under `board_only`. Fallback: close tracker + `updates-log.md`. Run **`make drift-validate`**; invoke **`drift-guard`** when P0/P1 findings need artifacts (drift-guard also reads/updates the board).
 
+**Plan mode / ADR-010:** Agents execute from `.local/plans/` via `plan list` → read latest snapshot; on slice exit use `plan snapshot --slug <kebab> --agent implementer --board-item <PVTI_>`. Live plan SSOT stays on the board card (`board_only`) or `plan.md` offline — never Status dual-write into `.local/plans/`. Humans bridge IDE Build with `plan open --slug <kebab>`. Canvas evidence: `canvas doctor|sync|save` — see `.cursor/skills/canvas-artifacts/SKILL.md`.
+
 ## Output
 
 Slice • item_id • Status before→after • Priority · Size · Estimate • modules/files • gates outcome • blockers • next agent · Tasks `[P…]`

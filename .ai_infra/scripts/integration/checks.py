@@ -25,7 +25,15 @@ REQUIRED_AGENT_MARKERS = (
     "## MCP integration",
     "workflow-kit",
     "mcp.registry.yaml",
+    "cursor_workflow mcp",
 )
+
+CANVAS_AGENT_MARKERS = (
+    "cursor_workflow canvas",
+    "canvas-artifacts",
+)
+
+CANVAS_AGENT_IDS = frozenset({"implementer", "integrator"})
 
 
 def agent_file_ids(agents_dir: Path) -> set[str]:
@@ -70,6 +78,18 @@ def check_all_agent_files(agents_dir: Path) -> list[str]:
         return violations
     for path in agents:
         violations.extend(check_agent_file(path))
+        if path.stem in CANVAS_AGENT_IDS:
+            violations.extend(check_canvas_agent_file(path))
+    return violations
+
+
+def check_canvas_agent_file(path: Path) -> list[str]:
+    text = path.read_text(encoding="utf-8")
+    rel = path.name
+    violations: list[str] = []
+    for marker in CANVAS_AGENT_MARKERS:
+        if marker not in text:
+            violations.append(f"{rel}: missing canvas marker '{marker}'")
     return violations
 
 

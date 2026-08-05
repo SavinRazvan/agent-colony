@@ -114,7 +114,7 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 | Root | Role |
 |------|------|
 | `.cursor/agents/` | Subagent cards (8) — Task delegation; **`model: auto`**; audit agents write `.local/` artifacts only |
-| `.cursor/skills/` | **Canonical protocols** (12 folders: `auditor-protocol`, `audit-orchestration`, `audit-module-map`, `board-ssot`, `board-shell`, `drift-audit`, `implementer-loop`, `integrator-protocol`, `mcp-connect`, `research-corpus`, `test-coverage`, `workflow-activate`) — see [repository-map](.ai_infra/docs/handoff/repository-map.md) |
+| `.cursor/skills/` | **Canonical protocols** (13 folders: `auditor-protocol`, `audit-orchestration`, `audit-module-map`, `board-ssot`, `board-shell`, `canvas-artifacts`, `drift-audit`, `implementer-loop`, `integrator-protocol`, `mcp-connect`, `research-corpus`, `test-coverage`, `workflow-activate`) — see [repository-map](.ai_infra/docs/handoff/repository-map.md) |
 | `.agents/skills/` | **Maintainer slash skills** (6 folders: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `full-pr-workflow`, `audit-alignment` stub → `auditor`) — additive in plugin sync |
 | `.cursor/rules/` | **7** `alwaysApply` rules in this product repo (6 kit + `project-ssot-precedence`) — high context cost by design |
 
@@ -148,13 +148,14 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. Staged `/
 | Integrate infrastructure | `.cursor/agents/integrator.md` + `.cursor/skills/integrator-protocol/SKILL.md` — validate with `python3 -m cursor_workflow integrate validate` |
 | Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-coverage/SKILL.md` |
 | Verify claims | `.cursor/agents/verifier.md` |
-| Continuous goal/plan/agent-doctrine coherence + DRIFT scripts | **`drift-guard`** — `.cursor/agents/drift-guard.md` + `.cursor/skills/drift-audit/SKILL.md` — `python3 -m cursor_workflow drift validate` (incl. DRIFT-011) |
+| Continuous goal/plan/agent-doctrine coherence + DRIFT scripts | **`drift-guard`** — `.cursor/agents/drift-guard.md` + `.cursor/skills/drift-audit/SKILL.md` — `python3 -m cursor_workflow drift validate` (incl. DRIFT-011, DRIFT-012) |
 | Deep / periodic architecture + CHK-* (security/perf/granularity/docs) | **`auditor`** — `.cursor/agents/auditor.md` + `.cursor/skills/auditor-protocol/SKILL.md` — not continuous plan pulse |
 | Audit orchestration | `.cursor/skills/audit-orchestration/SKILL.md` — parent runs verify-all + Task delegation (no dedicated agent) |
 | Audit module map | `.cursor/skills/audit-module-map/SKILL.md` — optional deep map; invoke via **`auditor`** |
 | Maintainer PR | `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` → `merge-pr` (staged) → `full-pr-workflow` → `finalize.py` (cleanup + `finalize.md` evidence) |
 | Research corpus (shipped; opt-in packs) | `.cursor/agents/researcher.md` — adaptive Brief from chat/agents; HTTPS/`github:`/`path:`; `research init\|fetch\|validate`; packs in `_research_results/sources/<slug>/`; live E2E proven 2026-07-19 |
 | MCP | `.ai_infra/mcp_servers/workflow_mcp/` — `python -m workflow_mcp`; [`.cursor/mcp.json.kit.example`](.cursor/mcp.json.kit.example) + [mcp-connect](.ai_infra/docs/operations/connect-external-mcp.md) |
+| Canvas / plan artifacts | [canvas-artifacts](.cursor/skills/canvas-artifacts/SKILL.md) — `python3 -m cursor_workflow canvas …` / `plan snapshot|list|open` (ADR-010) |
 
 Scripts:
 

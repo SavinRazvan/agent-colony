@@ -8,8 +8,10 @@ Depends On:
  - .ai_infra/bootstrap.py
  - .ai_infra/scripts/install/scaffold.py
  - .ai_infra/install/cursor_workflow/mcp_manage.py
+ - .ai_infra/install/cursor_workflow/mcp_cli.py
 Notes:
  - install forwards to scaffold.py; gates runs prepare-aligned checks.
+ - ADR-009 MCP; ADR-010 canvas/plan Pattern A CLI.
 """
 
 from __future__ import annotations
@@ -39,6 +41,9 @@ _MCP_PKG = Path(__file__).resolve().parent
 if str(_MCP_PKG) not in sys.path:
     sys.path.insert(0, str(_MCP_PKG))
 import mcp_manage  # noqa: E402
+import mcp_cli  # noqa: E402
+import canvas_cli  # noqa: E402
+import plan_cli  # noqa: E402
 import contributors_cli  # noqa: E402
 import integrate_cli  # noqa: E402
 import drift_cli  # noqa: E402
@@ -189,35 +194,6 @@ def cmd_health(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_mcp_validate(args: argparse.Namespace) -> int:
-    root = Path(args.directory).resolve()
-    try:
-        mcp_manage.write_merged_mcp(root)
-        errors = mcp_manage.validate_registry(root)
-    except (FileNotFoundError, ValueError) as exc:
-        print(f"mcp validate: FAIL — {exc}", file=sys.stderr)
-        return 1
-    if errors:
-        print("mcp validate: FAIL")
-        for err in errors:
-            print(f" - {err}")
-        return 1
-    print("mcp validate: PASS")
-    return 0
-
-
-def cmd_mcp_link(args: argparse.Namespace) -> int:
-    root = Path(args.directory).resolve()
-    try:
-        mcp_manage.link_user_server(root, args.name, args.file.resolve())
-        mcp_manage.ensure_mcp_gitignore(root)
-    except (FileNotFoundError, ValueError) as exc:
-        print(f"mcp link: FAIL — {exc}", file=sys.stderr)
-        return 1
-    print(f"mcp link: linked '{args.name}' from {args.file}")
-    return 0
-
-
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="cursor-workflow",
@@ -266,18 +242,26 @@ def build_parser() -> argparse.ArgumentParser:
     )
     health.set_defaults(func=cmd_health)
 
-    mcp = sub.add_parser("mcp", help="MCP config merge and registry validation")
+    mcp = sub.add_parser(
+        "mcp",
+        help="Pattern A MCP: validate, link, doctor, list-tools, call, auth, smoke",
+    )
     mcp_sub = mcp.add_subparsers(dest="mcp_command", required=True)
+    mcp_cli.register_mcp_subcommands(mcp_sub)
 
-    mcp_validate = mcp_sub.add_parser("validate", help="Merge kit+user MCP and validate registry")
-    mcp_validate.add_argument("--directory", type=Path, default=".")
-    mcp_validate.set_defaults(func=cmd_mcp_validate)
+    canvas = sub.add_parser(
+        "canvas",
+        help="Pattern A canvas: doctor, list, sync, save (ADR-010)",
+    )
+    canvas_sub = canvas.add_subparsers(dest="canvas_command", required=True)
+    canvas_cli.register_canvas_subcommands(canvas_sub)
 
-    mcp_link = mcp_sub.add_parser("link", help="Link external MCP server fragment into mcp.user.json")
-    mcp_link.add_argument("--name", required=True, help="Server name in mcp.user.json")
-    mcp_link.add_argument("--file", required=True, type=Path, help="JSON fragment with mcpServers")
-    mcp_link.add_argument("--directory", type=Path, default=".")
-    mcp_link.set_defaults(func=cmd_mcp_link)
+    plan = sub.add_parser(
+        "plan",
+        help="Pattern A plan snapshots: snapshot, list, open (ADR-010)",
+    )
+    plan_sub = plan.add_subparsers(dest="plan_command", required=True)
+    plan_cli.register_plan_subcommands(plan_sub)
 
     contributors_cli.register_contributors_subparser(sub)
     integrate_cli.register_integrate_subparser(sub)

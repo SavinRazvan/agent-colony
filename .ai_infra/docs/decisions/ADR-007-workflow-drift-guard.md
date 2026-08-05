@@ -58,6 +58,7 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 | DRIFT-009 | P1 | kit-dev | When `project_ssot.sync_policy: board_only`, no competing `in_progress` in work-tracker Active (ADR-008) |
 | DRIFT-010 | P1 | kit-dev | When `board_only`, board Status vs open PRs / stale In progress / merged-but-not-Done (uses read-only `project export` snapshot; skips offline) |
 | DRIFT-011 | P1 | kit-dev | Agent roster coherence: `.cursor/agents/*.md` basenames match the eight live kit agent ids (goal/doctrine pulse — falsifiable) |
+| DRIFT-012 | P2 | kit-dev | When `board_only`, `.local/plans/` is snapshot-only — no live/current plan SSOT in that dir (ADR-010) |
 
 **Exit policy:** exit code 1 on any P0 failure; P1/P2 advisory in output (same as `integrate validate`). Pending `project_ssot.outbox` ops are **not** a drift failure — cite `project outbox status` in artifacts when relevant.
 

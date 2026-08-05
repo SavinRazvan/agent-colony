@@ -297,10 +297,24 @@ def test_ensure_mcp_gitignore_appends_when_missing(tmp_path: Path) -> None:
     text = (tmp_path / ".gitignore").read_text(encoding="utf-8")
     assert "node_modules/" in text
     assert ".cursor/mcp.user.json" in text
+    assert ".local/user_settings/mcp.secrets.yaml" in text
 
 
 def test_ensure_mcp_gitignore_noop_when_present(tmp_path: Path) -> None:
-    existing = "node_modules/\n.cursor/mcp.user.json\n"
+    existing = (
+        "node_modules/\n"
+        ".cursor/mcp.user.json\n"
+        ".local/user_settings/mcp.secrets.yaml\n"
+    )
     (tmp_path / ".gitignore").write_text(existing, encoding="utf-8")
     mcp_manage.ensure_mcp_gitignore(tmp_path)
     assert (tmp_path / ".gitignore").read_text(encoding="utf-8") == existing
+
+
+def test_ensure_mcp_gitignore_adds_secrets_line(tmp_path: Path) -> None:
+    existing = "node_modules/\n.cursor/mcp.user.json\n"
+    (tmp_path / ".gitignore").write_text(existing, encoding="utf-8")
+    mcp_manage.ensure_mcp_gitignore(tmp_path)
+    text = (tmp_path / ".gitignore").read_text(encoding="utf-8")
+    assert ".local/user_settings/mcp.secrets.yaml" in text
+    assert ".cursor/mcp.user.json" in text

@@ -16,30 +16,45 @@ User wants kit agents to use **external** MCP tools (Slack, DB, GitHub, custom A
 3. Add server entry to `mcp.user.json` **or** run:
 
 ```bash
-cursor-workflow mcp link --name my-api --file .cursor/mcp.d/my-api.json
+python3 -m cursor_workflow mcp link --name my-api --file .cursor/mcp.d/my-api.json
 ```
 
 4. Map the server to agents in `mcp.registry.yaml`
 5. Merge and validate:
 
 ```bash
-cursor-workflow mcp validate
+python3 -m cursor_workflow mcp validate
+python3 -m cursor_workflow mcp doctor
 ```
 
-6. Enable MCP in Cursor settings for the workspace.
+6. Optional: enable MCP in Cursor settings for the workspace (`CallMcpTool` convenience).
 
-**Fastest way to validate this end-to-end:** the `deepwiki` entry already shipped in both
-example files is a free, zero-auth, remote server — copy the examples as-is (no secrets to
-fill in) and skip straight to step 5. Full walkthrough:
-`.ai_infra/docs/operations/connect-external-mcp.md` § Worked example: DeepWiki.
+**Pattern A (canonical):** agents call MCP via CLI — not Cursor host loading:
+
+```bash
+python3 -m cursor_workflow mcp list-tools --server workflow-kit
+python3 -m cursor_workflow mcp call --server workflow-kit --tool workflow_gate_count
+python3 -m cursor_workflow mcp auth --server my-api --token-env MY_TOKEN
+python3 -m cursor_workflow mcp smoke --server workflow-kit
+```
+
+**Fastest external smoke:** DeepWiki (zero-auth) — copy examples, validate, then:
+
+```bash
+python3 -m cursor_workflow mcp smoke --server deepwiki
+```
+
+Full walkthrough: `.ai_infra/docs/operations/connect-external-mcp.md` § Worked example: DeepWiki. Canon: ADR-009.
 
 ## Success
 
-- `cursor-workflow mcp validate` exits 0
-- `workflow_list_mcp_registry` (workflow-kit MCP) lists external servers
+- `python3 -m cursor_workflow mcp validate` exits 0
+- `python3 -m cursor_workflow mcp doctor` shows configured vs host-loaded
+- `mcp list-tools` / `mcp call` work for allowlisted servers
 - Target agent markdown includes the server under **MCP integration**
 
 ## Reference
 
 - `.ai_infra/docs/operations/connect-external-mcp.md`
 - `.ai_infra/docs/decisions/ADR-004-user-mcp-registry.md`
+- `.ai_infra/docs/decisions/ADR-009-mcp-pattern-a-cli.md`

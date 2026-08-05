@@ -20,6 +20,7 @@ Notes:
 |----------|-----------|--------|
 | `exemplars/github.collaboration.yaml` | `.local/user_settings/github.collaboration.yaml` | Commit trailers, PR bodies, PR phase artifacts |
 | `exemplars/mcp.agents.yaml` | `.local/user_settings/mcp.agents.yaml` | `.cursor/mcp.user.json`, `.cursor/mcp.registry.yaml` |
+| `exemplars/mcp.secrets.yaml` | `.local/user_settings/mcp.secrets.yaml` | Pattern A `mcp auth` / `mcp call` secrets (gitignored; ADR-009) |
 | `exemplars/board-shell.schema.minimal.yaml` | `.local/user_settings/board-shell.schema.yaml` | Optional **2-view** bootstrap minimum ([Playground #3](https://github.com/users/SavinRazvan/projects/3)); manual copy; gitignored |
 
 **Agents:** Read completed files for attribution defaults and MCP intent. Wired integration:

@@ -8,7 +8,7 @@ description: drift-guard MAS-SSOT-KIT — Continuous goal/plan/agent-doctrine/do
 
 ## What we guard (continuous)
 
-**Own:** Keep kit agents pointed at living goals — board card Acceptance/Notes, plan pointers, `AGENTS.md` / agent doctrine, and operational DRIFT-001…011 (script-first). Goal/plan/agent-doctrine/docs **coherence pulse** when plans change.
+**Own:** Keep kit agents pointed at living goals — board card Acceptance/Notes, plan pointers, `AGENTS.md` / agent doctrine, and operational DRIFT-001…012 (script-first). Goal/plan/agent-doctrine/docs **coherence pulse** when plans change.
 
 **Do not own:** Deep architecture scorecard, security/perf/module deep-dives — that is **`auditor`** (periodic / architecture-impacting). Do not auto-fix product code or silently edit trackers.
 
@@ -29,7 +29,7 @@ description: drift-guard MAS-SSOT-KIT — Continuous goal/plan/agent-doctrine/do
 **Write scope:** `.local/workflow-artifacts/drift/` only (`drift-audit.md`, `drift-todos.md` per `local_workflow_paths.py`) — no product-code edits. (`readonly` not set so Task delegation can write drift artifacts.)
 
 1. Run `python -m cursor_workflow drift validate --directory .` **before** prose findings.
-2. Map script output to `drift-audit.md` and `drift-todos.md` per skill (include **DRIFT-009** / **DRIFT-010** / **DRIFT-011** when applicable; prefer a fresh `project export` snapshot for DRIFT-010).
+2. Map script output to `drift-audit.md` and `drift-todos.md` per skill (include **DRIFT-009** / **DRIFT-010** / **DRIFT-011** / **DRIFT-012** when applicable; prefer a fresh `project export` snapshot for DRIFT-010; **DRIFT-012** guards `.local/plans/` snapshot-only under `board_only`).
 3. Goal pulse (prose): board Acceptance/Notes vs plan pointers vs `AGENTS.md` / agent cards — flag gaps; hand off to implementer/board (do not rewrite architecture).
 4. P0 failures block prepare-pr handoff; P1 fix in same slice; P2 → backlog (preferably a Ready board card).
 5. On kit-dev, `prepare.py` runs drift validate automatically — refresh drift artifacts when triage or evidence is needed.
@@ -58,8 +58,12 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 
 | Tier | Server | Use when |
 |------|--------|----------|
-| Kit | `workflow-kit` | Trackers/gates — prefer scripts |
-| External | See `.cursor/mcp.registry.yaml` | Only if listed for this agent |
+| Kit | `workflow-kit` | PR scripts, trackers, gates — prefer Pattern A CLI over re-running shell |
+| External | See `.cursor/mcp.registry.yaml` | Only servers listed for this agent id |
 
-Before **CallMcpTool**: read tool descriptor schema. Do not invent tool names.
+**Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
+
+Cursor **CallMcpTool** is optional when the IDE host loads the same server. Discover tools with `mcp list-tools --server <id>`; do not invent tool names.
 User setup: `.ai_infra/docs/operations/connect-external-mcp.md`
+
+**Canvas / plan (ADR-010):** Under `board_only`, `.local/plans/` is snapshot-only (**DRIFT-012**); live plan stays on the board card — see `.cursor/skills/canvas-artifacts/SKILL.md`.

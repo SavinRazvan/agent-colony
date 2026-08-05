@@ -26,9 +26,9 @@ import {
  * Not an agent-* canvas — excluded from DOC-008 roster scan (same as board-ssot-vs-kit).
  */
 
-const VERIFIED = "2026-08-04";
+const VERIFIED = "2026-08-05";
 const SOURCES =
-  "ADR-008 · ADR-007 · board-ssot/SKILL.md · project-board-collaboration.md · agent cards · drift/auditor quality split";
+  "ADR-008 · ADR-010 · ADR-007 · board-ssot/SKILL.md · canvas-artifacts/SKILL.md · project-board-collaboration.md · agent cards · drift/auditor quality split";
 
 const NODE_W = 118;
 const NODE_H = 36;
@@ -91,8 +91,8 @@ const WHO_WRITES: string[][] = [
   [
     "implementer",
     "claim · handoff · promote · mention-pr",
-    "session/plan/change-index (offline mirror)",
-    "Ships code; PR path",
+    "change-index; live plan on board card (board_only)",
+    "Ships code; PR path; plan snapshot on exit",
   ],
   [
     "test-runner",
@@ -161,7 +161,7 @@ const ARTIFACT_LANES: string[][] = [
     "Drift",
     ".local/workflow-artifacts/drift/",
     "drift-guard",
-    "Goal pulse + DRIFT-009…011 (011 kit-dev roster)",
+    "Goal pulse + DRIFT-009…012 (011 roster; 012 plan snapshots)",
   ],
   [
     "Release / smoke",
@@ -181,6 +181,18 @@ const ARTIFACT_LANES: string[][] = [
     "Any agent on EXIT_QUEUED (6)",
     "Flush later — not a second SSOT",
   ],
+  [
+    "Session canvases (local evidence)",
+    ".local/canvases/",
+    "Any agent via canvas save",
+    "ADR-010 — sync to IDE with canvas sync",
+  ],
+  [
+    "Plan snapshots (history only)",
+    ".local/plans/",
+    "plan snapshot · plan list (agents); plan open (human Build)",
+    "Live plan = board card under board_only — DRIFT-012",
+  ],
 ];
 
 const HAPPY_PATH = [
@@ -188,7 +200,8 @@ const HAPPY_PATH = [
   "2. claim --last --agent <name> (Start date on In progress when configured)",
   "3. Work — code/tests and/or write .local artifacts",
   "4. Exit — handoff --to in_review|done + Notes (@user/agent · UTC · …)",
-  "5. PR — mention-pr; merge.py can set card Done",
+  "5. Plan — agents: plan list → read .local/plans/; humans: plan open for Build",
+  "6. PR — mention-pr; merge.py can set card Done",
 ];
 
 function LoopDag({
@@ -353,6 +366,9 @@ export default function AgentsArtifactsBoardCanvas() {
           <Pill size="sm" tone="neutral" active>
             ADR-008
           </Pill>
+          <Pill size="sm" tone="neutral" active>
+            ADR-010
+          </Pill>
           <Pill size="sm" tone="neutral">
             8 agents
           </Pill>
@@ -447,7 +463,7 @@ export default function AgentsArtifactsBoardCanvas() {
           </Text>
           <Text size="small">
             implementer makes drift-validate → P0/P1 or goal-pulse gaps →
-            drift-guard writes drift artifacts (DRIFT-001…011 kit-dev) →
+            drift-guard writes drift artifacts (DRIFT-001…012 kit-dev) →
             remediation via Notes/Ready (never silent tracker Status).
           </Text>
           <Text size="small">

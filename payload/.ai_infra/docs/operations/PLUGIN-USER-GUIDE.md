@@ -296,6 +296,21 @@ Versioned under repo `canvases/*.canvas.tsx` (git SSOT). **Rendering** uses Curs
 
 Clicking a file in the repo explorer opens **source**, not the visualization. To view diagrams: **Ctrl+Shift+P → Open Canvas** (pick e.g. `agents-artifacts-board` or an `agent-*` canvas). See hub canvas `canvases/agents-artifacts-board.canvas.tsx` for the same note.
 
+**Three-tier model (ADR-010):** repo `canvases/` (git SSOT) → sync → Cursor managed path (preview) → optional save → `.local/canvases/` (session evidence). Plan snapshots: `.local/plans/` (history only; live plan stays on board or `plan.md`). Agents execute plans from `.local/plans/`; humans bridge to IDE Build with `plan open --slug <slug>` (requires `--force` if a Cursor twin already exists).
+
+```bash
+python3 -m cursor_workflow canvas doctor
+python3 -m cursor_workflow canvas list
+python3 -m cursor_workflow canvas sync --name mcp-onboarding
+python3 -m cursor_workflow canvas save --name <stem>
+python3 -m cursor_workflow canvas sync --missing
+python3 -m cursor_workflow plan snapshot --slug my-slice
+python3 -m cursor_workflow plan list
+python3 -m cursor_workflow plan open --slug my-slice
+```
+
+Skill: `.cursor/skills/canvas-artifacts/SKILL.md`
+
 Legacy browser UI still ships on activate. **Do not open HTML via `file://`**. From project root:
 
 ```bash

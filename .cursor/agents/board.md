@@ -97,5 +97,9 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 | Kit | `workflow-kit` | Trackers/gates if needed — prefer `cursor_workflow project` for board |
 | External | See `.cursor/mcp.registry.yaml` | Only if listed for `board` |
 
-Before **CallMcpTool**: read tool descriptor schema. Do not invent tool names.
+**Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
+
+Cursor **CallMcpTool** is optional when the IDE host loads the same server. Discover tools with `mcp list-tools --server <id>`; do not invent tool names.
 User setup: `.ai_infra/docs/operations/connect-external-mcp.md`
+
+**Canvas / plan (ADR-010):** Live plan SSOT on the board card (`board_only`) or `plan.md` offline — `.local/plans/` is snapshot-only; `plan snapshot|list|open` for history / human Build bridge — see `.cursor/skills/canvas-artifacts/SKILL.md`.

@@ -109,6 +109,7 @@ def test_run_checks_uses_consumer_board_when_board_only(tmp_path: Path) -> None:
         "DRIFT-008",
         "DRIFT-009",
         "DRIFT-010",
+        "DRIFT-012",
     ]
 
 

@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-03";
+const VERIFIED = "2026-08-05";
 const SOURCES =
   ".cursor/agents/board.md · board-ssot/SKILL.md · board-shell/SKILL.md · ADR-006 · ADR-008";
 
@@ -91,6 +91,7 @@ const READ_FIRST = [
   [".ai_infra/templates/project-board/README.md", "Card templates"],
   ["ADR-006", "Independent-governed agent"],
   ["ADR-008", "Project board SSOT (board_only)"],
+  [".cursor/skills/canvas-artifacts/SKILL.md", "ADR-010 canvas/plan tiers"],
 ];
 
 const PATTERNS = [
@@ -108,6 +109,16 @@ const ARTIFACTS = [
   ["history/updates-log.md", "Exit", "Continuity readers"],
   ["Board Status + Notes", "Every triage", "implementer / next agent"],
   [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
+  [
+    ".local/plans/",
+    "plan snapshot|list (history)",
+    "Agents execute; humans plan open",
+  ],
+  [
+    ".local/canvases/",
+    "canvas save (session evidence)",
+    "canvas-artifacts skill",
+  ],
 ];
 
 const PEERS = [

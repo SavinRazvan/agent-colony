@@ -94,7 +94,7 @@ See [consumer-quickstart.md](../../.ai_infra/docs/operations/consumer-quickstart
 |-------|-----------------|---------------|
 | Cursor contract | `.cursor/`, `.agents/`, `AGENTS.md` | Yes |
 | Infrastructure | `.ai_infra/`, `cursor_workflow/` | No — scripts/CLI |
-| Runtime | `.local/` Tier 1 scaffold: trackers, six `workflow-artifacts/*` buckets + README stubs, `pages.json`, dashboards; `user_settings/` exemplars | No — gitignored |
+| Runtime | `.local/` Tier 1 scaffold: trackers, six `workflow-artifacts/*` buckets + README stubs, `.local/canvases/` + `.local/plans/` index stubs (ADR-010), `pages.json`, dashboards; `user_settings/` exemplars | No — gitignored |
 
 Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear when agents/scripts run. See [local-workspace-layout.md](../../.ai_infra/docs/operations/local-workspace-layout.md) § Artifact tiers. Re-activate does not overwrite existing trackers, `user_settings/`, or `AGENTS.md`. Kit-managed dashboard HTML, JS/CSS assets, `module-audit.html`, and `pages.json` are refreshed from the activate source (plugin `payload/` when resolved) or embedded `.ai_infra/templates/local-workspace/` when not.
 
@@ -116,7 +116,7 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 **Dashboards (optional):** from project root run `source .venv/bin/activate && python3 -m http.server 8000`, then open
 http://localhost:8000/.local/agents-control-center/dashboards/index.html (not `file://`).
 
-Optional: `integrate validate`, `health`. Add infrastructure later: **`/integrator`**.
+Optional: `integrate validate`, `health`, `canvas doctor` (ADR-010 three-tier canvases). Add infrastructure later: **`/integrator`**.
 
 ## Adding agents/skills/MCP later
 

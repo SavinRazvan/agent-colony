@@ -1592,3 +1592,423 @@ def test_maybe_enqueue_scope_miss_not_queued(tmp_path: Path) -> None:
         )
         is None
     )
+
+
+# --- validate_outbox_entry: set-section payload validation (lines 319-322) ---
+
+
+def test_validate_outbox_entry_set_section_missing_section() -> None:
+    """Line 319-320: set-section without section → validation error."""
+    entry = {
+        "id": "00000000-0000-4000-8000-000000000099",
+        "ts": "2026-07-18T10:00:00Z",
+        "agent": "implementer",
+        "github_user": "@test",
+        "op": "set-section",
+        "item_id": VALID_ITEM_ID,
+        "payload": {"section": "", "text": "some text"},
+        "status": "pending",
+        "attempts": 0,
+        "last_error": None,
+    }
+    errs = project_outbox.validate_outbox_entry(entry)
+    assert any("section" in e for e in errs)
+
+
+def test_validate_outbox_entry_set_section_missing_text() -> None:
+    """Lines 321-322: set-section without text → validation error."""
+    entry = {
+        "id": "00000000-0000-4000-8000-000000000098",
+        "ts": "2026-07-18T10:00:00Z",
+        "agent": "implementer",
+        "github_user": "@test",
+        "op": "set-section",
+        "item_id": VALID_ITEM_ID,
+        "payload": {"section": "acceptance", "text": ""},
+        "status": "pending",
+        "attempts": 0,
+        "last_error": None,
+    }
+    errs = project_outbox.validate_outbox_entry(entry)
+    assert any("text" in e for e in errs)
+
+
+# --- apply_outbox_entry: set-section op (lines 607-641) ---
+
+
+def test_apply_outbox_set_section_invalid_section_name(tmp_path: Path) -> None:
+    """Lines 607-610: invalid section name → ValueError → (False, ...)."""
+    ssot = _outbox_ssot(tmp_path)
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="set-section", payload={"section": "notes", "text": "some text"}),
+    )
+    assert not ok
+    assert "acceptance|rollback" in detail or "section" in detail
+
+
+def test_apply_outbox_set_section_empty_text(tmp_path: Path) -> None:
+    """Lines 611-613: empty/placeholder text → (False, ...)."""
+    ssot = _outbox_ssot(tmp_path)
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="set-section", payload={"section": "acceptance", "text": "(TBD)"}),
+    )
+    assert not ok
+    assert "TBD" in detail or "empty" in detail
+
+
+def test_apply_outbox_set_section_fetch_fails(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Lines 614-616: fetch_project_items fails → (False, err)."""
+    ssot = _outbox_ssot(tmp_path)
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([], "gh list failed"),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="set-section", payload={"section": "acceptance", "text": "- real"}),
+    )
+    assert not ok
+    assert "gh list failed" in detail
+
+
+def test_apply_outbox_set_section_item_not_found(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Lines 617-619: item not found → (False, ...)."""
+    ssot = _outbox_ssot(tmp_path)
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([], None),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="set-section", payload={"section": "acceptance", "text": "- real"}),
+    )
+    assert not ok
+    assert "not found" in detail
+
+
+def test_apply_outbox_set_section_replace_raises(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Lines 621-624: replace_section_content raises ValueError → (False, ...)."""
+    ssot = _outbox_ssot(tmp_path)
+    item_body = {"body": "no headings here"}
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([{"id": VALID_ITEM_ID, "title": "T", "content": item_body}], None),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="set-section", payload={"section": "acceptance", "text": "- real"}),
+    )
+    assert not ok
+    assert "missing" in detail or "heading" in detail
+
+
+def test_apply_outbox_set_section_edit_fails(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Lines 625-628: edit_item_body fails → (False, detail)."""
+    ssot = _outbox_ssot(tmp_path)
+    item_body = {"body": "## Acceptance\n\n- (TBD)\n\n## Rollback\n\n- ok\n"}
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([{"id": VALID_ITEM_ID, "title": "T", "content": item_body}], None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "edit_item_body",
+        lambda *a, **k: (False, "body edit failed"),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="set-section", payload={"section": "acceptance", "text": "- criteria met"}),
+    )
+    assert not ok
+    assert "body edit failed" in detail
+
+
+def test_apply_outbox_set_section_notes_fail(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Lines 629-640: agent notes fails → (False, ...)."""
+    ssot = _outbox_ssot(tmp_path)
+    item_body = {"body": "## Acceptance\n\n- (TBD)\n\n## Rollback\n\n- ok\n"}
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([{"id": VALID_ITEM_ID, "title": "T", "content": item_body}], None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "edit_item_body",
+        lambda *a, **k: (True, "ok"),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "append_notes_helper",
+        lambda *a, **k: (False, "notes write failed", project_cli.EXIT_GH),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(
+            op="set-section",
+            payload={"section": "acceptance", "text": "- criteria met"},
+        ),
+    )
+    assert not ok
+    assert "Notes failed" in detail
+
+
+def test_apply_outbox_set_section_ok_with_agent(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Lines 629-641: set-section with agent succeeds → (True, '...updated')."""
+    ssot = _outbox_ssot(tmp_path)
+    item_body = {"body": "## Acceptance\n\n- (TBD)\n\n## Rollback\n\n- ok\n"}
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([{"id": VALID_ITEM_ID, "title": "T", "content": item_body}], None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "edit_item_body",
+        lambda *a, **k: (True, "ok"),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "append_notes_helper",
+        lambda *a, **k: (True, "updated", project_cli.EXIT_OK),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(
+            op="set-section",
+            payload={"section": "acceptance", "text": "- criteria met"},
+        ),
+    )
+    assert ok
+    assert "updated" in detail
+
+
+def test_apply_outbox_set_section_unchanged(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Line 641: set-section unchanged → (True, '...unchanged')."""
+    ssot = _outbox_ssot(tmp_path)
+    item_body = {"body": "## Acceptance\n\n- criteria met\n\n## Rollback\n\n- ok\n"}
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([{"id": VALID_ITEM_ID, "title": "T", "content": item_body}], None),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(
+            op="set-section",
+            agent="",   # empty agent → skip append_notes_helper call
+            payload={"section": "acceptance", "text": "- criteria met"},
+        ),
+    )
+    assert ok
+    assert "unchanged" in detail
+
+
+# --- apply_outbox_entry: set-status body gate (lines 646-654) ---
+
+
+def test_apply_outbox_set_status_body_gate_fetch_fails(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Lines 646-648: body gate fetch fails → (False, err)."""
+    ssot = _outbox_ssot(tmp_path)
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([], "gh list failed"),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="set-status", payload={"to": "in_review"}),
+    )
+    assert not ok
+    assert "gh list failed" in detail
+
+
+def test_apply_outbox_set_status_body_gate_item_not_found(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Lines 649-651: body gate item not found → (False, ...)."""
+    ssot = _outbox_ssot(tmp_path)
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([], None),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="set-status", payload={"to": "in_review"}),
+    )
+    assert not ok
+    assert "not found" in detail
+
+
+def test_apply_outbox_set_status_body_gate_tbd_body(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Lines 652-654: body gate assert fails (TBD content) → (False, detail)."""
+    ssot = _outbox_ssot(tmp_path)
+    ssot["conventions"] = {
+        **ssot.get("conventions", {}),
+        "body_sections": ["Acceptance", "Rollback"],
+    }
+    item = {
+        "id": VALID_ITEM_ID,
+        "title": "T",
+        "status": "In Progress",
+        "content": {"body": "## Acceptance\n\n- (TBD)\n\n## Rollback\n\n- (TBD)\n"},
+    }
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([item], None),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="set-status", payload={"to": "done"}),
+    )
+    assert not ok
+    assert detail  # body gate detail message
+
+
+# --- apply_outbox_entry: handoff body gate (lines 757, 760, 763) ---
+
+
+def test_apply_outbox_handoff_body_gate_fetch_fails(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Line 757: handoff with body gate status and fetch fails → (False, err)."""
+    ssot = _outbox_ssot(tmp_path)
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([], "gh list failed"),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="handoff", payload={"next": "verifier", "to": "in_review"}),
+    )
+    assert not ok
+    assert "gh list failed" in detail
+
+
+def test_apply_outbox_handoff_body_gate_item_not_found(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Line 760: handoff with body gate status, item not found → (False, ...)."""
+    ssot = _outbox_ssot(tmp_path)
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([], None),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="handoff", payload={"next": "verifier", "to": "done"}),
+    )
+    assert not ok
+    assert "not found" in detail
+
+
+def test_apply_outbox_handoff_body_gate_tbd_body(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Line 763: handoff body gate assert fails → (False, detail)."""
+    ssot = _outbox_ssot(tmp_path)
+    ssot["conventions"] = {
+        **ssot.get("conventions", {}),
+        "body_sections": ["Acceptance", "Rollback"],
+    }
+    item = {
+        "id": VALID_ITEM_ID,
+        "title": "T",
+        "status": "In Progress",
+        "content": {"body": "## Acceptance\n\n- (TBD)\n\n## Rollback\n\n- (TBD)\n"},
+    }
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([item], None),
+    )
+    ok, detail = project_outbox.apply_outbox_entry(
+        tmp_path,
+        ssot,
+        _valid_entry(op="handoff", payload={"next": "verifier", "to": "in_review"}),
+    )
+    assert not ok
+    assert detail
+
+
+# --- regression: --limit default=200 on claim/handoff/get parsers ---
+
+
+def test_project_parser_limit_defaults_200() -> None:
+    """Regression: claim/handoff/get parsers have --limit default=200."""
+    import project_parser  # noqa: E402
+
+    import argparse as ap
+
+    parser = ap.ArgumentParser()
+    sub = parser.add_subparsers()
+    project_parser.register_project_subparser(sub)
+
+    # claim
+    claim_ns = parser.parse_args([
+        "project", "claim",
+        "--id", VALID_ITEM_ID,
+        "--agent", "implementer",
+        "--directory", ".",
+    ])
+    assert claim_ns.limit == 200
+
+    # handoff
+    handoff_ns = parser.parse_args([
+        "project", "handoff",
+        "--id", VALID_ITEM_ID,
+        "--agent", "implementer",
+        "--next", "verifier",
+        "--directory", ".",
+    ])
+    assert handoff_ns.limit == 200
+
+    # get
+    get_ns = parser.parse_args([
+        "project", "get",
+        "--id", VALID_ITEM_ID,
+        "--directory", ".",
+    ])
+    assert get_ns.limit == 200

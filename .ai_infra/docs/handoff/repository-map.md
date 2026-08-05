@@ -71,7 +71,7 @@ Deep dive: [PLUGIN-ARCHITECTURE.md](PLUGIN-ARCHITECTURE.md).
 |------|------|------------|
 | `.cursor/agents/*.md` | 8 agent cards | **Here** |
 | `.cursor/rules/*.mdc` | 7 kit-dev rules | **Here** |
-| `.cursor/skills/*/` | 12 canonical protocols | **Here** |
+| `.cursor/skills/*/` | 13 canonical protocols | **Here** |
 | `.agents/skills/*/` | Maintainer slash skills | **Here** |
 | `agents/`, `rules/`, `skills/` (repo root) | Marketplace discovery (18 skill folders = 12 canonical + 6 maintainer PR slash skills, incl. `full-pr-workflow`) | `make sync-plugin` from `.cursor/` + `.agents/skills/` |
 | `payload/` | Consumer install bundle | `make sync-plugin` from above + manifest |
@@ -89,7 +89,7 @@ my-app/
 ├── .cursor/
 │   ├── agents/                     8 agents (from payload; incl. board)
 │   ├── rules/                      7 rules (6 kit + project-ssot-precedence)
-│   └── skills/                     12 canonical skills only (no repo-root skills/ merge)
+│   └── skills/                     13 canonical skills only (no repo-root skills/ merge)
 ├── .agents/skills/                 6 maintainer slash folders (incl. full-pr-workflow; + audit-alignment stub)
 ├── .ai_infra/                      Slim bundle (manifest copy_ai_infra only)
 │   ├── scripts/pr|architecture|integration|workflow|install/
@@ -102,7 +102,7 @@ my-app/
 └── .local/                         Scaffolded trackers + artifact buckets (gitignored)
 ```
 
-**Not installed:** kit `tests/modules/` (1180; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
+**Not installed:** kit `tests/modules/` (1411; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
 
 Consumer tree detail: [PLUGIN-ARCHITECTURE.md § Installed consumer project](PLUGIN-ARCHITECTURE.md).
 
@@ -143,7 +143,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 
 ## Skills
 
-### Canonical — `.cursor/skills/` (12) → consumer `.cursor/skills/`
+### Canonical — `.cursor/skills/` (13) → consumer `.cursor/skills/`
 
 | Skill | Paired agent |
 |-------|----------------|
@@ -156,6 +156,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `integrator-protocol` | `integrator` |
 | `board-ssot` | `board` (board Entry/Exit; ADR-008) |
 | `board-shell` | `board` (first-run shell coach) |
+| `canvas-artifacts` | Canvas/plan Pattern A CLI (ADR-010) |
 | `workflow-activate` | Install / re-activate |
 | `mcp-connect` | MCP setup |
 | `research-corpus` | `researcher` |
@@ -175,7 +176,7 @@ Also under `.agents/skills/`: `README.md`, `PR_WORKFLOW.md` (legacy redirect), `
 
 ### Repo-root `skills/` — Marketplace plugin mirror only
 
-Cursor loads repo-root `agents/`, `rules/`, and `skills/` from the GitHub plugin URL. Those trees are **generated mirrors** of `.cursor/` + `.agents/skills/` (via `sync_plugin_bundle.py`) — **not** a second authoring SSOT. Edit canonical `.cursor/skills/` (12) and `.agents/skills/` (6); then `make sync-plugin`. Consumers receive skills under `.cursor/skills/` and `.agents/skills/` via `payload/` after activate — never as a single root `skills/` tree on disk.
+Cursor loads repo-root `agents/`, `rules/`, and `skills/` from the GitHub plugin URL. Those trees are **generated mirrors** of `.cursor/` + `.agents/skills/` (via `sync_plugin_bundle.py`) — **not** a second authoring SSOT. Edit canonical `.cursor/skills/` (13) and `.agents/skills/` (6); then `make sync-plugin`. Consumers receive skills under `.cursor/skills/` and `.agents/skills/` via `payload/` after activate — never as a single root `skills/` tree on disk.
 
 ---
 
@@ -220,6 +221,8 @@ Product overlays: `overlays/rules/*.mdc` remains the source for domain overlays;
 | `workflow-artifacts/enterprise-architecture-audit/` | 2 | `auditor` |
 | `agents-control-center/` | 1 + refresh | scaffold / activate |
 | `user_settings/` | 1 | human (gitignored) |
+| `canvases/` | 2 | agents — `canvas save` session evidence (ADR-010) |
+| `plans/` | 2 | agents — `plan snapshot` history only; live plan on board / `plan.md` (DRIFT-012) |
 | `generated-data/` | 2 | pytest / CI |
 
 **Kit repo `.local/`** is a CI seed fixture — not what consumers receive. Consumers get neutral exemplars from `templates/local-workspace/exemplars/`.

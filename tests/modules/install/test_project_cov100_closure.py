@@ -965,3 +965,156 @@ def test_project_cli_remaining_gaps(monkeypatch: pytest.MonkeyPatch, capsys: pyt
 
 def test_section_body_content_empty_target_direct() -> None:
     assert pa.section_body_content("## A\n\nx", "   ") == ""
+
+
+# --- board_shell.py: missing lines 228, 241, 244, 293 ---
+
+
+def test_is_kit_dev_install_false_on_consumer_root(tmp_path: Path) -> None:
+    """Line 228: is_kit_dev_install returns False when test_scaffold.py is absent."""
+    assert bs.is_kit_dev_install(tmp_path) is False
+
+
+def test_init_minimal_overlay_already_exists(tmp_path: Path) -> None:
+    """Line 241: returns (1, ...) when overlay exists and force=False."""
+    dest = bs.consumer_overlay_path(tmp_path)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text("version: 1\n", encoding="utf-8")
+    code, msg = bs.init_minimal_overlay(tmp_path, force=False)
+    assert code == 1
+    assert "already exists" in msg
+
+
+def test_init_minimal_overlay_exemplar_missing(tmp_path: Path) -> None:
+    """Line 244: returns (2, ...) when exemplar YAML is absent."""
+    code, msg = bs.init_minimal_overlay(tmp_path, force=False)
+    assert code == 2
+    assert "missing" in msg
+
+
+def test_bootstrap_view_fail_message_min_count_le_2() -> None:
+    """Line 293: bootstrap_view_fail_message returns 2-view hint when min_count <= 2."""
+    schema = {
+        "views": {
+            "minimum": [
+                {"name": "Status board", "layout": "BOARD_LAYOUT"},
+            ]
+        }
+    }
+    problems = ["missing minimum view 'Prioritized backlog'"]
+    live_views: list[dict] = []
+    msg = bs.bootstrap_view_fail_message(schema, problems, live_views)
+    assert "Turn A Status board" in msg or "2-view" in msg or "Minimal" in msg
+
+
+# --- project_handlers.py: line 153 (handoff body gate + fetch fails) ---
+
+
+def test_run_handoff_fetch_fails_no_body_gate_no_queue(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Line 153: fetch fails, status_to is empty (not body-gate), _try_queue returns None → EXIT_GH."""
+    ssot = _ssot()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda *a, **k: ([], "some non-rate-limit gh error"),
+    )
+    # _try_queue_rate_limit returns None because error is not a rate-limit error
+    args = argparse.Namespace(
+        directory=tmp_path,
+        id="PVTI_lAHOBl46-84A9KZxtest01",
+        last=False,
+        agent="implementer",
+        next="verifier",
+        to="",        # empty → no body gate → goes to _try_queue_rate_limit path
+        text="",
+        limit=100,
+    )
+    result = project_handlers.run_handoff(args)
+    assert result == project_cli.EXIT_GH
+
+
+# --- project_handlers.py: lines 340-342 (json.JSONDecodeError in close_linked_issue) ---
+
+
+def test_run_close_linked_issue_invalid_json_state(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Lines 340-342: gh issue view returns non-JSON → DEFERRED + EXIT_GH."""
+    ssot = {**_ssot(), "conventions": {"close_linked_issue_on_cleanup": True, "body_sections": []}}
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_id_for_pr",
+        lambda *a, **k: ("PVTI_lAHOBl46-84A9KZxtest01", [], None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_content",
+        lambda *a, **k: ("issue", "42", {"repo": "o/r"}, None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "run_gh",
+        lambda *a, **k: _gh_ok("not-valid-json"),
+    )
+    args = argparse.Namespace(
+        directory=tmp_path,
+        pr="12",
+        repo="o/r",
+        dry_run=False,
+    )
+    result = project_handlers.run_close_linked_issue(args)
+    assert result == project_cli.EXIT_GH
+
+
+# --- project_handlers.py: lines 518-544 (run_board_shell_init) ---
+
+
+def test_run_board_shell_init_no_minimal_flag(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """run_board_shell_init without --minimal → EXIT_USAGE."""
+    args = argparse.Namespace(directory=tmp_path, minimal=False, force=False)
+    result = project_handlers.run_board_shell_init(args)
+    assert result == project_cli.EXIT_USAGE
+
+
+def test_run_board_shell_init_exemplar_missing(tmp_path: Path) -> None:
+    """run_board_shell_init --minimal but exemplar missing → EXIT_USAGE (code 2)."""
+    args = argparse.Namespace(directory=tmp_path, minimal=True, force=False)
+    result = project_handlers.run_board_shell_init(args)
+    assert result == project_cli.EXIT_USAGE
+
+
+def test_run_board_shell_init_overlay_exists_no_force(tmp_path: Path) -> None:
+    """run_board_shell_init --minimal, overlay exists but no --force → EXIT_USAGE (code 1)."""
+    dest = bs.consumer_overlay_path(tmp_path)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text("version: 1\n", encoding="utf-8")
+    args = argparse.Namespace(directory=tmp_path, minimal=True, force=False)
+    result = project_handlers.run_board_shell_init(args)
+    assert result == project_cli.EXIT_USAGE
+
+
+def test_run_board_shell_init_writes_overlay(tmp_path: Path) -> None:
+    """run_board_shell_init --minimal with exemplar present → EXIT_OK."""
+    import shutil
+    minimal_src = (
+        REPO_ROOT / ".ai_infra" / "templates" / "user-settings" / "exemplars"
+        / "board-shell.schema.minimal.yaml"
+    )
+    exemplar_dest_dir = (
+        tmp_path / ".ai_infra" / "templates" / "user-settings" / "exemplars"
+    )
+    exemplar_dest_dir.mkdir(parents=True)
+    if minimal_src.is_file():
+        shutil.copy(minimal_src, exemplar_dest_dir / "board-shell.schema.minimal.yaml")
+    else:
+        (exemplar_dest_dir / "board-shell.schema.minimal.yaml").write_text(
+            "version: 1\nviews:\n  minimum: []\n", encoding="utf-8"
+        )
+    args = argparse.Namespace(directory=tmp_path, minimal=True, force=False)
+    result = project_handlers.run_board_shell_init(args)
+    assert result == project_cli.EXIT_OK

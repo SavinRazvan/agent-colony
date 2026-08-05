@@ -101,8 +101,11 @@ def seed_kit_workspace(root: Path, profile: str = "kit-dev") -> list[str]:
 
     lwp = _import_local_workflow_paths(root)
     lwp.ensure_workflow_artifacts_tree(root=root)
+    lwp.ensure_local_artifact_tree(root=root)
     for bucket in lwp.WORKFLOW_ARTIFACT_BUCKETS:
         log.append(f"mkdir {bucket}")
+    for directory in lwp.LOCAL_ARTIFACT_DIRS:
+        log.append(f"mkdir {directory}")
 
     _copy_artifact_readme_stubs(root, lwp.ARTIFACT_STUB_BUCKET_NAMES, log)
     _seed_dashboards(root, log)

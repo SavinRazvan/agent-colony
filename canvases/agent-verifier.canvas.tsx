@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-03";
+const VERIFIED = "2026-08-05";
 const SOURCES = ".cursor/agents/verifier.md · board-ssot/SKILL.md § Continuation";
 
 const GOALS = [
@@ -92,6 +92,7 @@ const READ_FIRST = [
   [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
   [".local/index-and-planning/current/session-pointer.md", "Fallback Entry"],
   [".local/workflow-artifacts/pr/", "When maintainer workflow in play"],
+  [".cursor/skills/canvas-artifacts/SKILL.md", "ADR-010 canvas/plan tiers"],
 ];
 
 const PATTERNS = [
@@ -108,6 +109,16 @@ const ARTIFACTS = [
   ["change-index.md", "If findings change status", "Next agents / humans"],
   ["Board Status + Notes", "Exit (done or in_review + failure Notes)", "Next agent"],
   [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
+  [
+    ".local/plans/",
+    "plan snapshot|list (history)",
+    "Agents execute; humans plan open",
+  ],
+  [
+    ".local/canvases/",
+    "canvas save (session evidence)",
+    "canvas-artifacts skill",
+  ],
 ];
 
 const PEERS = [

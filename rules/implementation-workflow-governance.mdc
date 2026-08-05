@@ -27,6 +27,7 @@ alwaysApply: true
 - After substantive code change: `session-pointer.md`, `change-index.md`, `work-tracker.md`; `test-index.md` / `test-plan.md` when tests or risk change; `updates-log.md` (one line — see `.ai_infra/docs/operations/token-efficiency.md`).
 - Planning-only scope changes: update `plan.md` / `work-tracker.md` + at least one `updates-log.md` entry.
 - Blocked: mark blocker and unblock action in `work-tracker.md`.
+- **ADR-010:** `.local/plans/` is snapshot history only — live plan SSOT stays on the board card (`board_only`) or `plan.md` offline; see `canvas-artifacts` skill.
 - **Slice closure** (before handoff): regenerate `current/coverage-index.md` when coverage mattered; if a new tracker path is added, update `.local/agents-control-center/config/pages.json` and dashboard header **Depends On**; do not edit `.local/agents-control-center/audits/module-audit.html` unless refreshing that export.
 
 ## Merge gates
