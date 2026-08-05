@@ -128,3 +128,4 @@ token sent as a `Bearer` header — use `mcp auth --server github-remote --token
 - `mcp validate --strict` fails without a live `.cursor/mcp.registry.yaml` — copy the example when enforcing user tier
 - `mcp doctor` shows configured but NOT host-loaded: expected until Cursor enables project `mcp.json`; use Pattern A CLI anyway
 - Secrets: never commit `mcp.user.json` or `.local/user_settings/mcp.secrets.yaml` — `mcp link` / `mcp auth` update `.gitignore`
+- **Kit-dev:** committed `.cursor/mcp.registry.yaml` and merged `.cursor/mcp.json` stay **kit-tier only** (`workflow-kit`). External demos live in the `*.example` worksheets + your local (gitignored) `mcp.user.json`. `health` regenerates `mcp.json` from kit + user — CI has no user fragment, so registry must not list external servers that only exist in examples.
