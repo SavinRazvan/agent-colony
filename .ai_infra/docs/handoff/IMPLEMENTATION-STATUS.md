@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (MAS Workflow Kit — Project SSOT)
 
-**Last updated:** 2026-08-05 (kit-dev MCP health CI + consumer worksheets; 1413 tests)
-**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1413
+**Last updated:** 2026-08-05 (audit #178 alignment: prepare check-plugin + doc counts; DOC-006 1412 tests)
+**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1412
 
 ## Shipped (confirmed in repo)
 
@@ -54,7 +54,7 @@ Notes:
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Researcher agent (corpus) | **Shipped / proven** — adaptive Brief; anti-loop ≤6; CLI `research init\|fetch\|validate`; live E2E flexiai-toolsmith (18 curated, validate PASS) + verifier Claim A+B VERIFIED 2026-07-19; corpus **opt-in** after first `research init` | `.cursor/agents/researcher.md` · `research-corpus` · `canvases/agent-researcher.canvas.tsx` · Issue #74 |
 | Kit version on install | `kit_version` 0.4.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 1413 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1412 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 
@@ -90,6 +90,12 @@ cursor-workflow mcp validate
 pytest -m live tests/modules/workflow_mcp/test_workflow_mcp.py::test_workflow_mcp_stdio_initialize_smoke
 cursor-workflow drift validate
 ```
+
+| Command | Behavior |
+|---------|----------|
+| `make check-plugin` / CI (`kit-quality.yml`) | Regenerates mirrors to a temp tree and diffs against **committed** `agents/` / `rules/` / `skills/` / `payload/` — fails if stale (no prior sync) |
+| `make verify-all` | Runs **sync-plugin first**, then `--check` — refreshes the working tree; does **not** by itself prove committed trees were already green |
+| Kit-dev `prepare.py` | Includes the same strict `--check` as CI (see [gate-matrix.md](../operations/gate-matrix.md)) |
 
 ## Not yet shipped
 

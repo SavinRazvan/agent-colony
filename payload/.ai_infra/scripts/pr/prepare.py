@@ -12,8 +12,9 @@ Depends On:
 Notes:
  - Gate subprocesses use `sys.executable` (same interpreter as this script), not a bare `python` on PATH.
  - By default runs `resolve_gates()` (universal: check_testing_artifacts, pytest).
- - Kit-dev repos auto-append drift validate + doc facts when
-   `.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md` exists (see `GATES_KIT_DEV_APPEND`).
+ - Kit-dev repos auto-append drift validate + doc facts + plugin bundle `--check` when
+   `.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md` exists (see `GATES_KIT_DEV_APPEND`) —
+   five gates total on kit-dev.
  - Consumer projects keep universal gates only; append more at install time if needed.
  - Pass --skip-gates when the agent has already run and verified gates independently; the script
    then only writes the attribution/stamp block and marks gates as externally verified.
@@ -42,9 +43,11 @@ GATES_UNIVERSAL = [
 ]
 
 # Kit-dev only — appended when `is_kit_dev_root()` (same signal as doc-facts DOC-000 skip).
+# Strict check-plugin (no prior sync) catches stale committed agents/rules/skills/payload.
 GATES_KIT_DEV_APPEND = [
     ["python", "-m", "cursor_workflow", "drift", "validate", "--directory", "."],
     ["python", ".ai_infra/scripts/architecture/check_doc_facts.py"],
+    ["python", ".ai_infra/scripts/release/sync_plugin_bundle.py", "--check"],
 ]
 
 # Back-compat alias for doc parsers and overlays that reference `GATES`.

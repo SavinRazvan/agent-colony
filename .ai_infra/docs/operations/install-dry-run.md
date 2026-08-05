@@ -152,13 +152,13 @@ In Cursor: enable MCP server; call `workflow_list_agents` and `workflow_gate_cou
 
 | Check | Consumer | Kit-dev |
 |-------|----------|---------|
-| `prepare.py` / `resolve_gates()` count | **2** universal | **4** (auto-appends drift + doc facts) |
+| `prepare.py` / `resolve_gates()` count | **2** universal | **5** (auto-appends drift + doc facts + check-plugin) |
 | `.cursor/rules/*.mdc` | **7** shipped (6 kit + `project-ssot-precedence`); extra overlays optional | same |
 | `.local/index-and-planning/current/session-pointer.md` exists | yes | yes |
 | All six `workflow-artifacts/*/README.md` stubs (recommended_paths) | yes | yes |
 | `AGENTS.md` present | yes | yes |
 | `pytest -q` green | yes | yes |
-| `workflow_mcp` / `workflow_gate_count` (`load_gates` → `resolve_gates()`) | **2** | **4** |
+| `workflow_mcp` / `workflow_gate_count` (`load_gates` → `resolve_gates()`) | **2** | **5** |
 
 ## Cleanup
 
