@@ -50,9 +50,10 @@ def build_doctor_report(root: Path) -> dict[str, Any]:
     reg_live = (root / mcp_manage.REGISTRY).is_file()
     user_live = (root / mcp_manage.USER_FRAGMENT).is_file()
     servers_reg = mcp_manage.registry_servers(root)
+    servers_effective = mcp_manage.effective_registry_servers(root)
 
     agent_map: dict[str, list[str]] = {}
-    for name, spec in servers_reg.items():
+    for name, spec in servers_effective.items():
         if not isinstance(spec, dict):
             continue
         agents = spec.get("agents") or []
@@ -77,6 +78,7 @@ def build_doctor_report(root: Path) -> dict[str, Any]:
         "registry_path": str(reg_path) if reg_path else None,
         "registry_live": reg_live,
         "registry_servers": sorted(servers_reg.keys()),
+        "effective_registry_servers": sorted(servers_effective.keys()),
         "agent_mappings": {k: sorted(v) for k, v in sorted(agent_map.items())},
         "workflow_mcp": import_info,
         "cursor_mcps_dir": str(mcps_dir) if mcps_dir else None,
@@ -95,7 +97,9 @@ def format_doctor_markdown(report: dict[str, Any]) -> str:
         f"- registry: `{report['registry_path']}` "
         f"({'live' if report['registry_live'] else 'example/fallback'})",
         f"- merged servers: {', '.join(report['merged_servers']) or '(none)'}",
-        f"- registry servers: {', '.join(report['registry_servers']) or '(none)'}",
+        f"- registry servers (live): {', '.join(report['registry_servers']) or '(none)'}",
+        f"- effective registry (allowlist): "
+        f"{', '.join(report.get('effective_registry_servers') or []) or '(none)'}",
         "",
         "## Configured vs Cursor host",
         "",
