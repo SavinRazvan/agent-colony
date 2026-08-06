@@ -275,6 +275,105 @@ def test_validate_registry_kit_dev_rejects_external_in_live(tmp_path: Path) -> N
     assert any("kit-dev: live registry must not list external" in e for e in errors)
 
 
+def test_effective_registry_kit_dev_overlays_example_for_merged_user(
+    tmp_path: Path,
+) -> None:
+    """Kit-dev: deepwiki in user + example allows smoke/call without live external entry."""
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    (cursor / "mcp.json.kit.example").write_text(
+        json.dumps({"mcpServers": {"agent-colony-mcp": {"command": "echo"}}}),
+        encoding="utf-8",
+    )
+    (cursor / "mcp.user.json").write_text(
+        json.dumps({"mcpServers": {"deepwiki": {"url": "https://mcp.deepwiki.com/mcp"}}}),
+        encoding="utf-8",
+    )
+    (cursor / "mcp.registry.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "version": 1,
+                "servers": {
+                    "agent-colony-mcp": {
+                        "tier": "kit",
+                        "agents": ["implementer"],
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    (cursor / "mcp.registry.yaml.example").write_text(
+        yaml.safe_dump(
+            {
+                "version": 1,
+                "servers": {
+                    "agent-colony-mcp": {
+                        "tier": "kit",
+                        "agents": ["implementer"],
+                    },
+                    "deepwiki": {
+                        "tier": "external",
+                        "agents": ["researcher", "implementer"],
+                        "tools_hint": ["ask_question"],
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    marker = tmp_path / mcp_manage.KIT_DEV_MARKER
+    marker.parent.mkdir(parents=True)
+    marker.write_text("# kit-dev\n", encoding="utf-8")
+
+    effective = mcp_manage.effective_registry_servers(tmp_path)
+    assert "agent-colony-mcp" in effective
+    assert "deepwiki" in effective
+    assert mcp_manage.assert_server_allowed(tmp_path, "deepwiki") is None
+    assert mcp_manage.assert_server_allowed(tmp_path, "deepwiki", agent="researcher") is None
+    assert (
+        mcp_manage.assert_server_allowed(tmp_path, "deepwiki", agent="auditor") is not None
+    )
+    # Live validate still green (no external in live).
+    assert mcp_manage.validate_registry(tmp_path) == []
+
+
+def test_effective_registry_kit_dev_rejects_deepwiki_without_user_fragment(
+    tmp_path: Path,
+) -> None:
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    (cursor / "mcp.json.kit.example").write_text(
+        json.dumps({"mcpServers": {"agent-colony-mcp": {}}}), encoding="utf-8"
+    )
+    (cursor / "mcp.registry.yaml").write_text(
+        yaml.safe_dump(
+            {"servers": {"agent-colony-mcp": {"tier": "kit", "agents": ["implementer"]}}}
+        ),
+        encoding="utf-8",
+    )
+    (cursor / "mcp.registry.yaml.example").write_text(
+        yaml.safe_dump(
+            {
+                "servers": {
+                    "agent-colony-mcp": {"tier": "kit", "agents": ["implementer"]},
+                    "deepwiki": {"tier": "external", "agents": ["researcher"]},
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    marker = tmp_path / mcp_manage.KIT_DEV_MARKER
+    marker.parent.mkdir(parents=True)
+    marker.write_text("# kit-dev\n", encoding="utf-8")
+
+    effective = mcp_manage.effective_registry_servers(tmp_path)
+    assert "deepwiki" not in effective
+    err = mcp_manage.assert_server_allowed(tmp_path, "deepwiki")
+    assert err is not None
+    assert "deepwiki" in err
+
+
 def test_write_merged_mcp_with_url_based_user_server(tmp_path: Path) -> None:
     """merge_mcp_configs/write_merged_mcp treat server specs generically — no `command` required."""
     cursor = tmp_path / ".cursor"

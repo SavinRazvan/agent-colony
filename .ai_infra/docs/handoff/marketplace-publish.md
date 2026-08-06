@@ -218,7 +218,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-07-21 consumer board onboarding, archival):** Tier-1 column FAIL gate + onboarding automation boundary docs; **1180** tests collected. Superseded by 2026-08-05 alignment refresh below.
 
-**Listing copy refresh (2026-08-06 agent-colony rename):** Re-verified against `IMPLEMENTATION-STATUS.md` + filesystem — **1425** tests; agent/skill/rule counts (**8** / **13** / **7**); kit version **0.4.0**.
+**Listing copy refresh (2026-08-06 agent-colony rename):** Re-verified against `IMPLEMENTATION-STATUS.md` + filesystem — **1427** tests; agent/skill/rule counts (**8** / **13** / **7**); kit version **0.4.0**.
 
 **Listing copy refresh (2026-07-20 DOC-CANVAS-ALIGN):** Canvases re-aligned to live CLI (**22** leaves incl. `board-bootstrap`), board-shell day-0 story, test-runner `coverage.json` + post-100% doc sync, VERIFIED **2026-07-20**; metrics unchanged (**1178** / **7089** / **100%**; **8** / **12** / **7**).
 

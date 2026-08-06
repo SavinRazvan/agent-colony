@@ -11,6 +11,8 @@ Depends On:
 Notes:
  - Never overwrites existing mcp.user.json wholesale on install.
  - Consumer activate may seed DeepWiki (user-tier) when fragment/registry keys are missing.
+ - Kit-dev: live registry/mcp.json stay kit-tier; smoke/call allowlist uses example overlay
+   via effective_registry_servers for servers present in merged mcpServers.
  - Pattern A CLI: ADR-009.
 """
 
@@ -362,6 +364,7 @@ def registry_path_used(root: Path) -> Path | None:
 
 
 def registry_servers(root: Path) -> dict[str, Any]:
+    """Servers from live registry if present, else example (load_registry fallback)."""
     try:
         data = load_registry(root)
     except FileNotFoundError:
@@ -370,14 +373,73 @@ def registry_servers(root: Path) -> dict[str, Any]:
     return servers if isinstance(servers, dict) else {}
 
 
+def _load_example_registry_servers(root: Path) -> dict[str, Any]:
+    example = root / REGISTRY_EXAMPLE
+    if not example.is_file():
+        return {}
+    try:
+        data = yaml.safe_load(example.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError):
+        return {}
+    if not isinstance(data, dict):
+        return {}
+    servers = data.get("servers") or {}
+    return servers if isinstance(servers, dict) else {}
+
+
+def effective_registry_servers(root: Path) -> dict[str, Any]:
+    """
+    Allowlist map for smoke/call/list-tools.
+
+    Live registry entries win. On kit-dev, also overlay example-registry servers that
+    appear in merged mcpServers but are intentionally absent from the live kit-tier
+    registry (e.g. DeepWiki in mcp.user.json).
+    """
+    live_path = root / REGISTRY
+    if live_path.is_file():
+        try:
+            data = yaml.safe_load(live_path.read_text(encoding="utf-8"))
+        except (OSError, yaml.YAMLError):
+            data = None
+        live: dict[str, Any] = {}
+        if isinstance(data, dict):
+            raw = data.get("servers") or {}
+            if isinstance(raw, dict):
+                live = dict(raw)
+    else:
+        live = dict(registry_servers(root))
+
+    if not is_kit_dev_repo(root):
+        return live
+
+    try:
+        merged = compute_merged_mcp(root)
+    except (FileNotFoundError, ValueError, json.JSONDecodeError, OSError):
+        return live
+    mcp_servers = merged.get("mcpServers") or {}
+    if not isinstance(mcp_servers, dict):
+        return live
+
+    example = _load_example_registry_servers(root)
+    out = dict(live)
+    for name, spec in example.items():
+        if name in out:
+            continue
+        if name not in mcp_servers:
+            continue
+        if isinstance(spec, dict):
+            out[name] = spec
+    return out
+
+
 def servers_for_agent(root: Path, agent: str | None) -> set[str] | None:
     """
     If agent is None, return None (no filter).
-    If agent set, return allowlisted server names for that agent from registry.
+    If agent set, return allowlisted server names for that agent from effective registry.
     """
     if not agent:
         return None
-    servers = registry_servers(root)
+    servers = effective_registry_servers(root)
     allowed: set[str] = set()
     for name, spec in servers.items():
         if not isinstance(spec, dict):
@@ -396,17 +458,31 @@ def assert_server_allowed(
 ) -> str | None:
     """Return error message if server not allowlisted; None if OK."""
     reg_live = root / REGISTRY
-    if reg_live.is_file():
-        servers = registry_servers(root)
+    example = root / REGISTRY_EXAMPLE
+    has_registry_source = reg_live.is_file() or example.is_file()
+    if has_registry_source:
+        servers = effective_registry_servers(root)
         if server not in servers:
-            return f"server '{server}' not in registry {reg_live}"
+            return (
+                f"server '{server}' not in effective registry "
+                f"(live {reg_live}"
+                + (
+                    f"; kit-dev also checks {example} for merged user servers"
+                    if is_kit_dev_repo(root)
+                    else ""
+                )
+                + ")"
+            )
         if agent:
             allowed = servers_for_agent(root, agent)
             if allowed is not None and server not in allowed:
                 return f"server '{server}' not mapped to agent '{agent}' in registry"
     merged = load_merged_servers(root)
     if server not in merged:
-        return f"server '{server}' not in merged mcp.json mcpServers"
+        return (
+            f"server '{server}' not in merged mcpServers "
+            f"(add to {USER_FRAGMENT} or kit example)"
+        )
     return None
 
 
