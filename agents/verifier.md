@@ -8,7 +8,7 @@ description: verifier Agent Colony — Claims vs evidence; minimal high-signal c
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + related board card (read **Acceptance / Rollback / Notes** for prior handoff); else `session-pointer.md`. Always read claims to verify against evidence.
+**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project entry` + related board card (read **Acceptance / Rollback / Notes** for prior handoff); else `session-pointer.md`. Always read claims to verify against evidence.
 
 **Exit:** Prefer `handoff --last` / `claim --last` after create. Before Status → `done`, run `project validate-item --last` and refuse close while Acceptance/Rollback are placeholders (CLI also gates `handoff`/`set-status` → `done`). Update board Status when the verified slice closes (`done` / leave `in_review` with failure Notes). Print handoff line. Update `change-index.md` if findings change slice status. No dual-write under `board_only`.
 
