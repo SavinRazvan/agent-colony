@@ -541,3 +541,168 @@ def test_ensure_deepwiki_registry_creates_and_preserves_agents(tmp_path: Path) -
     assert mcp_manage.ensure_deepwiki_registry(tmp_path, force_registry_agents=True) is True
     forced = yaml.safe_load((tmp_path / ".cursor" / "mcp.registry.yaml").read_text(encoding="utf-8"))
     assert forced["servers"]["deepwiki"]["agents"] == list(mcp_manage.DEEPWIKI_AGENTS)
+
+
+def test_ensure_deepwiki_user_fragment_rejects_non_object_servers(tmp_path: Path) -> None:
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    (cursor / "mcp.user.json").write_text(
+        json.dumps({"mcpServers": []}),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="mcpServers must be an object"):
+        mcp_manage.ensure_deepwiki_user_fragment(tmp_path)
+
+
+def test_ensure_deepwiki_registry_invalid_root_and_servers(tmp_path: Path) -> None:
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    (cursor / "mcp.registry.yaml").write_text("[]\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="invalid registry YAML"):
+        mcp_manage.ensure_deepwiki_registry(tmp_path)
+
+    (cursor / "mcp.registry.yaml").write_text(
+        yaml.safe_dump({"version": 1, "servers": []}),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="registry servers must be a mapping"):
+        mcp_manage.ensure_deepwiki_registry(tmp_path)
+
+
+def test_ensure_deepwiki_registry_force_non_dict_and_replace(
+    tmp_path: Path,
+) -> None:
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    (cursor / "mcp.registry.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "version": 1,
+                "servers": {
+                    "agent-colony-mcp": {"tier": "kit", "agents": []},
+                    "deepwiki": "not-a-mapping",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    assert mcp_manage.ensure_deepwiki_registry(tmp_path, force_registry_agents=True) is True
+    forced = yaml.safe_load((cursor / "mcp.registry.yaml").read_text(encoding="utf-8"))
+    assert isinstance(forced["servers"]["deepwiki"], dict)
+    assert forced["servers"]["deepwiki"]["agents"] == list(mcp_manage.DEEPWIKI_AGENTS)
+    assert "tools_hint" in forced["servers"]["deepwiki"]
+    assert forced["servers"]["deepwiki"]["tier"] == "external"
+
+    # only_if_missing_server=False replaces existing deepwiki entry
+    forced["servers"]["deepwiki"] = {"tier": "external", "agents": ["researcher"]}
+    (cursor / "mcp.registry.yaml").write_text(
+        yaml.safe_dump(forced, sort_keys=False),
+        encoding="utf-8",
+    )
+    assert (
+        mcp_manage.ensure_deepwiki_registry(
+            tmp_path, only_if_missing_server=False, force_registry_agents=False
+        )
+        is True
+    )
+    replaced = yaml.safe_load((cursor / "mcp.registry.yaml").read_text(encoding="utf-8"))
+    assert replaced["servers"]["deepwiki"]["agents"] == list(mcp_manage.DEEPWIKI_AGENTS)
+
+
+def test_validate_registry_merged_servers_not_object(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    (cursor / "mcp.json.kit.example").write_text(
+        json.dumps({"mcpServers": {"agent-colony-mcp": {}}}), encoding="utf-8"
+    )
+    (cursor / "mcp.registry.yaml").write_text(
+        yaml.safe_dump({"servers": {"agent-colony-mcp": {"tier": "kit", "agents": []}}}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        mcp_manage,
+        "compute_merged_mcp",
+        lambda root: {"mcpServers": []},
+    )
+    errors = mcp_manage.validate_registry(tmp_path)
+    assert any("merged mcpServers must be an object" in e for e in errors)
+
+
+def test_validate_registry_kit_dev_skips_non_dict_spec(tmp_path: Path) -> None:
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    (cursor / "mcp.json.kit.example").write_text(
+        json.dumps({"mcpServers": {"agent-colony-mcp": {}}}), encoding="utf-8"
+    )
+    (cursor / "mcp.registry.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "servers": {
+                    "agent-colony-mcp": {"tier": "kit", "agents": []},
+                    "weird": "not-a-dict",
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    marker = tmp_path / mcp_manage.KIT_DEV_MARKER
+    marker.parent.mkdir(parents=True)
+    marker.write_text("# kit-dev\n", encoding="utf-8")
+    errors = mcp_manage.validate_registry(tmp_path)
+    # non-dict skipped in kit-dev external loop; still flagged in general loop
+    assert any("must be a mapping" in e for e in errors)
+
+
+def test_load_merged_servers_rejects_non_object(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        mcp_manage,
+        "compute_merged_mcp",
+        lambda root: {"mcpServers": "bad"},
+    )
+    with pytest.raises(ValueError, match="mcpServers must be an object"):
+        mcp_manage.load_merged_servers(tmp_path)
+
+
+def test_load_example_registry_servers_edges(tmp_path: Path) -> None:
+    assert mcp_manage._load_example_registry_servers(tmp_path) == {}
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    example = cursor / "mcp.registry.yaml.example"
+    example.write_text(":\n  bad yaml: [\n", encoding="utf-8")
+    assert mcp_manage._load_example_registry_servers(tmp_path) == {}
+    example.write_text("[]\n", encoding="utf-8")
+    assert mcp_manage._load_example_registry_servers(tmp_path) == {}
+
+
+def test_effective_registry_servers_error_paths(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    (cursor / "mcp.registry.yaml").write_text(":\n  broken\n", encoding="utf-8")
+    marker = tmp_path / mcp_manage.KIT_DEV_MARKER
+    marker.parent.mkdir(parents=True)
+    marker.write_text("# kit-dev\n", encoding="utf-8")
+    # YAML error on live → empty live, then merge failure returns live
+    monkeypatch.setattr(
+        mcp_manage,
+        "compute_merged_mcp",
+        lambda root: (_ for _ in ()).throw(ValueError("merge fail")),
+    )
+    assert mcp_manage.effective_registry_servers(tmp_path) == {}
+
+    (cursor / "mcp.registry.yaml").write_text(
+        yaml.safe_dump({"servers": {"agent-colony-mcp": {"tier": "kit"}}}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        mcp_manage,
+        "compute_merged_mcp",
+        lambda root: {"mcpServers": ["not-an-object"]},
+    )
+    effective = mcp_manage.effective_registry_servers(tmp_path)
+    assert "agent-colony-mcp" in effective

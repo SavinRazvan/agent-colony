@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-05";
+const VERIFIED = "2026-08-06";
 const SOURCES =
   ".cursor/agents/auditor.md · auditor-protocol/SKILL.md · board-ssot/SKILL.md";
 
@@ -66,7 +66,7 @@ const FALLBACK_EDGES = [
 ];
 
 const BOARD_LABELS: Record<string, string> = {
-  status: "project status",
+  status: "project entry",
   create: "create [AUDIT] slice",
   claim: "claim --last",
   audit: "evidence-only audit",
@@ -269,7 +269,7 @@ export default function AgentAuditorCanvas() {
           title={mode === "board" ? "project_ssot.enabled" : "Offline / disabled"}
         >
           {mode === "board"
-            ? "Entry: project status; may create-from-template slice [AUDIT] then claim."
+            ? "Entry: project entry; may create-from-template slice [AUDIT] then claim."
             : "Fallback: session-pointer. Audits write .local/ artifacts only."}
         </Callout>
         <DagPanel mode={mode} tokens={tokens} />
@@ -277,7 +277,7 @@ export default function AgentAuditorCanvas() {
 
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
-          <Text>1. project status; create [AUDIT] slice card if needed; claim.</Text>
+          <Text>1. project entry; create [AUDIT] slice card if needed; claim.</Text>
           <Text>
             2. Evidence-only audit per auditor-protocol — tick CHK-ARCH /
             GRANULARITY / PERF / SEC-CODE / SEC-AGENT / INFRA-KIT / DOCS (full or

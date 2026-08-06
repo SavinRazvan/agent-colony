@@ -85,12 +85,13 @@ Handoff: `item_id=<from create or --last> · @User/implementer · Status=a→b �
 
 ## Project CLI subcommands (Pattern A)
 
-All subcommands registered in `.ai_infra/install/cursor_workflow/project_parser.py`. Prefer recipes (`claim`, `handoff`, `guide`) over atomics.
+All subcommands registered in `.ai_infra/install/cursor_workflow/project_parser.py`. Prefer recipes (`entry`, `claim`, `handoff`, `guide`) over atomics.
 
 | Subcommand | Purpose | Typical agent |
 |------------|---------|---------------|
-| `status` | Show `project_ssot` config from user_settings | Any (Entry) |
-| `list` | List project items (optional `--status` filter) | Any (Entry) |
+| `status` | Show `project_ssot` config from user_settings | Any |
+| `entry` | Quota-aware Continuation Entry (live \| conserve \| offline_artifacts) | **Any (preferred Entry)** |
+| `list` | List project items (optional `--status` filter); WARN if unfiltered high `--limit` | Any (prefer `entry`) |
 | `create` | Create Issue (or Draft if `item_kind_default: draft`) | board, implementer, integrator |
 | `create-from-template` | Create Issue from slice/bug body template (default `item_kind_default: issue`) | board, implementer |
 | `set-status` | Set item Status from YAML option ids; gates `in_review`\|`done` on body (exit 5) | Power use (prefer `handoff --to`) |
@@ -109,15 +110,31 @@ All subcommands registered in `.ai_infra/install/cursor_workflow/project_parser.
 | `board-bootstrap` | Schema-aware shell check (`--check`); opt-in `--ensure-fields` / `--apply-readme` | board first-run / human |
 | `set-assignee` | Assign GitHub human user (Issue-backed items) | board, implementer |
 | `find-by-pr` | Resolve project item id from PR number or URL | verifier, merge.py |
-| `export` | Read-only board snapshot (never mutates Status) | drift-guard, ICC |
+| `export` | Read-only board snapshot (`--reuse-if-fresh` / `--force`); never mutates Status | drift-guard, ICC |
 | `queue` | Enqueue a board op to local outbox (EXIT_QUEUED=6) | Any (rate-limit fallback) |
 | `outbox status` | Outbox counts + GraphQL remaining | Any |
 | `outbox flush` | Apply pending outbox ops when quota allows | implementer, board |
 
+## Three coordination layers (do not conflate)
+
+| Layer | When | Writable Status? |
+|-------|------|------------------|
+| **Live board** | GraphQL healthy (`project entry` → `live`) | Yes — only writable SSOT under `board_only` |
+| **Outbox JSONL** | Writes throttled / precheck low / EXIT_QUEUED | Buffer only — `outbox flush` restores board; never SSOT |
+| **Offline artifacts / local_trackers** | `entry` → `offline_artifacts`, board unreachable, or `fallback: local_trackers` | Fallback only — resume board when up; do not dual-write Status |
+
+## Quota bands (`project_ssot.efficiency`)
+
+| Remaining (approx) | `project entry` mode | Reads | Writes |
+|--------------------|----------------------|-------|--------|
+| ≥ `conserve_below_remaining` (default 1500) | `live` | Scoped `item-list` (`entry_list_limit`) | Live Pattern A |
+| Below conserve, ≥ `offline_artifacts_below_remaining` (200) | `conserve` | Reuse snapshot if fresh TTL | Live or queue |
+| Below offline threshold / Forbidden | `offline_artifacts` | Snapshot + tracker paths | `project queue` only |
+
 ## drift-guard specifically
 
-1. **Read board first** (`project status`, `list --status in_progress`) so dual-write checks compare board Status vs trackers.
-2. Run `drift validate` (includes DRIFT-009 / DRIFT-010 when board_only; refresh `project export` for DRIFT-010).
+1. **Read board first** via `project entry` (or `list --status in_progress` if already in live mode) so dual-write checks compare board Status vs trackers.
+2. Run `drift validate` (includes DRIFT-009 / DRIFT-010 when board_only; prefer `project export --reuse-if-fresh` before validate so one snapshot serves the wave).
 3. Write `.local/workflow-artifacts/drift/*` (evidence stays local).
 4. **Update board:** close the drift-pass card; if dual-write Confirmed, add Notes on the offending card or ask board to queue a Ready fix — do not write competing `in_progress` into `work-tracker.md`.
 

@@ -329,6 +329,35 @@ def load_project_ssot(root: Path) -> tuple[dict[str, Any] | None, list[str]]:
     if not isinstance(ssot, dict):
         return None, ["project_ssot: missing block in github.collaboration.yaml"]
     return ssot, errors
+
+
+_DEFAULT_SNAPSHOT_REL = ".local/generated-data/project-board-snapshot.json"
+
+
+def load_efficiency_config(ssot: dict[str, Any]) -> dict[str, Any]:
+    """Return project_ssot.efficiency settings with defaults (GraphQL-efficient Entry/export)."""
+    raw = ssot.get("efficiency") if isinstance(ssot.get("efficiency"), dict) else {}
+    return {
+        "entry_list_limit": int(raw.get("entry_list_limit") or 50),
+        "export_reuse_ttl_seconds": int(raw.get("export_reuse_ttl_seconds") or 900),
+        "conserve_below_remaining": int(raw.get("conserve_below_remaining") or 1500),
+        "offline_artifacts_below_remaining": int(
+            raw.get("offline_artifacts_below_remaining") or 200
+        ),
+        "snapshot_path": str(
+            raw.get("snapshot_path") or _DEFAULT_SNAPSHOT_REL
+        ).strip()
+        or _DEFAULT_SNAPSHOT_REL,
+    }
+
+
+def snapshot_path(root: Path, ssot: dict[str, Any]) -> Path:
+    """Absolute path to read-only board snapshot JSON."""
+    cfg = load_efficiency_config(ssot)
+    rel = Path(str(cfg["snapshot_path"]))
+    return rel if rel.is_absolute() else (root / rel)
+
+
 def require_enabled(ssot: dict[str, Any]) -> list[str]:
     if not ssot.get("enabled"):
         fallback = ssot.get("fallback", "local_trackers")

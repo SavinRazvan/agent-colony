@@ -16,70 +16,82 @@ import {
   Table,
   Text,
   Toggle,
-  computeDAGLayout,
   useCanvasState,
   useHostTheme,
 } from "cursor/canvas";
 
 /**
  * Whole-picture hub: agents ↔ GitHub Project board ↔ local artifacts.
- * Not an agent-* canvas — excluded from DOC-008 roster scan (same as board-ssot-vs-kit).
+ * Not an agent-* canvas — excluded from DOC-008 roster scan (same as board-ssot-vs-trackers).
  */
 
-const VERIFIED = "2026-08-05";
+const VERIFIED = "2026-08-06";
 const SOURCES =
   "ADR-008 · ADR-010 · ADR-007 · board-ssot/SKILL.md · canvas-artifacts/SKILL.md · project-board-collaboration.md · agent cards · drift/auditor quality split";
 
-const NODE_W = 118;
-const NODE_H = 36;
+const NODE_W = 128;
+const NODE_H = 40;
+const LOOP_W = 760;
+const LOOP_H = 360;
 
 type ViewMode = "loop" | "who-writes";
 
-const LOOP_NODES = [
-  { id: "yaml" },
-  { id: "entry" },
-  { id: "board" },
-  { id: "agent" },
-  { id: "code" },
-  { id: "artifacts" },
-  { id: "exit" },
-  { id: "pr" },
-];
+type LoopId =
+  | "yaml"
+  | "entry"
+  | "board"
+  | "agent"
+  | "code"
+  | "artifacts"
+  | "exit"
+  | "pr";
 
-const LOOP_EDGES = [
-  { from: "yaml", to: "entry" },
-  { from: "entry", to: "board" },
-  { from: "board", to: "agent" },
-  { from: "agent", to: "code" },
-  { from: "agent", to: "artifacts" },
-  { from: "code", to: "pr" },
-  { from: "artifacts", to: "exit" },
-  { from: "exit", to: "board" },
-  { from: "pr", to: "board" },
-];
+/** Manual positions — auto DAG + on-edge labels overlapped on this cycle. */
+const LOOP_POS: Record<LoopId, { x: number; y: number; hub?: boolean }> = {
+  yaml: { x: 24, y: 28 },
+  entry: { x: 200, y: 28 },
+  board: { x: 400, y: 28, hub: true },
+  agent: { x: 400, y: 140 },
+  code: { x: 200, y: 140 },
+  artifacts: { x: 600, y: 140 },
+  pr: { x: 200, y: 260 },
+  exit: { x: 600, y: 260 },
+};
 
-const LOOP_LABELS: Record<string, string> = {
+const LOOP_LABELS: Record<LoopId, string> = {
   yaml: "project_ssot YAML",
-  entry: "Entry: project status",
+  entry: "project entry",
   board: "GitHub Project",
   agent: "Cursor agent",
   code: "Code + tests",
   artifacts: ".local artifacts",
-  exit: "Exit: Status + Notes",
+  exit: "Exit: Status+Notes",
   pr: "PR Pattern A",
 };
 
-const EDGE_HINTS: Record<string, string> = {
-  "yaml→entry": "enabled + board_only",
-  "entry→board": "list / claim",
-  "board→agent": "card body + Notes",
-  "agent→code": "implement / test",
-  "agent→artifacts": "audit · drift · verify",
-  "code→pr": "review → prepare → merge",
-  "artifacts→exit": "paths in Notes",
-  "exit→board": "only writable Status",
-  "pr→board": "mention-pr · merge Done",
+type LoopEdge = {
+  from: LoopId;
+  to: LoopId;
+  kind: "main" | "evidence" | "back";
+  via: string;
 };
+
+const LOOP_EDGES: LoopEdge[] = [
+  { from: "yaml", to: "entry", kind: "main", via: "enabled + board_only" },
+  { from: "entry", to: "board", kind: "main", via: "get / claim" },
+  { from: "board", to: "agent", kind: "main", via: "card body + Notes" },
+  { from: "agent", to: "code", kind: "main", via: "implement / test" },
+  {
+    from: "agent",
+    to: "artifacts",
+    kind: "evidence",
+    via: "audit · drift · verify",
+  },
+  { from: "code", to: "pr", kind: "main", via: "review → prepare → merge" },
+  { from: "artifacts", to: "exit", kind: "evidence", via: "paths in Notes" },
+  { from: "exit", to: "board", kind: "back", via: "only writable Status" },
+  { from: "pr", to: "board", kind: "back", via: "mention-pr · merge Done" },
+];
 
 const WHO_WRITES: string[][] = [
   [
@@ -196,7 +208,7 @@ const ARTIFACT_LANES: string[][] = [
 ];
 
 const HAPPY_PATH = [
-  "1. Entry — project status → list Ready / In progress",
+  "1. Entry — project entry (scoped list in live; snapshot in conserve)",
   "2. claim --last --agent <name> (Start date on In progress when configured)",
   "3. Work — code/tests and/or write .local artifacts",
   "4. Exit — handoff --to in_review|done + Notes (@user/agent · UTC · …)",
@@ -204,90 +216,201 @@ const HAPPY_PATH = [
   "6. PR — mention-pr; merge.py can set card Done",
 ];
 
+function port(
+  id: LoopId,
+  side: "left" | "right" | "top" | "bottom",
+): { x: number; y: number } {
+  const p = LOOP_POS[id];
+  const cx = p.x + NODE_W / 2;
+  const cy = p.y + NODE_H / 2;
+  if (side === "left") return { x: p.x, y: cy };
+  if (side === "right") return { x: p.x + NODE_W, y: cy };
+  if (side === "top") return { x: cx, y: p.y };
+  return { x: cx, y: p.y + NODE_H };
+}
+
+function edgePath(e: LoopEdge): string {
+  // Prefer orthogonal-ish curves so return-to-board arcs clear the mid row.
+  if (e.from === "yaml" && e.to === "entry") {
+    const s = port("yaml", "right");
+    const t = port("entry", "left");
+    return `M ${s.x} ${s.y} L ${t.x} ${t.y}`;
+  }
+  if (e.from === "entry" && e.to === "board") {
+    const s = port("entry", "right");
+    const t = port("board", "left");
+    return `M ${s.x} ${s.y} L ${t.x} ${t.y}`;
+  }
+  if (e.from === "board" && e.to === "agent") {
+    const s = port("board", "bottom");
+    const t = port("agent", "top");
+    return `M ${s.x} ${s.y} L ${t.x} ${t.y}`;
+  }
+  if (e.from === "agent" && e.to === "code") {
+    const s = port("agent", "left");
+    const t = port("code", "right");
+    return `M ${s.x} ${s.y} L ${t.x} ${t.y}`;
+  }
+  if (e.from === "agent" && e.to === "artifacts") {
+    const s = port("agent", "right");
+    const t = port("artifacts", "left");
+    return `M ${s.x} ${s.y} L ${t.x} ${t.y}`;
+  }
+  if (e.from === "code" && e.to === "pr") {
+    const s = port("code", "bottom");
+    const t = port("pr", "top");
+    return `M ${s.x} ${s.y} L ${t.x} ${t.y}`;
+  }
+  if (e.from === "artifacts" && e.to === "exit") {
+    const s = port("artifacts", "bottom");
+    const t = port("exit", "top");
+    return `M ${s.x} ${s.y} L ${t.x} ${t.y}`;
+  }
+  if (e.from === "exit" && e.to === "board") {
+    const s = port("exit", "top");
+    const t = port("board", "right");
+    return `M ${s.x} ${s.y} Q 720 80 ${t.x} ${t.y}`;
+  }
+  if (e.from === "pr" && e.to === "board") {
+    const s = port("pr", "left");
+    const t = port("board", "left");
+    // Left rail return — clears mid-row nodes
+    return `M ${s.x} ${s.y} L 48 ${s.y} L 48 ${t.y} L ${t.x} ${t.y}`;
+  }
+  const s = port(e.from, "right");
+  const t = port(e.to, "left");
+  return `M ${s.x} ${s.y} L ${t.x} ${t.y}`;
+}
+
 function LoopDag({
   tokens,
 }: {
   tokens: ReturnType<typeof useHostTheme>["tokens"];
 }) {
-  const layout = computeDAGLayout({
-    nodes: LOOP_NODES,
-    edges: LOOP_EDGES,
-    direction: "horizontal",
-    nodeWidth: NODE_W,
-    nodeHeight: NODE_H,
-    rankGap: 36,
-    nodeGap: 16,
-  });
+  const order: LoopId[] = [
+    "yaml",
+    "entry",
+    "board",
+    "agent",
+    "code",
+    "artifacts",
+    "pr",
+    "exit",
+  ];
+
   return (
-    <svg
-      width="100%"
-      viewBox={`0 0 ${layout.width} ${layout.height}`}
-      style={{ maxWidth: 980 }}
-    >
-      {layout.edges.map((e, i) => {
-        const label = EDGE_HINTS[`${e.from}→${e.to}`] ?? "";
-        const mx = (e.sourceX + e.targetX) / 2;
-        const my = (e.sourceY + e.targetY) / 2 - 8;
-        return (
-          <g key={`e-${e.from}-${e.to}-${i}`}>
-            <path
-              d={`M ${e.sourceX} ${e.sourceY} C ${e.sourceX + 18} ${e.sourceY}, ${e.targetX - 18} ${e.targetY}, ${e.targetX} ${e.targetY}`}
-              fill="none"
-              stroke={
-                e.isBackEdge
-                  ? tokens.stroke.tertiary
-                  : tokens.stroke.secondary
-              }
-              strokeWidth={1.25}
-              strokeDasharray={e.isBackEdge ? "4 3" : undefined}
-            />
-            {label ? (
+    <Stack gap={12}>
+      <svg
+        width="100%"
+        viewBox={`0 0 ${LOOP_W} ${LOOP_H}`}
+        style={{ maxWidth: 760 }}
+      >
+        {/* Lane bands */}
+        <rect
+          x={12}
+          y={16}
+          width={LOOP_W - 24}
+          height={64}
+          rx={6}
+          fill={tokens.fill.tertiary}
+          opacity={0.4}
+        />
+        <text x={20} y={14} fill={tokens.text.tertiary} fontSize={9}>
+          Config → Entry → Board hub
+        </text>
+        <rect
+          x={12}
+          y={128}
+          width={LOOP_W - 24}
+          height={64}
+          rx={6}
+          fill={tokens.fill.tertiary}
+          opacity={0.25}
+        />
+        <text x={20} y={126} fill={tokens.text.tertiary} fontSize={9}>
+          Work: code · agent · .local evidence
+        </text>
+        <rect
+          x={12}
+          y={248}
+          width={LOOP_W - 24}
+          height={64}
+          rx={6}
+          fill={tokens.fill.tertiary}
+          opacity={0.25}
+        />
+        <text x={20} y={246} fill={tokens.text.tertiary} fontSize={9}>
+          Close: PR Pattern A · Exit Status+Notes → board
+        </text>
+
+        {LOOP_EDGES.map((e) => (
+          <path
+            key={`${e.from}→${e.to}`}
+            d={edgePath(e)}
+            fill="none"
+            stroke={
+              e.kind === "main"
+                ? tokens.accent.primary
+                : e.kind === "back"
+                  ? tokens.stroke.secondary
+                  : tokens.stroke.tertiary
+            }
+            strokeWidth={e.kind === "main" ? 2 : 1.35}
+            strokeDasharray={e.kind === "back" ? "5 3" : undefined}
+            opacity={e.kind === "evidence" ? 0.9 : 1}
+          />
+        ))}
+
+        {order.map((id) => {
+          const p = LOOP_POS[id];
+          const hub = Boolean(p.hub);
+          return (
+            <g key={id}>
+              <rect
+                x={p.x}
+                y={p.y}
+                width={NODE_W}
+                height={NODE_H}
+                rx={6}
+                fill={hub ? tokens.fill.primary : tokens.fill.secondary}
+                stroke={
+                  hub ? tokens.accent.primary : tokens.stroke.primary
+                }
+                strokeWidth={hub ? 2 : 1}
+              />
               <text
-                x={mx}
-                y={my}
+                x={p.x + NODE_W / 2}
+                y={p.y + NODE_H / 2 + 4}
                 textAnchor="middle"
-                fill={tokens.text.secondary}
-                fontSize={9}
+                fill={tokens.text.primary}
+                fontSize={11}
+                fontWeight={hub ? 600 : 400}
               >
-                {label}
+                {LOOP_LABELS[id]}
               </text>
-            ) : null}
-          </g>
-        );
-      })}
-      {layout.nodes.map((n) => {
-        const accent =
-          n.id === "board" || n.id === "exit" || n.id === "entry";
-        return (
-          <g key={n.id}>
-            <rect
-              x={n.x}
-              y={n.y}
-              width={NODE_W}
-              height={NODE_H}
-              rx={6}
-              fill={
-                accent ? tokens.fill.secondary : tokens.fill.tertiary
-              }
-              stroke={
-                n.id === "board" ? tokens.accent.primary : tokens.stroke.primary
-              }
-              strokeWidth={n.id === "board" ? 1.75 : 1}
-            />
-            <text
-              x={n.x + NODE_W / 2}
-              y={n.y + NODE_H / 2 + 4}
-              textAnchor="middle"
-              fill={tokens.text.primary}
-              fontSize={10}
-              fontWeight={n.id === "board" ? 600 : 400}
-            >
-              {LOOP_LABELS[n.id] ?? n.id}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
+            </g>
+          );
+        })}
+      </svg>
+
+      <Row gap={10} wrap>
+        <Pill size="sm" tone="info" active>
+          solid accent = main path
+        </Pill>
+        <Pill size="sm" tone="neutral">
+          muted = evidence (.local)
+        </Pill>
+        <Pill size="sm" tone="neutral">
+          dashed = return to board
+        </Pill>
+      </Row>
+
+      <Table
+        headers={["From", "To", "Kind", "Via"]}
+        rows={LOOP_EDGES.map((e) => [LOOP_LABELS[e.from], LOOP_LABELS[e.to], e.kind, e.via])}
+        striped
+      />
+    </Stack>
   );
 }
 
@@ -384,14 +507,14 @@ export default function AgentsArtifactsBoardCanvas() {
       <Grid columns={4} gap={12}>
         <Stat value="Board" label="Only writable Status" />
         <Stat value=".local" label="Evidence / fallback" />
-        <Stat value="Entry" label="project status" />
+        <Stat value="Entry" label="project entry" />
         <Stat value="Exit" label="Status + Notes" />
       </Grid>
 
       <Callout tone="info" title="Read order">
         Open this hub first for orientation. Detail hubs: agent-board-collaboration
-        (recipes), agent-relations (handoff graph), board-ssot-vs-kit (classic vs
-        shipped), per-agent canvases for deep dive.
+        (recipes), agent-relations (handoff graph), board-ssot-vs-trackers (writable
+        Status: board vs offline trackers), per-agent canvases for deep dive.
       </Callout>
 
       <Callout tone="warning" title="How to render kit canvases">
@@ -421,7 +544,8 @@ export default function AgentsArtifactsBoardCanvas() {
         <Stack gap={10}>
           <Text size="small" tone="secondary">
             Board is the hub: Entry pulls work, Exit pushes Status. Artifacts and
-            PRs feed Notes — they do not replace Status.
+            PRs feed Notes — they do not replace Status. Edge labels are in the
+            table under the diagram (not on the lines).
           </Text>
           <LoopDag tokens={tokens} />
           <Stack gap={4}>

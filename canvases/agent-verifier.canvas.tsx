@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-05";
+const VERIFIED = "2026-08-06";
 const SOURCES = ".cursor/agents/verifier.md · board-ssot/SKILL.md § Continuation";
 
 const GOALS = [
@@ -69,7 +69,7 @@ const FALLBACK_EDGES = [
 ];
 
 const BOARD_LABELS: Record<string, string> = {
-  status: "project status",
+  status: "project entry",
   notes: "board card Notes",
   claim: "claim card",
   restate: "restate claim",
@@ -248,7 +248,7 @@ export default function AgentVerifierCanvas() {
           title={mode === "board" ? "project_ssot.enabled" : "Offline / disabled"}
         >
           {mode === "board"
-            ? "Entry: project status + board card Notes. Always verify claims vs evidence. No dual-write."
+            ? "Entry: project entry + board card Notes. Always verify claims vs evidence. No dual-write."
             : "Entry: session-pointer.md. Always verify claims vs evidence."}
         </Callout>
         <DagPanel mode={mode} tokens={tokens} />
@@ -295,7 +295,7 @@ export default function AgentVerifierCanvas() {
         <CardBody>
           <Stack gap={6}>
             <Text>
-              Entry: project status + board card Notes. Claim card for verification
+              Entry: project entry + board card Notes. Claim card for verification
               work.
             </Text>
             <Text>

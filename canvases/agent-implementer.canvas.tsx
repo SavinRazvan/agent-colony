@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-05";
+const VERIFIED = "2026-08-06";
 const SOURCES =
   ".cursor/agents/implementer.md · implementer-loop/SKILL.md · board-shell · board-ssot § Continuation";
 
@@ -81,7 +81,7 @@ const FALLBACK_EDGES = [
 const BOARD_LABELS: Record<string, string> = {
   yaml: "project_ssot YAML",
   bootstrap: "board-bootstrap --check",
-  status: "project status",
+  status: "project entry",
   claim: "claim (+ Start date if empty)",
   code: "contracts → code → tests",
   gates: "prepare.py resolve_gates()",

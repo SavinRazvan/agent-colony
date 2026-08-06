@@ -16,100 +16,174 @@ import {
   Table,
   Text,
   Toggle,
-  computeDAGLayout,
   useCanvasState,
   useHostTheme,
 } from "cursor/canvas";
 
 type FlowMode = "slice" | "side";
 
-const VERIFIED = "2026-08-05";
+const VERIFIED = "2026-08-06";
 const SOURCES =
-  "project-board-collaboration.md · board-ssot/SKILL.md · board-shell/SKILL.md · agent-relations · agent-roster · .cursor/agents/*.md · ADR-007";
+  "project-board-collaboration.md · token-efficiency.md · board-ssot/SKILL.md · board-shell/SKILL.md · agent-relations · agent-roster · .cursor/agents/*.md · ADR-007 · ADR-008";
 
 const STATUS_STEPS = ["Ready", "In progress", "In review", "Done"];
 
-const ROSTER_NODES = [
-  { id: "board" },
-  { id: "implementer" },
-  { id: "verifier" },
-  { id: "drift-guard" },
-  { id: "auditor" },
-  { id: "integrator" },
-  { id: "test-runner" },
-];
+/** Manual board-centered positions — auto DAG crossed labels on this dense graph. */
+const NODE_W = 118;
+const NODE_H = 36;
+const DAG_W = 720;
+const DAG_H = 320;
 
-const ROSTER_EDGES = [
-  { from: "board", to: "implementer" },
-  { from: "implementer", to: "verifier" },
-  { from: "implementer", to: "test-runner" },
-  { from: "implementer", to: "drift-guard" },
-  { from: "test-runner", to: "verifier" },
-  { from: "drift-guard", to: "board" },
-  { from: "drift-guard", to: "implementer" },
-  { from: "auditor", to: "implementer" },
-  { from: "auditor", to: "drift-guard" },
-  { from: "auditor", to: "verifier" },
-  { from: "integrator", to: "implementer" },
-  { from: "integrator", to: "test-runner" },
-  { from: "integrator", to: "auditor" },
-];
+type RosterId =
+  | "board"
+  | "implementer"
+  | "test-runner"
+  | "verifier"
+  | "integrator"
+  | "auditor"
+  | "drift-guard";
 
-const EDGE_LABELS: Record<string, string> = {
-  "board→implementer": "handoff next=implementer",
-  "implementer→verifier": "Exit --next verifier",
-  "implementer→test-runner": "when tests/coverage gate PR",
-  "implementer→drift-guard": "P0/P1 after drift-validate / goal pulse",
-  "test-runner→verifier": "tests gate the PR",
-  "drift-guard→board": "remediation Notes/Ready",
-  "drift-guard→implementer": "remediation Notes/Ready",
-  "auditor→implementer": "CHK-* artifacts → Ready",
-  "auditor→drift-guard": "orch Phase 3 goal pulse",
-  "auditor→verifier": "audit-orchestration Phase 3",
-  "integrator→implementer": "escalate product src/",
-  "integrator→test-runner": "escalate coverage",
-  "integrator→auditor": "escalate architecture",
+/** Centers: x,y of node box top-left. Lane: primary slice across mid-row. */
+const NODE_POS: Record<RosterId, { x: number; y: number; lane: "primary" | "side" }> =
+  {
+    board: { x: 24, y: 142, lane: "primary" },
+    implementer: { x: 200, y: 142, lane: "primary" },
+    "test-runner": { x: 400, y: 142, lane: "primary" },
+    verifier: { x: 580, y: 142, lane: "primary" },
+    integrator: { x: 200, y: 28, lane: "side" },
+    auditor: { x: 400, y: 28, lane: "side" },
+    "drift-guard": { x: 300, y: 256, lane: "side" },
+  };
+
+type RosterEdge = {
+  from: RosterId;
+  to: RosterId;
+  kind: "primary" | "side" | "back";
+  label: string;
 };
+
+const ROSTER_EDGES: RosterEdge[] = [
+  {
+    from: "board",
+    to: "implementer",
+    kind: "primary",
+    label: "handoff next=implementer",
+  },
+  {
+    from: "implementer",
+    to: "test-runner",
+    kind: "primary",
+    label: "when tests/coverage gate PR",
+  },
+  {
+    from: "test-runner",
+    to: "verifier",
+    kind: "primary",
+    label: "tests gate the PR",
+  },
+  {
+    from: "implementer",
+    to: "verifier",
+    kind: "primary",
+    label: "Exit --next verifier (no test gate)",
+  },
+  {
+    from: "implementer",
+    to: "drift-guard",
+    kind: "side",
+    label: "P0/P1 after drift-validate / goal pulse",
+  },
+  {
+    from: "drift-guard",
+    to: "board",
+    kind: "back",
+    label: "remediation Notes/Ready",
+  },
+  {
+    from: "drift-guard",
+    to: "implementer",
+    kind: "back",
+    label: "remediation Notes/Ready",
+  },
+  {
+    from: "auditor",
+    to: "implementer",
+    kind: "side",
+    label: "CHK-* artifacts → Ready",
+  },
+  {
+    from: "auditor",
+    to: "drift-guard",
+    kind: "side",
+    label: "orch Phase 3 goal pulse",
+  },
+  {
+    from: "auditor",
+    to: "verifier",
+    kind: "side",
+    label: "audit-orchestration Phase 3",
+  },
+  {
+    from: "integrator",
+    to: "implementer",
+    kind: "side",
+    label: "escalate product src/",
+  },
+  {
+    from: "integrator",
+    to: "test-runner",
+    kind: "side",
+    label: "escalate coverage",
+  },
+  {
+    from: "integrator",
+    to: "auditor",
+    kind: "side",
+    label: "escalate architecture",
+  },
+];
+
+type DagView = "slice" | "all";
 
 const PER_AGENT_ENTRY_EXIT = [
   [
     "board",
-    "status + list",
+    "project entry",
     "Full triage; handoff to implementer",
   ],
   [
     "implementer",
-    "status + claim --agent implementer",
+    "project entry → claim --agent implementer",
     "handoff --agent implementer --next … --to in_review or →Done",
   ],
   [
     "test-runner",
-    "status + slice card",
+    "project entry → slice card",
     "→In review or →Done; --agent test-runner",
   ],
   [
     "verifier",
-    "status + related card",
+    "project entry → related card",
     "→Done or leave In review; --agent verifier",
   ],
   [
     "integrator",
-    "status + claim",
+    "project entry → claim",
     "→Done; --agent integrator",
   ],
   [
     "auditor",
-    "status + audit card",
+    "project entry → audit card",
     "→In review/Done; --agent auditor + CHK-* / alignment artifact paths",
   ],
   [
     "drift-guard",
-    "Must status + list In progress",
+    "Must project entry (then scoped list if live)",
     "Drift card →Done; goal pulse + DRIFT-001…012; remediation via Notes/Ready — no silent tracker edits",
   ],
   [
     "researcher",
-    "status (+ research card)",
+    "project entry (+ research card)",
     "Research card →Done; --agent researcher + AGENT_BRIEF / pack paths",
   ],
 ];
@@ -218,7 +292,7 @@ const ARTIFACT_FLOWS = [
   ],
   [
     ".local/generated-data/project-board-snapshot.json",
-    "project export (read-only)",
+    "project export [--reuse-if-fresh] (read-only)",
     "DRIFT-010 refresh (+ kit-dev DRIFT-011 roster in validate)",
     "drift-guard · ICC (EA-010)",
     "Read-only export; never writes Status",
@@ -233,7 +307,7 @@ const ARTIFACT_FLOWS = [
 ];
 
 const NEXT_AGENT_STEPS = [
-  "List Ready / In progress / In review on board (project status · project list)",
+  "project entry (live|conserve|offline_artifacts); then get/claim one card",
   "Read Notes: @owner.github_user/agent · YYYY-MM-DDTHH:MM:SSZ · …",
   "Follow handoff line: item_id=… · Status=a→b · next=@user/agent",
   "Follow artifact paths in Notes (e.g. auditor → implementer)",
@@ -241,10 +315,10 @@ const NEXT_AGENT_STEPS = [
 ];
 
 const SLICE_FLOW = [
-  "board: status + list → triage Ready → handoff next=implementer",
+  "board: project entry → triage Ready → handoff next=implementer",
   "implementer: claim --agent implementer → code + prepare.py resolve_gates() → handoff --next verifier (or test-runner when tests gate)",
-  "test-runner (when tests gate PR): status + slice card → test-index / test-plan → in_review → verifier",
-  "verifier: status + related card → evidence check → done or in_review with failure Notes",
+  "test-runner (when tests gate PR): project entry → slice card → test-index / test-plan → in_review → verifier",
+  "verifier: project entry → related card → evidence check → done or in_review with failure Notes",
 ];
 
 const SIDE_FLOW = [
@@ -254,95 +328,181 @@ const SIDE_FLOW = [
   "integrator: integration card → integrate validate → escalate to implementer | test-runner | auditor",
 ];
 
+function anchor(
+  id: RosterId,
+  side: "left" | "right" | "top" | "bottom" | "center",
+): { x: number; y: number } {
+  const p = NODE_POS[id];
+  const cx = p.x + NODE_W / 2;
+  const cy = p.y + NODE_H / 2;
+  if (side === "left") return { x: p.x, y: cy };
+  if (side === "right") return { x: p.x + NODE_W, y: cy };
+  if (side === "top") return { x: cx, y: p.y };
+  if (side === "bottom") return { x: cx, y: p.y + NODE_H };
+  return { x: cx, y: cy };
+}
+
+/** Pick ports so primary stays mid-row; side/back use vertical ports. */
+function edgePorts(
+  from: RosterId,
+  to: RosterId,
+  kind: RosterEdge["kind"],
+): { s: { x: number; y: number }; t: { x: number; y: number } } {
+  if (kind === "primary") {
+    return { s: anchor(from, "right"), t: anchor(to, "left") };
+  }
+  if (from === "drift-guard" && to === "board") {
+    return { s: anchor(from, "left"), t: anchor(to, "bottom") };
+  }
+  if (from === "drift-guard" && to === "implementer") {
+    return { s: anchor(from, "top"), t: anchor(to, "bottom") };
+  }
+  if (NODE_POS[from].y < NODE_POS[to].y) {
+    return { s: anchor(from, "bottom"), t: anchor(to, "top") };
+  }
+  if (NODE_POS[from].y > NODE_POS[to].y) {
+    return { s: anchor(from, "top"), t: anchor(to, "bottom") };
+  }
+  return { s: anchor(from, "right"), t: anchor(to, "left") };
+}
+
+function edgePath(
+  from: RosterId,
+  to: RosterId,
+  kind: RosterEdge["kind"],
+): string {
+  const { s, t } = edgePorts(from, to, kind);
+  if (kind === "primary" && from === "implementer" && to === "verifier") {
+    // Arc above the mid-row so it clears test-runner
+    const midX = (s.x + t.x) / 2;
+    const midY = s.y - 52;
+    return `M ${s.x} ${s.y} Q ${midX} ${midY} ${t.x} ${t.y}`;
+  }
+  if (kind === "back" && from === "drift-guard" && to === "board") {
+    const midX = 80;
+    const midY = 300;
+    return `M ${s.x} ${s.y} Q ${midX} ${midY} ${t.x} ${t.y}`;
+  }
+  const midX = (s.x + t.x) / 2;
+  const midY = (s.y + t.y) / 2;
+  return `M ${s.x} ${s.y} Q ${midX} ${midY} ${t.x} ${t.y}`;
+}
+
 function CollaborationDag({
   tokens,
+  view,
 }: {
   tokens: ReturnType<typeof useHostTheme>["tokens"];
+  view: DagView;
 }) {
-  const nodeW = 130;
-  const nodeH = 40;
-  const layout = computeDAGLayout({
-    nodes: ROSTER_NODES,
-    edges: ROSTER_EDGES,
-    direction: "horizontal",
-    nodeWidth: nodeW,
-    nodeHeight: nodeH,
-    rankGap: 48,
-    nodeGap: 20,
-  });
+  const edges =
+    view === "slice"
+      ? ROSTER_EDGES.filter((e) => e.kind === "primary")
+      : ROSTER_EDGES;
+  const nodeIds: RosterId[] =
+    view === "slice"
+      ? ["board", "implementer", "test-runner", "verifier"]
+      : (Object.keys(NODE_POS) as RosterId[]);
 
   return (
-    <svg
-      width="100%"
-      viewBox={`0 0 ${layout.width} ${layout.height}`}
-      style={{ maxWidth: 960 }}
-    >
-      {layout.edges.map((e, i) => {
-        const label = EDGE_LABELS[`${e.from}→${e.to}`] ?? "";
-        const mx = (e.sourceX + e.targetX) / 2;
-        const my = (e.sourceY + e.targetY) / 2 - 6;
-        return (
-          <g key={i}>
-            <line
-              x1={e.sourceX}
-              y1={e.sourceY}
-              x2={e.targetX}
-              y2={e.targetY}
-              stroke={tokens.stroke.secondary}
-              strokeWidth={1.5}
-              strokeDasharray={e.isBackEdge ? "4 3" : undefined}
-            />
-            {label ? (
-              <text
-                x={mx}
-                y={my}
-                textAnchor="middle"
-                fill={tokens.text.tertiary}
-                fontSize={8}
-              >
-                {label.length > 28 ? label.slice(0, 26) + "…" : label}
-              </text>
-            ) : null}
-          </g>
-        );
-      })}
-      {layout.nodes.map((n) => (
-        <g key={n.id}>
-          <rect
-            x={n.x}
-            y={n.y}
-            width={nodeW}
-            height={nodeH}
-            rx={4}
-            fill={
-              n.id === "board"
-                ? tokens.fill.primary
-                : tokens.fill.secondary
-            }
+    <Stack gap={12}>
+      <svg
+        width="100%"
+        viewBox={`0 0 ${DAG_W} ${DAG_H}`}
+        style={{ maxWidth: 720 }}
+      >
+        {/* Primary lane band */}
+        <rect
+          x={12}
+          y={128}
+          width={DAG_W - 24}
+          height={64}
+          rx={6}
+          fill={tokens.fill.tertiary}
+          opacity={0.45}
+        />
+        <text
+          x={20}
+          y={122}
+          fill={tokens.text.tertiary}
+          fontSize={9}
+        >
+          Primary slice lane
+        </text>
+
+        {edges.map((e) => (
+          <path
+            key={`${e.from}→${e.to}`}
+            d={edgePath(e.from, e.to, e.kind)}
+            fill="none"
             stroke={
-              n.id === "board"
+              e.kind === "primary"
                 ? tokens.accent.primary
-                : tokens.stroke.primary
+                : tokens.stroke.secondary
             }
+            strokeWidth={e.kind === "primary" ? 2 : 1.25}
+            strokeDasharray={e.kind === "back" ? "5 3" : undefined}
+            opacity={e.kind === "primary" ? 1 : 0.85}
           />
-          <text
-            x={n.x + nodeW / 2}
-            y={n.y + nodeH / 2 + 4}
-            textAnchor="middle"
-            fill={tokens.text.primary}
-            fontSize={9}
-          >
-            {n.id}
-          </text>
-        </g>
-      ))}
-    </svg>
+        ))}
+
+        {nodeIds.map((id) => {
+          const p = NODE_POS[id];
+          const isHub = id === "board";
+          return (
+            <g key={id}>
+              <rect
+                x={p.x}
+                y={p.y}
+                width={NODE_W}
+                height={NODE_H}
+                rx={4}
+                fill={isHub ? tokens.fill.primary : tokens.fill.secondary}
+                stroke={
+                  isHub ? tokens.accent.primary : tokens.stroke.primary
+                }
+                strokeWidth={isHub ? 2 : 1}
+              />
+              <text
+                x={p.x + NODE_W / 2}
+                y={p.y + NODE_H / 2 + 4}
+                textAnchor="middle"
+                fill={tokens.text.primary}
+                fontSize={11}
+                fontWeight={isHub ? 600 : 400}
+              >
+                {id}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+
+      <Row gap={10} wrap>
+        <Pill size="sm" tone="info" active>
+          solid accent = primary slice
+        </Pill>
+        <Pill size="sm" tone="neutral">
+          solid muted = side escalate
+        </Pill>
+        <Pill size="sm" tone="neutral">
+          dashed = back / remediation
+        </Pill>
+      </Row>
+
+      <Table
+        headers={["From", "To", "Kind", "Via"]}
+        rows={edges.map((e) => [e.from, e.to, e.kind, e.label])}
+        striped
+      />
+    </Stack>
   );
 }
 
 export default function AgentBoardCollaborationCanvas() {
   const { tokens } = useHostTheme();
   const [flowMode, setFlowMode] = useCanvasState<FlowMode>("flowMode", "slice");
+  const [dagView, setDagView] = useCanvasState<DagView>("dagView", "slice");
 
   return (
     <Stack gap={20} style={{ padding: 20, maxWidth: 980 }}>
@@ -367,6 +527,10 @@ export default function AgentBoardCollaborationCanvas() {
           <Text>
             GitHub Project = only writable Status SSOT when project_ssot.enabled
             and sync_policy: board_only.
+          </Text>
+          <Text>
+            Entry: prefer project entry (live scoped list → conserve snapshot →
+            offline_artifacts). One export --reuse-if-fresh per parent wave.
           </Text>
           <Text>
             Local evidence (.local/workflow-artifacts/, change-index, PR artifacts)
@@ -409,15 +573,28 @@ export default function AgentBoardCollaborationCanvas() {
       <Divider />
 
       <Card>
-        <CardHeader>Collaboration DAG (board-centered roster edges)</CardHeader>
+        <CardHeader
+          trailing={
+            <Toggle
+              checked={dagView === "all"}
+              onChange={(on) => setDagView(on ? "all" : "slice")}
+              label={
+                dagView === "all" ? "All handoffs" : "Primary slice only"
+              }
+            />
+          }
+        >
+          Collaboration DAG (board-centered)
+        </CardHeader>
         <CardBody>
           <Callout tone="neutral" title="GitHub Project = continuation hub">
             Every agent Entry reads board Status + card body; Exit updates Status
-            and attributed Notes. DAG edges are explicit handoffs from agent cards
-            — all paths route through board Status/Notes.
+            and attributed Notes. Mid-row = typical slice; side/back edges are
+            escalations and remediation — labels live in the table (not on the
+            lines).
           </Callout>
           <Spacer size={10} />
-          <CollaborationDag tokens={tokens} />
+          <CollaborationDag tokens={tokens} view={dagView} />
           <Text tone="tertiary" size="small">
             researcher: no product handoff edges — redirects only (see
             agent-roster canvas).

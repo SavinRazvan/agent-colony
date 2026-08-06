@@ -966,3 +966,32 @@ def test_append_notes_helper_precheck_queues(
     assert not ok
     assert "queued to outbox" in detail
     assert code == project_cli.EXIT_QUEUED
+
+
+def test_cmd_set_status_post_gh_rate_limit_returns_queued(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Cover project_cli.cmd_set_status return after _try_queue_rate_limit (L861)."""
+    ssot = _ssot()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(project_cli, "guard_write_or_queue", lambda *a, **k: None)
+    monkeypatch.setattr(
+        project_cli,
+        "run_gh",
+        lambda *a, **k: SimpleNamespace(
+            returncode=1, stdout="", stderr="API rate limit exceeded"
+        ),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "_try_queue_rate_limit",
+        lambda *a, **k: project_cli.EXIT_QUEUED,
+    )
+    args = argparse.Namespace(
+        directory=tmp_path,
+        id=VALID_PVTI,
+        last=False,
+        to="ready",
+        agent="implementer",
+    )
+    assert project_cli.cmd_set_status(args) == project_cli.EXIT_QUEUED

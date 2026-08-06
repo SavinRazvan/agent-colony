@@ -79,6 +79,7 @@ from project_atomics import (
     item_field_value,
     latest_notes_line,
     load_card_template,
+    load_efficiency_config,
     normalize_set_section_name,
     section_body_content,
     load_last_item_id,
@@ -97,6 +98,7 @@ from project_atomics import (
     resolve_status_option_id,
     save_last_item_id,
     session_last_path,
+    snapshot_path,
     status_field_id,
     utc_note_timestamp,
     utc_today_iso,
@@ -124,6 +126,7 @@ from project_recipes import (
     note_successful_write,
     resolve_item_id_for_pr,
 )
+import project_outbox as _outbox
 
 def cmd_status(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
@@ -166,6 +169,20 @@ def cmd_list(args: argparse.Namespace) -> int:
     ssot, code = _load_enabled_ssot(root, "list")
     if ssot is None:
         return code
+    eff = load_efficiency_config(ssot)
+    filter_status = (args.status or "").strip().lower().replace("-", "_")
+    if filter_status in ("inprogress",):
+        filter_status = "in_progress"
+    if filter_status in ("review",):
+        filter_status = "in_review"
+    limit = int(args.limit)
+    if not filter_status and limit > int(eff["entry_list_limit"]):
+        print(
+            "project list: WARN — unfiltered list with --limit "
+            f">{limit} > entry_list_limit={eff['entry_list_limit']}; "
+            "prefer --status or `project entry` to save GraphQL quota",
+            file=sys.stderr,
+        )
     owner = str(ssot["owner"])
     number = int(ssot["number"])
     proc = run_gh(
@@ -178,7 +195,7 @@ def cmd_list(args: argparse.Namespace) -> int:
             "--format",
             "json",
             "--limit",
-            str(args.limit),
+            str(limit),
         ]
     )
     if proc.returncode != 0:
@@ -194,11 +211,6 @@ def cmd_list(args: argparse.Namespace) -> int:
     items = data.get("items") if isinstance(data, dict) else data
     if not isinstance(items, list):
         items = []
-    filter_status = (args.status or "").strip().lower().replace("-", "_")
-    if filter_status in ("inprogress",):
-        filter_status = "in_progress"
-    if filter_status in ("review",):
-        filter_status = "in_review"
     out_items: list[dict[str, Any]] = []
     for item in items:
         if not isinstance(item, dict):
@@ -1277,6 +1289,14 @@ def cmd_guide(args: argparse.Namespace) -> int:
     print("python3 -m cursor_workflow project doctor")
     print("python3 -m cursor_workflow project outbox status")
     print(
+        "python3 -m cursor_workflow project entry  "
+        "# quota-aware Entry (live|conserve|offline_artifacts); prefer over unfiltered list"
+    )
+    print(
+        "python3 -m cursor_workflow project export --reuse-if-fresh 900  "
+        "# reuse snapshot when fresh; --force to refresh"
+    )
+    print(
         "python3 -m cursor_workflow project board-bootstrap --check  "
         "# read-only README/view shell check (human paste pack)"
     )
@@ -1360,6 +1380,38 @@ def cmd_export(args: argparse.Namespace) -> int:
     ssot, code = _load_enabled_ssot(root, "export")
     if ssot is None:
         return code
+    eff = load_efficiency_config(ssot)
+    out_path = Path(args.output) if args.output else snapshot_path(root, ssot)
+    force = bool(getattr(args, "force", False))
+    reuse_ttl = getattr(args, "reuse_if_fresh", None)
+    if reuse_ttl is None:
+        reuse_ttl = int(eff["export_reuse_ttl_seconds"])
+    else:
+        reuse_ttl = int(reuse_ttl)
+    if (
+        not force
+        and not args.stdout
+        and reuse_ttl > 0
+        and out_path.is_file()
+    ):
+        age = max(0.0, datetime.now(timezone.utc).timestamp() - out_path.stat().st_mtime)
+        if age <= float(reuse_ttl):
+            try:
+                snapshot = json.loads(out_path.read_text(encoding="utf-8"))
+                total = (
+                    int(snapshot.get("totalCount") or 0)
+                    if isinstance(snapshot, dict)
+                    else 0
+                )
+            except (OSError, json.JSONDecodeError, TypeError, ValueError):
+                total = 0
+            print(
+                f"export: reused {out_path} ({total} items) age={int(age)}s "
+                f"ttl={reuse_ttl}s"
+            )
+            if args.json:
+                print(out_path.read_text(encoding="utf-8"), end="")
+            return EXIT_OK
     items, err = fetch_project_items(ssot, limit=args.limit)
     if err:
         return fail("export", EXIT_GH, err)
@@ -1368,14 +1420,149 @@ def cmd_export(args: argparse.Namespace) -> int:
     if args.stdout:
         print(text, end="")
         return EXIT_OK
-    out_path = Path(args.output) if args.output else (
-        root / ".local" / "generated-data" / "project-board-snapshot.json"
-    )
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(text, encoding="utf-8")
     print(f"Wrote {out_path} ({snapshot['totalCount']} items)")
     if args.json:
         print(text, end="")
     return EXIT_OK
+
+
+def _print_entry_rows(items: list[dict[str, Any]], *, statuses: set[str]) -> int:
+    """Print TSV rows matching normalized statuses; return count printed."""
+    printed = 0
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        status = _normalize_status(str(item.get("status") or item.get("status_normalized") or ""))
+        if status not in statuses:
+            continue
+        printed += 1
+        print(
+            f"{item.get('id')}\t{item.get('status')}\t{item.get('priority') or ''}\t"
+            f"{item.get('size') or ''}\t{item.get('estimate') or item.get('Estimate') or ''}\t"
+            f"{item.get('title')}"
+        )
+    return printed
+
+
+def cmd_entry(args: argparse.Namespace) -> int:
+    """
+    Quota-aware Continuation Entry: status + scoped list or snapshot reuse.
+
+    Modes: live | conserve | offline_artifacts (enterprise degrade, exit 0).
+    """
+    root = Path(args.directory).resolve()
+    ssot, errs = load_project_ssot(root)
+    if errs or ssot is None:
+        return fail("entry", EXIT_USAGE, errs[0] if errs else "project_ssot missing")
+    enabled = bool(ssot.get("enabled"))
+    print(f"enabled: {enabled}")
+    print(f"operational: {enabled}")
+    print(f"name: {ssot.get('name')}")
+    print(f"owner: {ssot.get('owner')}")
+    print(f"number: {ssot.get('number')}")
+    print(f"url: {ssot.get('url')}")
+    print(f"project_id: {ssot.get('project_id')}")
+    print(f"sync_policy: {ssot.get('sync_policy')}")
+    print(f"fallback: {ssot.get('fallback')}")
+    if not enabled:
+        print(
+            "mode=offline_artifacts · graphql_remaining=? · "
+            "next=local_trackers|enable project_ssot"
+        )
+        return EXIT_OK
+
+    eff = load_efficiency_config(ssot)
+    snap = snapshot_path(root, ssot)
+    force_live = bool(getattr(args, "force_live", False))
+    also_ready = bool(getattr(args, "also_ready", False))
+    want = {"in_progress"}
+    if also_ready:
+        want.add("ready")
+
+    rl = _outbox.graphql_rate_limit()
+    rem_raw = rl.get("remaining")
+    rem: int | None
+    try:
+        rem = int(rem_raw) if rem_raw is not None and "error" not in rl else None
+    except (TypeError, ValueError):
+        rem = None
+    if "error" in rl and rem is None:
+        # Forbidden / probe failure → treat as offline_artifacts (safe degrade)
+        mode = "offline_artifacts"
+        rem_disp = "error"
+    elif rem is None:
+        mode = "live"
+        rem_disp = "?"
+    elif rem < int(eff["offline_artifacts_below_remaining"]):
+        mode = "offline_artifacts"
+        rem_disp = str(rem)
+    elif rem < int(eff["conserve_below_remaining"]) and not force_live:
+        mode = "conserve"
+        rem_disp = str(rem)
+    else:
+        mode = "live"
+        rem_disp = str(rem)
+
+    if force_live and mode != "offline_artifacts":
+        mode = "live"
+
+    printed = 0
+    if mode == "offline_artifacts":
+        print(f"snapshot: {snap} exists={snap.is_file()}")
+        trackers = root / ".local" / "index-and-planning" / "current"
+        print(f"local_trackers: {trackers}")
+        print("advise: queue writes via `project queue`; flush when GraphQL recovers")
+        if snap.is_file():
+            try:
+                data = json.loads(snap.read_text(encoding="utf-8"))
+                items = data.get("items") if isinstance(data, dict) else []
+                if isinstance(items, list):
+                    printed = _print_entry_rows(items, statuses=want)
+            except (OSError, json.JSONDecodeError, TypeError):
+                print("(snapshot unreadable)")
+        if printed == 0:
+            print("(no items)")
+        print(f"mode={mode} · graphql_remaining={rem_disp} · next=queue|get|claim")
+        return EXIT_OK
+
+    if mode == "conserve":
+        ttl = int(eff["export_reuse_ttl_seconds"])
+        if snap.is_file():
+            age = max(0.0, datetime.now(timezone.utc).timestamp() - snap.stat().st_mtime)
+            if age <= float(ttl):
+                try:
+                    data = json.loads(snap.read_text(encoding="utf-8"))
+                    items = data.get("items") if isinstance(data, dict) else []
+                    if not isinstance(items, list):
+                        items = []
+                    printed = _print_entry_rows(items, statuses=want)
+                    if printed == 0:
+                        print("(no items)")
+                    print(
+                        f"mode={mode} · graphql_remaining={rem_disp} · "
+                        f"snapshot_age={int(age)}s · next=claim|get"
+                    )
+                    return EXIT_OK
+                except (OSError, json.JSONDecodeError, TypeError):
+                    pass
+        # Stale/missing snapshot → fall through to live list
+        mode = "live"
+
+    limit = int(getattr(args, "limit", None) or eff["entry_list_limit"])
+    items, err = fetch_project_items(ssot, limit=limit)
+    if err:
+        return fail("entry", EXIT_GH, err)
+    # Normalize for filter (gh item-list status strings)
+    for it in items:
+        if isinstance(it, dict) and "status_normalized" not in it:
+            it["status_normalized"] = _normalize_status(str(it.get("status") or ""))
+    printed = _print_entry_rows(items, statuses=want)
+    if printed == 0:
+        print("(no items)")
+    print(f"mode={mode} · graphql_remaining={rem_disp} · next=claim|get")
+    return EXIT_OK
+
 
 from project_parser import register_project_subparser  # noqa: E402 — after cmd_*

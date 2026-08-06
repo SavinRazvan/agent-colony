@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-05";
+const VERIFIED = "2026-08-06";
 const SOURCES =
   ".cursor/agents/board.md · board-ssot/SKILL.md · board-shell/SKILL.md · ADR-006 · ADR-008";
 
@@ -69,7 +69,7 @@ const FALLBACK_EDGES = [
 const BOARD_LABELS: Record<string, string> = {
   yaml: "project_ssot YAML",
   bootstrap: "board-bootstrap --check",
-  status: "project status",
+  status: "project entry",
   list: "list ready",
   triage: "move Status",
   create: "create-from-template",
@@ -246,7 +246,7 @@ export default function AgentBoardCanvas() {
           title={mode === "board" ? "project_ssot.enabled" : "Offline / disabled"}
         >
           {mode === "board"
-            ? "Entry: YAML + skill + project status + list. Primary board triage agent."
+            ? "Entry: YAML + skill + project entry (quota-aware). Primary board triage agent."
             : "Fallback: session-pointer + local trackers. Resume board sync when available."}
         </Callout>
         <DagPanel mode={mode} tokens={tokens} />
@@ -254,7 +254,7 @@ export default function AgentBoardCanvas() {
 
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
-          <Text>1. Read YAML + board-ssot skill; project status.</Text>
+          <Text>1. Read YAML + board-ssot skill; project entry.</Text>
           <Text>2. list --status ready (or other triage views).</Text>
           <Text>3. create-from-template + claim --last for new work.</Text>
           <Text>4. Move Status for every triage action.</Text>

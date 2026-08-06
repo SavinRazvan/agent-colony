@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-05";
+const VERIFIED = "2026-08-06";
 const SOURCES =
   ".cursor/agents/drift-guard.md · drift-audit/SKILL.md · board-ssot/SKILL.md · ADR-007";
 
@@ -68,7 +68,7 @@ const FALLBACK_EDGES = [
 ];
 
 const BOARD_LABELS: Record<string, string> = {
-  status: "project status",
+  status: "project entry",
   list: "list in_progress",
   validate: "drift validate",
   audit: "drift-audit.md",
@@ -245,7 +245,7 @@ export default function AgentDriftGuardCanvas() {
           title={mode === "board" ? "project_ssot.enabled" : "Offline / disabled"}
         >
           {mode === "board"
-            ? "Entry MUST: project status + list in_progress when board on."
+            ? "Entry MUST: project entry (live|conserve|offline_artifacts) when board on."
             : "Fallback: session-pointer. Resume board sync when available."}
         </Callout>
         <DagPanel mode={mode} tokens={tokens} />
@@ -253,10 +253,10 @@ export default function AgentDriftGuardCanvas() {
 
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
-          <Text>1. project status + list in_progress (board required when on).</Text>
+          <Text>1. project entry (prefer over unfiltered list; board required when on).</Text>
           <Text>2. Run drift validate; check DRIFT-009 / 010 / 011 / 012 (kit-dev).</Text>
           <Text>3. Goal pulse: board Acceptance/Notes + plan pointers + roster.</Text>
-          <Text>4. project export for DRIFT-010 evidence when needed.</Text>
+          <Text>4. project export --reuse-if-fresh for DRIFT-010 when needed.</Text>
           <Text>
             5. Write drift-audit.md + drift-todos.md under
             .local/workflow-artifacts/drift/.
@@ -295,7 +295,7 @@ export default function AgentDriftGuardCanvas() {
         <CardBody>
           <Stack gap={6}>
             <Text>
-              Entry MUST: project status + list in_progress when board SSOT enabled.
+              Entry MUST: project entry when board SSOT enabled; scoped list only in live mode.
             </Text>
             <Text>
               Exit: drift-pass card Status done/in_review; dual-write findings → Notes

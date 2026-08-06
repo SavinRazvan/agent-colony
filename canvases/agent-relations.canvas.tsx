@@ -20,7 +20,7 @@ import {
   useHostTheme,
 } from "cursor/canvas";
 
-const VERIFIED = "2026-08-05";
+const VERIFIED = "2026-08-06";
 const SOURCES =
   "agent-relations edges · audit-orchestration (quarterly CHK-* vs PR focused) · board-ssot § Continuation · per-agent canvas PEERS";
 
@@ -463,7 +463,7 @@ export default function AgentRelationsCanvas() {
       </Grid>
 
       <Callout tone="info" title="Shared board contract">
-        Every agent: Entry = project status / claim; Exit = Status + Notes.
+        Every agent: Entry = project entry / claim; Exit = Status + Notes.
         Tier-1: Start date on first In progress; Size/Estimate per skill table. Promote
         Draft→Issue via promote-to-issue or mention-pr (auto when
         promote_to_issue_on_pr) before shippable PR — claim does not auto-promote.

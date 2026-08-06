@@ -20,12 +20,14 @@ Notes:
 
 | Order | Path / command | When |
 |-------|----------------|------|
-| 1 | `python -m cursor_workflow project status` + `project list` | **Every session start** |
-| 2 | Board card body (Acceptance / Rollback / Notes) | Claimed / In progress card |
+| 1 | `python -m cursor_workflow project entry` (+ `outbox status` if unsure of quota) | **Every session start** — prefer over unfiltered `list`/`export` |
+| 2 | Board card body (Acceptance / Rollback / Notes) | Claimed / In progress card (`get` / claim) |
 | 3 | `.cursor/skills/board-ssot/SKILL.md` § Continuation | When mutating Status |
 | 4 | `change-index.md` | Resume mid-slice (thin cache) |
 | 5 | `test-plan.md`, `test-index.md` | When tests change |
 | 6 | `workflow-artifacts/pr/*.md` | Only when phase = review \| prepare \| merge |
+
+**GraphQL tiers (Entry):** `live` (scoped list) → `conserve` (reuse snapshot) → `offline_artifacts` (snapshot + local_trackers pointers; queue writes). One `export --reuse-if-fresh` per parent wave when drift needs a snapshot.
 
 **When disabled / offline fallback:**
 
@@ -82,6 +84,8 @@ Do **not** run individual gates in chat when `prepare.py` exists unless `verifie
 | Action | Command |
 |--------|---------|
 | Health | `python -m cursor_workflow project doctor` |
+| Entry (quota-aware) | `python -m cursor_workflow project entry` |
+| Export reuse | `python -m cursor_workflow project export --reuse-if-fresh 900` |
 | Create card | `python -m cursor_workflow project create-from-template --title "…" --template slice --priority p1 --size s --estimate 1` |
 | Claim | `python -m cursor_workflow project claim --last --agent <name>` |
 | Handoff | `python -m cursor_workflow project handoff --last --agent <name> --next <agent> [--to in_review]` |
