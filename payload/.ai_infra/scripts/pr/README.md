@@ -21,7 +21,7 @@ Notes:
 | `prepare.py` | Run merge gates via `resolve_gates()` (`GATES` = 2-gate alias) and stamp `prep.md` |
 | `merge.py` | Preconditions + stamp `merge.md` |
 | `finalize.py` | Post-merge branch cleanup |
-| `verify_publish.py` | Branch / upstream sanity before merge workflow |
+| `verify_publish.py` | Branch / origin-tracking sanity before merge workflow |
 | `local_workflow_paths.py` | Canonical artifact paths (also referenced by rules) |
 
 ## Git commits vs PR markdown

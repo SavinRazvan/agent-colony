@@ -1,6 +1,6 @@
 # Project overlays
 
-Per-project rules and optional docs that **extend** the universal **MAS Workflow Kit** — not part of core.
+Per-project rules and optional docs that **extend** the universal **Agent Colony** — not part of core.
 
 ## Convention
 
@@ -23,12 +23,12 @@ Also customize `.ai_infra/scripts/pr/prepare.py` `resolve_gates()` once — docu
 
 ## This directory in the kit repo
 
-- `overlays/rules/` — ships **`project-ssot-precedence.mdc`** in **mas-workflow-kit-project-ssot** (product-only; copy at consumer install). Add more `*.mdc` for your app domain.
+- `overlays/rules/` — ships **`project-ssot-precedence.mdc`** in **agent-colony** (product-only; copy at consumer install). Add more `*.mdc` for your app domain.
 - [`project-rules/`](../project-rules/) — same overlay concept (alias README for installs that prefer that name)
 
 ## Anti-patterns
 
-- Do not put product rules in universal `.cursor/rules/` in the **mas-workflow-kit-project-ssot** product repo
+- Do not put product rules in universal `.cursor/rules/` in the **agent-colony** product repo
 - Do not duplicate gate lists in overlay markdown — point to `prepare.py` `resolve_gates()` (`GATES` = alias)
 - Do not treat overlays as agent runtime config (Pattern A: hardcoded scripts)
 

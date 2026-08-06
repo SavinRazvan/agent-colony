@@ -340,13 +340,13 @@ export default function BoardSsotVsKitCanvas() {
     <Stack gap={24} style={{ padding: 24, maxWidth: 960 }}>
       <Stack gap={8}>
         <Row gap={10} style={{ alignItems: "center", flexWrap: "wrap" }}>
-          <H1 style={{ margin: 0 }}>MAS Workflow Kit → Board SSOT (shipped)</H1>
+          <H1 style={{ margin: 0 }}>Agent Colony → Board SSOT (shipped)</H1>
           <Pill size="sm" tone="info">
             hub · not an agent
           </Pill>
         </Row>
         <Text tone="secondary">
-          Before/after comparison for mas-workflow-kit-project-ssot (MAS-SSOT-KIT)
+          Before/after comparison for Agent Colony
           as of {VERIFIED}. PR #2 merged A→B→C on main; FIX-NOTES-DI, doc-drift
           residuals, EA-001/004, and expanded tests (1190 collected) are shipped
           on main. Live agents: board · implementer · test-runner · verifier ·
@@ -452,7 +452,7 @@ export default function BoardSsotVsKitCanvas() {
 
       {(mode === "classic" || mode === "compare") && (
         <Stack gap={10}>
-          <H2>Classic MAS Workflow Kit</H2>
+          <H2>Classic Agent Colony</H2>
           <Text tone="secondary">
             Per-clone markdown under .local/index-and-planning/current/ was the
             writable SSOT: plan, work-tracker, session-pointer.
@@ -701,8 +701,7 @@ export default function BoardSsotVsKitCanvas() {
       <Callout tone="neutral" title="How to read this (STANDALONE product)">
         Classic kit solved disciplined agents + PR gates on local markdown.
         This repository is the permanent product: coordination on one GitHub Project,
-        evidence in local artifacts. Upstream mas-workflow-kit is lineage only —
-        no port back. Board Entry/Exit continues every agent slice.
+        evidence in local artifacts. Board Entry/Exit continues every agent slice.
       </Callout>
 
       <Text size="small" tone="tertiary">

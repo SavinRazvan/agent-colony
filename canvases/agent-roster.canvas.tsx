@@ -23,40 +23,40 @@ const AGENTS = [
   {
     id: "implementer",
     description:
-      "implementer MAS-SSOT-KIT — Disciplined implementation slices with trackers and Pattern A gates.",
+      "implementer Agent Colony — Disciplined implementation slices with trackers and Pattern A gates.",
   },
   {
     id: "verifier",
-    description: "verifier MAS-SSOT-KIT — Claims vs evidence; minimal high-signal checks.",
+    description: "verifier Agent Colony — Claims vs evidence; minimal high-signal checks.",
   },
   {
     id: "test-runner",
-    description: "test-runner MAS-SSOT-KIT — Module-focused tests, regressions, coverage.",
+    description: "test-runner Agent Colony — Module-focused tests, regressions, coverage.",
   },
   {
     id: "drift-guard",
     description:
-      "drift-guard MAS-SSOT-KIT — Continuous goal/plan/agent-doctrine/docs coherence plus operational DRIFT scripts; handoff remediations only.",
+      "drift-guard Agent Colony — Continuous goal/plan/agent-doctrine/docs coherence plus operational DRIFT scripts; handoff remediations only.",
   },
   {
     id: "auditor",
     description:
-      "auditor MAS-SSOT-KIT — Deep/periodic evidence architecture audit (CHK-* security/perf/granularity/docs); not continuous plan pulse.",
+      "auditor Agent Colony — Deep/periodic evidence architecture audit (CHK-* security/perf/granularity/docs); not continuous plan pulse.",
   },
   {
     id: "board",
     description:
-      "board MAS-SSOT-KIT — Independent-governed helper — list/create/move GitHub Project SSOT cards via project_ssot CLI.",
+      "board Agent Colony — Independent-governed helper — list/create/move GitHub Project SSOT cards via project_ssot CLI.",
   },
   {
     id: "integrator",
     description:
-      "integrator MAS-SSOT-KIT — Integrates new agents, skills, MCP, and infrastructure expansions into the MAS Workflow Kit — procedural, evidence-only, Pattern A compliant.",
+      "integrator Agent Colony — Integrates new agents, skills, MCP, and infrastructure expansions into the Agent Colony — procedural, evidence-only, Pattern A compliant.",
   },
   {
     id: "researcher",
     description:
-      "researcher MAS-SSOT-KIT — Brief-driven multi-round research (GitHub/local) into _research_results packs; hard-stop on product code.",
+      "researcher Agent Colony — Brief-driven multi-round research (GitHub/local) into _research_results packs; hard-stop on product code.",
   },
 ];
 

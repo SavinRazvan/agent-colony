@@ -1,7 +1,7 @@
 """
 File: test_check_governance_consistency.py
 Path: tests/modules/architecture_scripts/test_check_governance_consistency.py
-Role: Smoke test for governance drift scanner on MAS Workflow Kit layout.
+Role: Smoke test for governance drift scanner on Agent Colony layout.
 Used By:
  - scripts/pr/prepare.py GATES (pytest -q)
 Depends On:
@@ -21,7 +21,7 @@ SCRIPT = REPO_ROOT / ".ai_infra" / "scripts" / "architecture" / "check_governanc
 
 
 def test_governance_consistency_passes_without_ci_workflow() -> None:
-  """MAS Workflow Kit may ship without .github/workflows until consumer adds CI."""
+  """Agent Colony may ship without .github/workflows until consumer adds CI."""
   proc = subprocess.run(
       [sys.executable, str(SCRIPT)],
       cwd=REPO_ROOT,

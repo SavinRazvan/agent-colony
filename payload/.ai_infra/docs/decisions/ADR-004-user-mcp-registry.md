@@ -13,17 +13,18 @@ Consumers need to attach external MCP servers (Slack, GitHub, custom APIs) to ki
 
 | Tier | Server | Configuration |
 |------|--------|---------------|
-| Kit | `workflow-kit` | Install / `mcp.json.kit.example` |
+| Kit | `agent-colony-mcp` | Install / `mcp.json.kit.example` |
 | User | Any `mcpServers` key | `mcp.user.json` + `mcp.registry.yaml` |
 
 Registry maps agent ids → server keys → tool hints. Agents read registry before `CallMcpTool`. Implementation detail in Phase 5b.
 
 ## Consequences
 
-- `cursor_workflow mcp link` / `mcp validate` CLI (Phase 5b)
-- Pattern A transport: `mcp doctor|list-tools|call|auth|smoke` — see [ADR-009](ADR-009-mcp-pattern-a-cli.md)
+- `cursor_workflow mcp link` / `mcp validate` / `mcp seed` CLI (Phase 5b + DeepWiki default seed)
+- Pattern A transport: `mcp doctor|list-tools|call|auth|smoke|seed` — see [ADR-009](ADR-009-mcp-pattern-a-cli.md)
 - `mcp-connect` skill and ops doc
 - Transport in `.cursor/mcp.user.json` (gitignored); auth secrets in `.local/user_settings/mcp.secrets.yaml`
+- **Consumer activate** may seed DeepWiki (user-tier URL + registry key) when missing; kit-dev live registry remains kit-tier only for CI `health`
 
 ## Reference implementation
 

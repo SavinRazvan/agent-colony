@@ -10,6 +10,7 @@ Depends On:
  - re
 Notes:
  - Scans explicit paths only (fast); excludes .venv and .git.
+ - Lineage footnotes (Formerly / upstream) are allowlisted per line.
 """
 
 from __future__ import annotations
@@ -43,11 +44,18 @@ SCAN_ROOTS: tuple[Path, ...] = (
     ROOT / "overlays",
     ROOT / "project-rules",
     ROOT / "schemas",
+    ROOT / "canvases",
+    ROOT / "agents",
+    ROOT / "skills",
+    ROOT / "rules",
 )
 
 SCAN_FILES: tuple[Path, ...] = (
     ROOT / "AGENTS.md",
     ROOT / "README.md",
+    ROOT / "NOTICE",
+    ROOT / ".cursor-plugin" / "plugin.json",
+    ROOT / "assets" / "README.md",
 )
 
 BANNED_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
@@ -60,16 +68,43 @@ BANNED_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("overlay-exo", re.compile(r"overlay-exo")),
     ("pack_exo_brain", re.compile(r"pack_exo_brain")),
     ("examples/eXo-brain-pack", re.compile(r"examples/eXo-brain-pack", re.IGNORECASE)),
+    ("mas-workflow-kit-project-ssot", re.compile(r"mas-workflow-kit-project-ssot", re.IGNORECASE)),
+    (
+        "MAS Workflow Kit — Project SSOT",
+        re.compile(r"MAS Workflow Kit — Project SSOT", re.IGNORECASE),
+    ),
+    ("MAS Workflow Kit", re.compile(r"MAS Workflow Kit", re.IGNORECASE)),
+    ("mas-workflow-kit", re.compile(r"mas-workflow-kit", re.IGNORECASE)),
+    ("workflow-kit", re.compile(r"workflow-kit", re.IGNORECASE)),
+    ("MAS-SSOT-KIT", re.compile(r"MAS-SSOT-KIT", re.IGNORECASE)),
+    ("Formerly", re.compile(r"Formerly", re.IGNORECASE)),
+    ("upstream", re.compile(r"upstream", re.IGNORECASE)),
 )
 
-TEXT_SUFFIXES = {".md", ".mdc", ".py", ".yaml", ".yml", ".txt", ".json", ".jsonc"}
+LINEAGE_ALLOWLIST_SUBSTRINGS: tuple[str, ...] = ()
+
+TEXT_SUFFIXES = {".md", ".mdc", ".py", ".yaml", ".yml", ".txt", ".json", ".jsonc", ".tsx", ".ts"}
 
 SKIP_REL_PATHS = frozenset(
     {
         ".ai_infra/scripts/architecture/check_debrand.py",
         ".ai_infra/scripts/architecture/check_governance_consistency.py",
+        "tests/modules/architecture_scripts/test_check_debrand.py",
     }
 )
+
+
+def line_is_lineage_allowlisted(line: str) -> bool:
+    return any(token in line for token in LINEAGE_ALLOWLIST_SUBSTRINGS)
+
+
+def text_has_banned_pattern(text: str, pattern: re.Pattern[str]) -> bool:
+    for line in text.splitlines():
+        if line_is_lineage_allowlisted(line):
+            continue
+        if pattern.search(line):
+            return True
+    return False
 
 
 def _iter_files() -> list[Path]:
@@ -83,7 +118,7 @@ def _iter_files() -> list[Path]:
         for path in root.rglob("*"):
             if not path.is_file():
                 continue
-            if ".venv" in path.parts or ".git" in path.parts:
+            if ".venv" in path.parts or ".git" in path.parts or "payload" in path.parts:
                 continue
             if path.suffix.lower() in TEXT_SUFFIXES:
                 paths.append(path)
@@ -101,7 +136,9 @@ def _collect_violations() -> list[str]:
         if rel in SKIP_REL_PATHS:
             continue
         for label, pattern in BANNED_PATTERNS:
-            if pattern.search(text):
+            if label == "upstream" and path.suffix == ".py":
+                continue
+            if text_has_banned_pattern(text, pattern):
                 violations.append(f"{rel}: banned term ({label})")
     return violations
 

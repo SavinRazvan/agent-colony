@@ -13,10 +13,10 @@ Notes:
  - Update this file each material slice; do not rewrite full maintainer megadocs for every change.
 -->
 
-# Implementation status (MAS Workflow Kit — Project SSOT)
+# Implementation status (Agent Colony)
 
-**Last updated:** 2026-08-05 (audit #178 alignment: prepare check-plugin + doc counts; DOC-006 1412 tests)
-**Product:** `mas-workflow-kit-project-ssot` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1412
+**Last updated:** 2026-08-06 (agent-colony rename + DeepWiki MCP seed; DOC-006 1425 tests)
+**Product:** `agent-colony` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1425
 
 ## Shipped (confirmed in repo)
 
@@ -54,7 +54,7 @@ Notes:
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Researcher agent (corpus) | **Shipped / proven** — adaptive Brief; anti-loop ≤6; CLI `research init\|fetch\|validate`; live E2E flexiai-toolsmith (18 curated, validate PASS) + verifier Claim A+B VERIFIED 2026-07-19; corpus **opt-in** after first `research init` | `.cursor/agents/researcher.md` · `research-corpus` · `canvases/agent-researcher.canvas.tsx` · Issue #74 |
 | Kit version on install | `kit_version` 0.4.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 1412 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1425 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

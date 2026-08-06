@@ -33,7 +33,7 @@ from test_project_cli import SAMPLE_SSOT, VALID_PVTI  # noqa: E402
 
 def _ssot(**overrides: object) -> dict:
     data = json.loads(json.dumps(SAMPLE_SSOT))
-    data["default_repo"] = "SavinRazvan/mas-workflow-kit-project-ssot"
+    data["default_repo"] = "SavinRazvan/agent-colony"
     data["conventions"] = {
         **data.get("conventions", {}),
         "promote_to_issue_on_pr": True,

@@ -62,6 +62,17 @@ BANNED_BRAND_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("overlay-exo", re.compile(r"overlay-exo")),
     ("pack_exo_brain", re.compile(r"pack_exo_brain")),
     ("examples/eXo-brain-pack", re.compile(r"examples/eXo-brain-pack", re.IGNORECASE)),
+    ("mas-workflow-kit-project-ssot", re.compile(r"mas-workflow-kit-project-ssot", re.IGNORECASE)),
+    (
+        "MAS Workflow Kit — Project SSOT",
+        re.compile(r"MAS Workflow Kit — Project SSOT", re.IGNORECASE),
+    ),
+    ("MAS Workflow Kit", re.compile(r"MAS Workflow Kit", re.IGNORECASE)),
+    ("mas-workflow-kit", re.compile(r"mas-workflow-kit", re.IGNORECASE)),
+    ("workflow-kit", re.compile(r"workflow-kit", re.IGNORECASE)),
+    ("MAS-SSOT-KIT", re.compile(r"MAS-SSOT-KIT", re.IGNORECASE)),
+    ("Formerly", re.compile(r"Formerly", re.IGNORECASE)),
+    ("upstream", re.compile(r"upstream", re.IGNORECASE)),
 )
 
 BRAND_DRIFT_SURFACES = (
@@ -78,6 +89,7 @@ BRAND_DRIFT_SKIP = frozenset(
     {
         ".ai_infra/scripts/architecture/check_debrand.py",
         ".ai_infra/scripts/architecture/check_governance_consistency.py",
+        "tests/modules/architecture_scripts/test_check_debrand.py",
     }
 )
 
@@ -186,6 +198,12 @@ def _collect_path_drift_violations() -> list[str]:
 
 
 def _collect_brand_drift_violations() -> list[str]:
+    arch = ROOT / ".ai_infra" / "scripts" / "architecture"
+    arch_str = str(arch)
+    if arch_str not in sys.path:
+        sys.path.insert(0, arch_str)
+    from check_debrand import text_has_banned_pattern
+
     violations: list[str] = []
     for surface in BRAND_DRIFT_SURFACES:
         if surface.is_file():
@@ -205,7 +223,9 @@ def _collect_brand_drift_violations() -> list[str]:
             if rel in BRAND_DRIFT_SKIP:
                 continue
             for label, pattern in BANNED_BRAND_PATTERNS:
-                if pattern.search(text):
+                if label == "upstream" and path.suffix == ".py":
+                    continue
+                if text_has_banned_pattern(text, pattern):
                     violations.append(f"{rel}: banned brand term ({label})")
     return violations
 

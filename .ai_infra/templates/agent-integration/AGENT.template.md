@@ -41,7 +41,7 @@ description: {{ONE_LINE_DESCRIPTION}}
 
 | Tier | Server | Use when |
 |------|--------|----------|
-| Kit | `workflow-kit` | {{kit tools}} |
+| Kit | `agent-colony-mcp` | {{kit tools}} |
 | External | See `.cursor/mcp.registry.yaml` | Only if listed for `{{AGENT_ID}}` |
 
 Before **CallMcpTool**: read tool descriptor schema. Do not invent tool names.

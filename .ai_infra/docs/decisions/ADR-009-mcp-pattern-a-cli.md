@@ -5,7 +5,7 @@
 
 ## Context
 
-ADR-003/004 define kit + user MCP tiers and a registry. Cursor agent sessions often load only plugin MCPs, not project `.cursor/mcp.json` servers (`workflow-kit`, DeepWiki). Agents need a transport that works in shell, CI, and chat without depending on Cursor host loading.
+ADR-003/004 define kit + user MCP tiers and a registry. Cursor agent sessions often load only plugin MCPs, not project `.cursor/mcp.json` servers (`agent-colony-mcp`, DeepWiki). Agents need a transport that works in shell, CI, and chat without depending on Cursor host loading.
 
 ## Decision
 
@@ -13,7 +13,7 @@ ADR-003/004 define kit + user MCP tiers and a registry. Cursor agent sessions of
 2. **Registry allowlist:** `mcp call` / `list-tools` only target servers present in `.cursor/mcp.registry.yaml` (when that file exists); `--agent` filters to servers that list the agent.
 3. **Secrets:** `.local/user_settings/mcp.secrets.yaml` (gitignored); `mcp.user.json` stays transport-only.
 4. **Cursor `CallMcpTool` is optional** when the IDE host loads the same server; docs/skills must not require it.
-5. **Kit `workflow-kit` stdio server unchanged** — still wraps `.ai_infra/scripts/`; CLI client talks to it over MCP stdio.
+5. **Kit `agent-colony-mcp` stdio server unchanged** — still wraps `.ai_infra/scripts/`; CLI client talks to it over MCP stdio.
 6. **Exit codes:** align with project CLI (`0/2/3/4/5`); remote outbox / `EXIT_QUEUED=6` deferred.
 
 ## Consequences

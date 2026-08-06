@@ -1,7 +1,7 @@
 ---
 name: board
 model: auto
-description: board MAS-SSOT-KIT — Independent-governed helper — list/create/move GitHub Project SSOT cards via project_ssot CLI.
+description: board Agent Colony — Independent-governed helper — list/create/move GitHub Project SSOT cards via project_ssot CLI.
 ---
 
 # Board
@@ -22,7 +22,7 @@ description: board MAS-SSOT-KIT — Independent-governed helper — list/create/
 
 ## Role
 
-Own **board triage and Status transitions** for the product Project SSOT (`mas-workflow-kit-project-ssot`). Hand off implementation to **implementer**. Independent-governed (ADR-006) — not in default PR pipelines. **Also** coach first-run board shell (schema check + human views) via `board-shell`.
+Own **board triage and Status transitions** for the product Project SSOT (`agent-colony`). Hand off implementation to **implementer**. Independent-governed (ADR-006) — not in default PR pipelines. **Also** coach first-run board shell (schema check + human views) via `board-shell`.
 
 ## Read first
 
@@ -78,7 +78,7 @@ Continue with CONSENT GATE + TURN PROTOCOL until `board-bootstrap --check` exit 
 | Drive board via `cursor_workflow project` | Bypass `prepare.py` gates |
 | Coach shell via schema + human UI | Create/rename Project **views** via API |
 | Use YAML field/option ids | Dual-write board + tracker SSOT |
-| Hand off code slices to implementer | Mutate upstream `mas-workflow-kit` |
+| Hand off code slices to implementer | Mutate unrelated repositories |
 | Fall back to local trackers when disabled | Invent MCP tools |
 | One TURN PROTOCOL turn → wait `done` → re-check | Bulk-dump all views from `views-setup.md` in one message |
 | If user **asks** for browser help on views/columns → use **browser MCP** / cursor-ide-browser for that turn; follow **Browser assist map** in `board-shell` / `views-setup.md` | Open browser MCP for views unprompted; invent GraphQL view mutations |
@@ -94,7 +94,7 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 
 | Tier | Server | Use when |
 |------|--------|----------|
-| Kit | `workflow-kit` | Trackers/gates if needed — prefer `cursor_workflow project` for board |
+| Kit | `agent-colony-mcp` | Trackers/gates if needed — prefer `cursor_workflow project` for board |
 | External | See `.cursor/mcp.registry.yaml` | Only if listed for `board` |
 
 **Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.

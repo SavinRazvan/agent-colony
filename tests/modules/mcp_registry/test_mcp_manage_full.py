@@ -147,31 +147,35 @@ def test_validate_registry_servers_not_dict(tmp_path: Path) -> None:
     assert errors == ["registry servers must be a mapping"]
 
 
-def test_validate_registry_missing_mcp_json(tmp_path: Path) -> None:
+def test_validate_registry_missing_kit_fragment(tmp_path: Path) -> None:
     cursor = tmp_path / ".cursor"
     cursor.mkdir()
     (cursor / "mcp.registry.yaml").write_text(yaml.safe_dump({"servers": {"a": {}}}), encoding="utf-8")
     errors = mcp_manage.validate_registry(tmp_path)
-    assert any("missing merged MCP config" in e for e in errors)
+    assert any("missing kit MCP fragment" in e for e in errors)
 
 
-def test_validate_registry_mcp_servers_not_dict(tmp_path: Path) -> None:
+def test_validate_registry_kit_servers_not_dict(tmp_path: Path) -> None:
     cursor = tmp_path / ".cursor"
     cursor.mkdir()
     (cursor / "mcp.registry.yaml").write_text(yaml.safe_dump({"servers": {"a": {}}}), encoding="utf-8")
-    (cursor / "mcp.json").write_text(json.dumps({"mcpServers": []}), encoding="utf-8")
+    (cursor / "mcp.json.kit.example").write_text(
+        json.dumps({"mcpServers": []}), encoding="utf-8"
+    )
     errors = mcp_manage.validate_registry(tmp_path)
-    assert errors == ["mcp.json mcpServers must be an object"]
+    assert any("mcpServers must be an object" in e for e in errors)
 
 
 def test_validate_registry_spec_not_dict_and_agents_not_list(tmp_path: Path) -> None:
     cursor = tmp_path / ".cursor"
     cursor.mkdir()
+    (cursor / "mcp.json.kit.example").write_text(
+        json.dumps({"mcpServers": {"good-name": {}}}), encoding="utf-8"
+    )
     (cursor / "mcp.registry.yaml").write_text(
         yaml.safe_dump({"servers": {"bad-spec": [], "good-name": {"agents": "not-a-list"}}}),
         encoding="utf-8",
     )
-    (cursor / "mcp.json").write_text(json.dumps({"mcpServers": {"good-name": {}}}), encoding="utf-8")
     errors = mcp_manage.validate_registry(tmp_path)
     assert any("bad-spec' must be a mapping" in e for e in errors)
     assert any("good-name' agents must be a list" in e for e in errors)
@@ -180,21 +184,25 @@ def test_validate_registry_spec_not_dict_and_agents_not_list(tmp_path: Path) -> 
 def test_validate_registry_name_not_in_mcp_servers(tmp_path: Path) -> None:
     cursor = tmp_path / ".cursor"
     cursor.mkdir()
+    (cursor / "mcp.json.kit.example").write_text(
+        json.dumps({"mcpServers": {}}), encoding="utf-8"
+    )
     (cursor / "mcp.registry.yaml").write_text(
         yaml.safe_dump({"servers": {"ghost": {"agents": []}}}), encoding="utf-8"
     )
-    (cursor / "mcp.json").write_text(json.dumps({"mcpServers": {}}), encoding="utf-8")
     errors = mcp_manage.validate_registry(tmp_path)
-    assert any("ghost' not in .cursor/mcp.json" in e for e in errors)
+    assert any("ghost' not in merged kit+user" in e for e in errors)
 
 
 def test_validate_registry_all_pass(tmp_path: Path) -> None:
     cursor = tmp_path / ".cursor"
     cursor.mkdir()
+    (cursor / "mcp.json.kit.example").write_text(
+        json.dumps({"mcpServers": {"a": {}}}), encoding="utf-8"
+    )
     (cursor / "mcp.registry.yaml").write_text(
         yaml.safe_dump({"servers": {"a": {"agents": ["implementer"]}}}), encoding="utf-8"
     )
-    (cursor / "mcp.json").write_text(json.dumps({"mcpServers": {"a": {}}}), encoding="utf-8")
     assert mcp_manage.validate_registry(tmp_path) == []
 
 
@@ -202,13 +210,69 @@ def test_validate_registry_url_based_server_passes(tmp_path: Path) -> None:
     """URL-based (remote) servers like DeepWiki have no `command`/`args` — must still validate."""
     cursor = tmp_path / ".cursor"
     cursor.mkdir()
-    (cursor / "mcp.registry.yaml").write_text(
-        yaml.safe_dump({"servers": {"deepwiki": {"agents": ["researcher"]}}}), encoding="utf-8"
+    (cursor / "mcp.json.kit.example").write_text(
+        json.dumps({"mcpServers": {}}), encoding="utf-8"
     )
-    (cursor / "mcp.json").write_text(
-        json.dumps({"mcpServers": {"deepwiki": {"url": "https://mcp.deepwiki.com/mcp"}}}), encoding="utf-8"
+    (cursor / "mcp.user.json").write_text(
+        json.dumps({"mcpServers": {"deepwiki": {"url": "https://mcp.deepwiki.com/mcp"}}}),
+        encoding="utf-8",
+    )
+    (cursor / "mcp.registry.yaml").write_text(
+        yaml.safe_dump({"servers": {"deepwiki": {"agents": ["researcher"], "tier": "external"}}}),
+        encoding="utf-8",
     )
     assert mcp_manage.validate_registry(tmp_path) == []
+
+
+def test_write_merged_mcp_kit_dev_writes_kit_tier_only(tmp_path: Path) -> None:
+    """Kit-dev marker: disk mcp.json stays kit-only even when user fragment has DeepWiki."""
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    (cursor / "mcp.json.kit.example").write_text(
+        json.dumps({"mcpServers": {"agent-colony-mcp": {"command": "echo"}}}),
+        encoding="utf-8",
+    )
+    (cursor / "mcp.user.json").write_text(
+        json.dumps({"mcpServers": {"deepwiki": {"url": "https://mcp.deepwiki.com/mcp"}}}),
+        encoding="utf-8",
+    )
+    marker = tmp_path / mcp_manage.KIT_DEV_MARKER
+    marker.parent.mkdir(parents=True)
+    marker.write_text("# kit-dev\n", encoding="utf-8")
+    dest = mcp_manage.write_merged_mcp(tmp_path)
+    disk = json.loads(dest.read_text(encoding="utf-8"))["mcpServers"]
+    assert list(disk.keys()) == ["agent-colony-mcp"]
+    logical = mcp_manage.load_merged_servers(tmp_path)
+    assert "deepwiki" in logical
+    assert "agent-colony-mcp" in logical
+
+
+def test_validate_registry_kit_dev_rejects_external_in_live(tmp_path: Path) -> None:
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    (cursor / "mcp.json.kit.example").write_text(
+        json.dumps({"mcpServers": {"agent-colony-mcp": {}}}), encoding="utf-8"
+    )
+    (cursor / "mcp.user.json").write_text(
+        json.dumps({"mcpServers": {"deepwiki": {"url": "https://mcp.deepwiki.com/mcp"}}}),
+        encoding="utf-8",
+    )
+    (cursor / "mcp.registry.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "servers": {
+                    "agent-colony-mcp": {"tier": "kit", "agents": []},
+                    "deepwiki": {"tier": "external", "agents": ["researcher"]},
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    marker = tmp_path / mcp_manage.KIT_DEV_MARKER
+    marker.parent.mkdir(parents=True)
+    marker.write_text("# kit-dev\n", encoding="utf-8")
+    errors = mcp_manage.validate_registry(tmp_path)
+    assert any("kit-dev: live registry must not list external" in e for e in errors)
 
 
 def test_write_merged_mcp_with_url_based_user_server(tmp_path: Path) -> None:
@@ -318,3 +382,63 @@ def test_ensure_mcp_gitignore_adds_secrets_line(tmp_path: Path) -> None:
     text = (tmp_path / ".gitignore").read_text(encoding="utf-8")
     assert ".local/user_settings/mcp.secrets.yaml" in text
     assert ".cursor/mcp.user.json" in text
+
+
+# ---------------------------------------------------------------------------
+# DeepWiki consumer seed helpers
+# ---------------------------------------------------------------------------
+
+
+def test_ensure_deepwiki_user_fragment_creates_when_missing(tmp_path: Path) -> None:
+    assert mcp_manage.ensure_deepwiki_user_fragment(tmp_path) is True
+    user = json.loads((tmp_path / ".cursor" / "mcp.user.json").read_text(encoding="utf-8"))
+    assert user["mcpServers"]["deepwiki"] == {"url": mcp_manage.DEEPWIKI_URL}
+    assert "my-custom-server" not in user["mcpServers"]
+    assert mcp_manage.ensure_deepwiki_user_fragment(tmp_path) is False
+
+
+def test_ensure_deepwiki_user_fragment_adds_missing_key_only(tmp_path: Path) -> None:
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    (cursor / "mcp.user.json").write_text(
+        json.dumps({"mcpServers": {"other": {"command": "x"}}}),
+        encoding="utf-8",
+    )
+    assert mcp_manage.ensure_deepwiki_user_fragment(tmp_path) is True
+    user = json.loads((cursor / "mcp.user.json").read_text(encoding="utf-8"))
+    assert "other" in user["mcpServers"]
+    assert user["mcpServers"]["deepwiki"]["url"] == mcp_manage.DEEPWIKI_URL
+
+
+def test_ensure_deepwiki_user_fragment_does_not_overwrite_existing(tmp_path: Path) -> None:
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    custom = {"url": "https://example.invalid/mcp"}
+    (cursor / "mcp.user.json").write_text(
+        json.dumps({"mcpServers": {"deepwiki": custom}}),
+        encoding="utf-8",
+    )
+    assert mcp_manage.ensure_deepwiki_user_fragment(tmp_path) is False
+    user = json.loads((cursor / "mcp.user.json").read_text(encoding="utf-8"))
+    assert user["mcpServers"]["deepwiki"] == custom
+
+
+def test_ensure_deepwiki_registry_creates_and_preserves_agents(tmp_path: Path) -> None:
+    assert mcp_manage.ensure_deepwiki_registry(tmp_path) is True
+    data = yaml.safe_load((tmp_path / ".cursor" / "mcp.registry.yaml").read_text(encoding="utf-8"))
+    assert "agent-colony-mcp" in data["servers"]
+    assert data["servers"]["deepwiki"]["agents"] == list(mcp_manage.DEEPWIKI_AGENTS)
+    assert mcp_manage.ensure_deepwiki_registry(tmp_path) is False
+
+    data["servers"]["deepwiki"]["agents"] = ["researcher"]
+    (tmp_path / ".cursor" / "mcp.registry.yaml").write_text(
+        yaml.safe_dump(data, sort_keys=False),
+        encoding="utf-8",
+    )
+    assert mcp_manage.ensure_deepwiki_registry(tmp_path) is False
+    again = yaml.safe_load((tmp_path / ".cursor" / "mcp.registry.yaml").read_text(encoding="utf-8"))
+    assert again["servers"]["deepwiki"]["agents"] == ["researcher"]
+
+    assert mcp_manage.ensure_deepwiki_registry(tmp_path, force_registry_agents=True) is True
+    forced = yaml.safe_load((tmp_path / ".cursor" / "mcp.registry.yaml").read_text(encoding="utf-8"))
+    assert forced["servers"]["deepwiki"]["agents"] == list(mcp_manage.DEEPWIKI_AGENTS)

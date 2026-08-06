@@ -109,6 +109,8 @@ def _print_post_activate_hints(root: Path) -> None:
         print(" 10. In Agent chat: /implementer — local trackers are offline fallback under board_only.")
         print(" 11. Canvas preview: python3 -m cursor_workflow canvas doctor")
         print("     (sync repo canvases: canvas sync --missing)")
+        print(" 12. MCP smoke: python3 -m cursor_workflow mcp smoke --server deepwiki")
+        print("     (/mcp-connect for enable DeepWiki | link custom | doctor)")
     else:
         print("\nYou're almost done — 3 quick steps:")
         print(f"  1. Edit {yaml_path}")
@@ -120,6 +122,10 @@ def _print_post_activate_hints(root: Path) -> None:
         print("  source .venv/bin/activate && python3 -m cursor_workflow health")
         print("  source .venv/bin/activate && python3 -m cursor_workflow canvas doctor")
         print("Add agents/skills later: /integrator (subagent, not a shell command).")
+
+    print("\nMCP (DeepWiki seeded on consumer activate when missing):")
+    print("  source .venv/bin/activate && python3 -m cursor_workflow mcp smoke --server deepwiki")
+    print("  Agent chat: /mcp-connect — enable DeepWiki | link custom | doctor/smoke")
 
 
 def _import_scaffold_refresh() -> object:

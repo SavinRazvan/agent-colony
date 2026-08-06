@@ -18,7 +18,7 @@ alwaysApply: true
 - PR Pattern A (`prepare.py` `resolve_gates()`), post-merge board close (`merge.py`), PR/audit artifacts, secrets, and user_settings stay local (`project_ssot.local_only`).
 - Humans own Project views, workflows, Insights, README, status updates, Ready prioritization.
 - Canon: `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`, `.ai_infra/docs/operations/project-board-collaboration.md`, `AGENTS.md`.
-- This product lives only in `mas-workflow-kit-project-ssot`. Do not mutate upstream `mas-workflow-kit`. Board = only writable SSOT; local = evidence/fallback.
+- This product lives only in `agent-colony`. Board = only writable SSOT; local = evidence/fallback.
 - Multi-collaborator Notes: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC; user → their agents) via `append-notes --agent`. Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime.
 - Prefer board Pattern A recipes (`claim` / `handoff` / `create-from-template`) over multi-step atomics; never paste Project settings UI into a shell.
 - Tier-1 board fields: **create as Issue** (`item_kind_default: issue`); claim / `set-status` / `handoff --to in_progress` may set Start date (UTC when configured); triage/own card sets Priority/Size/Estimate via `set-field` (Size↔Estimate table in `board-ssot` skill); Draft→Issue via `promote-to-issue` (or `mention-pr` auto when `promote_to_issue_on_pr`); PR URL via `mention-pr` — Iteration, Labels, Reviewers, End date out of scope for agents by default.

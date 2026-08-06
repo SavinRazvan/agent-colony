@@ -5,7 +5,7 @@
 
 ## Context
 
-MAS Workflow Kit enforces infrastructure parity via `integrate validate`, governance scanners, and testing-artifact gates. Those tools do not cover **operational workflow drift**: plan ↔ tracker ↔ session-pointer incoherence, stale handoff docs, or slice-closure discipline gaps.
+Agent Colony enforces infrastructure parity via `integrate validate`, governance scanners, and testing-artifact gates. Those tools do not cover **operational workflow drift**: plan ↔ tracker ↔ session-pointer incoherence, stale handoff docs, or slice-closure discipline gaps.
 
 The **drift-guard** capability closes that gap without duplicating architecture audits (`auditor`) or claim verification (`verifier`).
 
@@ -37,7 +37,7 @@ Introduce a script-first drift validator and MAS-integrated agent per [ADR-006](
 
 | Profile | When | Checks |
 |---------|------|--------|
-| `kit-dev` | Default for `mas-workflow-kit-project-ssot` (kit product repo) | DRIFT-001…011 + 004b (full set; 004b/009–011 when applicable) |
+| `kit-dev` | Default for `agent-colony` (kit product repo) | DRIFT-001…011 + 004b (full set; 004b/009–011 when applicable) |
 | `consumer` | `work-tracker.md` contains exemplar `STARTER-001` | DRIFT-005, DRIFT-008 (relaxed tracker rules) |
 
 Auto-detect profile from `work-tracker.md` unless `--profile` overrides.

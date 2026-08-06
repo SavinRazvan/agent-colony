@@ -326,7 +326,7 @@ def sync_all(profile: str = "with_mcp") -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Sync or verify MAS Workflow Kit plugin bundle.")
+    parser = argparse.ArgumentParser(description="Sync or verify Agent Colony plugin bundle.")
     parser.add_argument(
         "--check",
         action="store_true",

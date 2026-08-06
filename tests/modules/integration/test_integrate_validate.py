@@ -45,7 +45,7 @@ def test_orphan_registry_id_fails_p0(tmp_path: Path) -> None:
     _copy_minimal_kit(tmp_path)
     registry = tmp_path / ".cursor" / "mcp.registry.yaml.example"
     data = yaml.safe_load(registry.read_text(encoding="utf-8"))
-    data["servers"]["workflow-kit"]["agents"].append("nonexistent-agent")
+    data["servers"]["agent-colony-mcp"]["agents"].append("nonexistent-agent")
     registry.write_text(yaml.dump(data), encoding="utf-8")
     results = run_checks(tmp_path)
     int002 = next(r for r in results if r.check_id == "INT-002")

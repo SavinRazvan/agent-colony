@@ -231,7 +231,7 @@ export default function AgentAuditorCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          auditor MAS-SSOT-KIT — Deep/periodic evidence architecture audit
+          auditor Agent Colony — Deep/periodic evidence architecture audit
           (CHK-* security/perf/granularity/docs); continuous plan pulse is
           drift-guard. Writes workflow artifacts for other agents.
         </Text>
@@ -345,7 +345,7 @@ export default function AgentAuditorCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP">
-        Kit server workflow-kit for audit scripts — prefer cursor_workflow project for
+        Kit server agent-colony-mcp for audit scripts — prefer cursor_workflow project for
         board. External: only servers listed for this agent in mcp.registry.yaml.
       </Callout>
 

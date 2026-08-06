@@ -67,13 +67,12 @@ def test_load_merged_servers_write_and_auto(tmp_path: Path) -> None:
     assert "kit-server" in servers2
 
 
-def test_load_merged_servers_invalid_mcp_servers(tmp_path: Path) -> None:
+def test_load_merged_servers_invalid_kit_servers(tmp_path: Path) -> None:
     _seed_kit(tmp_path)
-    mcp_manage.write_merged_mcp(tmp_path)
-    (tmp_path / ".cursor" / "mcp.json").write_text(
+    (tmp_path / ".cursor" / "mcp.json.kit.example").write_text(
         json.dumps({"mcpServers": []}), encoding="utf-8"
     )
-    with pytest.raises(ValueError, match="must be an object"):
+    with pytest.raises(ValueError, match="mcpServers must be an object"):
         mcp_manage.load_merged_servers(tmp_path)
 
 

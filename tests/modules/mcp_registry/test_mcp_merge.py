@@ -29,10 +29,10 @@ def _load_mcp_manage():
 
 def test_merge_preserves_user_servers() -> None:
     mod = _load_mcp_manage()
-    kit = {"mcpServers": {"workflow-kit": {"command": "python"}}}
+    kit = {"mcpServers": {"agent-colony-mcp": {"command": "python"}}}
     user = {"mcpServers": {"slack": {"command": "npx"}}}
     merged = mod.merge_mcp_configs(kit, user)
-    assert "workflow-kit" in merged["mcpServers"]
+    assert "agent-colony-mcp" in merged["mcpServers"]
     assert "slack" in merged["mcpServers"]
 
 
@@ -45,4 +45,4 @@ def test_write_merged_mcp_from_examples(tmp_path: Path) -> None:
     dest = mod.write_merged_mcp(tmp_path)
     assert dest.is_file()
     text = dest.read_text(encoding="utf-8")
-    assert "workflow-kit" in text
+    assert "agent-colony-mcp" in text

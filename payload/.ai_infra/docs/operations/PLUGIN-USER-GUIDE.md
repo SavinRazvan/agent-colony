@@ -14,7 +14,7 @@ Notes:
  - Copied to consumer projects via manifest copy_ai_infra: docs/operations.
 -->
 
-# MAS Workflow Kit — Project SSOT · Plugin User Guide
+# Agent Colony · Plugin User Guide
 
 Single entry point for **installing**, **activating**, and **using** the kit in your project. Deeper runbooks are linked as chapters — you do not need the kit maintainer repo open.
 
@@ -60,32 +60,32 @@ flowchart LR
 In **Agent chat** (not the terminal):
 
 ```text
-/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot
+/add-plugin https://github.com/SavinRazvan/agent-colony
 ```
 
-Cursor shows an **Add Plugin** preview — click the **MAS Workflow Kit — Project SSOT** card to install:
+Cursor shows an **Add Plugin** preview — click the **Agent Colony** card to install:
 
-![Install MAS Workflow Kit — Project SSOT from Agent chat](assets/mas-workflow-kit-install.png)
+![Install Agent Colony from Agent chat](assets/agent-colony-install.png)
 
 Optional — explicit branch:
 
 ```text
-/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/tree/main
+/add-plugin https://github.com/SavinRazvan/agent-colony/tree/main
 ```
 
 This loads agents, skills, and rules into Cursor. Your project may only get `.cursor/settings.json` until you activate (§2).
 
-**When listed:** **Cursor → Marketplace → MAS Workflow Kit — Project SSOT → Install** — same two-step flow; you still run **`/workflow-activate`** afterward.
+**When listed:** **Cursor → Marketplace → Agent Colony → Install** — same two-step flow; you still run **`/workflow-activate`** afterward.
 
 ---
 
 ## 2. Quick start (5 steps)
 
-**Need:** Cursor · Python 3.11+ · **your project** open (not the kit product repo `mas-workflow-kit-project-ssot`).
+**Need:** Cursor · Python 3.11+ · **your project** open (not the kit product repo `agent-colony`).
 
 | Step | Action |
 |------|--------|
-| 1. Plugin | Agent chat: `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` *(or Marketplace when listed)* |
+| 1. Plugin | Agent chat: `/add-plugin https://github.com/SavinRazvan/agent-colony` *(or Marketplace when listed)* |
 | 2. Activate | Open **your app** → Agent chat → **`/workflow-activate`** → wait for **`VERIFY PASS`** |
 | 3. Identity | Edit `github.collaboration.yaml` → `display_name` + `github_user` → `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` |
 | 3b. GitHub auth | `gh auth status` — refresh Project scopes only if missing (`gh auth refresh -h github.com -s read:project,project`) |
@@ -107,7 +107,7 @@ Use this when your team opts into **GitHub Project as the only writable SSOT** (
 
 #### Product promise
 
-Install the **MAS Workflow Kit — Project SSOT** plugin, open **your app repo** (not the kit product repo), and run **`/workflow-activate`**. Activate copies the **full kit infrastructure** — the same three planes kit maintainers use: Cursor contract (`.cursor/` agents, skills, rules; `.agents/skills/`; `AGENTS.md`), infrastructure (`.ai_infra/`, `cursor_workflow/` CLI), and runtime scaffold (`.local/` including `user_settings/` exemplars). You then wire **your** identity and **your** GitHub Project in `.local/user_settings/github.collaboration.yaml`.
+Install the **Agent Colony** plugin, open **your app repo** (not the kit product repo), and run **`/workflow-activate`**. Activate copies the **full kit infrastructure** — the same three planes kit maintainers use: Cursor contract (`.cursor/` agents, skills, rules; `.agents/skills/`; `AGENTS.md`), infrastructure (`.ai_infra/`, `cursor_workflow/` CLI), and runtime scaffold (`.local/` including `user_settings/` exemplars). You then wire **your** identity and **your** GitHub Project in `.local/user_settings/github.collaboration.yaml`.
 
 **Ready for `/implementer` requires:** `contributors validate` + `project doctor` + **`project board-bootstrap --check` exit 0** (Tier-1 columns on Status board + Prioritized backlog + non-empty README). Accept either:
 
@@ -236,7 +236,7 @@ your-project/
 └── tests/modules/smoke/           # install smoke test only
 ```
 
-**Not installed:** kit full `tests/`, `Makefile`, `docs/handoff/`, CI/release scripts, maintainer megadocs. Those exist only in the [kit repository](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot).
+**Not installed:** kit full `tests/`, `Makefile`, `docs/handoff/`, CI/release scripts, maintainer megadocs. Those exist only in the [kit repository](https://github.com/SavinRazvan/agent-colony).
 
 **Re-activate is safe:** existing trackers, `user_settings/`, and `AGENTS.md` are not overwritten. Kit-managed **dashboard HTML**, JS/CSS, `module-audit.html`, and `pages.json` **are refreshed** on each activate.
 
@@ -253,7 +253,7 @@ your-project/
 
 | Goal | Type in chat |
 |------|--------------|
-| Install plugin | `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` |
+| Install plugin | `/add-plugin https://github.com/SavinRazvan/agent-colony` |
 | Activate / refresh | `/workflow-activate` |
 | Implement | `/implementer` |
 | Tests | `/test-runner` |
@@ -477,4 +477,4 @@ More: [consumer-quickstart.md](consumer-quickstart.md) § Troubleshooting.
 | Upgrade / semver | [upgrade-kit.md](upgrade-kit.md) |
 | Optional project metadata | [project-config.md](project-config.md) |
 
-**Kit maintainers** (not copied to your project): `PLUGIN-ARCHITECTURE.md` and `IMPLEMENTATION-STATUS.md` in the [GitHub kit repo](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/tree/main/.ai_infra/docs/handoff).
+**Kit maintainers** (not copied to your project): `PLUGIN-ARCHITECTURE.md` and `IMPLEMENTATION-STATUS.md` in the [GitHub kit repo](https://github.com/SavinRazvan/agent-colony/tree/main/.ai_infra/docs/handoff).

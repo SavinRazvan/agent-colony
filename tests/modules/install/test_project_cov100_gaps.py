@@ -58,7 +58,7 @@ def _ensure_pr_scripts(tmp_path: Path) -> None:
 
 def _ssot(**overrides: object) -> dict:
     data = json.loads(json.dumps(SAMPLE_SSOT))
-    data["default_repo"] = data.get("default_repo") or "SavinRazvan/mas-workflow-kit-project-ssot"
+    data["default_repo"] = data.get("default_repo") or "SavinRazvan/agent-colony"
     data["fields"] = {
         **data.get("fields", {}),
         "estimate": {"field_id": "PVTF_estimate"},
@@ -165,7 +165,7 @@ def _fake_create_gh(item_id: str = "PVTI_lAHOBl46-84A9KZxnew001"):
         if args[:2] == ["issue", "create"]:
             return SimpleNamespace(
                 returncode=0,
-                stdout="https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/issues/99\n",
+                stdout="https://github.com/SavinRazvan/agent-colony/issues/99\n",
                 stderr="",
             )
         if args[:2] == ["project", "item-add"]:

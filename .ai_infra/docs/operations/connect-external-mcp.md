@@ -4,12 +4,23 @@ Link **any** MCP server to kit agents without forking agent prompts.
 
 ## Prerequisites
 
-- MAS Workflow Kit installed (`with_mcp` profile or `--with-mcp-json`)
+- Agent Colony installed (`with_mcp` profile or `--with-mcp-json`)
 - Cursor MCP enabled for the workspace
 
 ## Quick path
 
-1. **Registry** — copy example and edit agent mappings:
+**Consumer activate** (`with_mcp` / `--with-mcp-json`) already seeds DeepWiki into
+`mcp.user.json` + live `mcp.registry.yaml` when those keys are missing (does not seed
+`my-custom-server`). Kit-dev repos skip that seed so CI `health` stays kit-tier only.
+
+Re-run without full activate:
+
+```bash
+python3 -m cursor_workflow mcp seed --deepwiki
+python3 -m cursor_workflow mcp validate
+```
+
+1. **Registry** — copy example only if live registry is missing and you did not activate:
 
 ```bash
 cp .cursor/mcp.registry.yaml.example .cursor/mcp.registry.yaml
@@ -18,6 +29,9 @@ cp .cursor/mcp.registry.yaml.example .cursor/mcp.registry.yaml
 2. **User servers** — secrets stay gitignored:
 
 ```bash
+# preferred for DeepWiki only:
+python3 -m cursor_workflow mcp seed --deepwiki
+# or full worksheet (includes my-custom-server stub):
 cp .cursor/mcp.user.example.json .cursor/mcp.user.json
 # edit mcpServers in mcp.user.json
 ```
@@ -42,7 +56,7 @@ cursor-workflow mcp validate
 
 | Tier | Config | Purpose |
 |------|--------|---------|
-| Kit | `mcp.json.kit.example` → merged into `mcp.json` | `workflow-kit` tools (PR, trackers, gates) |
+| Kit | `mcp.json.kit.example` → merged into `mcp.json` | `agent-colony-mcp` tools (PR, trackers, gates) |
 | User | `mcp.user.json` + registry YAML | External servers per agent |
 
 See [ADR-004](../decisions/ADR-004-user-mcp-registry.md) and [ADR-009](../decisions/ADR-009-mcp-pattern-a-cli.md) (Pattern A CLI).
@@ -52,10 +66,11 @@ See [ADR-004](../decisions/ADR-004-user-mcp-registry.md) and [ADR-009](../decisi
 ```bash
 python3 -m cursor_workflow mcp doctor
 python3 -m cursor_workflow mcp validate [--strict]
-python3 -m cursor_workflow mcp list-tools --server workflow-kit
-python3 -m cursor_workflow mcp call --server workflow-kit --tool workflow_gate_count
+python3 -m cursor_workflow mcp seed --deepwiki
+python3 -m cursor_workflow mcp list-tools --server agent-colony-mcp
+python3 -m cursor_workflow mcp call --server agent-colony-mcp --tool workflow_gate_count
 python3 -m cursor_workflow mcp auth --server my-api --token-env MY_TOKEN
-python3 -m cursor_workflow mcp smoke --server workflow-kit
+python3 -m cursor_workflow mcp smoke --server agent-colony-mcp
 ```
 
 Cursor IDE MCP loading is optional. Registry YAML is the allowlist for `call` / `list-tools`.
@@ -64,6 +79,9 @@ Cursor IDE MCP loading is optional. Registry YAML is the allowlist for `call` / 
 
 [DeepWiki](https://deepwiki.com) hosts a free, remote MCP server with no authentication — the
 fastest way to validate the two-tier flow end-to-end (also the kit's live demo script).
+
+**Preferred:** consumer activate or `mcp seed --deepwiki` writes the user fragment + registry
+entry (seven Pattern A agents). Manual worksheet:
 
 1. **User server** — add the URL-based entry to `.cursor/mcp.user.json` (no `command`/`args`,
    just a `url`):
@@ -83,7 +101,7 @@ servers:
   deepwiki:
     tier: external
     description: Public GitHub repo docs/Q&A (no auth) — Cognition DeepWiki
-    agents: [researcher, implementer, auditor]
+    agents: [implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard]
     tools_hint: [read_wiki_structure, read_wiki_contents, ask_question]
 ```
 
@@ -93,14 +111,15 @@ servers:
 python3 -m cursor_workflow mcp doctor
 python3 -m cursor_workflow mcp smoke --server deepwiki
 python3 -m cursor_workflow mcp call --server deepwiki --tool ask_question \
-  --args-json '{"repo":"cloudflare/workers-sdk","question":"What are Workers KV limits?"}'
+  --args-json '{"repoName":"cloudflare/workers-sdk","question":"What are Workers KV limits?"}'
 ```
 
 Optional: reload Cursor MCP so `CallMcpTool` also works when the IDE host loads the server.
 
 5. **Try it in chat** — ask an agent (e.g. `researcher`) to use Pattern A CLI or CallMcpTool;
    no secrets, no local process, no `secrets_checklist` entry needed in
-   `.local/user_settings/mcp.agents.yaml` for DeepWiki.
+   `.local/user_settings/mcp.agents.yaml` for DeepWiki. Use **`/mcp-connect`** intents:
+   enable DeepWiki | link custom | doctor/smoke.
 
 Both example files (`.cursor/mcp.registry.yaml.example`, `.cursor/mcp.user.example.json`) already
 ship this entry alongside the command-based `my-custom-server` example, so you can see the
@@ -128,4 +147,4 @@ token sent as a `Bearer` header — use `mcp auth --server github-remote --token
 - `mcp validate --strict` fails without a live `.cursor/mcp.registry.yaml` — copy the example when enforcing user tier
 - `mcp doctor` shows configured but NOT host-loaded: expected until Cursor enables project `mcp.json`; use Pattern A CLI anyway
 - Secrets: never commit `mcp.user.json` or `.local/user_settings/mcp.secrets.yaml` — `mcp link` / `mcp auth` update `.gitignore`
-- **Kit-dev:** committed `.cursor/mcp.registry.yaml` and merged `.cursor/mcp.json` stay **kit-tier only** (`workflow-kit`). External demos live in the `*.example` worksheets + your local (gitignored) `mcp.user.json`. `health` regenerates `mcp.json` from kit + user — CI has no user fragment, so registry must not list external servers that only exist in examples.
+- **Kit-dev:** committed `.cursor/mcp.registry.yaml` and merged `.cursor/mcp.json` stay **kit-tier only** (`agent-colony-mcp`). External demos live in the `*.example` worksheets + consumer activate seed / `mcp seed --deepwiki` + your local (gitignored) `mcp.user.json`. `health` regenerates `mcp.json` from kit + user — CI has no user fragment, so registry must not list external servers that only exist in examples.

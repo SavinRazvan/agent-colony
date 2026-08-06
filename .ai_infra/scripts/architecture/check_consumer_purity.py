@@ -8,7 +8,7 @@ Used By:
 Depends On:
  - .ai_infra/scripts/architecture/consumer_bundle_paths.py
 Notes:
- - Scans an installed target (default /tmp/workflow-kit-dry-run), not the kit-dev repo root.
+ - Scans an installed target (default /tmp/agent-colony-dry-run), not the kit-dev repo root.
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ from consumer_bundle_paths import (  # noqa: E402
 )
 
 TEXT_SUFFIXES = {".md", ".mdc", ".py", ".yaml", ".yml", ".txt", ".json", ".jsonc"}
-DEFAULT_TARGET = Path("/tmp/workflow-kit-dry-run")
+DEFAULT_TARGET = Path("/tmp/agent-colony-dry-run")
 
 CONSUMER_SCAN_ROOTS: tuple[str, ...] = (
     ".cursor/rules",

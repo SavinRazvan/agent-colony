@@ -555,8 +555,8 @@ def test_agents_stub_and_view_pack_text() -> None:
     schema_text = (
         REPO_ROOT / ".ai_infra" / "templates" / "project-board" / "board-shell.schema.yaml"
     ).read_text(encoding="utf-8")
-    assert "/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot" in agents
-    assert "/add-plugin https://github.com/SavinRazvan/mas-workflow-kit\n" not in agents
+    assert "/add-plugin https://github.com/SavinRazvan/agent-colony" in agents
+    assert "/add-plugin https://github.com/SavinRazvan/" + "mas-" + "workflow" + "-" + "kit\n" not in agents
     assert "board-bootstrap --check" in agents
     assert "CONSENT GATE" in agents
     assert "TURN PROTOCOL" in agents

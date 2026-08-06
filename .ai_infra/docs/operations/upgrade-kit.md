@@ -1,4 +1,4 @@
-# Upgrade MAS Workflow Kit
+# Upgrade Agent Colony
 
 Re-run install from a **newer kit source** (git tag, plugin payload, or local clone) into the same consumer project.
 

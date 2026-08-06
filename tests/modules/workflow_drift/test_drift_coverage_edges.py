@@ -43,7 +43,7 @@ def _write_collab(
     enabled: bool = True,
     policy: str = "board_only",
     raw: str | None = None,
-    default_repo: str = "SavinRazvan/mas-workflow-kit-project-ssot",
+    default_repo: str = "SavinRazvan/agent-colony",
 ) -> None:
     settings = tmp / ".local" / "user_settings"
     settings.mkdir(parents=True, exist_ok=True)

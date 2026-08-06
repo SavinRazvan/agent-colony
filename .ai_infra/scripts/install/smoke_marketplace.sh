@@ -23,7 +23,7 @@ if [[ ! -x "$PY" ]]; then
   exit 1
 fi
 
-echo "=== MAS Workflow Kit consumer smoke ==="
+echo "=== Agent Colony consumer smoke ==="
 echo "KIT=$KIT"
 echo "SMOKE=$SMOKE"
 echo "PLUGIN_TARGET=$PLUGIN_TARGET"

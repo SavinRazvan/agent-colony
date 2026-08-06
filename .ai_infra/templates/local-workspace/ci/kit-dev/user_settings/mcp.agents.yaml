@@ -13,7 +13,7 @@ version: 1
 
 # Kit server (installed with --with-mcp-json / with_mcp profile)
 kit:
-  server_key: workflow-kit
+  server_key: agent-colony-mcp
   description: PR workflow, trackers, gates (workflow_mcp)
   enabled: true
   agents:
@@ -72,19 +72,19 @@ external_servers:
 # Agent quick reference — which servers each agent should prefer
 agent_defaults:
   implementer:
-    primary_servers: [workflow-kit]
+    primary_servers: [agent-colony-mcp]
     optional_servers: []
   test-runner:
-    primary_servers: [workflow-kit]
+    primary_servers: [agent-colony-mcp]
     optional_servers: []
   auditor:
-    primary_servers: [workflow-kit]
+    primary_servers: [agent-colony-mcp]
     optional_servers: []
   researcher:
-    primary_servers: [workflow-kit]
+    primary_servers: [agent-colony-mcp]
     optional_servers: []
   integrator:
-    primary_servers: [workflow-kit]
+    primary_servers: [agent-colony-mcp]
     optional_servers: []
 
 # Fragments directory (optional) — cursor-workflow mcp link --name X --file ...

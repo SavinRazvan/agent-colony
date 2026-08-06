@@ -264,7 +264,7 @@ export default function AgentImplementerCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          implementer MAS-SSOT-KIT — Disciplined implementation slices with
+          implementer Agent Colony — Disciplined implementation slices with
           trackers and Pattern A gates.
         </Text>
         <Text tone="tertiary" size="small">
@@ -397,7 +397,7 @@ export default function AgentImplementerCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP">
-        Kit server workflow-kit for PR scripts/gates — prefer cursor_workflow
+        Kit server agent-colony-mcp for PR scripts/gates — prefer cursor_workflow
         project for board. External: only servers listed for this agent in
         mcp.registry.yaml.
       </Callout>

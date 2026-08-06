@@ -281,6 +281,60 @@ def cmd_mcp_smoke(args: argparse.Namespace) -> int:
     return mcp_manage.EXIT_OK
 
 
+def cmd_mcp_seed(args: argparse.Namespace) -> int:
+    """Seed DeepWiki user fragment + registry (re-run without full activate)."""
+    root = Path(args.directory).resolve()
+    seed_deepwiki = bool(getattr(args, "deepwiki", True))
+    force_agents = bool(getattr(args, "force_registry_agents", False))
+    if not seed_deepwiki:
+        print("mcp seed: FAIL — pass --deepwiki (only seed target today)", file=sys.stderr)
+        return mcp_manage.EXIT_USAGE
+    try:
+        user_wrote = mcp_manage.ensure_deepwiki_user_fragment(root)
+        reg_wrote = False
+        if mcp_manage.is_kit_dev_repo(root):
+            print(
+                "mcp seed: WARN — kit-dev: seeded user fragment only; "
+                "live registry stays kit-tier (use consumer activate for full seed)",
+                file=sys.stderr,
+            )
+        else:
+            reg_wrote = mcp_manage.ensure_deepwiki_registry(
+                root,
+                force_registry_agents=force_agents,
+            )
+        mcp_manage.write_merged_mcp(root)
+        mcp_manage.ensure_mcp_gitignore(root)
+        errors = mcp_manage.validate_registry(root)
+    except (FileNotFoundError, ValueError, OSError) as exc:
+        print(f"mcp seed: FAIL — {exc}", file=sys.stderr)
+        return mcp_manage.EXIT_VALIDATION
+    body = (
+        "# MCP seed\n\n"
+        f"- root: `{root}`\n"
+        f"- deepwiki: yes\n"
+        f"- user_fragment_wrote: {user_wrote}\n"
+        f"- registry_wrote: {reg_wrote}\n"
+        f"- force_registry_agents: {force_agents}\n"
+        f"- validate: {'PASS' if not errors else 'FAIL'}\n"
+    )
+    if errors:
+        body += "\n## Errors\n\n" + "\n".join(f"- {e}" for e in errors) + "\n"
+        print("mcp seed: FAIL — validate after seed")
+        for err in errors:
+            print(f" - {err}")
+        art = _write_artifact(root, "seed", body)
+        print(f"artifact: {art}", file=sys.stderr)
+        return mcp_manage.EXIT_VALIDATION
+    print(
+        f"mcp seed: OK — deepwiki "
+        f"(user_wrote={user_wrote}, registry_wrote={reg_wrote}); validate PASS"
+    )
+    art = _write_artifact(root, "seed", body)
+    print(f"artifact: {art}")
+    return mcp_manage.EXIT_OK
+
+
 def register_mcp_subcommands(mcp_sub: Any) -> None:
     """Attach Pattern A MCP subparsers to an existing `mcp` subparser group."""
     mcp_validate = mcp_sub.add_parser("validate", help="Merge kit+user MCP and validate registry")
@@ -336,3 +390,27 @@ def register_mcp_subcommands(mcp_sub: Any) -> None:
     smoke.add_argument("--server", required=True)
     smoke.add_argument("--agent", default=None)
     smoke.set_defaults(func=cmd_mcp_smoke)
+
+    seed = mcp_sub.add_parser(
+        "seed",
+        help="Seed DeepWiki into mcp.user.json + registry (consumer default / re-run)",
+    )
+    seed.add_argument("--directory", type=Path, default=".")
+    seed.add_argument(
+        "--deepwiki",
+        action="store_true",
+        default=True,
+        help="Seed DeepWiki user transport + registry (default)",
+    )
+    seed.add_argument(
+        "--no-deepwiki",
+        action="store_false",
+        dest="deepwiki",
+        help="Disable DeepWiki seed (no other seed targets yet)",
+    )
+    seed.add_argument(
+        "--force-registry-agents",
+        action="store_true",
+        help="Overwrite deepwiki.agents in live registry with kit default seven",
+    )
+    seed.set_defaults(func=cmd_mcp_seed)

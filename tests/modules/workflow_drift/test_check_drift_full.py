@@ -42,7 +42,7 @@ def _board_only_project(tmp_path: Path) -> None:
         "project_ssot:\n"
         "  enabled: true\n"
         "  sync_policy: board_only\n"
-        "  default_repo: SavinRazvan/mas-workflow-kit-project-ssot\n"
+        "  default_repo: SavinRazvan/agent-colony\n"
         "commit_provenance:\n"
         "  ai_disclosure_mode: none\n",
         encoding="utf-8",

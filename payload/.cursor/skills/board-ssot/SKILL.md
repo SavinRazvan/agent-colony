@@ -304,4 +304,4 @@ When `sync_policy: board_only`, do **not** mark the same slice `in_progress` in 
 - Pasting Project settings UI text into a terminal
 - Dual-write board + tracker under `board_only`
 - Multi-step claim without `project claim` / bare Notes without `--agent`
-- Do not push to upstream mas-workflow-kit
+- Do not push to unrelated repositories

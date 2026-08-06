@@ -1,17 +1,16 @@
 <p align="center">
-  <img src="assets/logo.png" alt="MAS Workflow Kit — Project SSOT" width="160" height="160" />
+  <img src="assets/logo.png" alt="Agent Colony" width="160" height="160" />
 </p>
 
-# MAS Workflow Kit — Project SSOT
+# Agent Colony
 
 **Installable multi-agent workflow infrastructure for Cursor**, with a **GitHub Project** as the only writable SSOT for backlog, Status, and agent continuation when `project_ssot.enabled` and `sync_policy: board_only`. Local `.local/` holds PR gates, audits, and evidence — never a second Status writer.
 
 | | |
 |--|--|
-| **Product repo** | [mas-workflow-kit-project-ssot](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot) |
-| **Version** | `0.4.0` · **Tests** · 1412 · **Agents** · 8 · **Rules** · **7 universal** |
+| **Product repo** | [agent-colony](https://github.com/SavinRazvan/agent-colony) |
+| **Version** | `0.4.0` · **Tests** · 1425 · **Agents** · 8 · **Rules** · **7 universal** |
 | **Board (kit-dev)** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) — reference layout for **Prioritized backlog** + **Status board** |
-| **Standing** | **STANDALONE** — permanent product; lineage only from [mas-workflow-kit](https://github.com/SavinRazvan/mas-workflow-kit) (`v0.4.0` / `8a779fa`) |
 
 ---
 
@@ -42,12 +41,12 @@
 ### 1. Add the plugin (Agent chat — not the terminal)
 
 ```text
-/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot
+/add-plugin https://github.com/SavinRazvan/agent-colony
 ```
 
-Click the **MAS Workflow Kit — Project SSOT** card:
+Click the **Agent Colony** card:
 
-![Install MAS Workflow Kit — Project SSOT from Agent chat](assets/mas-workflow-kit-install.png)
+![Install Agent Colony from Agent chat](assets/agent-colony-install.png)
 
 *Marketplace listing is deferred; `/add-plugin` from GitHub is the supported path today.*
 
@@ -255,7 +254,7 @@ Docs and agents in **your app** come from the plugin payload + `/workflow-activa
 2. **In your app** (e.g. Smart-Notes), Agent chat — refresh the plugin from GitHub:
 
 ```text
-/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot
+/add-plugin https://github.com/SavinRazvan/agent-colony
 ```
 
 3. Re-activate (safe / idempotent — keeps `.local/user_settings/` and existing `AGENTS.md`):
@@ -288,8 +287,8 @@ Details: [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md).
 ## Work in this repository (kit-dev)
 
 ```bash
-gh repo clone SavinRazvan/mas-workflow-kit-project-ssot
-cd mas-workflow-kit-project-ssot
+gh repo clone SavinRazvan/agent-colony
+cd agent-colony
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev,mcp]"
 ```

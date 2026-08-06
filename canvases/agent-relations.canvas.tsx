@@ -41,42 +41,42 @@ type AgentId =
 const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
   {
     id: "board",
-    role: "board MAS-SSOT-KIT · skill board-ssot (+ board-shell)",
+    role: "board Agent Colony · skill board-ssot (+ board-shell)",
     lane: "Coordination",
   },
   {
     id: "implementer",
-    role: "implementer MAS-SSOT-KIT · skill implementer-loop",
+    role: "implementer Agent Colony · skill implementer-loop",
     lane: "Delivery",
   },
   {
     id: "test-runner",
-    role: "test-runner MAS-SSOT-KIT · skill test-coverage",
+    role: "test-runner Agent Colony · skill test-coverage",
     lane: "Delivery",
   },
   {
     id: "verifier",
-    role: "verifier MAS-SSOT-KIT · claims vs evidence (no primary skill folder)",
+    role: "verifier Agent Colony · claims vs evidence (no primary skill folder)",
     lane: "Delivery",
   },
   {
     id: "integrator",
-    role: "integrator MAS-SSOT-KIT · skill integrator-protocol",
+    role: "integrator Agent Colony · skill integrator-protocol",
     lane: "Infrastructure",
   },
   {
     id: "auditor",
-    role: "auditor MAS-SSOT-KIT · auditor-protocol (CHK-* deep/periodic)",
+    role: "auditor Agent Colony · auditor-protocol (CHK-* deep/periodic)",
     lane: "Quality",
   },
   {
     id: "drift-guard",
-    role: "drift-guard MAS-SSOT-KIT · drift-audit (goal pulse + DRIFT-001…012)",
+    role: "drift-guard Agent Colony · drift-audit (goal pulse + DRIFT-001…012)",
     lane: "Quality",
   },
   {
     id: "researcher",
-    role: "researcher MAS-SSOT-KIT · skill research-corpus (opt-in packs)",
+    role: "researcher Agent Colony · skill research-corpus (opt-in packs)",
     lane: "Research (opt-in corpus)",
   },
 ];

@@ -67,7 +67,7 @@ flowchart LR
 ## Kit dev repo (where we build the plugin)
 
 ```text
-mas-workflow-kit-project-ssot/
+agent-colony/
 ├── AGENTS.md
 ├── .cursor-plugin/plugin.json  # marketplace manifest — no path fields (spec-exact discovery)
 ├── agents/                     # generated (make sync-plugin) — COMMITTED, sibling of .cursor-plugin/
@@ -93,7 +93,7 @@ mas-workflow-kit-project-ssot/
 
 Maintainer megadocs live under `.ai_infra/docs/maintainer/` (not copied to consumers).
 
-**`agents/`, `rules/`, `skills/`, `payload/` are generated but MUST be committed to git** — Cursor Marketplace reads the repository tree directly; there is no build step at install/review time. `make check-plugin` guards drift between `.cursor/` + `.agents/skills/` (source of truth) and these generated, committed trees. Upstream [`cursor/plugin-template`](https://github.com/cursor/plugin-template) may include `commands/`, `hooks/`, and repo-root `mcp.json`; **this kit ships** repo-root `agents/`, `rules/`, `skills/`, and `payload/` only (MCP config lives at `.cursor/mcp.json` when enabled). Components are discovered by convention — **no path-override fields** in `plugin.json`.
+**`agents/`, `rules/`, `skills/`, `payload/` are generated but MUST be committed to git** — Cursor Marketplace reads the repository tree directly; there is no build step at install/review time. `make check-plugin` guards drift between `.cursor/` + `.agents/skills/` (source of truth) and these generated, committed trees. The official [`cursor/plugin-template`](https://github.com/cursor/plugin-template) may include `commands/`, `hooks/`, and repo-root `mcp.json`; **this kit ships** repo-root `agents/`, `rules/`, `skills/`, and `payload/` only (MCP config lives at `.cursor/mcp.json` when enabled). Components are discovered by convention — **no path-override fields** in `plugin.json`.
 
 ---
 

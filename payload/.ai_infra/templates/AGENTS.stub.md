@@ -5,10 +5,10 @@
 1. Agent chat:
 
 ```text
-/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot
+/add-plugin https://github.com/SavinRazvan/agent-colony
 ```
 
-[screenshot](.ai_infra/docs/operations/assets/mas-workflow-kit-install.png) · [step-by-step](.ai_infra/docs/operations/consumer-quickstart.md#step-1-detail--install-plugin-from-github)
+[screenshot](.ai_infra/docs/operations/assets/agent-colony-install.png) · [step-by-step](.ai_infra/docs/operations/consumer-quickstart.md#step-1-detail--install-plugin-from-github)
 
 2. Open **your app folder** → Agent chat:
 
@@ -53,7 +53,7 @@ Full walkthrough: [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-G
 
 ## Project intent
 
-**MAS Workflow Kit** — multi-agent workflow installed via plugin. Agents call **one script command** per maintainer action; merge gate order lives in `.ai_infra/scripts/pr/prepare.py` **`resolve_gates()`** (`GATES` = 2-gate back-compat alias).
+**Agent Colony** — multi-agent workflow installed via plugin. Agents call **one script command** per maintainer action; merge gate order lives in `.ai_infra/scripts/pr/prepare.py` **`resolve_gates()`** (`GATES` = 2-gate back-compat alias).
 
 ## First reads
 

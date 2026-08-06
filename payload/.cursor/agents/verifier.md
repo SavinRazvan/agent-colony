@@ -1,7 +1,7 @@
 ---
 name: verifier
 model: auto
-description: verifier MAS-SSOT-KIT — Claims vs evidence; minimal high-signal checks.
+description: verifier Agent Colony — Claims vs evidence; minimal high-signal checks.
 ---
 
 # Verifier
@@ -42,7 +42,7 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 
 | Tier | Server | Use when |
 |------|--------|----------|
-| Kit | `workflow-kit` | PR scripts, trackers, gates — prefer Pattern A CLI over re-running shell |
+| Kit | `agent-colony-mcp` | PR scripts, trackers, gates — prefer Pattern A CLI over re-running shell |
 | External | See `.cursor/mcp.registry.yaml` | Only servers listed for this agent id |
 
 **Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.

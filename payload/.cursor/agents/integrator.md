@@ -1,7 +1,7 @@
 ---
 name: integrator
 model: auto
-description: integrator MAS-SSOT-KIT — Integrates new agents, skills, MCP, and infrastructure expansions into the MAS Workflow Kit — procedural, evidence-only, Pattern A compliant.
+description: integrator Agent Colony — Integrates new agents, skills, MCP, and infrastructure expansions into the Agent Colony — procedural, evidence-only, Pattern A compliant.
 ---
 
 # Integrator
@@ -26,7 +26,7 @@ You **extend the multi-agent system** without breaking planes, gates, or procedu
 
 **Templates:** feature → `--template slice`; defect → `--template bug`; Project README human-only — skill § Template routing. Notes timestamps via CLI; do not hand-forge times.
 
-**STANDALONE:** this product lives only in `mas-workflow-kit-project-ssot` — do not mutate or merge doctrine into upstream `mas-workflow-kit`.
+**STANDALONE:** this product lives only in `agent-colony` as a standalone product.
 
 ## Read first (evidence before edits)
 
@@ -90,7 +90,7 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 
 | Tier | Server | Use when |
 |------|--------|----------|
-| Kit | `workflow-kit` | PR scripts, trackers, gates — prefer Pattern A CLI over re-running shell |
+| Kit | `agent-colony-mcp` | PR scripts, trackers, gates — prefer Pattern A CLI over re-running shell |
 | External | See `.cursor/mcp.registry.yaml` | Only servers listed for this agent id |
 
 **Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.

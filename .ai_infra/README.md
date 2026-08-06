@@ -1,4 +1,4 @@
-# `.ai_infra/` — MAS Workflow Kit product tree
+# `.ai_infra/` — Agent Colony product tree
 
 Versioned workflow kit assets live here. **`.cursor/` and `.agents/` stay at repo root** (Cursor IDE contract).
 

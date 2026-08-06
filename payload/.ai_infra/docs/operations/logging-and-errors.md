@@ -10,7 +10,7 @@ Notes:
  - Kit scripts use subprocess exit codes; consumers add app logging in their own codebases.
 -->
 
-# Logging and error handling (MAS Workflow Kit)
+# Logging and error handling (Agent Colony)
 
 ## Kit scripts
 

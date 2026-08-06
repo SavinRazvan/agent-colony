@@ -1,7 +1,7 @@
 <!--
 File: abbreviations-notepad.md
 Path: .ai_infra/docs/operations/abbreviations-notepad.md
-Role: Glossary for MAS Workflow Kit workflow terminology.
+Role: Glossary for Agent Colony workflow terminology.
 Used By:
  - README.md
  - AGENTS.md
@@ -17,13 +17,13 @@ Notes:
 
 Quick reference for reading `README.md`, `AGENTS.md`, and kit docs.
 
-## MAS Workflow Kit flow (plain language)
+## Agent Colony flow (plain language)
 
 1. Install kit via `cursor_workflow activate` (plugin) or `cursor_workflow install` (kit clone).
 2. When `project_ssot.enabled` + `board_only`: Entry = board (`project status` / claim); Exit = Status + Notes. Local trackers = offline fallback only.
 3. Else: agents read `.local/` trackers (`session-pointer.md` → `plan.md` → `work-tracker.md`).
 4. Maintainer PR workflow runs via `.ai_infra/scripts/pr/*` (Pattern A + `prepare.py` `resolve_gates()`).
-5. Optional MCP (`workflow-kit`) wraps the same scripts.
+5. Optional MCP (`agent-colony-mcp`) wraps the same scripts.
 
 ## Core abbreviations
 

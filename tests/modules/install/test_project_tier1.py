@@ -46,7 +46,7 @@ def _tier1_ssot(**overrides):
         "body_sections": ["Acceptance", "Rollback", "Notes"],
         "promote_to_issue_on_pr": True,
     }
-    data["default_repo"] = "SavinRazvan/mas-workflow-kit-project-ssot"
+    data["default_repo"] = "SavinRazvan/agent-colony"
     data.update(overrides)
     if "fields" in overrides:
         data["fields"] = {**data["fields"], **overrides["fields"]}

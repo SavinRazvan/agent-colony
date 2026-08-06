@@ -10,7 +10,7 @@ Cursor Plugins load agents/skills/rules. MCP servers expose tools. These are dis
 ## Decision
 
 - **Plugin** = Cursor contract plane (`.cursor/`, `.agents/` skills/rules) + optional payload `.ai_infra/`
-- **MCP** = optional `workflow-kit` server wrapping `.ai_infra/scripts/` — not a substitute for install
+- **MCP** = optional `agent-colony-mcp` server wrapping `.ai_infra/scripts/` — not a substitute for install
 - Install flag: `--with-mcp-json` / `with_mcp` manifest profile
 
 ## Consequences
