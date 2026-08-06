@@ -342,3 +342,47 @@ def test_cmd_mcp_seed_no_deepwiki_fails(tmp_path: Path, capsys) -> None:
     args = argparse.Namespace(directory=tmp_path, deepwiki=False, force_registry_agents=False)
     assert mcp_cli.cmd_mcp_seed(args) == mcp_manage.EXIT_USAGE
     assert "FAIL" in capsys.readouterr().err
+
+
+def test_cmd_mcp_seed_kit_dev_warns_and_skips_registry(
+    tmp_path: Path, capsys, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Kit-dev: seed user fragment only; WARN on stderr (mcp_cli L300)."""
+    _seed_kit(tmp_path, with_registry=False)
+    marker = tmp_path / mcp_manage.KIT_DEV_MARKER
+    marker.parent.mkdir(parents=True)
+    marker.write_text("# kit-dev\n", encoding="utf-8")
+    monkeypatch.setattr(mcp_manage, "ensure_deepwiki_registry", lambda *a, **k: (_ for _ in ()).throw(AssertionError("must not run")))
+    args = argparse.Namespace(directory=tmp_path, deepwiki=True, force_registry_agents=False)
+    assert mcp_cli.cmd_mcp_seed(args) == 0
+    err = capsys.readouterr().err
+    assert "kit-dev: seeded user fragment only" in err
+
+
+def test_cmd_mcp_seed_exception_path(
+    tmp_path: Path, capsys, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        mcp_manage,
+        "ensure_deepwiki_user_fragment",
+        lambda *a, **k: (_ for _ in ()).throw(ValueError("fragment boom")),
+    )
+    args = argparse.Namespace(directory=tmp_path, deepwiki=True, force_registry_agents=False)
+    assert mcp_cli.cmd_mcp_seed(args) == mcp_manage.EXIT_VALIDATION
+    assert "fragment boom" in capsys.readouterr().err
+
+
+def test_cmd_mcp_seed_validate_errors(
+    tmp_path: Path, capsys, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _seed_kit(tmp_path, with_registry=False)
+    (tmp_path / ".cursor" / "mcp.json.kit.example").write_text(
+        json.dumps({"mcpServers": {"agent-colony-mcp": {"command": "echo"}}}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(mcp_manage, "validate_registry", lambda *a, **k: ["seed validate boom"])
+    args = argparse.Namespace(directory=tmp_path, deepwiki=True, force_registry_agents=False)
+    assert mcp_cli.cmd_mcp_seed(args) == mcp_manage.EXIT_VALIDATION
+    out = capsys.readouterr().out
+    assert "mcp seed: FAIL — validate after seed" in out
+    assert "seed validate boom" in out

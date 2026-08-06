@@ -11,7 +11,7 @@ description: implementer Agent Colony — Disciplined implementation slices with
 **Entry (board-first when enabled):**
 
 1. Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`.
-2. If `project_ssot.enabled`: run `python -m cursor_workflow project status`, then `project list --status ready` (or claim existing In progress). Skill: `.cursor/skills/board-ssot/SKILL.md`. Acceptance/Rollback live on the **card body** (`body_sections`).
+2. If `project_ssot.enabled`: run `python -m cursor_workflow project entry`, then claim existing In progress / Ready (or create). Skill: `.cursor/skills/board-ssot/SKILL.md`. Acceptance/Rollback live on the **card body** (`body_sections`).
 3. If disabled or CLI exit non-zero with `fallback: local_trackers`: read `.local/index-and-planning/current/session-pointer.md`, then files it lists (offline path only).
 
 **Exit (board-first when enabled):**

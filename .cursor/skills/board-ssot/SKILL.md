@@ -62,7 +62,7 @@ Work is **indexed on the Project**, not in chat alone.
 
 | Phase | Required |
 |-------|----------|
-| **Entry** | `project status` → find/claim related card (`list --status ready` or your In progress). Read Acceptance / Rollback / Notes on the card body. |
+| **Entry** | Prefer `python3 -m cursor_workflow project entry` (quota-aware: live \| conserve \| offline_artifacts). Then `get` / `claim` **one** card. Read Acceptance / Rollback / Notes on that card body. Avoid unfiltered `project list` / full `export` every turn — use `export --reuse-if-fresh` when a snapshot is enough. Parallel agents may each Entry, but **one export refresh per parent wave**. |
 | **During** | Keep **one** In progress card for your assignee. Put progress notes on the card body when handing off mid-slice. |
 | **Exit** | **Always** update Status for the card you worked: → `in_review` (PR/handoff) or → `done` (your part closed) or leave `in_progress` with **Notes** naming the next agent. Notes **must** use `append-notes --agent <this-agent>` → `@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · …` (CLI stamps UTC). Print handoff line. **If EXIT_QUEUED (6)** / rate-limit / Forbidden throttle / precheck low quota: do **not** retry in a loop — op is in `.local/generated-data/board-outbox.jsonl`; continue local evidence; later `project outbox flush`. |
 | **Never** | Finish in chat only while leaving the card Stuck in Ready/Backlog. Never dual-write tracker `in_progress` under `board_only`. Never write bare `Agent: implementer` without `@user/` namespace. |

@@ -10,7 +10,7 @@
  *  - .cursor/skills (canonical SKILL.md folders)
  *  - .agents/skills (maintainer SKILL.md folders)
  * Notes:
- *  - Concept hub (not agent-*). Excluded from DOC-008 roster scan like board-ssot-vs-kit.
+ *  - Concept hub (not agent-*). Excluded from DOC-008 roster scan like board-ssot-vs-trackers.
  *  - B-safe rename SHIPPED 2026-08-03 (#140, #146–#149); Plan/Scores/Stack = live roster.
  *  - Renames tab = historical old→live ledger only (not current Task subagent_type).
  *  - Roster scorecard 2026-08-04 (AA-ROSTER-001…008) mirrored on Stack/Future views.

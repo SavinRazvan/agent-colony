@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (Agent Colony)
 
-**Last updated:** 2026-08-06 (agent-colony rename + DeepWiki MCP seed; DOC-006 1427 tests)
-**Product:** `agent-colony` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1427
+**Last updated:** 2026-08-06 (board Entry efficiency; Metric A 100%; DOC-006 test count)
+**Product:** `agent-colony` · CLI: `cursor-workflow` 0.4.0 · **Tests:** 1455
 
 ## Shipped (confirmed in repo)
 
@@ -36,10 +36,11 @@ Notes:
 | Local continuity-index | Rolling ≥3-day UTC rows; board Notes = full card lifetime | `history/continuity-index.md` (+ exemplar) |
 | Board outbox (rate-limit) | `project queue` / `outbox status|flush`; EXIT_QUEUED=6; precheck + Forbidden/429 queue + dedupe; **77 mocked unit tests** | `project_outbox.py` + `project_atomics.py` / `project_cli.py` + `tests/modules/install/test_project_outbox.py` |
 | Board shell schema + coach | `board-shell.schema.yaml` + `board-shell` skill; schema-aware `board-bootstrap --check`; opt-in `--ensure-fields` / `--apply-readme` | templates/project-board · project_handlers · board_shell.py |
-| Board CLI subcommands | **22** leaf commands — full table in ops doc | [project-board-collaboration.md](../operations/project-board-collaboration.md) § Project CLI subcommands |
+| Board CLI subcommands | **23+** leaf commands (incl. `entry`; full table in ops doc) | [project-board-collaboration.md](../operations/project-board-collaboration.md) § Project CLI subcommands |
+| GraphQL-efficient Entry | `project entry` live \| conserve \| offline_artifacts; `export --reuse-if-fresh` | `project_cli.py` · `project_ssot.efficiency` |
 | EA-001 residual thin CLI | `project_cli.py` facade (~660 LOC) + parser/handlers split; board CLI modules under `.ai_infra/install/cursor_workflow/`: `project_cli.py`, `project_parser.py`, `project_handlers.py`, `project_atomics.py`, `gh_project_adapter.py`, `project_recipes.py`, `project_outbox.py` | PR #36 |
 | Doc facts validate | DOC-001…008 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
-| Kit canvases | **15** files under `canvases/`; DOC-008 counts **11** roster/agent canvases (excludes concept hubs `board-ssot-vs-kit.canvas.tsx`, `agents-artifacts-board.canvas.tsx`, `github-api-safety.canvas.tsx`, `naming-roster-audit.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
+| Kit canvases | **16** files under `canvases/`; DOC-008 counts **11** roster/agent canvases (excludes concept hubs `board-ssot-vs-trackers.canvas.tsx`, `agents-artifacts-board.canvas.tsx`, `github-api-safety.canvas.tsx`, `naming-roster-audit.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
 | MCP tools + resources | 20 tools + 6 resources | `.ai_infra/mcp_servers/workflow_mcp/` |
@@ -60,10 +61,10 @@ Notes:
 
 Two metrics (do not conflate):
 
-| Metric | Command | As of 2026-08-05 |
+| Metric | Command | As of 2026-08-06 |
 |--------|---------|------------------|
-| **(A) Install package** | `pytest tests/modules/ -q --cov=.ai_infra/install/cursor_workflow --cov-report=term-missing` | **5199 statements, 100.00%, Miss=0** (all 27 modules) |
-| **(B) Broader kit import surface** | `pytest --cov=.ai_infra --cov=cursor_workflow` | **8650 statements, 99% (23 miss)** — honest post-COV-CW; not claimed 100% when only install package is closed |
+| **(A) Install package** | `pytest tests/modules/ -q --cov=.ai_infra/install/cursor_workflow --cov-report=term-missing` | **5520 statements, 100.00%, Miss=0** (all modules) |
+| **(B) Broader kit import surface** | `pytest --cov=.ai_infra --cov=cursor_workflow` | **8929 statements, 99% (99 miss)** — honest post-COV-CW; not claimed 100% when only install package is closed |
 
 Metric (A) is the trust gate for Pattern A CLI (`project`, `mcp`, `canvas`, `plan`). Metric (B) tracks the installable kit import surface (CLI, scripts invoked in-process, MCP server). One import-order `sys.path` bootstrap in
 `merge.py` is `# pragma: no cover` (justified — import-order bootstrap only).
@@ -101,6 +102,7 @@ cursor-workflow drift validate
 
 | Item | Target |
 |------|--------|
+| Cursor Marketplace listing (EA-019) | deferred — consumers install from GitHub (`SavinRazvan/agent-colony`) until re-scheduled |
 | PyPI publish (`cursor-workflow` on PyPI) | out of scope — editable install via `pyproject.toml` is shipped |
 
 ## Maintainer doc sync

@@ -81,6 +81,37 @@
             }
           }
         },
+        "efficiency": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "GraphQL-efficient Entry/export defaults (human-like scoped reads; not a second SSOT).",
+          "properties": {
+            "entry_list_limit": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Max items for project entry live list (default 50)"
+            },
+            "export_reuse_ttl_seconds": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Reuse project-board-snapshot.json when younger than this (default 900)"
+            },
+            "conserve_below_remaining": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Prefer snapshot over live item-list when GraphQL remaining below this (default 1500)"
+            },
+            "offline_artifacts_below_remaining": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Skip Projects GraphQL reads when remaining below this; align with outbox.min_graphql_remaining (default 200)"
+            },
+            "snapshot_path": {
+              "type": "string",
+              "description": "Repo-relative path to read-only board snapshot JSON"
+            }
+          }
+        },
         "fields": {
           "type": "object",
           "additionalProperties": true,

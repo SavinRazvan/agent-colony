@@ -61,6 +61,14 @@ project_ssot:
     quota_cache_path: .local/generated-data/graphql-quota-cache.json
     dedupe_pending: true                # same op+item+payload → one pending outbox row
 
+  # GraphQL-efficient Entry / export (human-like scoped reads — not a second SSOT)
+  efficiency:
+    entry_list_limit: 50                # project entry live list cap
+    export_reuse_ttl_seconds: 900       # reuse snapshot if younger than this
+    conserve_below_remaining: 1500      # prefer snapshot over live item-list
+    offline_artifacts_below_remaining: 200  # skip Projects GraphQL reads (align min_flush)
+    snapshot_path: .local/generated-data/project-board-snapshot.json
+
   # Project V2 single-select fields (replace ids from field-list)
   fields:
     status:

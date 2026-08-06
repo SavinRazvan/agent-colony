@@ -14,7 +14,7 @@ description: drift-guard Agent Colony — Continuous goal/plan/agent-doctrine/do
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → **must** `python -m cursor_workflow project status` and `project list --status in_progress` (board vs tracker dual-write context; cite board Status in findings). Else `session-pointer.md`.
+**Entry:** If `project_ssot.enabled` → **must** `python -m cursor_workflow project entry` (and `list --status in_progress` only when Entry mode is `live` and you need a fresh filter). Cite board Status in findings. Else `session-pointer.md`. Prefer `project export --reuse-if-fresh` before drift validate when a snapshot is needed.
 
 **Exit:** Prefer `handoff --last` / `claim --last` after create. Write drift artifacts under `.local/workflow-artifacts/drift/`. When board SSOT is on: (1) set the **drift-pass card** Status → `done` (or `in_review` if P0/P1 need human); (2) for Confirmed dual-write, add Notes on the offending card or hand off to **board** / **implementer** via Ready — do **not** auto-edit `plan.md` / `work-tracker.md` / invent competing tracker `in_progress`. One line in `updates-log.md`.
 

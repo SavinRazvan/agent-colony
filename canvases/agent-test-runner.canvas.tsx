@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-05";
+const VERIFIED = "2026-08-06";
 const SOURCES =
   ".cursor/agents/test-runner.md · test-coverage/SKILL.md · board-ssot/SKILL.md";
 
@@ -73,7 +73,7 @@ const FALLBACK_EDGES = [
 ];
 
 const BOARD_LABELS: Record<string, string> = {
-  status: "project status",
+  status: "project entry",
   claim: "claim card",
   index: "test-index.md",
   tests: "tests/modules/",
@@ -262,7 +262,7 @@ export default function AgentTestRunnerCanvas() {
           title={mode === "board" ? "project_ssot.enabled" : "Offline / disabled"}
         >
           {mode === "board"
-            ? "Entry: project status + claim. Read test-index when tests change."
+            ? "Entry: project entry + claim. Read test-index when tests change."
             : "Entry: session-pointer.md. Read test-index when tests change."}
         </Callout>
         <DagPanel mode={mode} tokens={tokens} />
@@ -316,7 +316,7 @@ export default function AgentTestRunnerCanvas() {
         <CardHeader>Board interaction</CardHeader>
         <CardBody>
           <Stack gap={6}>
-            <Text>Entry: project status + claim. Consume only — no create-from-template.</Text>
+            <Text>Entry: project entry + claim. Consume only — no create-from-template.</Text>
             <Text>
               Exit: must Status in_review if tests gate PR else done; change-index +
               test-index/test-plan.

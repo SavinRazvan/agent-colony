@@ -34,6 +34,29 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     status_cmd.add_argument("--json", action="store_true")
     status_cmd.set_defaults(func=pc.cmd_status)
 
+    entry_cmd = project_sub.add_parser(
+        "entry",
+        help="Quota-aware Continuation Entry (scoped list or snapshot reuse)",
+    )
+    entry_cmd.add_argument("--directory", type=Path, default=".")
+    entry_cmd.add_argument(
+        "--also-ready",
+        action="store_true",
+        help="Include Ready items in addition to In progress",
+    )
+    entry_cmd.add_argument(
+        "--force-live",
+        action="store_true",
+        help="Force live item-list even in conserve band (not when offline_artifacts)",
+    )
+    entry_cmd.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Override efficiency.entry_list_limit for live mode",
+    )
+    entry_cmd.set_defaults(func=pc.cmd_entry)
+
     list_cmd = project_sub.add_parser("list", help="List project items (optional status filter)")
     list_cmd.add_argument("--directory", type=Path, default=".")
     list_cmd.add_argument(
@@ -383,6 +406,19 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     export_cmd.add_argument("--limit", type=int, default=200)
     export_cmd.add_argument("--json", action="store_true", help="Also print JSON to stdout")
     export_cmd.add_argument("--stdout", action="store_true", help="Print JSON only (no file write)")
+    export_cmd.add_argument(
+        "--reuse-if-fresh",
+        type=int,
+        default=None,
+        metavar="SECONDS",
+        help="Reuse on-disk snapshot when younger than SECONDS "
+        "(default: efficiency.export_reuse_ttl_seconds)",
+    )
+    export_cmd.add_argument(
+        "--force",
+        action="store_true",
+        help="Always refresh snapshot from live item-list",
+    )
     export_cmd.set_defaults(func=pc.cmd_export)
 
     queue_cmd = project_sub.add_parser(

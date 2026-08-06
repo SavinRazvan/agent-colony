@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-05";
+const VERIFIED = "2026-08-06";
 const SOURCES =
   ".cursor/agents/researcher.md · research-corpus/SKILL.md · research_cli.py · .agents/skills/RESEARCH_WORKFLOW.md · live pack flexiai-toolsmith + verifier";
 
@@ -65,7 +65,7 @@ const FALLBACK_EDGES = [
 ];
 
 const BOARD_LABELS: Record<string, string> = {
-  status: "project status",
+  status: "project entry",
   intake: "adaptive Brief",
   cli: "research init/fetch",
   rounds: "rounds 1-6 + validate",
@@ -311,7 +311,7 @@ export default function AgentResearcherCanvas() {
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
           <Text>
-            1. Entry: project status (+ research card); else session-pointer.
+            1. Entry: project entry (+ research card); else session-pointer.
           </Text>
           <Text>
             2. Adaptive intake → normalize source (HTTPS | github: | path) → Brief.
@@ -359,7 +359,7 @@ export default function AgentResearcherCanvas() {
               Create: create-from-template --template research --priority p2
               --size m --estimate 3 --agent researcher (or claim Ready card).
             </Text>
-            <Text>Entry: project status + research card when board on.</Text>
+            <Text>Entry: project entry + research card when board on.</Text>
             <Text>
               Exit: pack under _research_results/sources/&lt;slug&gt;/; research card
               done + Notes with AGENT_BRIEF paths.

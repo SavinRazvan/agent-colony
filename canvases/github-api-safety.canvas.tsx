@@ -18,8 +18,8 @@ import {
 
 /**
  * Inventory of GitHub API hammering / safety protections in Agent Colony.
- * Source: project_outbox.py, project_cli/handlers, agent Board-rights, ADR-008.
- * Verified: 2026-08-03 — post rename + canvas reality; G1 wording aligned to GraphQL remaining via REST cache (agent ids: auditor/board/drift-guard/integrator)
+ * Source: project_outbox.py, project_cli (entry/export/list), agent Board-rights, ADR-008.
+ * Verified: 2026-08-06 — G1–G5 write safety + G6 read stewardship (project entry / export reuse).
  */
 
 const FIXED = [
@@ -42,6 +42,10 @@ const FIXED = [
   {
     id: "G5",
     what: "Pending outbox dedupe by op + item_id + payload fingerprint",
+  },
+  {
+    id: "G6",
+    what: "Quota-aware Entry: project entry (live|conserve|offline_artifacts) + export --reuse-if-fresh + list WARN",
   },
 ] as const;
 
@@ -112,6 +116,24 @@ const HARD = [
     where: "project_handlers + project guide",
     enforces: "Code + docs",
   },
+  {
+    layer: "project entry (G6)",
+    what: "live scoped list → conserve snapshot → offline_artifacts (no Projects GraphQL)",
+    where: "cmd_entry + load_efficiency_config",
+    enforces: "Code",
+  },
+  {
+    layer: "export --reuse-if-fresh (G6)",
+    what: "Skip live fetch when snapshot age < TTL (default 900s); --force refreshes",
+    where: "cmd_export",
+    enforces: "Code",
+  },
+  {
+    layer: "list WARN (G6)",
+    what: "Unfiltered --limit > entry_list_limit → stderr WARN (soft; no hard-fail)",
+    where: "cmd_list",
+    enforces: "Code",
+  },
 ] as const;
 
 const SOFT = [
@@ -126,13 +148,18 @@ const SOFT = [
     where: "board-ssot/SKILL.md",
   },
   {
+    layer: "Entry prefers project entry (G6)",
+    what: "Prefer entry over unfiltered list/export storms; one export per parent wave",
+    where: "board-ssot · token-efficiency · AGENTS.md",
+  },
+  {
     layer: "Always-apply rule (G3)",
     what: "EXIT_QUEUED covers precheck + Forbidden/429; no dual-write",
     where: "project-ssot-precedence.mdc",
   },
   {
     layer: "Ops + exemplar (G4)",
-    what: "Precheck / dedupe / throttle documented for consumers",
+    what: "Precheck / dedupe / throttle / efficiency documented for consumers",
     where: "project-board-collaboration · PLUGIN-USER-GUIDE · collab YAML",
   },
   {
@@ -142,7 +169,7 @@ const SOFT = [
   },
   {
     layer: "Read-only export",
-    what: "project export never mutates Status",
+    what: "project export never mutates Status; reuse snapshot when fresh",
     where: "ADR-008 / project-board-collaboration",
   },
 ] as const;
@@ -169,6 +196,10 @@ const CONFIG = [
   ["dedupe_pending", "true", "One pending row per fingerprint"],
   ["max_flush_per_run", "10", "Ops per flush"],
   ["retry_backoff_seconds", "30", "Sleep after failed apply"],
+  ["efficiency.entry_list_limit", "50", "Scoped Entry list cap"],
+  ["efficiency.export_reuse_ttl_seconds", "900", "Reuse snapshot if fresher"],
+  ["efficiency.conserve_below_remaining", "1500", "Prefer snapshot over live list"],
+  ["efficiency.offline_artifacts_below_remaining", "200", "Skip live Projects GraphQL reads"],
 ] as const;
 
 export default function GithubApiSafetyCanvas() {
@@ -178,7 +209,7 @@ export default function GithubApiSafetyCanvas() {
         <Row gap={8} align="center">
           <H1>GitHub API safety</H1>
           <Pill tone="neutral">PR #83 · #85</Pill>
-          <Pill tone="success">G1–G5 done</Pill>
+          <Pill tone="success">G1–G6 done</Pill>
         </Row>
         <Text tone="secondary">
           How Agent Colony limits API hammering on Project writes — hard (code),
@@ -189,21 +220,20 @@ export default function GithubApiSafetyCanvas() {
       </Stack>
 
       <Grid columns={3} gap={12}>
-        <Stat value="5" label="Gaps fixed (G1–G5)" />
+        <Stat value="6" label="Gaps fixed (G1–G6)" />
         <Stat value="2" label="Residual soft gaps" />
         <Stat value="CODE=6" label="Do not retry" />
       </Grid>
 
       <Callout tone="info" title="Verdict">
         Pattern A writes use cached precheck + Forbidden/429 queue + pending
-        dedupe. Safe when agents use{" "}
+        dedupe. Reads use project entry tiers (live / conserve /
+        offline_artifacts) plus export --reuse-if-fresh. Safe when agents use{" "}
         <Text weight="semibold">python3 -m cursor_workflow project …</Text> and
-        treat EXIT_QUEUED (6) as soft-success (no retry loop). Ops doc path
-        project-board-collaboration.md is intentional (not the retired
-        project-board agent id).
+        treat EXIT_QUEUED (6) as soft-success (no retry loop).
       </Callout>
 
-      <H2>Fixed (G1–G5)</H2>
+      <H2>Fixed (G1–G6)</H2>
       <Table
         headers={["ID", "Fix"]}
         rows={FIXED.map((r) => [r.id, r.what])}
@@ -217,8 +247,8 @@ export default function GithubApiSafetyCanvas() {
 
       <H2>Config defaults</H2>
       <Text tone="secondary" size="small">
-        github.collaboration.yaml → project_ssot.outbox (schema documents all
-        keys)
+        github.collaboration.yaml → project_ssot.outbox + project_ssot.efficiency
+        (schema documents all keys)
       </Text>
       <Table
         headers={["Key", "Default", "Role"]}
@@ -253,10 +283,14 @@ export default function GithubApiSafetyCanvas() {
         </Card>
       </Grid>
 
-      <H2>Flow (Pattern A write)</H2>
+      <H2>Flow (Entry read + Pattern A write)</H2>
       <Card>
         <CardBody>
           <Stack gap={4}>
+            <Text size="small">
+              0. project entry — mode from GraphQL remaining (live scoped list /
+              conserve snapshot / offline_artifacts + queue writes)
+            </Text>
             <Text size="small">
               1. guard_write_or_queue — if cached remaining &lt; min → enqueue +
               EXIT_QUEUED (no GraphQL)
@@ -300,9 +334,9 @@ export default function GithubApiSafetyCanvas() {
 
       <Spacer height={8} />
       <Text tone="secondary" size="small">
-        Canon: ADR-008 · project_outbox.py · board-ssot skill ·
-        project-ssot-precedence.mdc · project-board-collaboration.md § Rate
-        limits · github-collaboration.schema.json
+        Canon: ADR-008 · project_outbox.py · project_cli cmd_entry · board-ssot
+        skill · token-efficiency.md · project-ssot-precedence.mdc ·
+        project-board-collaboration.md · github-collaboration.schema.json
       </Text>
     </Stack>
   );
