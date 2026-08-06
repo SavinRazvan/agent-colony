@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://mas-workflow-kit.local/schemas/research-index.json",
+  "$id": "https://agent-colony.local/schemas/research-index.json",
   "title": "ResearchPackIndex",
   "type": "object",
   "additionalProperties": false,

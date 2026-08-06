@@ -8,7 +8,7 @@ Stdio MCP server that **wraps existing scripts** — it does not duplicate `reso
 
 ```bash
 .venv/bin/python -m workflow_mcp
-WORKFLOW_KIT_ROOT=/path/to/project .venv/bin/python -m workflow_mcp
+AGENT_COLONY_ROOT=/path/to/project .venv/bin/python -m workflow_mcp
 ```
 
 ## Cursor wiring

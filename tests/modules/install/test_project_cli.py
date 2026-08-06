@@ -47,7 +47,7 @@ SAMPLE_SSOT = {
     "enabled": True,
     "name": "Playground",
     "owner": "SavinRazvan",
-    "default_repo": "SavinRazvan/mas-workflow-kit-project-ssot",
+    "default_repo": "SavinRazvan/agent-colony",
     "number": 3,
     "url": "https://github.com/users/SavinRazvan/projects/3",
     "project_id": "PVT_kwHOBl46-84A9KZx",

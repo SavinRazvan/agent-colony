@@ -61,7 +61,7 @@ def test_run_script_success() -> None:
 
 
 def test_workspace_root_walks_up_from_subdir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("WORKFLOW_KIT_ROOT", raising=False)
+    monkeypatch.delenv("AGENT_COLONY_ROOT", raising=False)
     sub = tmp_path / "a" / "b" / "c"
     sub.mkdir(parents=True)
     prepare = tmp_path / ".ai_infra" / "scripts" / "pr" / "prepare.py"
@@ -72,7 +72,7 @@ def test_workspace_root_walks_up_from_subdir(tmp_path: Path, monkeypatch: pytest
 
 
 def test_workspace_root_legacy_layout(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("WORKFLOW_KIT_ROOT", raising=False)
+    monkeypatch.delenv("AGENT_COLONY_ROOT", raising=False)
     legacy = tmp_path / "scripts" / "pr" / "prepare.py"
     legacy.parent.mkdir(parents=True)
     legacy.write_text("", encoding="utf-8")
@@ -81,7 +81,7 @@ def test_workspace_root_legacy_layout(tmp_path: Path, monkeypatch: pytest.Monkey
 
 
 def test_workspace_root_no_match_returns_start(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("WORKFLOW_KIT_ROOT", raising=False)
+    monkeypatch.delenv("AGENT_COLONY_ROOT", raising=False)
     isolated = tmp_path / "isolated"
     isolated.mkdir()
     # Use a fake root with no parents containing prepare.py by monkeypatching Path.cwd.

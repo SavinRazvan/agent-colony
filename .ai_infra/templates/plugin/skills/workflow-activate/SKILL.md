@@ -1,19 +1,19 @@
 ---
 name: workflow-activate
-description: Install MAS Workflow Kit — Project SSOT infrastructure into the current workspace from the plugin payload (ADR-001 Option B).
+description: Install Agent Colony infrastructure into the current workspace from the plugin payload (ADR-001 Option B).
 ---
 
 # Workflow activate
 
 ## When
 
-User enabled the **MAS Workflow Kit — Project SSOT** plugin (`mas-workflow-kit-project-ssot`) and opened **their app** (not the kit product repo). Run on first use or when planes are missing.
+User enabled the **Agent Colony** plugin (`agent-colony`) and opened **their app** (not the kit product repo). Run on first use or when planes are missing.
 
 ## Guide the user (keep it simple)
 
 **Product promise:** Plugin install loads agents/skills in Cursor only. **`/workflow-activate`** in **their app repo** installs the **full kit**. They edit `.local/user_settings/github.collaboration.yaml` for identity + board ids. Usage matches kit-dev after **`board-bootstrap --check` exit 0** — see [PLUGIN-USER-GUIDE § Product promise](../../../docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
 
-1. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` (chat only — not terminal).
+1. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/agent-colony` (chat only — not terminal).
 2. Confirm the open folder is **their app**, not the kit product repo.
 3. Run activate (below) — or **`/workflow-activate`** from the **`/`** menu.
 4. Wire collaboration YAML — set name/@handle; when enabling Project SSOT: **`gh` auth first**, then paste **Project URL + repo URL** → **`/board`** proposes ids + `default_repo` (or `gh project view` / `field-list`) → `contributors validate` → `project doctor`. Grant scopes `read:project,project` (+ `repo`).
@@ -30,7 +30,7 @@ python3 -m cursor_workflow activate --directory .
 
 **Auto source resolution:** `WORKFLOW_KIT_PAYLOAD` env → `./payload/` → kit `payload/` (plugin bundle). Override with `--source /path/to/payload`.
 
-**MCP:** `workflow_activate` on the `workflow-kit` server (same behavior).
+**MCP:** `workflow_activate` on the `agent-colony-mcp` server (same behavior).
 
 ## What `activate` does
 
@@ -67,7 +67,7 @@ Invoke subagent **`/integrator`** with skill **`/integrator-protocol`** — not 
 
 After plugin enable, parent agent or user should:
 
-0. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` (chat only — not terminal).
+0. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/agent-colony` (chat only — not terminal).
 1. Run **`workflow_activate`** or `cursor_workflow activate`
 2. Hand user to personalize `user_settings/` + `gh` Project scopes
 3. When SSOT on: **`/board`** (board-shell) until `board-bootstrap --check` green

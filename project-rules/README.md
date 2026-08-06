@@ -12,6 +12,6 @@ Notes:
 
 # project-rules (deprecated alias)
 
-**Use [`overlays/rules/`](../overlays/README.md)** as the canonical overlay source in MAS Workflow Kit.
+**Use [`overlays/rules/`](../overlays/README.md)** as the canonical overlay source in Agent Colony.
 
 This folder exists only for installs that historically used `project-rules/` naming. Copy overlay `.mdc` files from `overlays/rules/` at install time.

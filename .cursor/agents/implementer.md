@@ -1,7 +1,7 @@
 ---
 name: implementer
 model: auto
-description: implementer MAS-SSOT-KIT — Disciplined implementation slices with trackers and Pattern A gates.
+description: implementer Agent Colony — Disciplined implementation slices with trackers and Pattern A gates.
 ---
 
 # Implementer
@@ -33,7 +33,7 @@ description: implementer MAS-SSOT-KIT — Disciplined implementation slices with
 
 **Board shell gate (SSOT on):** Day-0 requires the kit **default** board shell (`.ai_infra/templates/project-board/board-shell.schema.yaml`: six Playground views; Priority/Size/Estimate/Start date on Status board + Prioritized backlog). Run `project board-bootstrap --check`. On **exit 5** (view or Tier-1 column FAIL), do **not** claim work — hand the human to **`/board`** + `board-shell` (**CONSENT GATE** then **TURN PROTOCOL**; human UI per `views-setup.md`). Do not treat `/auditor` as day-0 setup.
 
-**STANDALONE:** this product lives only in `mas-workflow-kit-project-ssot` — do not mutate or merge doctrine into upstream `mas-workflow-kit`.
+**STANDALONE:** this product lives only in `agent-colony` as a standalone product.
 
 **Tier note:** Tier 1 local trackers are **offline fallback**. Tier 2 `.local/workflow-artifacts/` stay local (PR/audit). See ADR-008 and `overlays/rules/project-ssot-precedence.mdc`.
 
@@ -74,7 +74,7 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 
 | Tier | Server | Use when |
 |------|--------|----------|
-| Kit | `workflow-kit` | PR scripts, gates — prefer `cursor_workflow project` for board |
+| Kit | `agent-colony-mcp` | PR scripts, gates — prefer `cursor_workflow project` for board |
 | External | See `.cursor/mcp.registry.yaml` | Only servers listed for this agent id |
 
 **Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.

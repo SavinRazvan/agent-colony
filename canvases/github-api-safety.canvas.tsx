@@ -17,7 +17,7 @@ import {
 } from "cursor/canvas";
 
 /**
- * Inventory of GitHub API hammering / safety protections in MAS Workflow Kit.
+ * Inventory of GitHub API hammering / safety protections in Agent Colony.
  * Source: project_outbox.py, project_cli/handlers, agent Board-rights, ADR-008.
  * Verified: 2026-08-03 — post rename + canvas reality; G1 wording aligned to GraphQL remaining via REST cache (agent ids: auditor/board/drift-guard/integrator)
  */
@@ -181,7 +181,7 @@ export default function GithubApiSafetyCanvas() {
           <Pill tone="success">G1–G5 done</Pill>
         </Row>
         <Text tone="secondary">
-          How MAS-SSOT-KIT limits API hammering on Project writes — hard (code),
+          How Agent Colony limits API hammering on Project writes — hard (code),
           soft (policy), and accepted residual gaps. Post G1–G5. Soft layer
           binds all 8 live agents (auditor · board · drift-guard · implementer ·
           integrator · researcher · test-runner · verifier).

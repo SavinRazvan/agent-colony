@@ -1,6 +1,6 @@
 ---
 name: integrator-protocol
-description: Procedural integration of new agents, skills, MCP servers, and kit expansions into MAS Workflow Kit — templates, scripts, three-plane discipline.
+description: Procedural integration of new agents, skills, MCP servers, and kit expansions into Agent Colony — templates, scripts, three-plane discipline.
 ---
 
 # Integrator protocol
@@ -89,7 +89,7 @@ Copy and edit from **`.ai_infra/templates/agent-integration/`**:
 |------|--------|
 | 1 | Add `.cursor/agents/<id>.md` from template |
 | 2 | Add skill if procedural steps are non-trivial |
-| 3 | Update `.cursor/mcp.registry.yaml` (+ example): list agent under `workflow-kit` or external server |
+| 3 | Update `.cursor/mcp.registry.yaml` (+ example): list agent under `agent-colony-mcp` or external server |
 | 4 | Update `.local/user_settings/mcp.agents.yaml` worksheet + exemplar under `templates/user-settings/` |
 | 5 | Add to `github.collaboration.yaml` pipeline if it runs in PR/slice flow (or rely on `--agents-from-session` via `change-index`) |
 | 6 | If consumer-installed: add paths to `manifest.yaml` / `install-contract.json` when new dirs ship |

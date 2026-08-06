@@ -1,7 +1,7 @@
 <!--
 File: documentation-maintenance-checklist.md
 Path: .ai_infra/docs/operations/documentation-maintenance-checklist.md
-Role: Recurring checklist to prevent documentation drift in the MAS Workflow Kit.
+Role: Recurring checklist to prevent documentation drift in the Agent Colony.
 Used By:
  - .agents/skills/pr-workflow/SKILL.md
  - Maintainers during PR preparation

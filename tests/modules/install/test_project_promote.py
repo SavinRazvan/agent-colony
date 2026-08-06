@@ -32,7 +32,7 @@ from test_project_outbox import VALID_ITEM_ID, _outbox_ssot, _valid_entry  # noq
 
 def _ssot(**overrides):
     data = json.loads(json.dumps(SAMPLE_SSOT))
-    data["default_repo"] = "SavinRazvan/mas-workflow-kit-project-ssot"
+    data["default_repo"] = "SavinRazvan/agent-colony"
     data["conventions"] = {
         **data.get("conventions", {}),
         "promote_to_issue_on_pr": True,

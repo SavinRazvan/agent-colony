@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://workflow-kit.local/schemas/board-outbox-entry.schema.json",
+  "$id": "https://agent-colony-mcp.local/schemas/board-outbox-entry.schema.json",
   "title": "BoardOutboxEntry",
   "type": "object",
   "required": [

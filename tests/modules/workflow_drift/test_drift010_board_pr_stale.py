@@ -46,7 +46,7 @@ def _scaffold(
         "project_ssot": {
             "enabled": enabled,
             "sync_policy": policy,
-            "default_repo": "SavinRazvan/mas-workflow-kit-project-ssot",
+            "default_repo": "SavinRazvan/agent-colony",
         },
         "commit_provenance": {"ai_disclosure_mode": "none"},
         "pr_collaboration": {"pipelines": {"default": {"agents": ["review-pr"]}}},

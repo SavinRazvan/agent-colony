@@ -23,7 +23,7 @@ PR_SKILL_ALIASES = frozenset({"review-pr", "prepare-pr", "merge-pr"})
 REQUIRED_AGENT_MARKERS = (
     "## Anchor",
     "## MCP integration",
-    "workflow-kit",
+    "agent-colony-mcp",
     "mcp.registry.yaml",
     "cursor_workflow mcp",
 )

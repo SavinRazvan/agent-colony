@@ -11,6 +11,7 @@ Depends On:
 from __future__ import annotations
 
 import importlib.util
+import json
 import os
 import runpy
 import shutil
@@ -246,6 +247,26 @@ def test_scaffold_with_mcp_json_uses_mcp_manage(tmp_path: Path) -> None:
     target = tmp_path / "project"
     mod.scaffold(target, REPO_ROOT, with_mcp_json=True)
     assert (target / ".cursor" / "mcp.json").is_file()
+    user = target / ".cursor" / "mcp.user.json"
+    registry = target / ".cursor" / "mcp.registry.yaml"
+    assert user.is_file()
+    assert registry.is_file()
+    merged = json.loads((target / ".cursor" / "mcp.json").read_text(encoding="utf-8"))
+    assert "agent-colony-mcp" in merged["mcpServers"]
+    assert "deepwiki" in merged["mcpServers"]
+    assert "my-custom-server" not in json.loads(user.read_text(encoding="utf-8"))["mcpServers"]
+
+
+def test_scaffold_skips_deepwiki_seed_on_kit_dev_marker(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "kitish"
+    log = mod.scaffold(target, REPO_ROOT, with_mcp_json=True, with_tests=True)
+    assert (target / mod.KIT_TESTS_MARKER).is_file()
+    assert any("SKIP deepwiki seed" in line for line in log)
+    assert not (target / ".cursor" / "mcp.user.json").is_file()
+    merged = json.loads((target / ".cursor" / "mcp.json").read_text(encoding="utf-8"))
+    assert "agent-colony-mcp" in merged["mcpServers"]
+    assert "deepwiki" not in merged["mcpServers"]
 
 
 def test_scaffold_subprocess_with_mcp_json_resolves_cursor_host_paths(tmp_path: Path) -> None:
@@ -334,7 +355,9 @@ def test_scaffold_applies_overlay_rules_end_to_end(
 def test_scaffold_dry_run_with_mcp_json_logs_merge(tmp_path: Path) -> None:
     mod = _load_scaffold()
     log = mod.scaffold(tmp_path / "out", REPO_ROOT, dry_run=True, with_mcp_json=True)
-    assert any("DRY-RUN merge .cursor/mcp.json" in line for line in log)
+    assert any(
+        "DRY-RUN seed DeepWiki" in line or "DRY-RUN merge .cursor/mcp.json" in line for line in log
+    )
 
 
 def test_scaffold_with_venv_invokes_create_venv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

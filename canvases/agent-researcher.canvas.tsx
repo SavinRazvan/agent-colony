@@ -232,7 +232,7 @@ export default function AgentResearcherCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          researcher MAS-SSOT-KIT — Brief-driven multi-round research
+          researcher Agent Colony — Brief-driven multi-round research
           (GitHub/local) into _research_results packs; hard-stop on product code.
           Adaptive intake from chat or peer agents; corpus packs are opt-in after
           research init.

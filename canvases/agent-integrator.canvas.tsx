@@ -101,7 +101,7 @@ const PATTERNS = [
   ["Promote before PR", "promote-to-issue OR mention-pr when shipping integration"],
   ["Tier-1", "claim/set-status→In progress Start date; Size/Estimate per skill table"],
   ["Verify", "integrate validate + prepare.py resolve_gates() + governance when needed"],
-  ["STANDALONE", "Product lives only in mas-workflow-kit-project-ssot"],
+  ["STANDALONE", "Product lives only in agent-colony"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/integrator via --agent"],
 ];
@@ -205,8 +205,8 @@ export default function AgentIntegratorCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          integrator MAS-SSOT-KIT — Integrates new agents, skills, MCP, and
-          infrastructure expansions into the MAS Workflow Kit — procedural,
+          integrator Agent Colony — Integrates new agents, skills, MCP, and
+          infrastructure expansions into the Agent Colony — procedural,
           evidence-only, Pattern A compliant.
         </Text>
         <Text tone="tertiary" size="small">
@@ -313,7 +313,7 @@ export default function AgentIntegratorCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP">
-        Kit server workflow-kit for integrate validate — prefer cursor_workflow
+        Kit server agent-colony-mcp for integrate validate — prefer cursor_workflow
         project for board. External: only servers listed for this agent in
         mcp.registry.yaml.
       </Callout>

@@ -1,13 +1,13 @@
 .PHONY: install-dry-run smoke-consumer live-board-smoke test gates sync-plugin check-plugin integrate-validate drift-validate ci-seed verify-all doc-validate type-check coverage-index
 
 install-dry-run:
-	rm -rf /tmp/workflow-kit-dry-run
+	rm -rf /tmp/agent-colony-dry-run
 	.venv/bin/python -m cursor_workflow install \
-		--target /tmp/workflow-kit-dry-run \
+		--target /tmp/agent-colony-dry-run \
 		--with-venv \
 		--with-mcp-json \
 		--verify
-	.venv/bin/python .ai_infra/scripts/architecture/check_consumer_purity.py --target /tmp/workflow-kit-dry-run
+	.venv/bin/python .ai_infra/scripts/architecture/check_consumer_purity.py --target /tmp/agent-colony-dry-run
 
 smoke-consumer:
 	bash .ai_infra/scripts/install/smoke_marketplace.sh

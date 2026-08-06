@@ -225,7 +225,7 @@ export default function AgentTestRunnerCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          test-runner MAS-SSOT-KIT — Module-focused tests, regressions, coverage.
+          test-runner Agent Colony — Module-focused tests, regressions, coverage.
           Primary skill: test-coverage.
         </Text>
         <Text tone="tertiary" size="small">
@@ -335,7 +335,7 @@ export default function AgentTestRunnerCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP">
-        Kit server workflow-kit for PR scripts / prepare.py resolve_gates() —
+        Kit server agent-colony-mcp for PR scripts / prepare.py resolve_gates() —
         prefer cursor_workflow project for board. External: only servers listed
         for this agent in mcp.registry.yaml.
       </Callout>

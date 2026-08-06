@@ -1,7 +1,7 @@
 <!--
 File: rollout-phases.md
 Path: .ai_infra/docs/governance/rollout-phases.md
-Role: REFACTOR phase history for the MAS Workflow Kit.
+Role: REFACTOR phase history for the Agent Colony.
 Used By:
  - .ai_infra/docs/governance/README.md
 Depends On:
@@ -10,7 +10,7 @@ Notes:
  - Phases 0–6 shipped; Phase 7 ongoing hygiene. Maintainer detail: kit repo IMPLEMENTATION-STATUS.md.
 -->
 
-# REFACTOR rollout phases (MAS Workflow Kit)
+# REFACTOR rollout phases (Agent Colony)
 
 > **Historical program record.** Phases 0–6 are **complete** (plugin bundle, activate CLI, three-plane install). Ongoing work is Phase 7 hygiene — see `.local/index-and-planning/current/plan.md` on the kit repo.
 

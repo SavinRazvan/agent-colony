@@ -23,7 +23,7 @@ Depends On:
 ## Universal runbooks
 
 - [`PLUGIN-USER-GUIDE.md`](PLUGIN-USER-GUIDE.md) — **start here** — plugin vs activate, file tree, use-case matrix
-- [`consumer-quickstart.md`](consumer-quickstart.md) — adopt the kit in under five minutes (includes [install screenshot](assets/mas-workflow-kit-install.png) for `/add-plugin`)
+- [`consumer-quickstart.md`](consumer-quickstart.md) — adopt the kit in under five minutes (includes [install screenshot](assets/agent-colony-install.png) for `/add-plugin`)
 - [`install-dry-run.md`](install-dry-run.md) — detailed install verification checklist
 - [`connect-external-mcp.md`](connect-external-mcp.md) — link external MCP servers
 - [`mas-infrastructure-integration.md`](mas-infrastructure-integration.md) — add agents/skills/MCP to kit

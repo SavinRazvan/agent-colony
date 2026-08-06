@@ -54,7 +54,7 @@ def _ensure_pr_scripts(tmp_path: Path) -> None:
 
 def _ssot(**overrides: object) -> dict:
     data = json.loads(json.dumps(SAMPLE_SSOT))
-    data["default_repo"] = data.get("default_repo") or "SavinRazvan/mas-workflow-kit-project-ssot"
+    data["default_repo"] = data.get("default_repo") or "SavinRazvan/agent-colony"
     data["conventions"] = {
         **data.get("conventions", {}),
         "body_sections": ["Acceptance", "Rollback", "Notes"],

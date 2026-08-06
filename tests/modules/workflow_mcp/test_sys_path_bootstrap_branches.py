@@ -97,7 +97,7 @@ def test_integrate_cli_inserts_integration_dir() -> None:
 
 
 def _env_root() -> None:
-    os.environ["WORKFLOW_KIT_ROOT"] = str(REPO_ROOT)
+    os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
 
 
 def test_server_user_settings_module_inserts_pr_dir() -> None:

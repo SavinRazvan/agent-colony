@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://workflow-kit.local/schemas/mcp-agents.schema.json",
+  "$id": "https://agent-colony-mcp.local/schemas/mcp-agents.schema.json",
   "title": "McpAgentsWorksheet",
   "type": "object",
   "required": ["version"],

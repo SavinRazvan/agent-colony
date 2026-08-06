@@ -1,6 +1,6 @@
 # Rendered examples — GitHub collaboration
 
-Side-by-side: **legacy external-product style** vs **MAS Workflow Kit default** (from `github.collaboration.yaml`).
+Side-by-side: **legacy external-product style** vs **Agent Colony default** (from `github.collaboration.yaml`).
 
 Replace `Your Full Name` and `@yourhandle` with values from `.local/user_settings/github.collaboration.yaml`.
 

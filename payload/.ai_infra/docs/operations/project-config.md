@@ -13,7 +13,7 @@ Notes:
 
 # Optional `project.config.yaml`
 
-The **MAS Workflow Kit** ships **`.ai_infra/project.config.yaml.example`**. After install, copy it to `project.config.yaml` in the project root and fill in metadata.
+The **Agent Colony** ships **`.ai_infra/project.config.yaml.example`**. After install, copy it to `project.config.yaml` in the project root and fill in metadata.
 
 ## What it is for
 

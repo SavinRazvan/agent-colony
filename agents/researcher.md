@@ -1,7 +1,7 @@
 ---
 name: researcher
 model: auto
-description: researcher MAS-SSOT-KIT — Brief-driven multi-round research (GitHub/local) into _research_results packs; hard-stop on product code.
+description: researcher Agent Colony — Brief-driven multi-round research (GitHub/local) into _research_results packs; hard-stop on product code.
 ---
 
 # Researcher (shipped; opt-in corpus)
@@ -125,7 +125,7 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 
 | Tier | Server | Use when |
 |------|--------|----------|
-| Kit | `workflow-kit` | PR scripts, trackers, gates — prefer Pattern A CLI over re-running shell |
+| Kit | `agent-colony-mcp` | PR scripts, trackers, gates — prefer Pattern A CLI over re-running shell |
 | External | `deepwiki` (worked example, zero-auth) — see `.cursor/mcp.registry.yaml` | GitHub repo docs/Q&A (`read_wiki_structure`, `read_wiki_contents`, `ask_question`); other listed servers only if connected for this agent id |
 
 **Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`. Example: `mcp call --server deepwiki --tool ask_question --args-json '{"repo":"org/name","question":"..."}'`.

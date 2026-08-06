@@ -211,7 +211,7 @@ export default function AgentVerifierCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          verifier MAS-SSOT-KIT — Claims vs evidence; minimal high-signal checks.
+          verifier Agent Colony — Claims vs evidence; minimal high-signal checks.
           No primary skill folder (agent card is canon).
         </Text>
         <Text tone="tertiary" size="small">
@@ -319,7 +319,7 @@ export default function AgentVerifierCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP">
-        Kit server workflow-kit for PR scripts / prepare.py resolve_gates() —
+        Kit server agent-colony-mcp for PR scripts / prepare.py resolve_gates() —
         prefer cursor_workflow project for board. External: only servers listed
         for this agent in mcp.registry.yaml.
       </Callout>

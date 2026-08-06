@@ -1,7 +1,7 @@
 """
 File: test_mcp_call_allowlist.py
 Path: tests/modules/mcp_client/test_mcp_call_allowlist.py
-Role: Registry allowlist + live stdio smoke against workflow-kit when available.
+Role: Registry allowlist + live stdio smoke against agent-colony-mcp when available.
 Used By:
  - pytest
 Depends On:
@@ -42,7 +42,7 @@ def _seed(root: Path) -> None:
     registry = {
         "version": 1,
         "servers": {
-            "workflow-kit": {
+            "agent-colony-mcp": {
                 "tier": "kit",
                 "description": "kit",
                 "agents": ["implementer"],
@@ -59,9 +59,9 @@ def test_assert_server_rejects_unknown(tmp_path: Path) -> None:
     manage.write_merged_mcp(tmp_path)
     err = manage.assert_server_allowed(tmp_path, "nope")
     assert err is not None
-    err2 = manage.assert_server_allowed(tmp_path, "workflow-kit", agent="researcher")
+    err2 = manage.assert_server_allowed(tmp_path, "agent-colony-mcp", agent="researcher")
     assert err2 is not None
-    err3 = manage.assert_server_allowed(tmp_path, "workflow-kit", agent="implementer")
+    err3 = manage.assert_server_allowed(tmp_path, "agent-colony-mcp", agent="implementer")
     assert err3 is None
 
 
@@ -77,12 +77,12 @@ def test_parse_args_json() -> None:
     reason="venv required for live stdio smoke",
 )
 def test_list_tools_workflow_kit_live() -> None:
-    """Live stdio against this kit's workflow-kit server."""
+    """Live stdio against this kit's agent-colony-mcp server."""
     manage = _load("mcp_manage_live", CW / "mcp_manage.py")
     client = _load("mcp_client_live", CW / "mcp_client.py")
     # Ensure registry exists for allowlist — use example-only path: no live registry
     # means allowlist skips registry check and only requires merged mcp.json
-    tools = client.list_tools(REPO_ROOT, "workflow-kit")
+    tools = client.list_tools(REPO_ROOT, "agent-colony-mcp")
     names = {t["name"] for t in tools}
     assert "workflow_gate_count" in names
     assert len(tools) >= 5
@@ -94,7 +94,7 @@ def test_list_tools_workflow_kit_live() -> None:
 )
 def test_smoke_cli_workflow_kit() -> None:
     cli = _load("cli_smoke", CW / "cli.py")
-    code = cli.main(["mcp", "smoke", "--directory", str(REPO_ROOT), "--server", "workflow-kit"])
+    code = cli.main(["mcp", "smoke", "--directory", str(REPO_ROOT), "--server", "agent-colony-mcp"])
     assert code == 0
     arts = list((REPO_ROOT / ".local" / "workflow-artifacts" / "mcp").glob("smoke-*.md"))
     assert arts

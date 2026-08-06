@@ -232,7 +232,7 @@ def test_cmd_health_pass_without_mcp_user_fragment(
     cursor.mkdir()
     shutil.copy(REPO_ROOT / ".cursor" / "mcp.json.kit.example", cursor / "mcp.json.kit.example")
     (cursor / "mcp.registry.yaml").write_text(
-        "version: 1\nservers:\n  workflow-kit:\n    tier: kit\n    agents: [implementer]\n",
+        "version: 1\nservers:\n  agent-colony-mcp:\n    tier: kit\n    agents: [implementer]\n",
         encoding="utf-8",
     )
     (tmp_path / ".ai_infra" / "scripts" / "pr").mkdir(parents=True)
@@ -252,8 +252,38 @@ def test_cmd_health_pass_without_mcp_user_fragment(
     args = argparse.Namespace(directory=tmp_path)
     assert cli.cmd_health(args) == 0
     merged = json.loads((cursor / "mcp.json").read_text(encoding="utf-8"))["mcpServers"]
-    assert "workflow-kit" in merged
+    assert "agent-colony-mcp" in merged
     assert "deepwiki" not in merged
+
+
+def test_cmd_health_fails_when_registry_lists_deepwiki_without_user(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """External registry key without user fragment must fail validate/health."""
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    shutil.copy(REPO_ROOT / ".cursor" / "mcp.json.kit.example", cursor / "mcp.json.kit.example")
+    (cursor / "mcp.registry.yaml").write_text(
+        "version: 1\nservers:\n  agent-colony-mcp:\n    tier: kit\n    agents: [implementer]\n"
+        "  deepwiki:\n    tier: external\n    agents: [researcher]\n",
+        encoding="utf-8",
+    )
+    (tmp_path / ".ai_infra" / "scripts" / "pr").mkdir(parents=True)
+    (tmp_path / ".ai_infra" / "scripts" / "pr" / "prepare.py").write_text("# stub\n", encoding="utf-8")
+    (tmp_path / ".ai_infra" / ".kit-version").write_text("0.4.0\n", encoding="utf-8")
+    (tmp_path / ".cursor" / "agents").mkdir(parents=True)
+    (tmp_path / ".cursor" / "agents" / "implementer.md").write_text("# implementer\n", encoding="utf-8")
+    (tmp_path / ".local" / "index-and-planning" / "current").mkdir(parents=True)
+    (tmp_path / ".local" / "index-and-planning" / "current" / "session-pointer.md").write_text(
+        "pointer\n", encoding="utf-8"
+    )
+    fake_us = SimpleNamespace(validate_github_collaboration=lambda root: [])
+    monkeypatch.setattr(contributors_cli, "_import_user_settings", lambda root: fake_us)
+    empty_checks = SimpleNamespace(run_checks=lambda root: [])
+    monkeypatch.setattr(integrate_cli, "_import_validate", lambda root: empty_checks)
+    monkeypatch.setattr(drift_cli, "_import_check_drift", lambda root: empty_checks)
+    args = argparse.Namespace(directory=tmp_path)
+    assert cli.cmd_health(args) == 1
 
 
 def test_cmd_health_missing_required_file(tmp_path: Path) -> None:

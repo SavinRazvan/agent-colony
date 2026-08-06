@@ -896,7 +896,7 @@ export default function NamingRosterAuditCanvas() {
         <Stack gap={16}>
           <Callout tone="success" title="B-safe rename SHIPPED — 2026-08-03">
             Live filesystem roster: 8 agents / 12 canonical skills / 7 rules.
-            Agent descriptions prefixed MAS-SSOT-KIT (#153). Shared board-ssot is
+            Agent descriptions prefixed Agent Colony (#153). Shared board-ssot is
             Entry/Exit for all agents. Plan rows below are keep/keep against the
             shipped names — not a pending rename plan.
           </Callout>

@@ -1,4 +1,4 @@
-# project.config.yaml.example — optional per-repository metadata (MAS Workflow Kit)
+# project.config.yaml.example — optional per-repository metadata (Agent Colony)
 #
 # Copy to project.config.yaml and edit for your repo.
 # Agents do NOT read this at runtime — they call scripts (one command per action).

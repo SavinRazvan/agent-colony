@@ -9,7 +9,7 @@ Used By:
 Depends On:
  - docs/governance/workflow-source-owners.md
 Notes:
- - Universal MAS Workflow Kit schema; product-specific vocabulary belongs in project overlays.
+ - Universal Agent Colony schema; product-specific vocabulary belongs in project overlays.
  - Last reviewed: 2026-06-14
 -->
 

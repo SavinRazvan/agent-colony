@@ -164,6 +164,8 @@ def test_print_post_activate_hints_board_first_when_enabled(
     assert "offline fallback under board_only" in out
     assert "/implementer" in out
     assert "apply default shell" not in out.lower() or "CONSENT" in out
+    assert "mcp smoke --server deepwiki" in out
+    assert "/mcp-connect" in out
 
 
 def test_print_post_activate_hints_tracker_fallback_when_disabled(
@@ -179,6 +181,8 @@ def test_print_post_activate_hints_tracker_fallback_when_disabled(
     out = capsys.readouterr().out
     assert "session-pointer.md" in out
     assert "/implementer" in out
+    assert "mcp smoke --server deepwiki" in out
+    assert "/mcp-connect" in out
 
 
 # ---------------------------------------------------------------------------

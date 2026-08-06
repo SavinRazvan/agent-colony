@@ -1,10 +1,10 @@
 # Install scripts
 
-Scaffold the universal **MAS Workflow Kit** into a consumer project.
+Scaffold the universal **Agent Colony** into a consumer project.
 
 ## Usage
 
-From the **mas-workflow-kit-project-ssot** product repo root:
+From the **agent-colony** product repo root:
 
 ```bash
 # Preview
@@ -52,6 +52,6 @@ cp overlays/rules/*.mdc /path/to/target/.cursor/rules/
 make install-dry-run
 ```
 
-Installs to `/tmp/workflow-kit-dry-run` and runs verification gates.
+Installs to `/tmp/agent-colony-dry-run` and runs verification gates.
 
 See [`docs/operations/install-dry-run.md`](../../docs/operations/install-dry-run.md).

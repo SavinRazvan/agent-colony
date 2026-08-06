@@ -1,7 +1,7 @@
 <!--
 File: module-boundaries.md
 Path: .ai_infra/docs/governance/module-boundaries.md
-Role: Machine-readable charter for cross-plane boundaries in the MAS Workflow Kit.
+Role: Machine-readable charter for cross-plane boundaries in the Agent Colony.
 Used By:
  - .ai_infra/docs/governance/README.md
  - check_governance_consistency.py (path-drift scans)

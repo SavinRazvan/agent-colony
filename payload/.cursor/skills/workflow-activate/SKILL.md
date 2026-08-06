@@ -1,11 +1,11 @@
 ---
 name: workflow-activate
-description: Install MAS Workflow Kit — Project SSOT infrastructure into the current workspace from the plugin payload (ADR-001 Option B).
+description: Install Agent Colony infrastructure into the current workspace from the plugin payload (ADR-001 Option B).
 ---
 <!--
 File: SKILL.md
 Path: .cursor/skills/workflow-activate/SKILL.md
-Role: Install MAS Workflow Kit — Project SSOT three planes into the open workspace (ADR-001 Option B).
+Role: Install Agent Colony three planes into the open workspace (ADR-001 Option B).
 Used By:
  - PLUGIN-ARCHITECTURE.md
  - sync_plugin_bundle.py (canonical; template fallback at .ai_infra/templates/plugin/skills/)
@@ -19,7 +19,7 @@ Notes:
 
 ## When
 
-User enabled the **MAS Workflow Kit — Project SSOT** plugin (`mas-workflow-kit-project-ssot`) and opened **their app** (not this kit product repo). Run on first use or when planes are missing.
+User enabled the **Agent Colony** plugin (`agent-colony`) and opened **their app** (not this kit product repo). Run on first use or when planes are missing.
 
 ## When user just installed plugin (`/add-plugin`)
 
@@ -39,8 +39,8 @@ Never list `/board-shell` before wire. Never imply views are API-automated. Defa
 
 **Product promise:** Plugin install loads agents/skills in Cursor only. **`/workflow-activate`** in **their app repo** installs the **full kit** (same three planes as kit-dev). They edit `.local/user_settings/github.collaboration.yaml` for identity + board ids. Usage matches kit-dev after **`board-bootstrap --check` exit 0** (not wire-only). See [PLUGIN-USER-GUIDE § Product promise](../../.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
 
-1. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/mas-workflow-kit-project-ssot` (chat only — not terminal). Show [install screenshot](https://raw.githubusercontent.com/SavinRazvan/mas-workflow-kit-project-ssot/main/assets/mas-workflow-kit-install.png) or [consumer-quickstart § step 1](../../.ai_infra/docs/operations/consumer-quickstart.md#step-1-detail--install-plugin-from-github) — user clicks the **MAS Workflow Kit — Project SSOT** card in the preview.
-2. Confirm the open folder is **their app**, not the kit product repo (`mas-workflow-kit-project-ssot`).
+1. If plugin not installed: Agent chat → `/add-plugin https://github.com/SavinRazvan/agent-colony` (chat only — not terminal). Show [install screenshot](https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/agent-colony-install.png) or [consumer-quickstart § step 1](../../.ai_infra/docs/operations/consumer-quickstart.md#step-1-detail--install-plugin-from-github) — user clicks the **Agent Colony** card in the preview.
+2. Confirm the open folder is **their app**, not the kit product repo (`agent-colony`).
 3. Run activate (below) — or tell them to pick **`/workflow-activate`** from the **`/`** menu.
 4. Wire collaboration YAML — set name/@handle → **`contributors validate`** → **`gh auth status`** (refresh only if needed) → paste **Project URL + repo URL** in chat → **`/board`** wires `project_ssot` + `default_repo` → `project doctor`.
 5. When `project_ssot.enabled`: copy **minimal 2-view overlay** (optional; [Playground #3](https://github.com/users/SavinRazvan/projects/3)) → **`/board`** + [board-shell](board-shell/SKILL.md) **CONSENT GATE** + **TURN PROTOCOL** → `board-bootstrap --check` exit **0** → `project status`.
@@ -58,14 +58,14 @@ python3 -m cursor_workflow activate --directory .
 
 **Auto source resolution:** `WORKFLOW_KIT_PAYLOAD` env → `./payload/` → kit `payload/` (plugin bundle). Override with `--source /path/to/payload`.
 
-**MCP:** `workflow_activate` on the `workflow-kit` server (same behavior).
+**MCP:** `workflow_activate` on the `agent-colony-mcp` server (same behavior).
 
 ### First install (`cursor_workflow` module absent)
 
 On a **brand-new app repo**, `python3 -m cursor_workflow` fails until activate copies infrastructure. **Do not stop** — run activate from the **plugin payload** (or kit checkout):
 
 ```bash
-export KIT=~/Projects/mas-workflow-kit-project-ssot   # or plugin cache path
+export KIT=~/Projects/agent-colony   # or plugin cache path
 export TARGET=~/Projects/my-app
 cd "$TARGET"
 "$KIT/.venv/bin/python" "$KIT/payload/cursor_workflow" activate \

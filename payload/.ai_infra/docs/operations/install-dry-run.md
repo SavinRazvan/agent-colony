@@ -1,7 +1,7 @@
 <!--
 File: install-dry-run.md
 Path: .ai_infra/docs/operations/install-dry-run.md
-Role: Manual install verification checklist for consuming the MAS Workflow Kit in a fresh project.
+Role: Manual install verification checklist for consuming the Agent Colony in a fresh project.
 Used By:
  - README.md Quick install
 Depends On:
@@ -20,7 +20,7 @@ Verify the kit installs into an empty or greenfield project **without** product-
 
 ## Automated (recommended)
 
-From the **MAS Workflow Kit** repo:
+From the **Agent Colony** repo:
 
 ```bash
 make install-dry-run
@@ -46,7 +46,7 @@ python .ai_infra/scripts/install/scaffold.py \
 
 See [`.ai_infra/scripts/install/README.md`](../../scripts/install/README.md).
 
-**Marketplace / plugin smoke (Track A + B):** this product repo [`marketplace-publish.md`](https://github.com/SavinRazvan/mas-workflow-kit-project-ssot/blob/main/.ai_infra/docs/handoff/marketplace-publish.md) § Automated smoke, or `make smoke-consumer` from this repo.
+**Marketplace / plugin smoke (Track A + B):** this product repo [`marketplace-publish.md`](https://github.com/SavinRazvan/agent-colony/blob/main/.ai_infra/docs/handoff/marketplace-publish.md) § Automated smoke, or `make smoke-consumer` from this repo.
 
 ## Manual steps
 
@@ -65,8 +65,8 @@ Use the sections below if you prefer hand-copying or need to debug scaffold beha
 If you must debug scaffold behavior, install from **`payload/`** (not repo root):
 
 ```bash
-TARGET=/tmp/workflow-kit-dry-run
-SOURCE=/path/to/mas-workflow-kit-project-ssot/payload
+TARGET=/tmp/agent-colony-dry-run
+SOURCE=/path/to/agent-colony/payload
 python3 -m cursor_workflow install --target "$TARGET" --source "$SOURCE" --dry-run
 ```
 
@@ -135,7 +135,7 @@ Expected: all PASS (governance may skip CI workflow if `.github/` absent).
 cp .cursor/mcp.json.kit.example .cursor/mcp.json
 # or: cursor-workflow install --with-mcp-json (merges kit + mcp.user.json)
 # Edit python path to $TARGET/.venv/bin/python
-WORKFLOW_KIT_ROOT="$TARGET" .venv/bin/python -m workflow_mcp
+AGENT_COLONY_ROOT="$TARGET" .venv/bin/python -m workflow_mcp
 ```
 
 In Cursor: enable MCP server; call `workflow_list_agents` and `workflow_gate_count`.
@@ -163,5 +163,5 @@ In Cursor: enable MCP server; call `workflow_list_agents` and `workflow_gate_cou
 ## Cleanup
 
 ```bash
-rm -rf /tmp/workflow-kit-dry-run
+rm -rf /tmp/agent-colony-dry-run
 ```

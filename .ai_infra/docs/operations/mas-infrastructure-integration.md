@@ -1,7 +1,7 @@
 <!--
 File: mas-infrastructure-integration.md
 Path: .ai_infra/docs/operations/mas-infrastructure-integration.md
-Role: Consumer-facing procedure for extending MAS Workflow Kit (agents, skills, MCP, scripts).
+Role: Consumer-facing procedure for extending Agent Colony (agents, skills, MCP, scripts).
 Used By:
  - .cursor/agents/integrator.md
  - .cursor/skills/integrator-protocol/SKILL.md

@@ -34,7 +34,7 @@ from workflow_mcp.resources import (
 from workflow_mcp.runner import run_cmd, run_script
 from workflow_mcp.workspace import workspace_root
 
-mcp = MCPServer("workflow-kit")
+mcp = MCPServer("agent-colony-mcp")
 
 _TRACKER_NAMES = frozenset(
     {

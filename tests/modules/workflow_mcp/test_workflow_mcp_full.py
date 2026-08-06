@@ -20,7 +20,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 def _env_root(root: Path = REPO_ROOT) -> None:
-    os.environ["WORKFLOW_KIT_ROOT"] = str(root)
+    os.environ["AGENT_COLONY_ROOT"] = str(root)
 
 
 def test_workflow_run_gate_invalid_index() -> None:
@@ -239,4 +239,4 @@ def test_resource_mcp_registry() -> None:
     from workflow_mcp.server import resource_mcp_registry
 
     text = resource_mcp_registry()
-    assert "workflow-kit" in text
+    assert "agent-colony-mcp" in text

@@ -16,11 +16,9 @@ Notes:
 
 # Repository map (kit maintainers)
 
-**Audience:** People working in **this product repo** (`mas-workflow-kit-project-ssot`) — not consumer app projects.
+**Audience:** People working in **this product repo** (`agent-colony`) — not consumer app projects.
 
 **Not shipped to consumers.** This file lives under `docs/handoff/` (excluded from `manifest.yaml` `copy_ai_infra`). Do not link it from consumer quickstart or PLUGIN-USER-GUIDE body text.
-
-**Lineage:** Originally mirrored from upstream `mas-workflow-kit`; folder layout below still uses that tree shape. This repository is the permanent product (STANDALONE 2026-07-18).
 
 ---
 
@@ -35,10 +33,10 @@ Notes:
 
 ---
 
-## Product repository (`mas-workflow-kit-project-ssot`)
+## Product repository (`agent-colony`)
 
 ```text
-mas-workflow-kit-project-ssot/
+agent-colony/
 ├── .cursor/                    SSOT — agents, rules, canonical skills
 ├── .agents/skills/             SSOT — maintainer slash skills (+ deprecated stubs)
 ├── agents/                     Generated → Marketplace plugin surface (mirror of .cursor/agents)
@@ -52,7 +50,7 @@ mas-workflow-kit-project-ssot/
 ├── cursor_workflow/            SSOT — thin CLI shim (also copied to consumer)
 ├── schemas/                    Legacy gate.json stub (`resolve_gates()` in prepare.py; `GATES` = alias)
 ├── .local/                     Kit-dev runtime (gitignored); CI seed fixture — not consumer exemplars
-├── tests/                      Kit-dev only — full pytest suite (1412; see IMPLEMENTATION-STATUS)
+├── tests/                      Kit-dev only — full pytest suite (1415; see IMPLEMENTATION-STATUS)
 ├── Makefile, pyproject.toml    Kit-dev only
 ├── overlays/                   Optional product rules source (`overlays/rules/project-ssot-precedence.mdc`); this product payload ships **7** rules (6 kit + SSOT precedence)
 ├── project-rules/              Deprecated alias → use overlays/rules/
@@ -102,7 +100,7 @@ my-app/
 └── .local/                         Scaffolded trackers + artifact buckets (gitignored)
 ```
 
-**Not installed:** kit `tests/modules/` (1412; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
+**Not installed:** kit `tests/modules/` (1415; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
 
 Consumer tree detail: [PLUGIN-ARCHITECTURE.md § Installed consumer project](PLUGIN-ARCHITECTURE.md).
 

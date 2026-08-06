@@ -55,10 +55,10 @@ def _seed_kit(root: Path, *, with_registry: bool = False, with_user: bool = Fals
             registry["servers"] = {
                 k: v
                 for k, v in registry["servers"].items()
-                if k in ("workflow-kit", "deepwiki")
+                if k in ("agent-colony-mcp", "deepwiki")
             }
         else:
-            registry["servers"] = {"workflow-kit": registry["servers"]["workflow-kit"]}
+            registry["servers"] = {"agent-colony-mcp": registry["servers"]["agent-colony-mcp"]}
         (cursor / "mcp.registry.yaml").write_text(yaml.dump(registry), encoding="utf-8")
     else:
         # still ship example for doctor fallback
@@ -81,8 +81,8 @@ def test_doctor_report_configured_vs_host(tmp_path: Path) -> None:
         report = mcp_cli.build_doctor_report(tmp_path)
     finally:
         manage.cursor_project_mcps_dir = original  # type: ignore[assignment]
-    assert "workflow-kit" in report["merged_servers"]
-    assert "workflow-kit" in report["configured_not_host_loaded"]
+    assert "agent-colony-mcp" in report["merged_servers"]
+    assert "agent-colony-mcp" in report["configured_not_host_loaded"]
     assert "cursor-ide-browser" in report["host_loaded_not_configured"]
     md = mcp_cli.format_doctor_markdown(report)
     assert "configured but NOT host-loaded" in md

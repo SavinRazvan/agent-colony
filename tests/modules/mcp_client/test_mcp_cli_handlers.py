@@ -54,7 +54,7 @@ def _seed_kit(root: Path, *, with_registry: bool = True) -> None:
 
 def test_build_doctor_report_merge_error(tmp_path: Path) -> None:
     _seed_kit(tmp_path)
-    (tmp_path / ".cursor" / "mcp.json").write_text("{not-json", encoding="utf-8")
+    (tmp_path / ".cursor" / "mcp.json.kit.example").write_text("{not-json", encoding="utf-8")
     report = mcp_cli.build_doctor_report(tmp_path)
     assert report["merge_error"]
     assert report["merged_servers"] == []
@@ -315,4 +315,28 @@ def test_cmd_mcp_link_success_and_fail(tmp_path: Path, capsys) -> None:
     empty.write_text(json.dumps({"mcpServers": {}}), encoding="utf-8")
     bad.file = empty
     assert mcp_cli.cmd_mcp_link(bad) == 1
+    assert "FAIL" in capsys.readouterr().err
+
+
+def test_cmd_mcp_seed_deepwiki(tmp_path: Path, capsys) -> None:
+    _seed_kit(tmp_path, with_registry=False)
+    (tmp_path / ".cursor" / "mcp.json.kit.example").write_text(
+        json.dumps({"mcpServers": {"agent-colony-mcp": {"command": "echo"}}}),
+        encoding="utf-8",
+    )
+    args = argparse.Namespace(directory=tmp_path, deepwiki=True, force_registry_agents=False)
+    assert mcp_cli.cmd_mcp_seed(args) == 0
+    out = capsys.readouterr().out
+    assert "mcp seed: OK" in out
+    assert "artifact:" in out
+    user = json.loads((tmp_path / ".cursor" / "mcp.user.json").read_text(encoding="utf-8"))
+    assert "deepwiki" in user["mcpServers"]
+    merged = json.loads((tmp_path / ".cursor" / "mcp.json").read_text(encoding="utf-8"))
+    assert "deepwiki" in merged["mcpServers"]
+    assert mcp_cli.cmd_mcp_seed(args) == 0  # idempotent
+
+
+def test_cmd_mcp_seed_no_deepwiki_fails(tmp_path: Path, capsys) -> None:
+    args = argparse.Namespace(directory=tmp_path, deepwiki=False, force_registry_agents=False)
+    assert mcp_cli.cmd_mcp_seed(args) == mcp_manage.EXIT_USAGE
     assert "FAIL" in capsys.readouterr().err

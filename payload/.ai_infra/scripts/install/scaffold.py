@@ -90,6 +90,8 @@ ADAPTER_WALL_RULE = "provider-neutral-adapter-wall.mdc"
 PREPARE_REL = Path(".ai_infra") / "scripts" / "pr" / "prepare.py"
 KIT_TESTS_MARKER = Path("tests") / "modules" / "install" / "test_scaffold.py"
 SMOKE_TEST_REL = Path("tests") / "modules" / "smoke" / "test_kit_installed.py"
+# Live MCP files stay local to kit-dev / consumer; only examples ship via copy.
+CURSOR_LIVE_MCP_IGNORE = ("mcp.user.json", "mcp.json", "mcp.registry.yaml")
 SMOKE_TEST_BODY = '''"""
 File: test_kit_installed.py
 Path: tests/modules/smoke/test_kit_installed.py
@@ -575,7 +577,7 @@ def _create_venv(target: Path, dry_run: bool, log: list[str]) -> None:
     if req.is_file():
         subprocess.run([str(pip), "install", "-q", "-r", str(req)], check=True)
     else:
-        subprocess.run([str(pip), "install", "-q", "pytest", "mcp>=1.2", "pyyaml"], check=True)
+        subprocess.run([str(pip), "install", "-q", "pytest", "mcp>=2.0,<3", "pyyaml"], check=True)
     mcp_req = target / "requirements-mcp.txt"
     if mcp_req.is_file() and not req.is_file():
         subprocess.run([str(pip), "install", "-q", "-r", str(mcp_req)], check=True)
@@ -619,7 +621,10 @@ def scaffold(
     for entry in spec.get("copy_dirs", []):
         rel_src = entry["src"]
         rel_dst = entry["dst"]
-        _copy_tree(source / rel_src, target / rel_dst, dry_run, log)
+        ignore = None
+        if rel_src in {".cursor", Path(".cursor")} or str(rel_src) == ".cursor":
+            ignore = shutil.ignore_patterns(*CURSOR_LIVE_MCP_IGNORE)
+        _copy_tree(source / rel_src, target / rel_dst, dry_run, log, ignore=ignore)
 
     for rel in spec.get("copy_ai_infra", []):
         _copy_ai_infra_rel(ai_src, ai_dst, rel, dry_run, log)
@@ -661,10 +666,17 @@ def scaffold(
 
     if with_mcp_json or spec.get("mcp_json"):
         if dry_run:
-            _log(log, "DRY-RUN merge .cursor/mcp.json from kit + user fragments")
+            _log(log, "DRY-RUN seed DeepWiki user/registry (consumer) + merge .cursor/mcp.json")
         else:
             mcp_manage = _load_mcp_manage(source)
             if mcp_manage is not None:
+                if (target / KIT_TESTS_MARKER).is_file():
+                    _log(log, "SKIP deepwiki seed (kit-dev repo)")
+                else:
+                    if mcp_manage.ensure_deepwiki_user_fragment(target):
+                        _log(log, "SEED DeepWiki into .cursor/mcp.user.json")
+                    if mcp_manage.ensure_deepwiki_registry(target):
+                        _log(log, "SEED DeepWiki into .cursor/mcp.registry.yaml")
                 dest = mcp_manage.write_merged_mcp(target)
                 mcp_manage.ensure_mcp_gitignore(target)
                 _log(log, f"WRITE merged MCP config {dest}")

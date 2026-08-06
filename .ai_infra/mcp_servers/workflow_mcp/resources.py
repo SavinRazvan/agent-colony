@@ -106,7 +106,7 @@ def _list_skill_ids(root: Path) -> list[str]:
 def build_inventory(root: Path) -> str:
     """Minimal live inventory JSON — not a duplicate of prepare.py GATES commands."""
     payload = {
-        "schema": "workflow-kit-inventory/v1",
+        "schema": "agent-colony-mcp-inventory/v1",
         "agents": _list_agent_ids(root),
         "skills": _list_skill_ids(root),
         "gate_count": len(load_gates(root)),

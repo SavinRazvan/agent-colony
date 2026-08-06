@@ -5,7 +5,7 @@
 
 ## Context
 
-Consumers extend the MAS Workflow Kit by adding agents, skills, MCP servers, and scripts. Without a clear integration contract, new capability drifts from gates, PR pipelines, registry parity, and procedural discipline.
+Consumers extend the Agent Colony by adding agents, skills, MCP servers, and scripts. Without a clear integration contract, new capability drifts from gates, PR pipelines, registry parity, and procedural discipline.
 
 The **integrator** and **integrator-protocol** skill proceduralize extension; this ADR records the architectural decision.
 

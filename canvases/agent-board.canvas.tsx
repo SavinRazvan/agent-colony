@@ -209,7 +209,7 @@ export default function AgentBoardCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          board MAS-SSOT-KIT — Independent-governed helper — list/create/move
+          board Agent Colony — Independent-governed helper — list/create/move
           GitHub Project SSOT cards via project_ssot CLI.
         </Text>
         <Text tone="tertiary" size="small">

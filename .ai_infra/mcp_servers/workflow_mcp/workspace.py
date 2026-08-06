@@ -10,7 +10,7 @@ Depends On:
  - os
  - pathlib
 Notes:
- - Set WORKFLOW_KIT_ROOT to override auto-detection.
+ - Set AGENT_COLONY_ROOT to override auto-detection.
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ _LEGACY_PREPARE = Path("scripts") / "pr" / "prepare.py"
 
 def workspace_root() -> Path:
     """Return the repo root containing .ai_infra/scripts/pr/prepare.py."""
-    override = os.environ.get("WORKFLOW_KIT_ROOT", "").strip()
+    override = os.environ.get("AGENT_COLONY_ROOT", "").strip()
     if override:
         return Path(override).resolve()
 

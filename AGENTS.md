@@ -2,7 +2,7 @@
 
 ## Project intent
 
-**MAS Workflow Kit — Project SSOT** (`mas-workflow-kit-project-ssot`) — this repository **is** the product: installable multi-agent workflow infrastructure with a **GitHub Project** as the only writable coordination SSOT when `project_ssot.enabled` and `sync_policy: board_only`.
+**Agent Colony** (`agent-colony`) — this repository **is** the product: installable multi-agent workflow infrastructure with a **GitHub Project** as the only writable coordination SSOT when `project_ssot.enabled` and `sync_policy: board_only`.
 
 | Surface | Role |
 |---------|------|
@@ -12,8 +12,6 @@
 **Non-negotiables**
 
 - **No dual-write** of Status to `work-tracker.md` / `session-pointer.md` when `board_only`.
-- **No merge** of this product’s board doctrine back into upstream `mas-workflow-kit`.
-- **STANDALONE:** permanently decoupled from upstream `mas-workflow-kit` (lineage only).
 - Create shippable cards as **Issues** (`item_kind_default: issue`). Draft is scratch-only.
 - Fill **Tier-1** fields (Status, Priority, Size/Estimate, Start date on first In progress, Assignee, Linked PR via `mention-pr`).
 - GraphQL throttle / Forbidden / precheck low quota → **EXIT_QUEUED (6)** / `project outbox` (do not retry-loop); outbox is not SSOT.

@@ -22,7 +22,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 def test_workspace_root_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("WORKFLOW_KIT_ROOT", str(REPO_ROOT))
+    monkeypatch.setenv("AGENT_COLONY_ROOT", str(REPO_ROOT))
     from workflow_mcp.workspace import workspace_root
 
     assert workspace_root() == REPO_ROOT.resolve()
@@ -40,7 +40,7 @@ def test_load_gates_matches_prepare() -> None:
     assert "check_doc_facts" in joined
     assert "sync_plugin_bundle" in joined
     assert "--check" in joined
-    os.environ["WORKFLOW_KIT_ROOT"] = str(REPO_ROOT)
+    os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
     from workflow_mcp.server import workflow_list_agents
 
     result = workflow_list_agents()
@@ -49,7 +49,7 @@ def test_load_gates_matches_prepare() -> None:
 
 
 def test_get_tracker_session_pointer() -> None:
-    os.environ["WORKFLOW_KIT_ROOT"] = str(REPO_ROOT)
+    os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
     from workflow_mcp.server import workflow_get_tracker
 
     text = workflow_get_tracker("session-pointer")
@@ -57,7 +57,7 @@ def test_get_tracker_session_pointer() -> None:
 
 
 def test_gate_count() -> None:
-    os.environ["WORKFLOW_KIT_ROOT"] = str(REPO_ROOT)
+    os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
     from workflow_mcp.server import workflow_gate_count
 
     assert workflow_gate_count() == "5"
@@ -115,14 +115,14 @@ def test_run_cmd_times_out() -> None:
 
 
 def test_resource_inventory_fn() -> None:
-    os.environ["WORKFLOW_KIT_ROOT"] = str(REPO_ROOT)
+    os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
     from workflow_mcp.server import resource_inventory
 
     assert "implementer" in resource_inventory()
 
 
 def test_workflow_get_project_config() -> None:
-    os.environ["WORKFLOW_KIT_ROOT"] = str(REPO_ROOT)
+    os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
     from workflow_mcp.server import workflow_get_project_config
 
     text = workflow_get_project_config()
@@ -130,15 +130,15 @@ def test_workflow_get_project_config() -> None:
 
 
 def test_workflow_list_mcp_registry() -> None:
-    os.environ["WORKFLOW_KIT_ROOT"] = str(REPO_ROOT)
+    os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
     from workflow_mcp.server import workflow_list_mcp_registry
 
     text = workflow_list_mcp_registry()
-    assert "workflow-kit" in text
+    assert "agent-colony-mcp" in text
 
 
 def test_workflow_mcp_connection_guide() -> None:
-    os.environ["WORKFLOW_KIT_ROOT"] = str(REPO_ROOT)
+    os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
     from workflow_mcp.server import workflow_mcp_connection_guide
 
     text = workflow_mcp_connection_guide()
@@ -146,7 +146,7 @@ def test_workflow_mcp_connection_guide() -> None:
 
 
 def test_workflow_doc_facts_validate() -> None:
-    os.environ["WORKFLOW_KIT_ROOT"] = str(REPO_ROOT)
+    os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
     from workflow_mcp.server import workflow_doc_facts_validate
 
     text = workflow_doc_facts_validate()
@@ -155,7 +155,7 @@ def test_workflow_doc_facts_validate() -> None:
 
 
 def _env_root() -> None:
-    os.environ["WORKFLOW_KIT_ROOT"] = str(REPO_ROOT)
+    os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
 
 
 def _mock_run_script(monkeypatch: pytest.MonkeyPatch, *, code: int = 0, out: str = "ok") -> None:
@@ -298,7 +298,7 @@ def test_server_imports_mcp_sdk_v2() -> None:
     from workflow_mcp.server import mcp as server_instance
 
     assert isinstance(server_instance, MCPServer)
-    assert server_instance.name == "workflow-kit"
+    assert server_instance.name == "agent-colony-mcp"
 
 
 def test_workflow_contributors_validate() -> None:
@@ -334,7 +334,7 @@ def test_workflow_mcp_stdio_initialize_smoke() -> None:
     import subprocess
     import threading
 
-    env = {**os.environ, "WORKFLOW_KIT_ROOT": str(REPO_ROOT)}
+    env = {**os.environ, "AGENT_COLONY_ROOT": str(REPO_ROOT)}
     proc = subprocess.Popen(
         [sys.executable, "-m", "workflow_mcp"],
         cwd=REPO_ROOT,
@@ -380,4 +380,4 @@ def test_workflow_mcp_stdio_initialize_smoke() -> None:
     assert response is not None, proc.stderr.read() if proc.stderr else ""
     assert response.get("id") == 1
     assert "result" in response
-    assert response["result"].get("serverInfo", {}).get("name") == "workflow-kit"
+    assert response["result"].get("serverInfo", {}).get("name") == "agent-colony-mcp"

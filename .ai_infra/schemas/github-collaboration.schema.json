@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://workflow-kit.local/schemas/github-collaboration.schema.json",
+  "$id": "https://agent-colony-mcp.local/schemas/github-collaboration.schema.json",
   "title": "GitHubCollaboration",
   "type": "object",
   "required": ["version", "owner", "commit_provenance", "pr_collaboration"],

@@ -207,7 +207,7 @@ export default function AgentDriftGuardCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          drift-guard MAS-SSOT-KIT — Continuous goal/plan/agent-doctrine/docs
+          drift-guard Agent Colony — Continuous goal/plan/agent-doctrine/docs
           coherence + DRIFT-001…012; remediations via Notes/Ready (not auditor
           deep scorecard).
         </Text>
@@ -315,7 +315,7 @@ export default function AgentDriftGuardCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP">
-        Kit server workflow-kit for drift validate — prefer cursor_workflow project
+        Kit server agent-colony-mcp for drift validate — prefer cursor_workflow project
         for board. External: only servers listed for this agent in mcp.registry.yaml.
       </Callout>
 

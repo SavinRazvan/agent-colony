@@ -9,7 +9,8 @@ Used By:
 Depends On:
  - json, yaml (PyYAML)
 Notes:
- - Never overwrites existing mcp.user.json on install.
+ - Never overwrites existing mcp.user.json wholesale on install.
+ - Consumer activate may seed DeepWiki (user-tier) when fragment/registry keys are missing.
  - Pattern A CLI: ADR-009.
 """
 
@@ -30,6 +31,46 @@ USER_EXAMPLE = Path(".cursor") / "mcp.user.example.json"
 REGISTRY = Path(".cursor") / "mcp.registry.yaml"
 REGISTRY_EXAMPLE = Path(".cursor") / "mcp.registry.yaml.example"
 MCP_JSON = Path(".cursor") / "mcp.json"
+# Same marker as scaffold.py — kit-dev must not commit user-tier into live mcp.json.
+KIT_DEV_MARKER = Path("tests") / "modules" / "install" / "test_scaffold.py"
+
+DEEPWIKI_SERVER_ID = "deepwiki"
+DEEPWIKI_URL = "https://mcp.deepwiki.com/mcp"
+DEEPWIKI_AGENTS: tuple[str, ...] = (
+    "implementer",
+    "test-runner",
+    "verifier",
+    "auditor",
+    "researcher",
+    "integrator",
+    "drift-guard",
+)
+DEEPWIKI_TOOLS_HINT: tuple[str, ...] = (
+    "read_wiki_structure",
+    "read_wiki_contents",
+    "ask_question",
+)
+
+KIT_REGISTRY_SERVER: dict[str, Any] = {
+    "tier": "kit",
+    "description": "PR workflow, trackers, gates",
+    "agents": [
+        "implementer",
+        "test-runner",
+        "verifier",
+        "auditor",
+        "researcher",
+        "integrator",
+        "drift-guard",
+    ],
+    "tools_hint": [
+        "workflow_run_prepare",
+        "workflow_get_tracker",
+        "workflow_list_mcp_registry",
+        "workflow_integrate_validate",
+        "workflow_drift_validate",
+    ],
+}
 
 EXIT_OK = 0
 EXIT_USAGE = 2
@@ -37,6 +78,126 @@ EXIT_GH = 3
 EXIT_NOT_FOUND = 4
 EXIT_VALIDATION = 5
 EXIT_QUEUED = 6
+
+
+def is_kit_dev_repo(root: Path) -> bool:
+    """True when target tree includes kit install tests (maintainer checkout)."""
+    return (root / KIT_DEV_MARKER).is_file()
+
+
+def deepwiki_user_server_spec() -> dict[str, Any]:
+    return {"url": DEEPWIKI_URL}
+
+
+def deepwiki_registry_entry() -> dict[str, Any]:
+    return {
+        "tier": "external",
+        "description": "Public GitHub repo docs/Q&A (no auth) — Cognition DeepWiki",
+        "agents": list(DEEPWIKI_AGENTS),
+        "tools_hint": list(DEEPWIKI_TOOLS_HINT),
+    }
+
+
+def ensure_deepwiki_user_fragment(root: Path, *, only_if_missing: bool = True) -> bool:
+    """
+    Ensure mcp.user.json contains DeepWiki URL transport.
+
+    Returns True when a write occurred. Never replaces an existing deepwiki entry
+    when only_if_missing is True. Never copies my-custom-server from the example.
+    """
+    user_path = root / USER_FRAGMENT
+    if user_path.is_file():
+        user = _read_json(user_path)
+        servers = user.setdefault("mcpServers", {})
+        if not isinstance(servers, dict):
+            raise ValueError("existing mcp.user.json mcpServers must be an object")
+        if only_if_missing and DEEPWIKI_SERVER_ID in servers:
+            return False
+        servers[DEEPWIKI_SERVER_ID] = deepwiki_user_server_spec()
+        user_path.write_text(json.dumps(user, indent=2) + "\n", encoding="utf-8")
+        return True
+
+    payload = {"mcpServers": {DEEPWIKI_SERVER_ID: deepwiki_user_server_spec()}}
+    user_path.parent.mkdir(parents=True, exist_ok=True)
+    user_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    return True
+
+
+def ensure_deepwiki_registry(
+    root: Path,
+    *,
+    only_if_missing_server: bool = True,
+    force_registry_agents: bool = False,
+) -> bool:
+    """
+    Ensure live mcp.registry.yaml includes kit server + deepwiki.
+
+    Returns True when a write occurred. Does not replace an existing deepwiki
+    agents list unless force_registry_agents is True. Never bulk-copies the example.
+    """
+    reg_path = root / REGISTRY
+    wrote = False
+
+    if reg_path.is_file():
+        data = yaml.safe_load(reg_path.read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
+            raise ValueError(f"invalid registry YAML: {reg_path}")
+        servers = data.setdefault("servers", {})
+        if not isinstance(servers, dict):
+            raise ValueError("registry servers must be a mapping")
+    else:
+        data = {"version": 1, "servers": {}}
+        servers = data["servers"]
+        wrote = True
+
+    if "agent-colony-mcp" not in servers:
+        example_path = root / REGISTRY_EXAMPLE
+        kit_entry = dict(KIT_REGISTRY_SERVER)
+        if example_path.is_file():
+            example = yaml.safe_load(example_path.read_text(encoding="utf-8"))
+            if isinstance(example, dict):
+                ex_servers = example.get("servers") or {}
+                if isinstance(ex_servers, dict):
+                    kit = ex_servers.get("agent-colony-mcp")
+                    if isinstance(kit, dict):
+                        kit_entry = kit
+        servers["agent-colony-mcp"] = kit_entry
+        wrote = True
+
+    if DEEPWIKI_SERVER_ID in servers:
+        if force_registry_agents:
+            existing = servers[DEEPWIKI_SERVER_ID]
+            if not isinstance(existing, dict):
+                existing = {}
+            existing["agents"] = list(DEEPWIKI_AGENTS)
+            if "tools_hint" not in existing:
+                existing["tools_hint"] = list(DEEPWIKI_TOOLS_HINT)
+            if "tier" not in existing:
+                existing["tier"] = "external"
+            if "description" not in existing:
+                existing["description"] = deepwiki_registry_entry()["description"]
+            servers[DEEPWIKI_SERVER_ID] = existing
+            wrote = True
+        elif only_if_missing_server:
+            pass
+        else:
+            servers[DEEPWIKI_SERVER_ID] = deepwiki_registry_entry()
+            wrote = True
+    else:
+        servers[DEEPWIKI_SERVER_ID] = deepwiki_registry_entry()
+        wrote = True
+
+    if not wrote:
+        return False
+
+    data["version"] = int(data.get("version") or 1)
+    data["servers"] = servers
+    reg_path.parent.mkdir(parents=True, exist_ok=True)
+    reg_path.write_text(
+        yaml.safe_dump(data, sort_keys=False, default_flow_style=False),
+        encoding="utf-8",
+    )
+    return True
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -76,7 +237,25 @@ def merge_mcp_configs(kit: dict[str, Any], user: dict[str, Any] | None = None) -
     return merged
 
 
+def compute_merged_mcp(root: Path) -> dict[str, Any]:
+    """In-memory kit + user merge (CLI allowlist / validate). Does not write disk."""
+    kit_path = root / KIT_FRAGMENT
+    if not kit_path.is_file():
+        raise FileNotFoundError(f"missing kit MCP fragment: {kit_path}")
+    kit = _strip_private_keys(_read_json(kit_path))
+    user_path = root / USER_FRAGMENT
+    user = _strip_private_keys(_read_json(user_path)) if user_path.is_file() else None
+    return merge_mcp_configs(kit, user)
+
+
 def write_merged_mcp(root: Path, *, dry_run: bool = False) -> Path:
+    """
+    Write `.cursor/mcp.json` for the Cursor host.
+
+    Consumers: full kit+user merge.
+    Kit-dev: kit fragment only — user-tier stays in gitignored mcp.user.json so
+    validate/doctor/health cannot pollute the tracked mcp.json.
+    """
     kit_path = root / KIT_FRAGMENT
     if not kit_path.is_file():
         raise FileNotFoundError(f"missing kit MCP fragment: {kit_path}")
@@ -84,11 +263,13 @@ def write_merged_mcp(root: Path, *, dry_run: bool = False) -> Path:
     user_path = root / USER_FRAGMENT
     user = _strip_private_keys(_read_json(user_path)) if user_path.is_file() else None
     merged = merge_mcp_configs(kit, user)
+    kit_dev = is_kit_dev_repo(root)
+    payload = kit if kit_dev else merged
     dest = root / MCP_JSON
     if dry_run:
         return dest
     dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_text(json.dumps(merged, indent=2) + "\n", encoding="utf-8")
+    dest.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     return dest
 
 
@@ -124,53 +305,47 @@ def validate_registry(root: Path, *, strict: bool = False) -> list[str]:
     if not isinstance(servers, dict):
         return ["registry servers must be a mapping"]
 
-    mcp_path = root / MCP_JSON
-    if not mcp_path.is_file():
-        return [f"missing merged MCP config: {mcp_path}"]
-
-    mcp = _read_json(mcp_path)
-    mcp_servers = mcp.get("mcpServers", {})
+    try:
+        merged = compute_merged_mcp(root)
+    except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
+        return [str(exc)]
+    mcp_servers = merged.get("mcpServers", {})
     if not isinstance(mcp_servers, dict):
-        return ["mcp.json mcpServers must be an object"]
+        return ["merged mcpServers must be an object"]
+
+    # Kit-dev hygiene: live registry must stay kit-tier (user servers live in examples / seed).
+    if is_kit_dev_repo(root):
+        for name, spec in servers.items():
+            if not isinstance(spec, dict):
+                continue
+            if str(spec.get("tier") or "") == "external":
+                errors.append(
+                    f"kit-dev: live registry must not list external server '{name}' "
+                    f"(keep kit-tier only; use mcp.user.json + *.example / consumer seed)"
+                )
 
     for name, spec in servers.items():
         if not isinstance(spec, dict):
             errors.append(f"registry server '{name}' must be a mapping")
             continue
         if name not in mcp_servers:
-            errors.append(f"registry server '{name}' not in .cursor/mcp.json mcpServers")
+            errors.append(
+                f"registry server '{name}' not in merged kit+user mcpServers "
+                f"(add to {USER_FRAGMENT} or kit example)"
+            )
         agents = spec.get("agents", [])
         if agents is not None and not isinstance(agents, list):
             errors.append(f"registry server '{name}' agents must be a list")
-        if strict and isinstance(spec, dict):
-            tier = str(spec.get("tier") or "")
-            if tier == "external" and name not in mcp_servers:
-                # already covered above; keep for clarity
-                pass
-
-    if strict and not (root / USER_FRAGMENT).is_file():
-        # Kit-only is OK unless registry lists external servers missing from merge
-        for name, spec in servers.items():
-            if not isinstance(spec, dict):
-                continue
-            if str(spec.get("tier") or "") == "external" and name not in mcp_servers:
-                errors.append(
-                    f"strict: external registry server '{name}' missing from mcp.json "
-                    f"(add to {USER_FRAGMENT} and re-validate)"
-                )
 
     return errors
 
 
 def load_merged_servers(root: Path, *, write: bool = False) -> dict[str, Any]:
-    """Return mcpServers from merged kit+user (optionally rewrite mcp.json)."""
+    """Return mcpServers from kit+user merge (optionally refresh on-disk mcp.json)."""
     if write:
         write_merged_mcp(root)
-    mcp_path = root / MCP_JSON
-    if not mcp_path.is_file():
-        write_merged_mcp(root)
-    mcp = _read_json(root / MCP_JSON)
-    servers = mcp.get("mcpServers", {})
+    merged = compute_merged_mcp(root)
+    servers = merged.get("mcpServers", {})
     if not isinstance(servers, dict):
         raise ValueError("mcp.json mcpServers must be an object")
     return {k: v for k, v in servers.items() if isinstance(v, dict)}

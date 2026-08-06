@@ -15,7 +15,7 @@ const VERIFIED = "2026-08-05";
 
 const REGISTRY_SNAPSHOT = {
   workflowKit: {
-    serverId: "workflow-kit",
+    serverId: "agent-colony-mcp",
     tier: "kit",
     agents: [
       "implementer",
@@ -46,11 +46,11 @@ const FLOW_COMMANDS: Array<[string, string]> = [
   ],
   [
     "3) Discover tools",
-    "python3 -m cursor_workflow mcp list-tools --server workflow-kit",
+    "python3 -m cursor_workflow mcp list-tools --server agent-colony-mcp",
   ],
   [
     "4) Call a tool (kit stdio example)",
-    "python3 -m cursor_workflow mcp call --server workflow-kit --tool workflow_gate_count",
+    "python3 -m cursor_workflow mcp call --server agent-colony-mcp --tool workflow_gate_count",
   ],
 ];
 
@@ -114,7 +114,7 @@ export default function MCPOnboardingCanvas() {
       </Callout>
 
       <Card>
-        <CardHeader>Quick start (kit: workflow-kit)</CardHeader>
+        <CardHeader>Quick start (kit: agent-colony-mcp)</CardHeader>
         <CardBody>
           <Stack gap={6}>
             <Table

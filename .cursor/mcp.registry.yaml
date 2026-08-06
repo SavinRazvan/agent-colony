@@ -1,6 +1,6 @@
 version: 1
 servers:
-  workflow-kit:
+  agent-colony-mcp:
     tier: kit
     description: PR workflow, trackers, gates
     agents: [implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard]
