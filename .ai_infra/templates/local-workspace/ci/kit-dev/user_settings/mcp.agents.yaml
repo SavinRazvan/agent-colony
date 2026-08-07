@@ -14,7 +14,7 @@ version: 1
 # Kit server (installed with --with-mcp-json / with_mcp profile)
 kit:
   server_key: agent-colony-mcp
-  description: PR workflow, trackers, gates (workflow_mcp)
+  description: PR workflow, trackers, gates (agent_colony_mcp)
   enabled: true
   agents:
     - implementer

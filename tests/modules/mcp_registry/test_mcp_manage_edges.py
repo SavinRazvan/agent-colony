@@ -139,13 +139,13 @@ def test_list_cursor_host_servers(tmp_path: Path) -> None:
     assert mcp_manage.list_cursor_host_servers(mcps) == ["alpha"]
 
 
-def test_check_workflow_mcp_import_missing(tmp_path: Path) -> None:
-    result = mcp_manage.check_workflow_mcp_import(tmp_path)
+def test_check_agent_colony_mcp_import_missing(tmp_path: Path) -> None:
+    result = mcp_manage.check_agent_colony_mcp_import(tmp_path)
     assert result["import_ok"] is False
     assert result["error"]
 
 
-def test_check_workflow_mcp_import_success_and_fail(tmp_path: Path, monkeypatch) -> None:
+def test_check_agent_colony_mcp_import_success_and_fail(tmp_path: Path, monkeypatch) -> None:
     venv_py = tmp_path / ".venv" / "bin" / "python"
     venv_py.parent.mkdir(parents=True)
     venv_py.write_text("#!/bin/sh\n", encoding="utf-8")
@@ -157,7 +157,7 @@ def test_check_workflow_mcp_import_success_and_fail(tmp_path: Path, monkeypatch)
         "run",
         lambda *a, **k: SimpleNamespace(returncode=0, stdout="/mod.py\n", stderr=""),
     )
-    ok = mcp_manage.check_workflow_mcp_import(tmp_path)
+    ok = mcp_manage.check_agent_colony_mcp_import(tmp_path)
     assert ok["import_ok"] is True
     assert ok["module_file"] == "/mod.py"
 
@@ -166,6 +166,6 @@ def test_check_workflow_mcp_import_success_and_fail(tmp_path: Path, monkeypatch)
         "run",
         lambda *a, **k: SimpleNamespace(returncode=1, stdout="", stderr="No module"),
     )
-    fail = mcp_manage.check_workflow_mcp_import(tmp_path)
+    fail = mcp_manage.check_agent_colony_mcp_import(tmp_path)
     assert fail["import_ok"] is False
     assert "No module" in fail["error"]

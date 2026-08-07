@@ -127,7 +127,7 @@ When touching `canvases/`, `.local/canvases/`, or `.local/plans/`:
 
 - Lives under `.ai_infra/scripts/` — never duplicate `GATES` outside `prepare.py`
 - File header per `file-docstring-header-relations.mdc`
-- Wire MCP tool in `workflow_mcp/server.py` only as thin wrapper (Pattern A)
+- Wire MCP tool in `agent_colony_mcp/server.py` only as thin wrapper (Pattern A)
 
 ---
 

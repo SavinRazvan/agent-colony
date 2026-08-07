@@ -95,7 +95,7 @@ my-app/
 │   ├── docs/operations|governance|roadmap|decisions|architecture/
 │   ├── templates/local-workspace|user-settings|agent-integration|project-board|research-corpus/
 │   ├── workflows/                  PR lane hub (shipped — see workflows/README.md)
-│   └── mcp_servers/workflow_mcp/   (with_mcp profile)
+│   └── mcp_servers/agent_colony_mcp/   (with_mcp profile)
 ├── agent_colony/                CLI entrypoint
 └── .local/                         Scaffolded trackers + artifact buckets (gitignored)
 ```

@@ -5,7 +5,7 @@ Role: Machine-enforced operational workflow drift checks (drift validate).
 Used By:
  - agent_colony drift validate
  - scripts/integration/validate.py (INT-012)
- - workflow_mcp workflow_drift_validate
+ - agent_colony_mcp workflow_drift_validate
 Depends On:
  - .ai_infra/scripts/workflow/drift_checks.py
 Notes:

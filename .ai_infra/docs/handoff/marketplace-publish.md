@@ -28,7 +28,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 4. `make sync-plugin` — rebuild `agents/`, `rules/`, `skills/`, `payload/` (commit the result)
 5. `make check-plugin` — bundle parity green
 6. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
-7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02); **done** 0.4.0 → 0.5.0 (2026-08-07); **done** 0.5.0 → 0.6.0 (2026-08-07, CLI module rename)
+7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02); **done** 0.4.0 → 0.5.0 (2026-08-07); **done** 0.5.0 → 0.6.0 (2026-08-07, CLI module rename); **done** 0.6.0 → 0.6.1 (2026-08-07, MCP package rename)
 8. [x] `assets/logo.png` (1:1, background plate) — see `assets/README.md` — **present** (commit `1f16af1`, 1024×1024 PNG RGBA, ~1.5 MB; verified 2026-07-02)
 9. [x] Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — **PASS 2026-07-08**
    on **Smart-Notes** (`~/Projects/Smart-Notes`): chat activate + terminal matrix green.
@@ -40,7 +40,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 
 ## Versioning
 
-**Current release:** `0.6.0` (git tag `v0.6.0`).
+**Current release:** `0.6.1` (git tag `v0.6.1`).
 
 **Superseded:** `v0.3.0` (`1f16af1`) predates `PLUGIN-FLATTEN` (#15) — its tagged tree has **zero**
 files under `agents/`, `rules/`, `skills/`, `payload/` (the gitignore bug #15 fixed). Do not
@@ -68,7 +68,7 @@ On every release, bump **in lockstep**:
 | `tests/modules/ai_infra/test_bootstrap_and_misc.py` | `__version__` assertion |
 | `tests/modules/install/test_agent_colony_cli_full.py` | fixture `.kit-version` + `--version` assert |
 
-**Consumer installs** receive version via `.ai_infra/.kit-version` (written fresh from manifest `kit_version` at scaffold/activate — no manual action needed there). **The kit-dev repo's own `.ai_infra/.kit-version` is git-tracked** and is *not* regenerated automatically (scaffold only runs on install targets), so it must be bumped by hand in this table too — `python3 -m agent_colony health` in this repo reads it directly and will report a stale version if it's missed (caught in v0.4.0: file was left at `0.3.0` after the version bump). **Not versioned with kit:** `workflow_mcp.__version__` (MCP server package semver).
+**Consumer installs** receive version via `.ai_infra/.kit-version` (written fresh from manifest `kit_version` at scaffold/activate — no manual action needed there). **The kit-dev repo's own `.ai_infra/.kit-version` is git-tracked** and is *not* regenerated automatically (scaffold only runs on install targets), so it must be bumped by hand in this table too — `python3 -m agent_colony health` in this repo reads it directly and will report a stale version if it's missed (caught in v0.4.0: file was left at `0.3.0` after the version bump). **Not versioned with kit:** `agent_colony_mcp.__version__` (MCP server package semver).
 
 After bump: `make sync-plugin && make check-plugin`, tag `vX.Y.Z`, optional GitHub Release notes.
 

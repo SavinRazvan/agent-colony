@@ -9,7 +9,7 @@
 | | |
 |--|--|
 | **Product repo** | [agent-colony](https://github.com/SavinRazvan/agent-colony) |
-| **Version** | `0.6.0` · **Tests** · 1456 · **Agents** · 8 · **Rules** · **7 universal** |
+| **Version** | `0.6.1` · **Tests** · 1456 · **Agents** · 8 · **Rules** · **7 universal** |
 | **Board (kit-dev)** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) — reference layout for **Prioritized backlog** + **Status board** |
 
 ---
@@ -28,7 +28,7 @@
 - **8 agents:** `implementer`, `test-runner`, `verifier`, `auditor`, `researcher`, `integrator`, `drift-guard`, `board`
 - **12 canonical skills** + maintainer PR slash skills (`/review-pr` → `/prepare-pr` → `/merge-pr`)
 - **Board Pattern A CLI:** `python3 -m agent_colony project …` (claim, handoff, Tier-1 fields, outbox)
-- **PR gates** via `prepare.py` · optional MCP (`workflow_mcp`) · research corpus under `_research_results/` (opt-in)
+- **PR gates** via `prepare.py` · optional MCP (`agent_colony_mcp`) · research corpus under `_research_results/` (opt-in)
 
 **North star:** Entry = read the Project; Exit = update Status + Notes. Details: [ADR-008](.ai_infra/docs/decisions/ADR-008-project-board-ssot.md) · [project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md).
 

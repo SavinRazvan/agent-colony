@@ -4,7 +4,7 @@
       "command": "${workspaceFolder}/.venv/bin/python",
       "args": [
         "-m",
-        "workflow_mcp"
+        "agent_colony_mcp"
       ],
       "env": {
         "AGENT_COLONY_ROOT": "${workspaceFolder}",

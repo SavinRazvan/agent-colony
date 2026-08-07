@@ -82,7 +82,7 @@ def test_format_doctor_markdown_merge_error_and_empty_mappings() -> None:
         "cursor_host_loaded": [],
         "configured_not_host_loaded": [],
         "host_loaded_not_configured": [],
-        "workflow_mcp": {"venv_python": None, "import_ok": False, "error": "missing"},
+        "agent_colony_mcp": {"venv_python": None, "import_ok": False, "error": "missing"},
         "merge_error": "boom",
         "agent_mappings": {},
     }
@@ -105,7 +105,7 @@ def test_format_doctor_markdown_with_mappings() -> None:
         "cursor_host_loaded": ["a"],
         "configured_not_host_loaded": [],
         "host_loaded_not_configured": [],
-        "workflow_mcp": {"venv_python": "/py", "import_ok": True},
+        "agent_colony_mcp": {"venv_python": "/py", "import_ok": True},
         "agent_mappings": {"implementer": ["a"]},
     }
     body = mcp_cli.format_doctor_markdown(report)

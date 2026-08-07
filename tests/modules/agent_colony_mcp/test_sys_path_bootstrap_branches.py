@@ -1,8 +1,8 @@
 """
 File: test_sys_path_bootstrap_branches.py
-Path: tests/modules/workflow_mcp/test_sys_path_bootstrap_branches.py
+Path: tests/modules/agent_colony_mcp/test_sys_path_bootstrap_branches.py
 Role: Forces the True branch of "if <dir> not in sys.path: sys.path.insert(...)" guards
-      shared across agent_colony dispatcher modules and workflow_mcp/server.py.
+      shared across agent_colony dispatcher modules and agent_colony_mcp/server.py.
       These lines only execute once per process by design (idempotent sys.path setup);
       running under pytest's shared process, an earlier test may have already inserted
       the same directory. Removing the exact path first guarantees True-branch coverage
@@ -11,7 +11,7 @@ Used By:
  - pytest
 Depends On:
  - .ai_infra/install/agent_colony/{contributors_cli,doc_cli,drift_cli,integrate_cli,verify_cli}.py
- - .ai_infra/mcp_servers/workflow_mcp/server.py
+ - .ai_infra/mcp_servers/agent_colony_mcp/server.py
 """
 
 from __future__ import annotations
@@ -102,7 +102,7 @@ def _env_root() -> None:
 
 def test_server_user_settings_module_inserts_pr_dir() -> None:
     _env_root()
-    from workflow_mcp.server import _user_settings_module
+    from agent_colony_mcp.server import _user_settings_module
 
     pr_dir = str(REPO_ROOT / ".ai_infra" / "scripts" / "pr")
     with _without_path(pr_dir):
@@ -112,7 +112,7 @@ def test_server_user_settings_module_inserts_pr_dir() -> None:
 
 def test_server_drift_validate_inserts_workflow_dir() -> None:
     _env_root()
-    from workflow_mcp.server import workflow_drift_validate
+    from agent_colony_mcp.server import workflow_drift_validate
 
     workflow_dir = str(REPO_ROOT / ".ai_infra" / "scripts" / "workflow")
     with _without_path(workflow_dir):
@@ -122,7 +122,7 @@ def test_server_drift_validate_inserts_workflow_dir() -> None:
 
 def test_server_activate_inserts_pkg_dir() -> None:
     _env_root()
-    from workflow_mcp.server import workflow_activate
+    from agent_colony_mcp.server import workflow_activate
 
     pkg = str(REPO_ROOT / ".ai_infra" / "install" / "agent_colony")
     with _without_path(pkg):
@@ -132,7 +132,7 @@ def test_server_activate_inserts_pkg_dir() -> None:
 
 def test_server_integrate_validate_inserts_integration_dir() -> None:
     _env_root()
-    from workflow_mcp.server import workflow_integrate_validate
+    from agent_colony_mcp.server import workflow_integrate_validate
 
     integration_dir = str(REPO_ROOT / ".ai_infra" / "scripts" / "integration")
     with _without_path(integration_dir):
@@ -142,7 +142,7 @@ def test_server_integrate_validate_inserts_integration_dir() -> None:
 
 def test_server_doc_facts_validate_inserts_architecture_dir() -> None:
     _env_root()
-    from workflow_mcp.server import workflow_doc_facts_validate
+    from agent_colony_mcp.server import workflow_doc_facts_validate
 
     arch_dir = str(REPO_ROOT / ".ai_infra" / "scripts" / "architecture")
     with _without_path(arch_dir):
@@ -162,7 +162,7 @@ def test_server_verify_all_inserts_architecture_dir(monkeypatch: pytest.MonkeyPa
     monkeypatch.setattr(verify_all, "format_report", lambda results: "summary: failed=0 total=0")
     monkeypatch.setattr(verify_all, "exit_code_for", lambda results: 0)
 
-    from workflow_mcp.server import workflow_verify_all
+    from agent_colony_mcp.server import workflow_verify_all
 
     with _without_path(arch_dir):
         workflow_verify_all()
@@ -172,7 +172,7 @@ def test_server_verify_all_inserts_architecture_dir(monkeypatch: pytest.MonkeyPa
 def test_server_user_settings_module_spec_none_raises(monkeypatch: pytest.MonkeyPatch) -> None:
     import importlib.util
 
-    from workflow_mcp.server import _user_settings_module
+    from agent_colony_mcp.server import _user_settings_module
 
     monkeypatch.setattr(importlib.util, "spec_from_file_location", lambda *a, **k: None)
     with pytest.raises(ImportError, match="cannot load"):
@@ -194,7 +194,7 @@ def test_validate_import_check_drift_inserts_workflow_dir() -> None:
 def test_gates_load_prepare_module_spec_none_raises(monkeypatch: pytest.MonkeyPatch) -> None:
     import importlib.util
 
-    from workflow_mcp import gates
+    from agent_colony_mcp import gates
 
     monkeypatch.setattr(importlib.util, "spec_from_file_location", lambda *a, **k: None)
     with pytest.raises(ImportError, match="Cannot load prepare module"):

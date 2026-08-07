@@ -1,11 +1,11 @@
 """
 File: resources.py
-Path: .ai_infra/mcp_servers/workflow_mcp/resources.py
+Path: .ai_infra/mcp_servers/agent_colony_mcp/resources.py
 Role: Resolve workflow:// MCP resource URIs to repo files (read-only).
 Used By:
- - workflow_mcp/server.py
+ - agent_colony_mcp/server.py
 Depends On:
- - workflow_mcp/gates.py, workspace.py
+ - agent_colony_mcp/gates.py, workspace.py
 Notes:
  - P1 resources per IMPLEMENTATION-STATUS.md. No second GATES list in inventory.
 """
@@ -17,7 +17,7 @@ from pathlib import Path
 
 import yaml
 
-from workflow_mcp.gates import load_gates
+from agent_colony_mcp.gates import load_gates
 
 _PR_PHASES = {
     "review": "review.md",

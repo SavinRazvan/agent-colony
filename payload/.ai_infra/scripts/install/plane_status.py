@@ -4,7 +4,7 @@ Path: .ai_infra/scripts/install/plane_status.py
 Role: Assess three-plane readiness (Cursor contract, infrastructure, runtime).
 Used By:
  - .ai_infra/install/agent_colony/activate_cli.py
- - workflow_mcp workflow_activate
+ - agent_colony_mcp workflow_activate
 Depends On:
  - .ai_infra/install-contract.json
  - pathlib, json (stdlib)

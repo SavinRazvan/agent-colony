@@ -1,11 +1,11 @@
 """
 File: test_resources_full.py
-Path: tests/modules/workflow_mcp/test_resources_full.py
-Role: Full-branch coverage for workflow_mcp/resources.py.
+Path: tests/modules/agent_colony_mcp/test_resources_full.py
+Role: Full-branch coverage for agent_colony_mcp/resources.py.
 Used By:
  - pytest
 Depends On:
- - .ai_infra/mcp_servers/workflow_mcp/resources.py
+ - .ai_infra/mcp_servers/agent_colony_mcp/resources.py
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from workflow_mcp import resources
+from agent_colony_mcp import resources
 
 
 def test_read_pr_artifact_file_missing(tmp_path: Path) -> None:

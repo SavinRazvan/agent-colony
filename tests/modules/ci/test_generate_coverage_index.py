@@ -64,7 +64,7 @@ def test_module_key_branches() -> None:
     assert mod._module_key("agent_colony/cli.py") == "agent_colony"
     assert mod._module_key(".ai_infra/scripts/pr/foo.py") == ".ai_infra/scripts/pr"
     assert mod._module_key(".ai_infra/install/agent_colony/x.py") == ".ai_infra/install/agent_colony"
-    assert mod._module_key(".ai_infra/mcp_servers/workflow_mcp/x.py") == ".ai_infra/mcp_servers/workflow_mcp"
+    assert mod._module_key(".ai_infra/mcp_servers/agent_colony_mcp/x.py") == ".ai_infra/mcp_servers/agent_colony_mcp"
     assert mod._module_key(".ai_infra/bootstrap.py") == ".ai_infra/bootstrap.py"
     assert mod._module_key("other/foo.py") == "other/foo.py"
 

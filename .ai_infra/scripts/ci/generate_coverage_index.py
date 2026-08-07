@@ -81,7 +81,7 @@ def _module_key(path: str) -> str:
         if len(parts) >= 3 and parts[1] == "install":
             return ".ai_infra/install/agent_colony"
         if len(parts) >= 3 and parts[1] == "mcp_servers":
-            return ".ai_infra/mcp_servers/workflow_mcp"
+            return ".ai_infra/mcp_servers/agent_colony_mcp"
         if len(parts) == 2:
             return f".ai_infra/{parts[1]}"
         return ".ai_infra/other"

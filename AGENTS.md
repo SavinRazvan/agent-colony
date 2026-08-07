@@ -153,7 +153,7 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. Staged `/
 | Audit module map | `.cursor/skills/audit-module-map/SKILL.md` — optional deep map; invoke via **`auditor`** |
 | Maintainer PR | `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` → `merge-pr` (staged) → `full-pr-workflow` → `finalize.py` (cleanup + `finalize.md` evidence) |
 | Research corpus (shipped; opt-in packs) | `.cursor/agents/researcher.md` — adaptive Brief from chat/agents; HTTPS/`github:`/`path:`; `research init\|fetch\|validate`; packs in `_research_results/sources/<slug>/`; live E2E proven 2026-07-19 |
-| MCP | `.ai_infra/mcp_servers/workflow_mcp/` — `python -m workflow_mcp`; [`.cursor/mcp.json.kit.example`](.cursor/mcp.json.kit.example) + [mcp-connect](.ai_infra/docs/operations/connect-external-mcp.md) |
+| MCP | `.ai_infra/mcp_servers/agent_colony_mcp/` — `python -m agent_colony_mcp`; [`.cursor/mcp.json.kit.example`](.cursor/mcp.json.kit.example) + [mcp-connect](.ai_infra/docs/operations/connect-external-mcp.md) |
 | Canvas / plan artifacts | [canvas-artifacts](.cursor/skills/canvas-artifacts/SKILL.md) — `python3 -m agent_colony canvas …` / `plan snapshot|list|open` (ADR-010) |
 
 Scripts:

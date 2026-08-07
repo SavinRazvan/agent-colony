@@ -1,5 +1,5 @@
 version: 1
-kit_version: "0.6.0"
+kit_version: "0.6.1"
 profiles:
   default:
     copy_dirs:
@@ -38,7 +38,7 @@ profiles:
   with_mcp:
     extends: default
     copy_ai_infra:
-      - mcp_servers/workflow_mcp
+      - mcp_servers/agent_colony_mcp
     copy_files:
       - requirements-mcp.txt
       - requirements-dev.txt

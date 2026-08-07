@@ -15,5 +15,5 @@ Cursor Plugins load agents/skills/rules. MCP servers expose tools. These are dis
 
 ## Consequences
 
-- `mcp.json` references `workflow_mcp` package under `.ai_infra/mcp_servers/`
+- `mcp.json` references `agent_colony_mcp` package under `.ai_infra/mcp_servers/`
 - User external MCP servers are ADR-004 (registry), not plugin core

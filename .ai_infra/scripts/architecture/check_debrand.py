@@ -78,6 +78,7 @@ BANNED_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("workflow-kit", re.compile(r"workflow-kit", re.IGNORECASE)),
     ("cursor_workflow", re.compile(r"cursor_workflow")),
     ("cursor-workflow", re.compile(r"cursor-workflow")),
+    ("workflow_mcp", re.compile(r"(?<![A-Za-z0-9_])workflow_mcp(?![A-Za-z0-9_])")),
     ("MAS-SSOT-KIT", re.compile(r"MAS-SSOT-KIT", re.IGNORECASE)),
     ("Formerly", re.compile(r"Formerly", re.IGNORECASE)),
     ("upstream", re.compile(r"upstream", re.IGNORECASE)),

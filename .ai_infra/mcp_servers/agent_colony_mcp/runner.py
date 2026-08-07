@@ -1,9 +1,9 @@
 """
 File: runner.py
-Path: .ai_infra/mcp_servers/workflow_mcp/runner.py
+Path: .ai_infra/mcp_servers/agent_colony_mcp/runner.py
 Role: Subprocess helpers for MCP tools wrapping existing scripts.
 Used By:
- - workflow_mcp/server.py
+ - agent_colony_mcp/server.py
 Depends On:
  - subprocess
  - sys

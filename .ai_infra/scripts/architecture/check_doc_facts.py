@@ -6,7 +6,7 @@ Used By:
  - agent_colony doc validate
  - agent_colony gates
  - scripts/integration/validate.py (INT-013)
- - workflow_mcp workflow_doc_facts_validate
+ - agent_colony_mcp workflow_doc_facts_validate
 Depends On:
  - .ai_infra/scripts/architecture/doc_facts_checks.py
 Notes:

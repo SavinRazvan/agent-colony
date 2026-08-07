@@ -32,7 +32,7 @@
     "with_mcp": {
       "extends": "default",
       "required_paths": [
-        ".ai_infra/mcp_servers/workflow_mcp/server.py",
+        ".ai_infra/mcp_servers/agent_colony_mcp/server.py",
         "requirements-mcp.txt"
       ],
       "forbidden_paths": []

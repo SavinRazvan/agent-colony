@@ -83,7 +83,7 @@ agent-colony/
 │   ├── scripts/
 │   ├── docs/
 │   ├── templates/
-│   ├── mcp_servers/        # optional workflow_mcp
+│   ├── mcp_servers/        # optional agent_colony_mcp
 │   └── install/agent_colony/
 ├── .local/
 ├── Makefile
@@ -113,7 +113,7 @@ my-app/
 │   ├── install/agent_colony/
 │   ├── docs/operations|governance|roadmap|decisions|architecture/
 │   ├── templates/local-workspace|user-settings|agent-integration|project-board|research-corpus/
-│   ├── mcp_servers/workflow_mcp/   # with_mcp profile
+│   ├── mcp_servers/agent_colony_mcp/   # with_mcp profile
 │   └── workflows/
 ├── agent_colony/          # CLI entry
 └── .local/                   # scaffolded trackers + canvases/ + plans/
@@ -137,7 +137,7 @@ The path `.ai_infra/templates/local-workspace/ci/kit-dev/` holds **kit-repositor
 | Profile    | Adds                                                                             |
 | ---------- | -------------------------------------------------------------------------------- |
 | `default`  | `.cursor/`, `.agents/`, slim `.ai_infra/`, `.local/` exemplars, `AGENTS.md` stub |
-| `with_mcp` | `.ai_infra/mcp_servers/workflow_mcp/`, `requirements-mcp.txt`, merged `.cursor/mcp.json`, MCP worksheets (`mcp.*.example`, `.cursor/mcp.d/`) |
+| `with_mcp` | `.ai_infra/mcp_servers/agent_colony_mcp/`, `requirements-mcp.txt`, merged `.cursor/mcp.json`, MCP worksheets (`mcp.*.example`, `.cursor/mcp.d/`) |
 
 
 Product rules already ship in `.cursor/rules/` via activate. Optional `overlays/rules/*.mdc` remain kit-dev / install-time extras — not a separate consumer profile.
@@ -172,7 +172,7 @@ Product rules already ship in `.cursor/rules/` via activate. Optional `overlays/
 | Mechanism              | What it is                                                          |
 | ---------------------- | ------------------------------------------------------------------- |
 | **This plugin**        | File bundle installed per project via `agent_colony activate` or `install` |
-| **MCP**                | Optional `.cursor/mcp.json` → `workflow_mcp` tools wrapping scripts |
+| **MCP**                | Optional `.cursor/mcp.json` → `agent_colony_mcp` tools wrapping scripts |
 | **Cursor Marketplace** | Future distribution channel for the same bundle                     |
 
 `.cursor/settings.json` (tracked) is a maintainer kit-dev preference — enables the

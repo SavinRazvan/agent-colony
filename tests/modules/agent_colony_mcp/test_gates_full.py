@@ -1,11 +1,11 @@
 """
 File: test_gates_full.py
-Path: tests/modules/workflow_mcp/test_gates_full.py
-Role: Full-branch coverage for workflow_mcp/gates.py (prepare.py GATES loader).
+Path: tests/modules/agent_colony_mcp/test_gates_full.py
+Role: Full-branch coverage for agent_colony_mcp/gates.py (prepare.py GATES loader).
 Used By:
  - pytest
 Depends On:
- - .ai_infra/mcp_servers/workflow_mcp/gates.py
+ - .ai_infra/mcp_servers/agent_colony_mcp/gates.py
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from workflow_mcp import gates
+from agent_colony_mcp import gates
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 

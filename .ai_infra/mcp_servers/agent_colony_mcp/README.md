@@ -1,14 +1,14 @@
 # Workflow MCP server
 
-**Canonical path:** `.ai_infra/mcp_servers/workflow_mcp/`
+**Canonical path:** `.ai_infra/mcp_servers/agent_colony_mcp/`
 
 Stdio MCP server that **wraps existing scripts** — it does not duplicate `resolve_gates()` from `.ai_infra/scripts/pr/prepare.py`.
 
 ## Run locally
 
 ```bash
-.venv/bin/python -m workflow_mcp
-AGENT_COLONY_ROOT=/path/to/project .venv/bin/python -m workflow_mcp
+.venv/bin/python -m agent_colony_mcp
+AGENT_COLONY_ROOT=/path/to/project .venv/bin/python -m agent_colony_mcp
 ```
 
 ## Cursor wiring

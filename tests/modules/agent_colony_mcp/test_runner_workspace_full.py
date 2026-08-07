@@ -1,12 +1,12 @@
 """
 File: test_runner_workspace_full.py
-Path: tests/modules/workflow_mcp/test_runner_workspace_full.py
-Role: Full-branch coverage for workflow_mcp/runner.py and workflow_mcp/workspace.py.
+Path: tests/modules/agent_colony_mcp/test_runner_workspace_full.py
+Role: Full-branch coverage for agent_colony_mcp/runner.py and agent_colony_mcp/workspace.py.
 Used By:
  - pytest
 Depends On:
- - .ai_infra/mcp_servers/workflow_mcp/runner.py
- - .ai_infra/mcp_servers/workflow_mcp/workspace.py
+ - .ai_infra/mcp_servers/agent_colony_mcp/runner.py
+ - .ai_infra/mcp_servers/agent_colony_mcp/workspace.py
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pytest
 
-from workflow_mcp import runner, workspace
+from agent_colony_mcp import runner, workspace
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
