@@ -7,7 +7,7 @@
  * Depends On:
  *  - local-markdown.js (escapeHtml)
  * Notes:
- *  - Reads `.local/generated-data/project-project-board-snapshot.json` only; never writes board Status.
+ *  - Reads `.local/generated-data/project-board-snapshot.json` only; never writes board Status.
  *  - Copy to `.local/agents-control-center/dashboards/` with other dashboard assets.
  */
 (function (global) {
@@ -161,7 +161,7 @@
       '<p class="status-bad">Project board snapshot not found.</p>' +
       "<p>Export a read-only snapshot from the CLI:</p>" +
       "<pre><code>python3 -m agent_colony project export</code></pre>" +
-      "<p>Output path: <code>.local/generated-data/project-project-board-snapshot.json</code></p>" +
+      "<p>Output path: <code>.local/generated-data/project-board-snapshot.json</code></p>" +
       "</div>"
     );
   }
