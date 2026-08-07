@@ -37,6 +37,16 @@ Kit **0.6.1** renames the MCP Python package (Cursor server id unchanged):
 
 Update `.cursor/mcp.json` `args` to `["-m", "agent_colony_mcp"]` (or re-run activate / `mcp seed`). MCP **tool** names such as `workflow_`* are unchanged.
 
+## Consumer heal (activate hardening on main → next tag)
+
+If an older activate left only MCP secret lines in `.gitignore`, or omitted the consumer `STARTER-001` drift marker:
+
+1. Re-run `source .venv/bin/activate && python3 -m agent_colony activate --directory .`  
+   (heals `.gitignore` for `.local/` + `.venv/`, seeds `STARTER-001` into `work-tracker.md`, creates `.venv` only if missing and `--with-venv` is on).
+2. If `.venv/` or `.local/` were already committed: keep the healed `.gitignore`, then  
+   `git rm -r --cached .venv .local` and commit app sources (`src/`, `pyproject.toml`, …) instead.
+3. MCP tool rename: `workflow_mcp_connection_guide` → `workflow_agent_colony_mcp_connection_guide` (re-copy exemplar `mcp.agents.yaml` tools_hint or edit locally).
+
 ## Before upgrade
 
 1. Note current version: `cat .ai_infra/.kit-version`

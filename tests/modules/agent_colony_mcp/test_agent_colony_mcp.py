@@ -137,11 +137,11 @@ def test_workflow_list_mcp_registry() -> None:
     assert "agent-colony-mcp" in text
 
 
-def test_workflow_mcp_connection_guide() -> None:
+def test_workflow_agent_colony_mcp_connection_guide() -> None:
     os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
-    from agent_colony_mcp.server import workflow_mcp_connection_guide
+    from agent_colony_mcp.server import workflow_agent_colony_mcp_connection_guide
 
-    text = workflow_mcp_connection_guide()
+    text = workflow_agent_colony_mcp_connection_guide()
     assert "external MCP" in text or "Connect external" in text
 
 

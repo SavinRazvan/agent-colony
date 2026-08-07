@@ -94,8 +94,12 @@ def test_debrand_text_suffixes_include_html_and_js() -> None:
     assert ".js" in mod.TEXT_SUFFIXES
 
 
-def test_debrand_flags_cursor_workflow_in_html_sample() -> None:
+def test_debrand_flags_workflow_mcp_underscore_prefix() -> None:
     mod = _load_debrand_module()
-    pattern = dict(mod.BANNED_PATTERNS)["cursor_workflow"]
-    sample = '<code>python3 -m cursor_workflow project status</code>'
-    assert mod.text_has_banned_pattern(sample, pattern)
+    pattern = dict(mod.BANNED_PATTERNS)["workflow_mcp_"]
+    assert mod.text_has_banned_pattern(
+        "def workflow_mcp_connection_guide():\n    pass\n",
+        pattern,
+    )
+    exact = dict(mod.BANNED_PATTERNS)["workflow_mcp_connection_guide"]
+    assert mod.text_has_banned_pattern("workflow_mcp_connection_guide", exact)

@@ -31,7 +31,7 @@ External servers: [connect-external-mcp.md](../../docs/operations/connect-extern
 | `workflow_gate_count` | `len(load_gates())` → prefers `resolve_gates()` (2 consumer / 4 kit-dev) |
 | `workflow_get_project_config` | `project.config.yaml` or example |
 | `workflow_list_mcp_registry` | `.cursor/mcp.registry.yaml` |
-| `workflow_mcp_connection_guide` | connect-external-mcp.md |
+| `workflow_agent_colony_mcp_connection_guide` | connect-external-mcp.md |
 | `workflow_render_commit_trailers` | `.local/user_settings/github.collaboration.yaml` |
 | `workflow_render_pr_body` | PR body for named pipeline |
 | `workflow_contributors_validate` | validate user settings YAML |

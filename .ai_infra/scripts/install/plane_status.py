@@ -82,7 +82,9 @@ CONSUMER_ONLY_PATHS = frozenset(
 )
 
 
-def assess_planes(root: Path, *, profile: str = "with_mcp") -> PlaneStatus:
+def assess_planes(
+    root: Path, *, profile: str = "with_mcp", require_venv: bool = False
+) -> PlaneStatus:
     project_root = root.resolve()
     contract = _load_contract(project_root)
     spec = _resolve_profile(contract, profile)
@@ -106,6 +108,12 @@ def assess_planes(root: Path, *, profile: str = "with_mcp") -> PlaneStatus:
 
     settings_dir = project_root / ".local" / "user_settings"
     _ = settings_dir  # settings exemplars scaffolded at activate; validated separately
+
+    if require_venv:
+        venv_py = ".venv/bin/python"
+        if not (project_root / venv_py).is_file():
+            missing.append(venv_py)
+            plane_hits["runtime"] = False
 
     return PlaneStatus(
         cursor_contract=plane_hits["cursor"],
