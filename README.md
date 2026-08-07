@@ -9,7 +9,7 @@
 | | |
 |--|--|
 | **Product repo** | [agent-colony](https://github.com/SavinRazvan/agent-colony) |
-| **Version** | `0.6.1` · **Tests** · 1479 · **Agents** · 8 · **Rules** · **7 universal** |
+| **Version** | `0.6.1` · **Tests** · 1484 · **Agents** · 8 · **Rules** · **7 universal** |
 | **Board (kit-dev)** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) — reference layout for **Prioritized backlog** + **Status board** |
 
 ---
