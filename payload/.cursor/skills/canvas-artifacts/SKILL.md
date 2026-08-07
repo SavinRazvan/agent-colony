@@ -64,4 +64,6 @@ Agents **never depend on** the IDE Build button. Execute from `.local/plans/`:
 
 `plan snapshot` from a Cursor plan preserves YAML frontmatter (`name` / `overview` / `todos`) needed for Build.
 
+**Indexing:** only `*.plan.md` (+ sibling `*.meta.yaml`) appear in `plan list` / `index.md`. Plain `.md` files dropped under `.local/plans/` are orphans — remove or re-snapshot via `plan snapshot --from <path>`.
+
 Canon: [ADR-010](../../.ai_infra/docs/decisions/ADR-010-canvas-plan-local-artifacts.md)
