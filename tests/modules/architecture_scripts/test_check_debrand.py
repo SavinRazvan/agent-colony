@@ -86,3 +86,16 @@ def test_debrand_flags_legacy_cli_module_name() -> None:
         "Run python -m cursor_workflow health",
         pattern,
     )
+
+
+def test_debrand_text_suffixes_include_html_and_js() -> None:
+    mod = _load_debrand_module()
+    assert ".html" in mod.TEXT_SUFFIXES
+    assert ".js" in mod.TEXT_SUFFIXES
+
+
+def test_debrand_flags_cursor_workflow_in_html_sample() -> None:
+    mod = _load_debrand_module()
+    pattern = dict(mod.BANNED_PATTERNS)["cursor_workflow"]
+    sample = '<code>python3 -m cursor_workflow project status</code>'
+    assert mod.text_has_banned_pattern(sample, pattern)

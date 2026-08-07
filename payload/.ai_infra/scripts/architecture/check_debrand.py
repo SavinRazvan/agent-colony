@@ -86,13 +86,28 @@ BANNED_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
 
 LINEAGE_ALLOWLIST_SUBSTRINGS: tuple[str, ...] = ()
 
-TEXT_SUFFIXES = {".md", ".mdc", ".py", ".yaml", ".yml", ".txt", ".json", ".jsonc", ".tsx", ".ts"}
+TEXT_SUFFIXES = {
+    ".md",
+    ".mdc",
+    ".py",
+    ".yaml",
+    ".yml",
+    ".txt",
+    ".json",
+    ".jsonc",
+    ".tsx",
+    ".ts",
+    ".html",
+    ".js",
+}
 
 SKIP_REL_PATHS = frozenset(
     {
         ".ai_infra/scripts/architecture/check_debrand.py",
         ".ai_infra/scripts/architecture/check_governance_consistency.py",
         "tests/modules/architecture_scripts/test_check_debrand.py",
+        # Cold-cut upgrade notes must name removed modules (cursor_workflow / workflow_mcp).
+        ".ai_infra/docs/operations/upgrade-kit.md",
     }
 )
 

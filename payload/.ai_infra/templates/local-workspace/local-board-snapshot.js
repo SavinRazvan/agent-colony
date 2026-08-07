@@ -72,7 +72,7 @@
     return (
       '<div class="local-board-empty-state">' +
       "<p>No board items in this snapshot.</p>" +
-      "<p>Run <code>python3 -m cursor_workflow project export</code> after updating cards on GitHub.</p>" +
+      "<p>Run <code>python3 -m agent_colony project export</code> after updating cards on GitHub.</p>" +
       "</div>"
     );
   }
@@ -160,7 +160,7 @@
       '<div class="local-board-missing">' +
       '<p class="status-bad">Project board snapshot not found.</p>' +
       "<p>Export a read-only snapshot from the CLI:</p>" +
-      "<pre><code>python3 -m cursor_workflow project export</code></pre>" +
+      "<pre><code>python3 -m agent_colony project export</code></pre>" +
       "<p>Output path: <code>.local/generated-data/project-project-board-snapshot.json</code></p>" +
       "</div>"
     );

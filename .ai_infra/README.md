@@ -13,7 +13,7 @@ Versioned workflow kit assets live here. **`.cursor/` and `.agents/` stay at rep
 | `.ai_infra/mcp_servers/agent_colony_mcp/` | Optional MCP server (wraps scripts) |
 | `.ai_infra/docs/` | governance, operations, roadmap, handoff, architecture |
 | `.ai_infra/templates/` | AGENTS stub, local-workspace exemplars, plugin skills |
-| `.ai_infra/install/agent_colony/` | `agent-colony` CLI — twelve top-level commands (`install`, `activate`, `gates`, `health`, `mcp`, `contributors`, `integrate`, `drift`, `doc`, `verify`, `project`, `research`; see `agent-colony --help`) |
+| `.ai_infra/install/agent_colony/` | `agent-colony` CLI — fourteen top-level commands (`install`, `activate`, `gates`, `health`, `mcp`, `contributors`, `integrate`, `drift`, `doc`, `verify`, `project`, `research`, `canvas`, `plan`; see `agent-colony --help`) |
 
 ## Path resolution
 
