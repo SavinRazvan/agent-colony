@@ -1922,6 +1922,12 @@ def test_cmd_claim_not_found_and_assignee_ok(
         "fetch_project_items",
         lambda *a, **k: ([], None),
     )
+    # Claim falls back to node-id lookup when the item is outside the list page.
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_item_by_id",
+        lambda *a, **k: (None, f"project item not found: {VALID_ITEM}"),
+    )
     args = argparse.Namespace(
         directory=tmp_path,
         id=VALID_ITEM,
@@ -1978,6 +1984,11 @@ def test_cmd_handoff_not_found_and_queued_paths(
         project_cli,
         "fetch_project_items",
         lambda *a, **k: ([], None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_item_by_id",
+        lambda *a, **k: (None, f"project item not found: {VALID_ITEM}"),
     )
     assert project_cli.cmd_handoff(argparse.Namespace(**base)) == project_cli.EXIT_NOT_FOUND
     monkeypatch.setattr(
