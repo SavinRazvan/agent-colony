@@ -50,7 +50,7 @@ agent-colony/
 ├── agent_colony/            SSOT — thin CLI shim (also copied to consumer)
 ├── schemas/                    Legacy gate.json stub (`resolve_gates()` in prepare.py; `GATES` = alias)
 ├── .local/                     Kit-dev runtime (gitignored); CI seed fixture — not consumer exemplars
-├── tests/                      Kit-dev only — full pytest suite (1465; see IMPLEMENTATION-STATUS)
+├── tests/                      Kit-dev only — full pytest suite (1476; see IMPLEMENTATION-STATUS)
 ├── Makefile, pyproject.toml    Kit-dev only
 ├── overlays/                   Optional product rules source (`overlays/rules/project-ssot-precedence.mdc`); this product payload ships **7** rules (6 kit + SSOT precedence)
 ├── project-rules/              Deprecated alias → use overlays/rules/
@@ -69,9 +69,9 @@ Deep dive: [PLUGIN-ARCHITECTURE.md](PLUGIN-ARCHITECTURE.md).
 |------|------|------------|
 | `.cursor/agents/*.md` | 8 agent cards | **Here** |
 | `.cursor/rules/*.mdc` | 7 kit-dev rules | **Here** |
-| `.cursor/skills/*/` | 13 canonical protocols | **Here** |
+| `.cursor/skills/*/` | 14 canonical protocols | **Here** |
 | `.agents/skills/*/` | Maintainer slash skills | **Here** |
-| `agents/`, `rules/`, `skills/` (repo root) | Marketplace discovery (19 skill folders = 13 canonical + 6 maintainer PR slash skills, incl. `full-pr-workflow`) | `make sync-plugin` from `.cursor/` + `.agents/skills/` |
+| `agents/`, `rules/`, `skills/` (repo root) | Marketplace discovery (20 skill folders = 14 canonical + 6 maintainer PR slash skills, incl. `full-pr-workflow`) | `make sync-plugin` from `.cursor/` + `.agents/skills/` |
 | `payload/` | Consumer install bundle | `make sync-plugin` from above + manifest |
 | `skills/audit-alignment/` | Deprecated stub in merged `skills/` | `.agents/skills/audit-alignment/` |
 
@@ -87,7 +87,7 @@ my-app/
 ├── .cursor/
 │   ├── agents/                     8 agents (from payload; incl. board)
 │   ├── rules/                      7 rules (6 kit + project-ssot-precedence)
-│   └── skills/                     13 canonical skills only (no repo-root skills/ merge)
+│   └── skills/                     14 canonical skills only (no repo-root skills/ merge)
 ├── .agents/skills/                 6 maintainer slash folders (incl. full-pr-workflow; + audit-alignment stub)
 ├── .ai_infra/                      Slim bundle (manifest copy_ai_infra only)
 │   ├── scripts/pr|architecture|integration|workflow|install/
@@ -100,7 +100,7 @@ my-app/
 └── .local/                         Scaffolded trackers + artifact buckets (gitignored)
 ```
 
-**Not installed:** kit `tests/modules/` (1465; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
+**Not installed:** kit `tests/modules/` (1476; see IMPLEMENTATION-STATUS), `Makefile`, `docs/handoff/`, `docs/maintainer/`, `.ai_infra/scripts/ci/`, `.ai_infra/scripts/release/`, this `repository-map.md`, `IMPLEMENTATION-STATUS.md`, repo-root `agents/rules/skills/`.
 
 Consumer tree detail: [PLUGIN-ARCHITECTURE.md § Installed consumer project](PLUGIN-ARCHITECTURE.md).
 
@@ -141,7 +141,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 
 ## Skills
 
-### Canonical — `.cursor/skills/` (13) → consumer `.cursor/skills/`
+### Canonical — `.cursor/skills/` (14) → consumer `.cursor/skills/`
 
 | Skill | Paired agent |
 |-------|----------------|
@@ -155,7 +155,8 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `board-ssot` | `board` (board Entry/Exit; ADR-008) |
 | `board-shell` | `board` (first-run shell coach) |
 | `canvas-artifacts` | Canvas/plan Pattern A CLI (ADR-010) |
-| `workflow-activate` | Install / re-activate |
+| `workflow-activate` | Install / first activate |
+| `update-agent-colony` | Version-gated consumer upgrade |
 | `mcp-connect` | MCP setup |
 | `research-corpus` | `researcher` |
 
@@ -174,7 +175,7 @@ Also under `.agents/skills/`: `README.md`, `PR_WORKFLOW.md` (legacy redirect), `
 
 ### Repo-root `skills/` — Marketplace plugin mirror only
 
-Cursor loads repo-root `agents/`, `rules/`, and `skills/` from the GitHub plugin URL. Those trees are **generated mirrors** of `.cursor/` + `.agents/skills/` (via `sync_plugin_bundle.py`) — **not** a second authoring SSOT. Edit canonical `.cursor/skills/` (13) and `.agents/skills/` (6); then `make sync-plugin`. Consumers receive skills under `.cursor/skills/` and `.agents/skills/` via `payload/` after activate — never as a single root `skills/` tree on disk.
+Cursor loads repo-root `agents/`, `rules/`, and `skills/` from the GitHub plugin URL. Those trees are **generated mirrors** of `.cursor/` + `.agents/skills/` (via `sync_plugin_bundle.py`) — **not** a second authoring SSOT. Edit canonical `.cursor/skills/` (14) and `.agents/skills/` (6); then `make sync-plugin`. Consumers receive skills under `.cursor/skills/` and `.agents/skills/` via `payload/` after activate — never as a single root `skills/` tree on disk.
 
 ---
 

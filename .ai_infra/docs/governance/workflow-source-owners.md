@@ -24,7 +24,7 @@ Notes:
 | Merge preconditions | `.ai_infra/scripts/pr/merge.py` | `merge-pr` skill |
 | Post-merge cleanup | `.ai_infra/scripts/pr/finalize.py` | `full-pr-workflow` skill |
 | Maintainer narrative order | `.agents/skills/pr-workflow/SKILL.md` (slash `/pr-workflow`; redirect stub: `PR_WORKFLOW.md`) | Humans |
-| Canonical Cursor skills | `.cursor/skills/` (13 folders) | Plugin sync, agents |
+| Canonical Cursor skills | `.cursor/skills/` (14 folders) | Plugin sync, agents |
 | Maintainer slash skills | `.agents/skills/` (6 folders; no name overlap with `.cursor/skills/`) | Plugin sync additive merge |
 | Kit subagent model policy | `.cursor/agents/*.md` frontmatter `model: auto` | Task delegation cost control |
 | Durable maintainer checklist | `.ai_infra/docs/operations/workflow-complete.md` | Everyone (versioned) |

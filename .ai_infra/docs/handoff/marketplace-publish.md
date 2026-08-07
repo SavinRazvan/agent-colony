@@ -198,7 +198,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 | Organization handle | `savin-razvan` (or `agent-colony`) |
 | Contact email | razvan.i.savin@gmail.com |
 | Logotype URL | `https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/logo.png` |
-| Description | Agent Colony installs multi-agent workflow into any Cursor project (8 agents, 13 skills, 7 rules): GitHub Project as writable backlog/status SSOT, PR lifecycle scripts, `.local/` evidence, optional MCP. Run **`/workflow-activate`**, then first-run **`/board`** (Playground board shell) before **`/implementer`**. Pattern A: one script per maintainer action. |
+| Description | Agent Colony installs multi-agent workflow into any Cursor project (8 agents, 14 skills, 7 rules): GitHub Project as writable backlog/status SSOT, PR lifecycle scripts, `.local/` evidence, optional MCP. Run **`/workflow-activate`**, then first-run **`/board`** (Playground board shell) before **`/implementer`**. Pattern A: one script per maintainer action. |
 | GitHub repository | https://github.com/SavinRazvan/agent-colony |
 | Owner | Individual · razvan.i.savin@gmail.com |
 | Website URL | https://razvansavin.com/ |
@@ -226,6 +226,8 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 **Listing copy refresh (2026-08-07 rename leftover sync):** Re-verified against `IMPLEMENTATION-STATUS.md` + filesystem post v0.6.0/v0.6.1 CLI/MCP rename + local-workspace template cleanup — **1458** tests; agent/skill/rule counts (**8** / **13** / **7**); kit version **0.6.1**.
 
 **Listing copy refresh (2026-08-07 consumer activate hardening):** Re-verified after activate gitignore/venv/STARTER/MCP-tool hardening — **1465** tests; agent/skill/rule counts (**8** / **13** / **7**); kit version **0.6.1**.
+
+**Listing copy refresh (2026-08-07 update-agent-colony command):** Added `/update-agent-colony` + `agent_colony update` version-gated upgrade — **1476** tests; agent/skill/rule counts (**8** / **14** / **7**); kit version **0.6.1**.
 
 **Listing copy refresh (2026-07-20 DOC-CANVAS-ALIGN):** Canvases re-aligned to live CLI (**22** leaves incl. `board-bootstrap`), board-shell day-0 story, test-runner `coverage.json` + post-100% doc sync, VERIFIED **2026-07-20**; metrics unchanged (**1178** / **7089** / **100%**; **8** / **12** / **7**).
 

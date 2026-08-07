@@ -41,8 +41,8 @@ Update `.cursor/mcp.json` `args` to `["-m", "agent_colony_mcp"]` (or re-run acti
 
 If an older activate left only MCP secret lines in `.gitignore`, or omitted the consumer `STARTER-001` drift marker:
 
-1. Re-run `source .venv/bin/activate && python3 -m agent_colony activate --directory .`  
-   (heals `.gitignore` for `.local/` + `.venv/`, seeds `STARTER-001` into `work-tracker.md`, creates `.venv` only if missing and `--with-venv` is on).
+1. Re-run `source .venv/bin/activate && python3 -m agent_colony update --directory .`  
+   (when up to date: heals `.gitignore` for `.local/` + `.venv/`, seeds `STARTER-001`, creates missing `.venv`; when source newer: full kit refresh). Plain `activate` also heals when planes are ready.
 2. If `.venv/` or `.local/` were already committed: keep the healed `.gitignore`, then  
    `git rm -r --cached .venv .local` and commit app sources (`src/`, `pyproject.toml`, …) instead.
 3. MCP tool rename: `workflow_mcp_connection_guide` → `workflow_agent_colony_mcp_connection_guide` (re-copy exemplar `mcp.agents.yaml` tools_hint or edit locally).
@@ -57,19 +57,33 @@ If an older activate left only MCP secret lines in `.gitignore`, or omitted the 
 
 ## Upgrade command
 
-**Light refresh (dashboards + activate scripts, keeps trackers):**
+**Preferred (version-gated):**
 
 ```bash
 cd ~/Projects/my-app    # your activated project
 source .venv/bin/activate
-python3 -m agent_colony activate --directory .
+python3 -m agent_colony update --directory .
+# or Agent chat: /update-agent-colony
 ```
 
-Same as `/workflow-activate` in Agent chat when planes are already ready. Refreshes kit-managed dashboard HTML, `pages.json`, and install scripts from the plugin payload.
+Compares `.ai_infra/.kit-version` to the activate source `manifest.yaml` `kit_version`:
 
-**Full reinstall (scripts, agents, rules — review** `.local/` **merge):**
+| Result | Action |
+|--------|--------|
+| Up to date | Light heal — dashboards, runtime `.gitignore`, `STARTER-001`, missing `.venv` |
+| Source newer | Full kit-managed refresh (agents/rules/skills/scripts) |
+| `--check` | Report only (no writes) |
+| `--force` | Full refresh even when versions match |
+
+Same as Agent chat **`/update-agent-colony`**. See [update-agent-colony skill](../../.cursor/skills/update-agent-colony/SKILL.md).
+
+**Advanced aliases** (same underlying scaffold paths):
 
 ```bash
+# Light heal only (no version compare) — also what plain re-activate does when planes are ready
+python3 -m agent_colony activate --directory .
+
+# Full reinstall without version gate
 python3 -m agent_colony activate --directory . --force
 ```
 

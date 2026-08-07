@@ -1,0 +1,272 @@
+"""
+File: update_cli.py
+Path: .ai_infra/install/agent_colony/update_cli.py
+Role: Version-gated consumer kit upgrade — heal when current, full scaffold when newer.
+Used By:
+ - .ai_infra/install/agent_colony/cli.py
+ - .cursor/skills/update-agent-colony/SKILL.md
+Depends On:
+ - .ai_infra/install/agent_colony/activate_cli.py
+ - .ai_infra/scripts/install/plane_status.py
+ - .ai_infra/scripts/install/scaffold.py (via activate force path)
+Notes:
+ - First install remains activate; update is for already-activated apps after plugin/kit bump.
+"""
+
+from __future__ import annotations
+
+import argparse
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+import yaml
+
+import activate_cli
+
+
+_VERSION_RE = re.compile(r"^(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:[.-].*)?$")
+
+
+def read_installed_version(target: Path) -> str | None:
+    path = target / ".ai_infra" / ".kit-version"
+    if not path.is_file():
+        return None
+    text = path.read_text(encoding="utf-8").strip()
+    return text or None
+
+
+def read_source_version(source: Path) -> str:
+    manifest = source / ".ai_infra" / "manifest.yaml"
+    if not manifest.is_file():
+        raise FileNotFoundError(f"missing manifest: {manifest}")
+    raw = yaml.safe_load(manifest.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise ValueError(f"invalid manifest (not a mapping): {manifest}")
+    version = str(raw.get("kit_version", "")).strip()
+    if not version:
+        raise ValueError(f"manifest missing kit_version: {manifest}")
+    return version
+
+
+def _parse_version_tuple(version: str) -> tuple[int, ...] | None:
+    match = _VERSION_RE.match(version.strip())
+    if not match:
+        return None
+    parts = [int(p) if p is not None else 0 for p in match.groups()]
+    return tuple(parts)
+
+
+def compare_versions(installed: str, available: str) -> int:
+    """Return -1 if installed < available, 0 if equal, 1 if installed > available."""
+    left = _parse_version_tuple(installed)
+    right = _parse_version_tuple(available)
+    if left is not None and right is not None:
+        if left < right:
+            return -1
+        if left > right:
+            return 1
+        return 0
+    if installed == available:
+        return 0
+    return -1 if installed < available else 1
+
+
+def decide_action(*, installed: str | None, available: str, force: bool) -> str:
+    """Return heal | upgrade | missing."""
+    if installed is None:
+        return "missing"
+    if force:
+        return "upgrade"
+    if compare_versions(installed, available) < 0:
+        return "upgrade"
+    return "heal"
+
+
+def _run_scaffold_upgrade(
+    target: Path,
+    source: Path,
+    *,
+    profile: str,
+    with_venv: bool,
+    with_mcp_json: bool,
+    verify: bool,
+) -> int:
+    from paths import kit_root, scripts_dir
+
+    script = scripts_dir("install", kit_root()) / "scaffold.py"
+    cmd = [
+        sys.executable,
+        str(script),
+        "--target",
+        str(target),
+        "--source",
+        str(source),
+        "--profile",
+        profile,
+    ]
+    if with_venv:
+        cmd.append("--with-venv")
+    if with_mcp_json:
+        cmd.append("--with-mcp-json")
+    if verify:
+        cmd.append("--verify")
+    proc = subprocess.run(cmd, cwd=kit_root())
+    return int(proc.returncode)
+
+
+def _run_light_heal(target: Path, source: Path, *, with_venv: bool) -> None:
+    from paths import kit_root
+
+    activate_cli._refresh_dashboard_templates(target, source, kit_root())
+    activate_cli._heal_consumer_runtime(target, with_venv=with_venv)
+
+
+def cmd_update(args: argparse.Namespace) -> int:
+    from paths import kit_root
+
+    target = Path(args.directory).resolve()
+    kit_ver_path = target / ".ai_infra" / ".kit-version"
+    if not (target / ".ai_infra").is_dir():
+        print(
+            "update: FAIL — workspace not activated (.ai_infra missing). "
+            "Run: python3 -m agent_colony activate --directory .",
+            file=sys.stderr,
+        )
+        return 1
+
+    try:
+        source = activate_cli.resolve_activate_source(args.source, target, kit_root())
+    except FileNotFoundError as exc:
+        print(f"update: FAIL — {exc}", file=sys.stderr)
+        return 1
+
+    if source.resolve() == target.resolve():
+        print(
+            "update: FAIL — cannot upgrade a workspace from itself; "
+            "pass --source <kit-root|payload/> or set WORKFLOW_KIT_PAYLOAD",
+            file=sys.stderr,
+        )
+        return 1
+
+    try:
+        available = read_source_version(source)
+    except (OSError, ValueError, FileNotFoundError) as exc:
+        print(f"update: FAIL — {exc}", file=sys.stderr)
+        return 1
+
+    installed = read_installed_version(target)
+    action = decide_action(
+        installed=installed,
+        available=available,
+        force=bool(args.force),
+    )
+
+    print(f"installed={installed or '(none)'}")
+    print(f"available={available}")
+    print(f"source={source}")
+    print(f"action={action}")
+
+    if args.check:
+        if action == "missing":
+            print("check: would_activate (no .kit-version — run activate first)")
+            return 1
+        if action == "upgrade":
+            print("check: would_upgrade (full kit-managed refresh)")
+        else:
+            print("check: would_heal (dashboards + runtime gitignore/STARTER/venv)")
+        return 0
+
+    if action == "missing":
+        print(
+            "update: FAIL — missing .ai_infra/.kit-version. "
+            "First install: python3 -m agent_colony activate --directory .",
+            file=sys.stderr,
+        )
+        return 1
+
+    plane_status = activate_cli._import_plane_status()
+
+    if action == "heal":
+        print("\nKit up to date — light heal (dashboards + runtime).")
+        _run_light_heal(target, source, with_venv=bool(args.with_venv))
+        status = plane_status.assess_planes(
+            target, profile=args.profile, require_venv=bool(args.with_venv)
+        )
+        print(plane_status.format_plane_report(status))
+        if not status.all_ready:
+            print("update: FAIL — runtime still incomplete after heal", file=sys.stderr)
+            return 1
+        print("update: OK — healed (no version bump)")
+        return 0
+
+    print(f"\nUpgrading three planes from {source} → {target}")
+    code = _run_scaffold_upgrade(
+        target,
+        source,
+        profile=args.profile,
+        with_venv=bool(args.with_venv),
+        with_mcp_json=bool(args.with_mcp_json),
+        verify=bool(args.verify),
+    )
+    if code != 0:
+        return code
+
+    activate_cli._heal_consumer_runtime(target, with_venv=bool(args.with_venv))
+    status = plane_status.assess_planes(
+        target, profile=args.profile, require_venv=bool(args.with_venv)
+    )
+    print("\nPost-update plane status:")
+    print(plane_status.format_plane_report(status))
+    if not status.all_ready:
+        print("update: FAIL — planes still incomplete after upgrade", file=sys.stderr)
+        return 1
+
+    new_installed = read_installed_version(target)
+    print(f"update: OK — upgraded to {new_installed or available}")
+    print("Preserved: AGENTS.md (if present), mcp.user.json, .local/user_settings/, trackers.")
+    print("Next: python3 -m agent_colony health && python3 -m agent_colony mcp validate")
+    return 0
+
+
+def register_update_subparser(sub: argparse._SubParsersAction) -> None:
+    update = sub.add_parser(
+        "update",
+        help="Version-gated kit upgrade (heal if current; full refresh if newer)",
+    )
+    update.add_argument(
+        "--directory",
+        type=Path,
+        default=".",
+        help="Target workspace (default: current directory)",
+    )
+    update.add_argument(
+        "--source",
+        type=Path,
+        default=None,
+        help="Kit root or payload/ (default: same auto-resolve as activate)",
+    )
+    update.add_argument(
+        "--profile",
+        default="with_mcp",
+        choices=("default", "with_mcp"),
+        help="Install profile (default: with_mcp)",
+    )
+    update.add_argument("--with-venv", action="store_true", default=True)
+    update.add_argument("--no-venv", action="store_false", dest="with_venv")
+    update.add_argument("--with-mcp-json", action="store_true", default=True)
+    update.add_argument("--no-mcp-json", action="store_false", dest="with_mcp_json")
+    update.add_argument("--verify", action="store_true", default=True)
+    update.add_argument("--no-verify", action="store_false", dest="verify")
+    update.add_argument(
+        "--check",
+        action="store_true",
+        help="Report installed vs available and planned action; no writes",
+    )
+    update.add_argument(
+        "--force",
+        action="store_true",
+        help="Full kit-managed refresh even when versions match",
+    )
+    update.set_defaults(func=cmd_update)

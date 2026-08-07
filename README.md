@@ -9,7 +9,7 @@
 | | |
 |--|--|
 | **Product repo** | [agent-colony](https://github.com/SavinRazvan/agent-colony) |
-| **Version** | `0.6.1` · **Tests** · 1465 · **Agents** · 8 · **Rules** · **7 universal** |
+| **Version** | `0.6.1` · **Tests** · 1476 · **Agents** · 8 · **Rules** · **7 universal** |
 | **Board (kit-dev)** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) — reference layout for **Prioritized backlog** + **Status board** |
 
 ---
@@ -26,7 +26,7 @@
 ## What you get
 
 - **8 agents:** `implementer`, `test-runner`, `verifier`, `auditor`, `researcher`, `integrator`, `drift-guard`, `board`
-- **13 canonical skills** + maintainer PR slash skills (`/review-pr` → `/prepare-pr` → `/merge-pr`)
+- **14 canonical skills** + maintainer PR slash skills (`/review-pr` → `/prepare-pr` → `/merge-pr`)
 - **Board Pattern A CLI:** `python3 -m agent_colony project …` (claim, handoff, Tier-1 fields, outbox)
 - **PR gates** via `prepare.py` · optional MCP (`agent_colony_mcp`) · research corpus under `_research_results/` (opt-in)
 
