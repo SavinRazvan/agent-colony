@@ -23,10 +23,14 @@ kit:
     - auditor
     - researcher
     - integrator
+    - drift-guard
+    - board
   tools_hint:
     - workflow_run_prepare
     - workflow_get_tracker
     - workflow_list_mcp_registry
+    - workflow_integrate_validate
+    - workflow_drift_validate
     - workflow_mcp_connection_guide
 
 # External servers — add rows as you connect more capability
@@ -93,6 +97,9 @@ agent_defaults:
   test-runner:
     primary_servers: [agent-colony-mcp]
     optional_servers: []
+  verifier:
+    primary_servers: [agent-colony-mcp]
+    optional_servers: []
   auditor:
     primary_servers: [agent-colony-mcp]
     optional_servers: [deepwiki]
@@ -100,6 +107,12 @@ agent_defaults:
     primary_servers: [agent-colony-mcp]
     optional_servers: [deepwiki]
   integrator:
+    primary_servers: [agent-colony-mcp]
+    optional_servers: []
+  drift-guard:
+    primary_servers: [agent-colony-mcp]
+    optional_servers: []
+  board:
     primary_servers: [agent-colony-mcp]
     optional_servers: []
 

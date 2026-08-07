@@ -3,13 +3,13 @@ servers:
   agent-colony-mcp:
     tier: kit
     description: PR workflow, trackers, gates
-    agents: [implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard]
+    agents: [implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard, board]
     tools_hint: [workflow_run_prepare, workflow_get_tracker, workflow_list_mcp_registry, workflow_integrate_validate, workflow_drift_validate]
   # User adds keys matching mcp.json mcpServers:
   deepwiki:
     tier: external
     description: Public GitHub repo docs/Q&A (no auth) — Cognition DeepWiki
-    agents: [implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard]
+    agents: [implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard, board]
     tools_hint: [read_wiki_structure, read_wiki_contents, ask_question]
   my-custom-server:
     tier: external
