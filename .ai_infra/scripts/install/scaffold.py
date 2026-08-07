@@ -396,6 +396,8 @@ def _scaffold_local(source: Path, target: Path, dry_run: bool, log: list[str]) -
     for name in EXEMPLAR_TRACKERS:
         _copy_file_if_missing(exemplars / name, current / name, dry_run, log)
 
+    _seed_consumer_drift_marker(target, dry_run, log)
+
     audit_exemplars = exemplars / "audits"
     for name in AUDIT_EXEMPLARS:
         _copy_file_if_missing(audit_exemplars / name, audits / name, dry_run, log)
@@ -438,6 +440,28 @@ def _scaffold_user_settings(source: Path, target: Path, dry_run: bool, log: list
     for name in USER_SETTINGS_FILES:
         _copy_file_if_missing(exemplars / name, dest_root / name, dry_run, log)
     _scaffold_board_shell_overlay(source, target, dry_run, log)
+
+
+STARTER_DRIFT_MARKER = "<!-- STARTER-001: consumer drift profile marker -->"
+
+
+def _seed_consumer_drift_marker(target: Path, dry_run: bool, log: list[str]) -> None:
+    """Append STARTER-001 to consumer work-tracker (not kit exemplars — DOC-003)."""
+    if (target / KIT_TESTS_MARKER).is_file():
+        _log(log, "SKIP STARTER-001 seed (kit-dev repo)")
+        return
+    tracker = target / ".local" / "index-and-planning" / "current" / "work-tracker.md"
+    if not tracker.is_file():
+        _log(log, f"SKIP STARTER-001 seed (missing {tracker})")
+        return
+    if dry_run:
+        _log(log, f"DRY-RUN seed STARTER-001 into {tracker}")
+        return
+    text = tracker.read_text(encoding="utf-8")
+    if "STARTER-001" in text:
+        return
+    tracker.write_text(text.rstrip() + "\n\n" + STARTER_DRIFT_MARKER + "\n", encoding="utf-8")
+    _log(log, f"SEED STARTER-001 into {tracker}")
 
 
 def _scaffold_board_shell_overlay(source: Path, target: Path, dry_run: bool, log: list[str]) -> None:
@@ -659,6 +683,14 @@ def scaffold(
     if spec.get("scaffold_local"):
         _scaffold_local(source, target, dry_run, log)
         _scaffold_user_settings(source, target, dry_run, log)
+
+    if not dry_run:
+        mcp_manage = _load_mcp_manage(source)
+        if mcp_manage is not None:
+            mcp_manage.ensure_consumer_gitignore(target)
+            _log(log, f"ENSURE consumer .gitignore under {target}")
+        else:
+            _log(log, "SKIP consumer .gitignore (mcp_manage unavailable)")
 
     overlay = spec.get("overlay_rules")
     if overlay:

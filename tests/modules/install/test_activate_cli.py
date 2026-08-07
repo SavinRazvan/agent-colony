@@ -156,6 +156,7 @@ def test_print_post_activate_hints_board_first_when_enabled(
     assert "gh auth status" in out
     assert "gh auth refresh" in out
     assert "contributors validate" in out
+    assert "replace placeholders" in out
     assert "board-shell init --minimal" in out
     assert "minimal 2-view" in out
     assert "project board-bootstrap --check" in out
@@ -166,6 +167,27 @@ def test_print_post_activate_hints_board_first_when_enabled(
     assert "apply default shell" not in out.lower() or "CONSENT" in out
     assert "mcp smoke --server deepwiki" in out
     assert "/mcp-connect" in out
+
+
+def test_print_post_activate_hints_configured_owner_skips_placeholders(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    settings = tmp_path / ".local" / "user_settings"
+    settings.mkdir(parents=True)
+    (settings / "github.collaboration.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "owner": {"display_name": "Ada Lovelace", "github_user": "@ada"},
+                "project_ssot": {"enabled": False},
+            }
+        ),
+        encoding="utf-8",
+    )
+    activate_cli._print_post_activate_hints(tmp_path)
+    out = capsys.readouterr().out
+    assert "Owner configured" in out
+    assert "replace placeholders" not in out
+    assert "/implementer" in out
 
 
 def test_print_post_activate_hints_tracker_fallback_when_disabled(
@@ -181,6 +203,7 @@ def test_print_post_activate_hints_tracker_fallback_when_disabled(
     out = capsys.readouterr().out
     assert "session-pointer.md" in out
     assert "/implementer" in out
+    assert "replace placeholders" in out
     assert "mcp smoke --server deepwiki" in out
     assert "/mcp-connect" in out
 
@@ -228,8 +251,63 @@ def test_cmd_activate_all_ready_settings_pass(tmp_path: Path, monkeypatch: pytes
         "run",
         lambda *a, **k: SimpleNamespace(returncode=0, stdout="PASS", stderr=""),
     )
+    monkeypatch.setattr(activate_cli, "_heal_consumer_runtime", lambda *a, **k: None)
     code = activate_cli.cmd_activate(_args(directory=target))
     assert code == 0
+
+
+def test_cmd_activate_all_ready_heals_gitignore_and_creates_venv(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target = tmp_path / "target"
+    _make_ready(target)
+    (target / ".venv" / "bin").mkdir(parents=True)
+    (target / ".venv" / "bin" / "python").write_text("", encoding="utf-8")
+
+    created: list[Path] = []
+
+    def _fake_create(t: Path, dry_run: bool, log: list[str]) -> None:
+        created.append(t)
+        py = t / ".venv" / "bin" / "python"
+        py.parent.mkdir(parents=True, exist_ok=True)
+        py.write_text("", encoding="utf-8")
+        log.append(f"VENV created: {t / '.venv'}")
+
+    class _FakeScaffold:
+        @staticmethod
+        def _load_mcp_manage(_source: Path):
+            class _MM:
+                @staticmethod
+                def ensure_consumer_gitignore(root: Path) -> None:
+                    (root / ".gitignore").write_text(".local/\n.venv/\n", encoding="utf-8")
+
+            return _MM()
+
+        @staticmethod
+        def _seed_consumer_drift_marker(t: Path, dry_run: bool, log: list[str]) -> None:
+            tracker = t / ".local" / "index-and-planning" / "current" / "work-tracker.md"
+            tracker.parent.mkdir(parents=True, exist_ok=True)
+            tracker.write_text("# Work\n\nSTARTER-001\n", encoding="utf-8")
+            log.append("SEED STARTER-001")
+
+        _create_venv = staticmethod(_fake_create)
+
+    monkeypatch.setattr(activate_cli, "_import_scaffold_refresh", lambda: _FakeScaffold)
+    monkeypatch.setattr(activate_cli, "_refresh_dashboard_templates", lambda *a, **k: None)
+    monkeypatch.setattr(
+        activate_cli.subprocess,
+        "run",
+        lambda *a, **k: SimpleNamespace(returncode=0, stdout="PASS", stderr=""),
+    )
+    # Missing venv python → heal should create.
+    (target / ".venv" / "bin" / "python").unlink()
+    code = activate_cli.cmd_activate(_args(directory=target, with_venv=True))
+    assert code == 0
+    assert created == [target]
+    assert ".local/" in (target / ".gitignore").read_text(encoding="utf-8")
+    assert "STARTER-001" in (
+        target / ".local" / "index-and-planning" / "current" / "work-tracker.md"
+    ).read_text(encoding="utf-8")
 
 
 def test_cmd_activate_idempotent_refreshes_dashboards_fallback(
@@ -247,6 +325,7 @@ def test_cmd_activate_idempotent_refreshes_dashboards_fallback(
         calls.append((t, source, default_root))
 
     monkeypatch.setattr(activate_cli, "_refresh_dashboard_templates", _fake_refresh)
+    monkeypatch.setattr(activate_cli, "_heal_consumer_runtime", lambda *a, **k: None)
     monkeypatch.setattr(
         activate_cli,
         "resolve_activate_source",
@@ -272,6 +351,7 @@ def test_cmd_activate_all_ready_settings_fail_pending_allowed(
     target = tmp_path / "target"
     _make_ready(target)
 
+    monkeypatch.setattr(activate_cli, "_heal_consumer_runtime", lambda *a, **k: None)
     monkeypatch.setattr(
         activate_cli.subprocess,
         "run",
@@ -287,6 +367,7 @@ def test_cmd_activate_all_ready_settings_fail_pending_disallowed(
     target = tmp_path / "target"
     _make_ready(target)
 
+    monkeypatch.setattr(activate_cli, "_heal_consumer_runtime", lambda *a, **k: None)
     monkeypatch.setattr(
         activate_cli.subprocess,
         "run",
@@ -367,6 +448,10 @@ def test_cmd_activate_install_succeeds_settings_pass(tmp_path: Path, monkeypatch
     def _fake_run(cmd, *a, **k):  # noqa: ANN001
         if "--target" in cmd:
             _make_ready(target)
+            if "--with-venv" in cmd:
+                py = target / ".venv" / "bin" / "python"
+                py.parent.mkdir(parents=True, exist_ok=True)
+                py.write_text("", encoding="utf-8")
             return SimpleNamespace(returncode=0, stdout="", stderr="")
         return SimpleNamespace(returncode=0, stdout="PASS", stderr="")
 

@@ -483,6 +483,32 @@ def test_ensure_mcp_gitignore_adds_secrets_line(tmp_path: Path) -> None:
     assert ".cursor/mcp.user.json" in text
 
 
+def test_ensure_runtime_gitignore_creates_new(tmp_path: Path) -> None:
+    mcp_manage.ensure_runtime_gitignore(tmp_path)
+    text = (tmp_path / ".gitignore").read_text(encoding="utf-8")
+    assert ".local/" in text
+    assert ".venv/" in text
+    assert ".coverage" in text
+
+
+def test_ensure_runtime_gitignore_appends_when_missing(tmp_path: Path) -> None:
+    (tmp_path / ".gitignore").write_text("node_modules/\n", encoding="utf-8")
+    mcp_manage.ensure_runtime_gitignore(tmp_path)
+    text = (tmp_path / ".gitignore").read_text(encoding="utf-8")
+    assert "node_modules/" in text
+    assert ".local/" in text
+    assert ".venv/" in text
+
+
+def test_ensure_consumer_gitignore_combines_runtime_and_mcp(tmp_path: Path) -> None:
+    mcp_manage.ensure_consumer_gitignore(tmp_path)
+    text = (tmp_path / ".gitignore").read_text(encoding="utf-8")
+    assert ".local/" in text
+    assert ".venv/" in text
+    assert ".cursor/mcp.user.json" in text
+    assert ".local/user_settings/mcp.secrets.yaml" in text
+
+
 # ---------------------------------------------------------------------------
 # DeepWiki consumer seed helpers
 # ---------------------------------------------------------------------------

@@ -79,10 +79,23 @@ def _run_settings_validate(root: Path) -> tuple[int, str]:
     return proc.returncode, output
 
 
+def _is_placeholder_owner_cfg(raw: object) -> bool:
+    if not isinstance(raw, dict):
+        return True
+    pr_dir = Path(__file__).resolve().parents[2] / "scripts" / "pr"
+    pr_str = str(pr_dir)
+    if pr_str not in sys.path:
+        sys.path.insert(0, pr_str)
+    from user_settings_load import is_placeholder_owner
+
+    return bool(is_placeholder_owner(raw))
+
+
 def _print_post_activate_hints(root: Path) -> None:
     settings = root / ".local" / "user_settings"
     yaml_path = settings / "github.collaboration.yaml"
     collab_enabled = False
+    raw: object = None
     try:
         raw = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError):
@@ -91,32 +104,80 @@ def _print_post_activate_hints(root: Path) -> None:
         project_ssot = raw.get("project_ssot")
         collab_enabled = isinstance(project_ssot, dict) and bool(project_ssot.get("enabled"))
 
+    needs_owner_edit = _is_placeholder_owner_cfg(raw)
+
     if collab_enabled:
         print("\nYou're almost done — board-first setup:")
-        print(f"  1. Edit {yaml_path}")
-        print('     Set owner.display_name and owner.github_user (replace placeholders).')
-        print("  2. Run: source .venv/bin/activate && python3 -m agent_colony contributors validate")
-        print("  3. Run: gh auth status — refresh Project scopes only if missing")
+        step = 1
+        if needs_owner_edit:
+            print(f"  {step}. Edit {yaml_path}")
+            print("     Set owner.display_name and owner.github_user (replace placeholders).")
+            step += 1
+            print(
+                f"  {step}. Run: source .venv/bin/activate && "
+                "python3 -m agent_colony contributors validate"
+            )
+            step += 1
+        else:
+            print(f"  {step}. Owner configured (contributors validate: PASS).")
+            step += 1
+        print(f"  {step}. Run: gh auth status — refresh Project scopes only if missing")
         print("     (gh auth refresh -h github.com -s read:project,project)")
-        print("  4. Agent chat: paste Project URL + this repo URL → /board wires project_ssot ids")
-        print("  5. Run: source .venv/bin/activate && python3 -m agent_colony project doctor")
-        print("  6. Board shell overlay seeded on activate (minimal 2-view); if missing:")
-        print("     source .venv/bin/activate && python3 -m agent_colony project board-shell init --minimal")
-        print("  7. Agent chat: /board — CONSENT GATE then TURN PROTOCOL coach")
-        print("  8. Run: source .venv/bin/activate && python3 -m agent_colony project board-bootstrap --check")
-        print("     Until shell green (2-view overlay or six-view default; Tier-1 columns on both primary views).")
-        print("  9. Run: source .venv/bin/activate && python3 -m agent_colony project status")
-        print(" 10. In Agent chat: /implementer — local trackers are offline fallback under board_only.")
-        print(" 11. Canvas preview: python3 -m agent_colony canvas doctor")
+        step += 1
+        print(
+            f"  {step}. Agent chat: paste Project URL + this repo URL → /board wires project_ssot ids"
+        )
+        step += 1
+        print(f"  {step}. Run: source .venv/bin/activate && python3 -m agent_colony project doctor")
+        step += 1
+        print(f"  {step}. Board shell overlay seeded on activate (minimal 2-view); if missing:")
+        print(
+            "     source .venv/bin/activate && "
+            "python3 -m agent_colony project board-shell init --minimal"
+        )
+        step += 1
+        print(f"  {step}. Agent chat: /board — CONSENT GATE then TURN PROTOCOL coach")
+        step += 1
+        print(
+            f"  {step}. Run: source .venv/bin/activate && "
+            "python3 -m agent_colony project board-bootstrap --check"
+        )
+        print(
+            "     Until shell green (2-view overlay or six-view default; "
+            "Tier-1 columns on both primary views)."
+        )
+        step += 1
+        print(f"  {step}. Run: source .venv/bin/activate && python3 -m agent_colony project status")
+        step += 1
+        print(
+            f"  {step}. In Agent chat: /implementer — local trackers are offline fallback under board_only."
+        )
+        step += 1
+        print(f"  {step}. Canvas preview: python3 -m agent_colony canvas doctor")
         print("     (sync repo canvases: canvas sync --missing)")
-        print(" 12. MCP smoke: python3 -m agent_colony mcp smoke --server deepwiki")
+        step += 1
+        print(f"  {step}. MCP smoke: python3 -m agent_colony mcp smoke --server deepwiki")
         print("     (/mcp-connect for enable DeepWiki | link custom | doctor)")
     else:
         print("\nYou're almost done — 3 quick steps:")
-        print(f"  1. Edit {yaml_path}")
-        print('     Set owner.display_name and owner.github_user (replace placeholders).')
-        print("  2. Run: source .venv/bin/activate && python3 -m agent_colony contributors validate")
-        print("  3. In Agent chat: /implementer — read .local/index-and-planning/current/session-pointer.md")
+        if needs_owner_edit:
+            print(f"  1. Edit {yaml_path}")
+            print("     Set owner.display_name and owner.github_user (replace placeholders).")
+            print(
+                "  2. Run: source .venv/bin/activate && "
+                "python3 -m agent_colony contributors validate"
+            )
+            print(
+                "  3. In Agent chat: /implementer — "
+                "read .local/index-and-planning/current/session-pointer.md"
+            )
+        else:
+            print("  1. Owner configured (contributors validate: PASS).")
+            print(
+                "  2. In Agent chat: /implementer — "
+                "read .local/index-and-planning/current/session-pointer.md"
+            )
+            print("  3. Optional: enable project_ssot + /board when ready for board SSOT.")
         print("\nOptional:")
         print("  source .venv/bin/activate && python3 -m agent_colony integrate validate")
         print("  source .venv/bin/activate && python3 -m agent_colony health")
@@ -136,6 +197,28 @@ def _import_scaffold_refresh() -> object:
     import scaffold
 
     return scaffold
+
+
+def _heal_consumer_runtime(target: Path, *, with_venv: bool) -> None:
+    """Idempotent heal: gitignore + STARTER marker + missing .venv when requested."""
+    from paths import kit_root
+
+    scaffold = _import_scaffold_refresh()
+    log: list[str] = []
+    mcp_manage = scaffold._load_mcp_manage(target)
+    if mcp_manage is None:
+        mcp_manage = scaffold._load_mcp_manage(kit_root())
+    if mcp_manage is not None:
+        mcp_manage.ensure_consumer_gitignore(target)
+        print(f"ENSURE consumer .gitignore under {target}")
+    scaffold._seed_consumer_drift_marker(target, False, log)
+    for line in log:
+        print(line)
+    if with_venv and not (target / ".venv" / "bin" / "python").is_file():
+        before = len(log)
+        scaffold._create_venv(target, False, log)
+        for line in log[before:]:
+            print(line)
 
 
 def _resolve_dashboard_refresh_source(
@@ -163,7 +246,8 @@ def cmd_activate(args: argparse.Namespace) -> int:
 
     target = Path(args.directory).resolve()
     plane_status = _import_plane_status()
-    status = plane_status.assess_planes(target, profile=args.profile)
+    # Path planes only — missing .venv is healed below when --with-venv (default).
+    status = plane_status.assess_planes(target, profile=args.profile, require_venv=False)
 
     if status.all_ready and not args.force:
         print(plane_status.format_plane_report(status))
@@ -172,6 +256,14 @@ def cmd_activate(args: argparse.Namespace) -> int:
             _refresh_dashboard_templates(target, ext_source, kit_root())
         except FileNotFoundError:
             _refresh_dashboard_templates(target, None, kit_root())
+        _heal_consumer_runtime(target, with_venv=bool(args.with_venv))
+        status = plane_status.assess_planes(
+            target, profile=args.profile, require_venv=bool(args.with_venv)
+        )
+        print(plane_status.format_plane_report(status))
+        if not status.all_ready:
+            print("activate: FAIL — runtime still incomplete after heal", file=sys.stderr)
+            return 1
         print("\nAll three planes ready — skipping install.")
         code, out = _run_settings_validate(target)
         if out:
@@ -196,7 +288,8 @@ def cmd_activate(args: argparse.Namespace) -> int:
 
     if source.resolve() == target.resolve():
         print(
-            "activate: FAIL — cannot install a workspace into itself; use kit root as --source for another target",
+            "activate: FAIL — cannot install a workspace into itself; "
+            "use kit root as --source for another target",
             file=sys.stderr,
         )
         return 1
@@ -226,7 +319,9 @@ def cmd_activate(args: argparse.Namespace) -> int:
     if code != 0:
         return code
 
-    status = plane_status.assess_planes(target, profile=args.profile)
+    status = plane_status.assess_planes(
+        target, profile=args.profile, require_venv=bool(args.with_venv)
+    )
     print("\nPost-install plane status:")
     print(plane_status.format_plane_report(status))
     if not status.all_ready:

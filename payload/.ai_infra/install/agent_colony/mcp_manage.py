@@ -579,16 +579,55 @@ def link_user_server(root: Path, name: str, fragment_file: Path) -> None:
     write_merged_mcp(root)
 
 
-def ensure_mcp_gitignore(root: Path) -> None:
+RUNTIME_GITIGNORE_LINES: tuple[str, ...] = (
+    ".local/",
+    ".venv/",
+    ".env",
+    ".env.*",
+    "!.env.example",
+    "__pycache__/",
+    "*.py[cod]",
+    ".pytest_cache/",
+    ".coverage",
+    "htmlcov/",
+    "*.egg-info/",
+)
+
+MCP_GITIGNORE_LINES: tuple[str, ...] = (
+    ".cursor/mcp.user.json",
+    ".local/user_settings/mcp.secrets.yaml",
+)
+
+
+def _append_gitignore_lines(root: Path, lines: tuple[str, ...], *, header: str) -> None:
     gitignore = root / ".gitignore"
-    lines = [
-        ".cursor/mcp.user.json",
-        ".local/user_settings/mcp.secrets.yaml",
-    ]
     if gitignore.is_file():
         text = gitignore.read_text(encoding="utf-8")
         additions = [ln for ln in lines if ln not in text]
         if additions:
             gitignore.write_text(text.rstrip() + "\n" + "\n".join(additions) + "\n", encoding="utf-8")
-    else:
-        gitignore.write_text("# MCP secrets\n" + "\n".join(lines) + "\n", encoding="utf-8")
+        return
+    gitignore.write_text(header + "\n".join(lines) + "\n", encoding="utf-8")
+
+
+def ensure_runtime_gitignore(root: Path) -> None:
+    """Ensure consumer .gitignore covers .local/, .venv/, and common Python runtime junk."""
+    _append_gitignore_lines(
+        root,
+        RUNTIME_GITIGNORE_LINES,
+        header="# Agent Colony runtime (activate)\n",
+    )
+
+
+def ensure_mcp_gitignore(root: Path) -> None:
+    _append_gitignore_lines(
+        root,
+        MCP_GITIGNORE_LINES,
+        header="# MCP secrets\n",
+    )
+
+
+def ensure_consumer_gitignore(root: Path) -> None:
+    """Write runtime + MCP ignore lines (idempotent append)."""
+    ensure_runtime_gitignore(root)
+    ensure_mcp_gitignore(root)

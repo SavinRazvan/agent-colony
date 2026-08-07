@@ -64,6 +64,20 @@ def test_scaffold_creates_core_layout(tmp_path: Path) -> None:
     assert "workflow-artifacts/drift" in smoke
 
 
+def test_scaffold_writes_runtime_gitignore_and_starter(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT)
+    gi = (target / ".gitignore").read_text(encoding="utf-8")
+    assert ".local/" in gi
+    assert ".venv/" in gi
+    assert ".cursor/mcp.user.json" in gi
+    tracker = (
+        target / ".local" / "index-and-planning" / "current" / "work-tracker.md"
+    ).read_text(encoding="utf-8")
+    assert "STARTER-001" in tracker
+
+
 def test_scaffold_creates_workflow_artifact_buckets(tmp_path: Path) -> None:
     mod = _load_scaffold()
     target = tmp_path / "project"

@@ -31,7 +31,7 @@ kit:
     - workflow_list_mcp_registry
     - workflow_integrate_validate
     - workflow_drift_validate
-    - workflow_mcp_connection_guide
+    - workflow_agent_colony_mcp_connection_guide
 
 # External servers — add rows as you connect more capability
 external_servers:
