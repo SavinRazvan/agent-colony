@@ -2,6 +2,23 @@
 
 Re-run install from a **newer kit source** (git tag, plugin payload, or local clone) into the same consumer project.
 
+## Breaking change (0.6.0)
+
+Kit **0.6.0** renames the Python CLI module and console script:
+
+| Before (removed) | After |
+|------------------|-------|
+| `python -m` old module name | `python -m agent_colony` |
+| Console script old name | `agent-colony` |
+| Root package dir | `agent_colony/` |
+| Install package | `.ai_infra/install/agent_colony/` |
+
+**Cold cut** — old names are not aliased. After upgrading:
+
+1. Re-run `/workflow-activate` or `python -m agent_colony activate --directory .`
+2. Reinstall editable tooling: `pip install -e ".[dev,mcp]"` (kit-dev) so the `agent-colony` console script is on PATH
+3. Update any local scripts/CI that still call the old module or console script
+
 ## Before upgrade
 
 1. Note current version: `cat .ai_infra/.kit-version`
@@ -15,7 +32,7 @@ Re-run install from a **newer kit source** (git tag, plugin payload, or local cl
 ```bash
 cd ~/Projects/my-app    # your activated project
 source .venv/bin/activate
-python3 -m cursor_workflow activate --directory .
+python3 -m agent_colony activate --directory .
 ```
 
 Same as **`/workflow-activate`** in Agent chat when planes are already ready. Refreshes kit-managed dashboard HTML, `pages.json`, and install scripts from the plugin payload.
@@ -23,14 +40,14 @@ Same as **`/workflow-activate`** in Agent chat when planes are already ready. Re
 **Full reinstall (scripts, agents, rules — review `.local/` merge):**
 
 ```bash
-python3 -m cursor_workflow activate --directory . --force
+python3 -m agent_colony activate --directory . --force
 ```
 
 **Kit clone / advanced** — from kit repo:
 
 ```bash
 export TARGET=~/Projects/my-app
-.venv/bin/python -m cursor_workflow install \
+.venv/bin/python -m agent_colony install \
   --target "$TARGET" \
   --source . \
   --profile with_mcp \
@@ -49,16 +66,16 @@ Use `--source payload` when running from the distribution root (see `workflow-ac
 | `.local/` exemplars | Re-copied on **`--force`** only; light re-activate refreshes dashboards + `pages.json` |
 | Dashboard HTML / `pages.json` | Refreshed on every `activate` (idempotent) |
 | `AGENTS.md` | **Not** overwritten if present — delete to refresh from stub, or merge manually |
-| `mcp.user.json` | **Not** overwritten — merge via `python3 -m cursor_workflow mcp validate` |
+| `mcp.user.json` | **Not** overwritten — merge via `python3 -m agent_colony mcp validate` |
 | `.kit-version` | Updated to manifest `kit_version` |
 
 ## After upgrade
 
 ```bash
 cd ~/Projects/my-app
-python3 -m cursor_workflow gates
-python3 -m cursor_workflow health
-python3 -m cursor_workflow mcp validate
+python3 -m agent_colony gates
+python3 -m agent_colony health
+python3 -m agent_colony mcp validate
 ```
 
 ## Rollback

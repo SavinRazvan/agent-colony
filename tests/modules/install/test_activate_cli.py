@@ -5,7 +5,7 @@ Role: Full-branch coverage for activate_cli.py (source resolution, hints, cmd_ac
 Used By:
  - pytest
 Depends On:
- - .ai_infra/install/cursor_workflow/activate_cli.py
+ - .ai_infra/install/agent_colony/activate_cli.py
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ import pytest
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 _AI_INFRA_DIR = REPO_ROOT / ".ai_infra"
 
 for _p in (str(_PKG_DIR), str(_AI_INFRA_DIR)):

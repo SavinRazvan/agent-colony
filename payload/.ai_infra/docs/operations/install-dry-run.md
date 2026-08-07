@@ -8,7 +8,7 @@ Depends On:
  - .ai_infra/docs/maintainer/local-anchoring-patterns.md
  - .ai_infra/templates/local-workspace/
 Notes:
- - Automated: `python -m cursor_workflow install` and `make install-dry-run`.
+ - Automated: `python -m agent_colony install` and `make install-dry-run`.
  - Entry doc: `.ai_infra/docs/operations/consumer-quickstart.md`.
 -->
 
@@ -25,13 +25,13 @@ From the **Agent Colony** repo:
 ```bash
 make install-dry-run
 # or:
-python -m cursor_workflow install \
+python -m agent_colony install \
   --target /path/to/new-project \
   --with-venv \
   --with-mcp-json \
   --verify
 # Kit dev only (full tests tree):
-python -m cursor_workflow install \
+python -m agent_colony install \
   --target /path/to/new-project \
   --with-tests \
   --with-venv \
@@ -60,22 +60,22 @@ Use the sections below if you prefer hand-copying or need to debug scaffold beha
 
 ## 1. Copy core (manual — deprecated)
 
-> **Prefer the [Automated](#automated-recommended) section above.** Hand-copy paths drift from `manifest.yaml` and `cursor_workflow install`. Do **not** copy deprecated `project-rules/` — use `overlays/rules/` only.
+> **Prefer the [Automated](#automated-recommended) section above.** Hand-copy paths drift from `manifest.yaml` and `agent_colony install`. Do **not** copy deprecated `project-rules/` — use `overlays/rules/` only.
 
 If you must debug scaffold behavior, install from **`payload/`** (not repo root):
 
 ```bash
 TARGET=/tmp/agent-colony-dry-run
 SOURCE=/path/to/agent-colony/payload
-python3 -m cursor_workflow install --target "$TARGET" --source "$SOURCE" --dry-run
+python3 -m agent_colony install --target "$TARGET" --source "$SOURCE" --dry-run
 ```
 
 ## 2. Scaffold `.local/` (prefer automated)
 
-**Recommended:** use `scaffold.py` / `cursor_workflow install` — do not hand-mkdir buckets.
+**Recommended:** use `scaffold.py` / `agent_colony install` — do not hand-mkdir buckets.
 
 ```bash
-python -m cursor_workflow install --target "$TARGET" --source "$SOURCE"
+python -m agent_colony install --target "$TARGET" --source "$SOURCE"
 ```
 
 Tier 1 base layout created by scaffold (see [local-workspace-layout.md](local-workspace-layout.md) § Artifact tiers):
@@ -133,7 +133,7 @@ Expected: all PASS (governance may skip CI workflow if `.github/` absent).
 
 ```bash
 cp .cursor/mcp.json.kit.example .cursor/mcp.json
-# or: cursor-workflow install --with-mcp-json (merges kit + mcp.user.json)
+# or: agent-colony install --with-mcp-json (merges kit + mcp.user.json)
 # Edit python path to $TARGET/.venv/bin/python
 AGENT_COLONY_ROOT="$TARGET" .venv/bin/python -m workflow_mcp
 ```
@@ -146,7 +146,7 @@ In Cursor: enable MCP server; call `workflow_list_agents` and `workflow_gate_cou
 - [ ] Twelve canonical skills under `.cursor/skills/` (includes `board-shell`)
 - [ ] Seven rules under `.cursor/rules/*.mdc` (6 kit + `project-ssot-precedence`)
 - [ ] Maintainer skills under `.agents/skills/`
-- [ ] When `project_ssot.enabled`: `python3 -m cursor_workflow project board-bootstrap --check` (default Playground shell)
+- [ ] When `project_ssot.enabled`: `python3 -m agent_colony project board-bootstrap --check` (default Playground shell)
 
 ## Success criteria
 

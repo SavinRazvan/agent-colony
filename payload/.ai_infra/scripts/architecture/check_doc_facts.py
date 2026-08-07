@@ -3,8 +3,8 @@ File: check_doc_facts.py
 Path: .ai_infra/scripts/architecture/check_doc_facts.py
 Role: Machine-enforced canonical doc vs repo fact checks (doc validate).
 Used By:
- - cursor_workflow doc validate
- - cursor_workflow gates
+ - agent_colony doc validate
+ - agent_colony gates
  - scripts/integration/validate.py (INT-013)
  - workflow_mcp workflow_doc_facts_validate
 Depends On:
@@ -86,7 +86,7 @@ def exit_code_for(results: list[CheckResult]) -> int:
 
 def write_preflight_json(results: list[CheckResult], output: Path) -> None:
     payload = {
-        "command": "python -m cursor_workflow doc validate",
+        "command": "python -m agent_colony doc validate",
         "results": [
             {
                 "check_id": r.check_id,

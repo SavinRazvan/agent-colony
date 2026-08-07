@@ -6,7 +6,7 @@
 #   .cursor/mcp.user.json       (server commands, args, env — gitignored)
 #   .cursor/mcp.registry.yaml   (which agents use which servers)
 #
-# Validate: cursor-workflow mcp validate
+# Validate: agent-colony mcp validate
 # Guide:    .ai_infra/docs/operations/connect-external-mcp.md
 
 version: 1
@@ -103,7 +103,7 @@ agent_defaults:
     primary_servers: [agent-colony-mcp]
     optional_servers: []
 
-# Fragments directory (optional) — cursor-workflow mcp link --name X --file ...
+# Fragments directory (optional) — agent-colony mcp link --name X --file ...
 fragments_dir: .cursor/mcp.d
 
 # After editing this file:
@@ -111,4 +111,4 @@ fragments_dir: .cursor/mcp.d
 #   2. Merge enabled external_servers[].transport into mcp.user.json mcpServers
 #   3. cp .cursor/mcp.registry.yaml.example .cursor/mcp.registry.yaml
 #   4. Add registry servers: keys matching mcp.user.json + agents + tools_hint
-#   5. cursor-workflow mcp validate && reload Cursor MCP
+#   5. agent-colony mcp validate && reload Cursor MCP

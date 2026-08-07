@@ -5,9 +5,9 @@ Role: Dispatch coverage for plan_cli via cli.main (ADR-010).
 Used By:
  - pytest
 Depends On:
- - .ai_infra/install/cursor_workflow/cli.py
- - .ai_infra/install/cursor_workflow/plan_cli.py
- - .ai_infra/install/cursor_workflow/plan_manage.py
+ - .ai_infra/install/agent_colony/cli.py
+ - .ai_infra/install/agent_colony/plan_cli.py
+ - .ai_infra/install/agent_colony/plan_manage.py
 Notes:
  - Imports package modules via sys.path so coverage attributes correctly.
 """
@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-PKG = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+PKG = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 
 if str(PKG) not in sys.path:
     sys.path.insert(0, str(PKG))

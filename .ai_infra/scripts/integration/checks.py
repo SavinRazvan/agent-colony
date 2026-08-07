@@ -25,11 +25,11 @@ REQUIRED_AGENT_MARKERS = (
     "## MCP integration",
     "agent-colony-mcp",
     "mcp.registry.yaml",
-    "cursor_workflow mcp",
+    "agent_colony mcp",
 )
 
 CANVAS_AGENT_MARKERS = (
-    "cursor_workflow canvas",
+    "agent_colony canvas",
     "canvas-artifacts",
 )
 

@@ -19,7 +19,7 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs.
 
 ## Agent Colony flow (plain language)
 
-1. Install kit via `cursor_workflow activate` (plugin) or `cursor_workflow install` (kit clone).
+1. Install kit via `agent_colony activate` (plugin) or `agent_colony install` (kit clone).
 2. When `project_ssot.enabled` + `board_only`: Entry = board (`project status` / claim); Exit = Status + Notes. Local trackers = offline fallback only.
 3. Else: agents read `.local/` trackers (`session-pointer.md` → `plan.md` → `work-tracker.md`).
 4. Maintainer PR workflow runs via `.ai_infra/scripts/pr/*` (Pattern A + `prepare.py` `resolve_gates()`).
@@ -32,7 +32,7 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs.
 | MAS | Multi-Agent System — this kit’s agent/skill/script workflow product |
 | SSOT | Single Source of Truth — one authoritative place for a given concern |
 | MCP | Model Context Protocol — Cursor tool server integration |
-| CLI | Command-line interface — here mainly `python3 -m cursor_workflow …` and `gh` |
+| CLI | Command-line interface — here mainly `python3 -m agent_colony …` and `gh` |
 | PR | Pull request — maintainer merge workflow (Pattern A) |
 | ADR | Architecture Decision Record — `.ai_infra/docs/decisions/` (ADR-001…008) |
 | GATES | 2-gate back-compat alias in `.ai_infra/scripts/pr/prepare.py`; SSOT is `resolve_gates()` (kit-dev may append drift + doc facts) |

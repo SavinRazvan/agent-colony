@@ -15,4 +15,4 @@ Ephemeral agent canvases (billing reviews, one-off analyses). **Not** git SSOT â
 | Slug | Saved (UTC) | Agent | Notes |
 |------|-------------|-------|-------|
 
-Sync to IDE preview: `python3 -m cursor_workflow canvas sync --from local --name <slug>`
+Sync to IDE preview: `python3 -m agent_colony canvas sync --from local --name <slug>`

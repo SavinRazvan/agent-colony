@@ -269,7 +269,7 @@ export default function AgentResearcherCanvas() {
         <H2 style={{ margin: 0 }}>How it works</H2>
         <Table headers={["Step", "Action"]} rows={HOW_IT_WORKS} />
         <Callout tone="info" title="CLI owns scaffold; agent owns evidence">
-          python3 -m cursor_workflow research init|fetch|validate. Agent fills
+          python3 -m agent_colony research init|fetch|validate. Agent fills
           rounds 1–6 prose under sources/&lt;slug&gt;/ then exits on complete.
         </Callout>
       </Stack>
@@ -378,7 +378,7 @@ export default function AgentResearcherCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP + CLI">
-        Prefer python3 -m cursor_workflow research init|fetch|validate. External
+        Prefer python3 -m agent_colony research init|fetch|validate. External
         research MCP only when listed for this agent in mcp.registry.yaml.
       </Callout>
 

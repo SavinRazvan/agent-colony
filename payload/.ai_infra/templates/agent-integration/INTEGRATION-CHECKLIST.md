@@ -42,7 +42,7 @@ Notes:
 
 ## Verify
 
-- [ ] `python -m cursor_workflow contributors validate`
+- [ ] `python -m agent_colony contributors validate`
 - [ ] `python .ai_infra/scripts/architecture/check_governance_consistency.py`
 - [ ] `pytest -q tests/modules/___` (if applicable)
 - [ ] `make install-dry-run` (if manifest/scaffold)

@@ -5,8 +5,8 @@ Role: Unit tests for mcp doctor report builders and validate --strict.
 Used By:
  - pytest
 Depends On:
- - .ai_infra/install/cursor_workflow/mcp_cli.py
- - .ai_infra/install/cursor_workflow/mcp_manage.py
+ - .ai_infra/install/agent_colony/mcp_cli.py
+ - .ai_infra/install/agent_colony/mcp_manage.py
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from pathlib import Path
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-CW = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+CW = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 
 
 def _load(name: str, path: Path):
@@ -90,21 +90,21 @@ def test_doctor_report_configured_vs_host(tmp_path: Path) -> None:
 
 def test_validate_strict_fails_without_live_registry(tmp_path: Path) -> None:
     _seed_kit(tmp_path, with_registry=False)
-    cli = _load("cursor_workflow_cli_doc", REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow" / "cli.py")
+    cli = _load("agent_colony_cli_doc", REPO_ROOT / ".ai_infra" / "install" / "agent_colony" / "cli.py")
     code = cli.main(["mcp", "validate", "--directory", str(tmp_path), "--strict"])
     assert code == 1
 
 
 def test_validate_strict_passes_with_live_registry(tmp_path: Path) -> None:
     _seed_kit(tmp_path, with_registry=True, with_user=False)
-    cli = _load("cursor_workflow_cli_doc2", REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow" / "cli.py")
+    cli = _load("agent_colony_cli_doc2", REPO_ROOT / ".ai_infra" / "install" / "agent_colony" / "cli.py")
     code = cli.main(["mcp", "validate", "--directory", str(tmp_path), "--strict"])
     assert code == 0
 
 
 def test_doctor_cli_writes_artifact(tmp_path: Path) -> None:
     _seed_kit(tmp_path)
-    cli = _load("cursor_workflow_cli_doc3", REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow" / "cli.py")
+    cli = _load("agent_colony_cli_doc3", REPO_ROOT / ".ai_infra" / "install" / "agent_colony" / "cli.py")
     code = cli.main(["mcp", "doctor", "--directory", str(tmp_path)])
     assert code == 0
     arts = list((tmp_path / ".local" / "workflow-artifacts" / "mcp").glob("doctor-*.md"))

@@ -148,7 +148,7 @@ const ARTIFACT_LANES: string[][] = [
   [
     "Board (writable SSOT)",
     "GitHub Project Status · Notes · Linked PRs",
-    "All agents via cursor_workflow project …",
+    "All agents via agent_colony project …",
     "ADR-008 board_only — only Status writer",
   ],
   [

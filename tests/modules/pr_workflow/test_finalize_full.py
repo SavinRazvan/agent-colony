@@ -330,7 +330,7 @@ def test_maybe_close_linked_issue_pass_from_cli_output(
     assert calls[0] == [
         calls[0][0],
         "-m",
-        "cursor_workflow",
+        "agent_colony",
         "project",
         "close-linked-issue",
         "--pr",

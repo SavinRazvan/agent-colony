@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (Agent Colony)
 
-**Last updated:** 2026-08-07 (kit version 0.5.0 lockstep bump)
-**Product:** `agent-colony` · CLI: `cursor-workflow` 0.5.0 · **Tests:** 1455
+**Last updated:** 2026-08-07 (CLI rename agent_colony; kit 0.6.0)
+**Product:** `agent-colony` · CLI: `agent-colony` 0.6.0 · **Tests:** 1456
 
 ## Shipped (confirmed in repo)
 
@@ -38,7 +38,7 @@ Notes:
 | Board shell schema + coach | `board-shell.schema.yaml` + `board-shell` skill; schema-aware `board-bootstrap --check`; opt-in `--ensure-fields` / `--apply-readme` | templates/project-board · project_handlers · board_shell.py |
 | Board CLI subcommands | **23+** leaf commands (incl. `entry`; full table in ops doc) | [project-board-collaboration.md](../operations/project-board-collaboration.md) § Project CLI subcommands |
 | GraphQL-efficient Entry | `project entry` live \| conserve \| offline_artifacts; `export --reuse-if-fresh` | `project_cli.py` · `project_ssot.efficiency` |
-| EA-001 residual thin CLI | `project_cli.py` facade (~660 LOC) + parser/handlers split; board CLI modules under `.ai_infra/install/cursor_workflow/`: `project_cli.py`, `project_parser.py`, `project_handlers.py`, `project_atomics.py`, `gh_project_adapter.py`, `project_recipes.py`, `project_outbox.py` | PR #36 |
+| EA-001 residual thin CLI | `project_cli.py` facade (~660 LOC) + parser/handlers split; board CLI modules under `.ai_infra/install/agent_colony/`: `project_cli.py`, `project_parser.py`, `project_handlers.py`, `project_atomics.py`, `gh_project_adapter.py`, `project_recipes.py`, `project_outbox.py` | PR #36 |
 | Doc facts validate | DOC-001…008 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
 | Kit canvases | **16** files under `canvases/`; DOC-008 counts **11** roster/agent canvases (excludes concept hubs `board-ssot-vs-trackers.canvas.tsx`, `agents-artifacts-board.canvas.tsx`, `github-api-safety.canvas.tsx`, `naming-roster-audit.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
@@ -47,15 +47,15 @@ Notes:
 | Install scaffold + contract | `install-contract.json`; idempotent trackers/`AGENTS.md`/`pages.json` on re-activate | `.ai_infra/scripts/install/scaffold.py` |
 | Local artifact tiers | Tier 1 scaffold: all `workflow-artifacts/*` buckets + README stubs; SSOT `local_workflow_paths.py` | `.ai_infra/templates/local-workspace/`, `pages.json` |
 | Integrate validate | INT-001…014; INT-009/011 plugin parity **kit-dev only** | `.ai_infra/scripts/integration/validate.py` |
-| Canvas / plan CLI | ADR-010 Pattern A — `canvas doctor|sync|save`, `plan snapshot|list|open` | `.ai_infra/install/cursor_workflow/canvas_cli.py`, `plan_cli.py` · `canvas-artifacts` skill |
-| Install CLI | install, **activate**, gates, health, mcp, contributors, integrate, drift, doc, verify, **project**, **research**, **canvas**, **plan** | `.ai_infra/install/cursor_workflow/cli.py` |
+| Canvas / plan CLI | ADR-010 Pattern A — `canvas doctor|sync|save`, `plan snapshot|list|open` | `.ai_infra/install/agent_colony/canvas_cli.py`, `plan_cli.py` · `canvas-artifacts` skill |
+| Install CLI | install, **activate**, gates, health, mcp, contributors, integrate, drift, doc, verify, **project**, **research**, **canvas**, **plan** | `.ai_infra/install/agent_colony/cli.py` |
 | Editable install | `pyproject.toml` — `pip install -e ".[dev,mcp]"` | repo root |
-| Three-plane activate | Idempotent plugin consumer setup | `.ai_infra/install/cursor_workflow/activate_cli.py`, `plane_status.py` |
+| Three-plane activate | Idempotent plugin consumer setup | `.ai_infra/install/agent_colony/activate_cli.py`, `plane_status.py` |
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Researcher agent (corpus) | **Shipped / proven** — adaptive Brief; anti-loop ≤6; CLI `research init\|fetch\|validate`; live E2E flexiai-toolsmith (18 curated, validate PASS) + verifier Claim A+B VERIFIED 2026-07-19; corpus **opt-in** after first `research init` | `.cursor/agents/researcher.md` · `research-corpus` · `canvases/agent-researcher.canvas.tsx` · Issue #74 |
-| Kit version on install | `kit_version` 0.5.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 1455 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Kit version on install | `kit_version` 0.6.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
+| Tests | 1456 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 
@@ -63,8 +63,8 @@ Two metrics (do not conflate):
 
 | Metric | Command | As of 2026-08-06 |
 |--------|---------|------------------|
-| **(A) Install package** | `pytest tests/modules/ -q --cov=.ai_infra/install/cursor_workflow --cov-report=term-missing` | **5520 statements, 100.00%, Miss=0** (all modules) |
-| **(B) Broader kit import surface** | `pytest --cov=.ai_infra --cov=cursor_workflow` | **8929 statements, 99% (99 miss)** — honest post-COV-CW; not claimed 100% when only install package is closed |
+| **(A) Install package** | `pytest tests/modules/ -q --cov=.ai_infra/install/agent_colony --cov-report=term-missing` | **5520 statements, 100.00%, Miss=0** (all modules) |
+| **(B) Broader kit import surface** | `pytest --cov=.ai_infra --cov=agent_colony` | **8929 statements, 99% (99 miss)** — honest post-COV-CW; not claimed 100% when only install package is closed |
 
 Metric (A) is the trust gate for Pattern A CLI (`project`, `mcp`, `canvas`, `plan`). Metric (B) tracks the installable kit import surface (CLI, scripts invoked in-process, MCP server). One import-order `sys.path` bootstrap in
 `merge.py` is `# pragma: no cover` (justified — import-order bootstrap only).
@@ -85,11 +85,11 @@ make doc-validate
 make verify-all
 make install-dry-run
 make check-plugin
-cursor-workflow activate --directory .
-cursor-workflow health
-cursor-workflow mcp validate
+agent-colony activate --directory .
+agent-colony health
+agent-colony mcp validate
 pytest -m live tests/modules/workflow_mcp/test_workflow_mcp.py::test_workflow_mcp_stdio_initialize_smoke
-cursor-workflow drift validate
+agent-colony drift validate
 ```
 
 | Command | Behavior |
@@ -103,7 +103,7 @@ cursor-workflow drift validate
 | Item | Target |
 |------|--------|
 | Cursor Marketplace listing (EA-019) | deferred — consumers install from GitHub (`SavinRazvan/agent-colony`) until re-scheduled |
-| PyPI publish (`cursor-workflow` on PyPI) | out of scope — editable install via `pyproject.toml` is shipped |
+| PyPI publish (`agent-colony` on PyPI) | out of scope — editable install via `pyproject.toml` is shipped |
 
 ## Maintainer doc sync
 

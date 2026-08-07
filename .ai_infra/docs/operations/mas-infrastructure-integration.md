@@ -58,7 +58,7 @@ Standalone agent for a narrow domain; not in default PR pipelines.
 3. Update `.cursor/mcp.registry.yaml` (+ `.example`)
 4. Update exemplars: `templates/user-settings/mcp.agents.yaml`, `github.collaboration.yaml` if pipeline-related
 5. If shipped to consumers: `manifest.yaml`, `install-contract.json`, `make sync-plugin`
-6. Verify: `python -m cursor_workflow integrate validate`, `contributors validate`, `check_governance_consistency.py`, targeted `pytest`
+6. Verify: `python -m agent_colony integrate validate`, `contributors validate`, `check_governance_consistency.py`, targeted `pytest`
 
 Full checklist: `.ai_infra/templates/agent-integration/INTEGRATION-CHECKLIST.md`
 
@@ -67,7 +67,7 @@ Full checklist: `.ai_infra/templates/agent-integration/INTEGRATION-CHECKLIST.md`
 | Change | Minimum commands |
 |--------|------------------|
 | Agent/skill only | `integrate validate`, `check_governance_consistency.py` |
-| User settings / pipelines | `python -m cursor_workflow contributors validate` |
+| User settings / pipelines | `python -m agent_colony contributors validate` |
 | Manifest / scaffold | `make install-dry-run` |
 | Plugin bundle | `make sync-plugin` && `make check-plugin` |
 | PR-ready slice | `make gates` or `prepare.py` (`resolve_gates()`) |

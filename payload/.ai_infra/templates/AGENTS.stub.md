@@ -16,16 +16,16 @@
 /workflow-activate
 ```
 
-**First install note:** if activate fails with *No module named cursor_workflow*, run from kit payload per [consumer-quickstart § First activate troubleshooting](.ai_infra/docs/operations/consumer-quickstart.md#first-activate-troubleshooting).
+**First install note:** if activate fails with *No module named agent_colony*, run from kit payload per [consumer-quickstart § First activate troubleshooting](.ai_infra/docs/operations/consumer-quickstart.md#first-activate-troubleshooting).
 
 ## Just installed?
 
 1. Edit `.local/user_settings/github.collaboration.yaml` → your name + `@handle`
-2. `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` (**must PASS**)
+2. `source .venv/bin/activate && python3 -m agent_colony contributors validate` (**must PASS**)
 3. If `project_ssot.enabled: true`:
    - `gh auth status` — if Project scopes missing: `gh auth refresh -h github.com -s read:project,project` ([PLUGIN-USER-GUIDE § GitHub CLI auth](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#github-cli-auth-projects))
    - Agent chat **`/board`** + paste **Project URL** + **repo URL** → agent wires `project_ssot` ids + `default_repo` (confirm before save)
-   - `source .venv/bin/activate && python3 -m cursor_workflow project doctor` (expect **ok**)
+   - `source .venv/bin/activate && python3 -m agent_colony project doctor` (expect **ok**)
    - **Minimal 2-view shell** (recommended — matches [Playground #3](https://github.com/users/SavinRazvan/projects/3)):
      ```bash
      cp .ai_infra/templates/user-settings/exemplars/board-shell.schema.minimal.yaml \
@@ -34,7 +34,7 @@
      GitHub UI: **Prioritized backlog** (Table) + **Status board** (Board, group by Status) with Tier-1 columns on both.
    - **`/board`** → **CONSENT GATE** + **TURN PROTOCOL** (one view per turn; [views-setup.md](.ai_infra/templates/project-board/views-setup.md))
    - Re-run `board-bootstrap --check` until **exit 0**
-   - `source .venv/bin/activate && python3 -m cursor_workflow project status`
+   - `source .venv/bin/activate && python3 -m agent_colony project status`
    - Day-to-day board protocol: `board-ssot` skill (loaded automatically); wire + shell coach: **`/board`**
 4. If Project SSOT is disabled: read `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 5. **`/implementer`** when bootstrap is green (not day-0: `/auditor`)
@@ -61,7 +61,7 @@ Full walkthrough: [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-G
 2. [`.ai_infra/docs/operations/consumer-quickstart.md`](.ai_infra/docs/operations/consumer-quickstart.md)
 3. [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md) — artifact tiers
 4. [`.ai_infra/docs/operations/token-efficiency.md`](.ai_infra/docs/operations/token-efficiency.md)
-5. When `project_ssot.enabled` + `board_only`: `python3 -m cursor_workflow project status` (board-first). Else / offline: `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
+5. When `project_ssot.enabled` + `board_only`: `python3 -m agent_colony project status` (board-first). Else / offline: `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 
 ## Rules (always applied in Cursor)
 
@@ -79,7 +79,7 @@ Full walkthrough: [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-G
 
 ## Commits
 
-Required trailers: `.cursor/rules/commit-trailer-format.mdc` — set identity in `github.collaboration.yaml`, then `python3 -m cursor_workflow contributors validate`.
+Required trailers: `.cursor/rules/commit-trailer-format.mdc` — set identity in `github.collaboration.yaml`, then `python3 -m agent_colony contributors validate`.
 
 ## Quality gates
 

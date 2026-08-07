@@ -88,7 +88,7 @@ const FALLBACK_LABELS: Record<string, string> = {
 const READ_FIRST = [
   [".cursor/skills/integrator-protocol/SKILL.md", "Integration canon"],
   [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
-  ["python3 -m cursor_workflow integrate validate", "Wire verification"],
+  ["python3 -m agent_colony integrate validate", "Wire verification"],
   ["prepare.py resolve_gates()", "PR / kit-dev gate SSOT"],
   ["check_governance_consistency.py", "When policy docs change"],
   [".cursor/skills/canvas-artifacts/SKILL.md", "ADR-010 canvas/plan tiers"],
@@ -313,7 +313,7 @@ export default function AgentIntegratorCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP">
-        Kit server agent-colony-mcp for integrate validate — prefer cursor_workflow
+        Kit server agent-colony-mcp for integrate validate — prefer agent_colony
         project for board. External: only servers listed for this agent in
         mcp.registry.yaml.
       </Callout>

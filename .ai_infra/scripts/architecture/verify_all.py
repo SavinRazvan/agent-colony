@@ -4,7 +4,7 @@ Path: .ai_infra/scripts/architecture/verify_all.py
 Role: Maintainer verify-all matrix aligned with kit-quality.yml gate step.
 Used By:
  - Makefile verify-all target
- - cursor_workflow verify all
+ - agent_colony verify all
  - workflow_mcp workflow_verify_all
 Depends On:
  - subprocess, sys, pathlib (stdlib)
@@ -66,20 +66,20 @@ def run_verify_all(root: Path, py: str) -> list[StepResult]:
     steps.extend(
         [
             ("sync-plugin", [py, str(release / "sync_plugin_bundle.py")]),
-            ("gates", [py, "-m", "cursor_workflow", "gates", "--directory", str(root)]),
+            ("gates", [py, "-m", "agent_colony", "gates", "--directory", str(root)]),
             (
                 "drift-validate",
-                [py, "-m", "cursor_workflow", "drift", "validate", "--directory", str(root)],
+                [py, "-m", "agent_colony", "drift", "validate", "--directory", str(root)],
             ),
             (
                 "integrate-validate",
-                [py, "-m", "cursor_workflow", "integrate", "validate", "--directory", str(root)],
+                [py, "-m", "agent_colony", "integrate", "validate", "--directory", str(root)],
             ),
             ("check-plugin", [py, str(release / "sync_plugin_bundle.py"), "--check"]),
-            ("health", [py, "-m", "cursor_workflow", "health", "--directory", str(root)]),
+            ("health", [py, "-m", "agent_colony", "health", "--directory", str(root)]),
             (
                 "contributors-validate",
-                [py, "-m", "cursor_workflow", "contributors", "validate", "--directory", str(root)],
+                [py, "-m", "agent_colony", "contributors", "validate", "--directory", str(root)],
             ),
         ]
     )
@@ -106,7 +106,7 @@ def exit_code_for(results: list[StepResult]) -> int:
 
 def write_preflight_json(results: list[StepResult], output: Path) -> None:
     payload = {
-        "command": "python -m cursor_workflow verify all",
+        "command": "python -m agent_colony verify all",
         "steps": [
             {
                 "name": r.name,

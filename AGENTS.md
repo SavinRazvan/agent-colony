@@ -18,7 +18,7 @@
 
 **Consumer install:** plugin + `/workflow-activate` in the app repo installs the full kit; consumers wire only identity + board YAML — see [PLUGIN-USER-GUIDE § Product promise](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
 
-**Continuation:** Entry prefers `python3 -m cursor_workflow project entry` (quota-aware live \| conserve \| offline_artifacts), then claim/get one card; Exit updates Status and Notes (see [board-ssot skill](.cursor/skills/board-ssot/SKILL.md) § Collaboration, [ADR-008](.ai_infra/docs/decisions/ADR-008-project-board-ssot.md), and [project-board-collaboration ops](.ai_infra/docs/operations/project-board-collaboration.md)). Offline fallback trackers only when board unavailable or Entry mode `offline_artifacts`. Rate-limit / precheck / Forbidden throttle: EXIT_QUEUED (6) → `project outbox` (do not retry-loop; local buffer, not a second SSOT).
+**Continuation:** Entry prefers `python3 -m agent_colony project entry` (quota-aware live \| conserve \| offline_artifacts), then claim/get one card; Exit updates Status and Notes (see [board-ssot skill](.cursor/skills/board-ssot/SKILL.md) § Collaboration, [ADR-008](.ai_infra/docs/decisions/ADR-008-project-board-ssot.md), and [project-board-collaboration ops](.ai_infra/docs/operations/project-board-collaboration.md)). Offline fallback trackers only when board unavailable or Entry mode `offline_artifacts`. Rate-limit / precheck / Forbidden throttle: EXIT_QUEUED (6) → `project outbox` (do not retry-loop; local buffer, not a second SSOT).
 
 ## First reads (onboarding)
 
@@ -54,7 +54,7 @@ Abbreviations: [`.ai_infra/docs/operations/abbreviations-notepad.md`](.ai_infra/
 
 **Resume every session:**
 
-1. If `project_ssot.enabled` → `python -m cursor_workflow project entry` (then claim/get one card; `.cursor/skills/board-ssot/SKILL.md` § Continuation contract). Read card Notes for prior handoffs. **First-run only:** if `board-bootstrap --check` exits non-zero (views, Tier-1 columns, README) → `/board` + `board-shell` (**CONSENT GATE** + TURN PROTOCOL) before `/implementer` (audit is not day-0).
+1. If `project_ssot.enabled` → `python -m agent_colony project entry` (then claim/get one card; `.cursor/skills/board-ssot/SKILL.md` § Continuation contract). Read card Notes for prior handoffs. **First-run only:** if `board-bootstrap --check` exits non-zero (views, Tier-1 columns, README) → `/board` + `board-shell` (**CONSENT GATE** + TURN PROTOCOL) before `/implementer` (audit is not day-0).
 2. Else → `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
 
 **After every agent part:** update board Status (`in_review` / `done` / Notes + next agent) so continuation is indexed on the Project — not chat-only. **Tier-1 fields are mandatory** on cards you create/own: Status, Priority (`p0|p1|p2`), Size/Estimate per skill **Size↔Estimate** table (points, not hours), Start date on first **In progress** (`claim` / `set-status` / `handoff --to in_progress`), Assignee (human — **create as Issue** via `item_kind_default: issue`), and Linked PR via `mention-pr` when a PR exists. Exit task lists use `[P0]`…`[P3]`. Notes attribution: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC). Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime. Ops: `.ai_infra/docs/operations/project-board-collaboration.md`. Canon: `.cursor/skills/board-ssot/SKILL.md` § Tier-1 card fields contract.
@@ -86,9 +86,9 @@ Full handoff checklist: [`.ai_infra/docs/operations/workflow-complete.md`](.ai_i
 
 **Additionally** run **`python3 .ai_infra/scripts/architecture/check_governance_consistency.py`** and **`python3 .ai_infra/scripts/architecture/check_debrand.py`** when changing governance, workflows, `.cursor/`, `.agents/`, or tracked policy docs.
 
-When adding or changing agents, skills, pipelines, or integration templates, also run **`python3 -m cursor_workflow integrate validate`** (included in governance consistency on kit dev repo).
+When adding or changing agents, skills, pipelines, or integration templates, also run **`python3 -m agent_colony integrate validate`** (included in governance consistency on kit dev repo).
 
-At slice closure, run **`python3 -m cursor_workflow drift validate`** (or `make drift-validate`) and hand off to **`drift-guard`** when P0/P1 findings need artifacts.
+At slice closure, run **`python3 -m agent_colony drift validate`** (or `make drift-validate`) and hand off to **`drift-guard`** when P0/P1 findings need artifacts.
 
 After doc or agent roster changes, run **`make doc-validate`** (included in **`make gates`**). Before full audits, run **`make verify-all`** — see `.cursor/skills/audit-orchestration/SKILL.md`.
 
@@ -100,7 +100,7 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 - `GitHub-User: @<handle>`
 
 **Render from config:** `.local/user_settings/github.collaboration.yaml` via  
-`python3 -m cursor_workflow contributors commit-trailers`.
+`python3 -m agent_colony contributors commit-trailers`.
 
 **AI-assisted work:** optional `Assisted-by:` when AI materially shaped the change. Do **not** add **`Made-with:`** (redundant). You stay accountable for the result.
 
@@ -140,21 +140,21 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. Staged `/
 
 | Role | Entry |
 |------|--------|
-| Plugin activation | [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) or `workflow-activate` skill / `python3 -m cursor_workflow activate --directory .` |
+| Plugin activation | [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) or `workflow-activate` skill / `python3 -m agent_colony activate --directory .` |
 | Implement | `.cursor/agents/implementer.md` + `.cursor/skills/implementer-loop/SKILL.md` |
-| Project board SSOT | `.cursor/agents/board.md` + `.cursor/skills/board-ssot/SKILL.md` — `python -m cursor_workflow project …` |
+| Project board SSOT | `.cursor/agents/board.md` + `.cursor/skills/board-ssot/SKILL.md` — `python -m agent_colony project …` |
 | Board shell first-run | `/board` + `.cursor/skills/board-shell/SKILL.md` + `board-shell.schema.yaml` |
-| Integrate infrastructure | `.cursor/agents/integrator.md` + `.cursor/skills/integrator-protocol/SKILL.md` — validate with `python3 -m cursor_workflow integrate validate` |
+| Integrate infrastructure | `.cursor/agents/integrator.md` + `.cursor/skills/integrator-protocol/SKILL.md` — validate with `python3 -m agent_colony integrate validate` |
 | Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-coverage/SKILL.md` |
 | Verify claims | `.cursor/agents/verifier.md` |
-| Continuous goal/plan/agent-doctrine coherence + DRIFT scripts | **`drift-guard`** — `.cursor/agents/drift-guard.md` + `.cursor/skills/drift-audit/SKILL.md` — `python3 -m cursor_workflow drift validate` (incl. DRIFT-011, DRIFT-012) |
+| Continuous goal/plan/agent-doctrine coherence + DRIFT scripts | **`drift-guard`** — `.cursor/agents/drift-guard.md` + `.cursor/skills/drift-audit/SKILL.md` — `python3 -m agent_colony drift validate` (incl. DRIFT-011, DRIFT-012) |
 | Deep / periodic architecture + CHK-* (security/perf/granularity/docs) | **`auditor`** — `.cursor/agents/auditor.md` + `.cursor/skills/auditor-protocol/SKILL.md` — not continuous plan pulse |
 | Audit orchestration | `.cursor/skills/audit-orchestration/SKILL.md` — parent runs verify-all + Task delegation (no dedicated agent) |
 | Audit module map | `.cursor/skills/audit-module-map/SKILL.md` — optional deep map; invoke via **`auditor`** |
 | Maintainer PR | `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` → `merge-pr` (staged) → `full-pr-workflow` → `finalize.py` (cleanup + `finalize.md` evidence) |
 | Research corpus (shipped; opt-in packs) | `.cursor/agents/researcher.md` — adaptive Brief from chat/agents; HTTPS/`github:`/`path:`; `research init\|fetch\|validate`; packs in `_research_results/sources/<slug>/`; live E2E proven 2026-07-19 |
 | MCP | `.ai_infra/mcp_servers/workflow_mcp/` — `python -m workflow_mcp`; [`.cursor/mcp.json.kit.example`](.cursor/mcp.json.kit.example) + [mcp-connect](.ai_infra/docs/operations/connect-external-mcp.md) |
-| Canvas / plan artifacts | [canvas-artifacts](.cursor/skills/canvas-artifacts/SKILL.md) — `python3 -m cursor_workflow canvas …` / `plan snapshot|list|open` (ADR-010) |
+| Canvas / plan artifacts | [canvas-artifacts](.cursor/skills/canvas-artifacts/SKILL.md) — `python3 -m agent_colony canvas …` / `plan snapshot|list|open` (ADR-010) |
 
 Scripts:
 

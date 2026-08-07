@@ -11,7 +11,7 @@ disable-model-invocation: true
 ## Steps
 
 1. **Complete once:** `.local/user_settings/github.collaboration.yaml` (owner, pipelines). Validate:  
-   `python -m cursor_workflow contributors validate`
+   `python -m agent_colony contributors validate`
 2. Read PR diff and context. **Do not** land code in this phase.
 3. Focus: correctness, boundary violations (project `overlays/` rules when installed), security, missing tests.
 4. **Stub artifact** (owner from YAML; **Agent/s** merges trackers + `--pipeline`):  

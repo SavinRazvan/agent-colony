@@ -8,7 +8,7 @@ Used By:
 Depends On:
  - paths.resolve_project_python
 Notes:
- - Scope: `--cov=.ai_infra --cov=cursor_workflow` (shipped kit surface).
+ - Scope: `--cov=.ai_infra --cov=agent_colony` (shipped kit surface).
 """
 
 from __future__ import annotations
@@ -35,7 +35,7 @@ for _candidate in (Path(__file__).resolve(), *Path(__file__).resolve().parents):
 from paths import kit_root, resolve_project_python  # noqa: E402
 
 LOW_THRESHOLD = 90.0
-COV_SOURCES = (".ai_infra", "cursor_workflow")
+COV_SOURCES = (".ai_infra", "agent_colony")
 
 
 def _run_coverage_json(root: Path) -> dict:
@@ -46,7 +46,7 @@ def _run_coverage_json(root: Path) -> dict:
         "-m",
         "pytest",
         "--cov=.ai_infra",
-        "--cov=cursor_workflow",
+        "--cov=agent_colony",
         f"--cov-report=json:{cov_file}",
         "-q",
     ]
@@ -73,13 +73,13 @@ def _collect_test_count(root: Path) -> int:
 
 def _module_key(path: str) -> str:
     parts = Path(path).parts
-    if parts[0] == "cursor_workflow":
-        return "cursor_workflow"
+    if parts[0] == "agent_colony":
+        return "agent_colony"
     if parts[0] == ".ai_infra":
         if len(parts) >= 3 and parts[1] == "scripts":
             return f".ai_infra/scripts/{parts[2]}"
         if len(parts) >= 3 and parts[1] == "install":
-            return ".ai_infra/install/cursor_workflow"
+            return ".ai_infra/install/agent_colony"
         if len(parts) >= 3 and parts[1] == "mcp_servers":
             return ".ai_infra/mcp_servers/workflow_mcp"
         if len(parts) == 2:
@@ -125,7 +125,7 @@ def render_markdown(root: Path, data: dict, test_count: int) -> str:
         " - .ai_infra/scripts/ci/generate_coverage_index.py",
         "Notes:",
         " - Regenerate via `make coverage-index` after coverage runs.",
-        " - Scope is shipped source only (.ai_infra/** import surface + cursor_workflow/**).",
+        " - Scope is shipped source only (.ai_infra/** import surface + agent_colony/**).",
         "-->",
         "",
         "# Coverage Index",
@@ -182,7 +182,7 @@ def render_markdown(root: Path, data: dict, test_count: int) -> str:
             "handful of defensive branches inside test-helper cleanup code (e.g. \"insert only if not",
             "already present\" guards, order-dependent `sys.path` restore paths) don't fire on every",
             "collection order. These are test-of-tests scaffolding, not part of the installable kit",
-            "surface. Scope `--cov=.ai_infra --cov=cursor_workflow` for marketplace readiness claims.",
+            "surface. Scope `--cov=.ai_infra --cov=agent_colony` for marketplace readiness claims.",
             "",
         ]
     )

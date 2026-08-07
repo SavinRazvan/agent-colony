@@ -2,7 +2,7 @@
 File: test_sys_path_bootstrap_branches.py
 Path: tests/modules/workflow_mcp/test_sys_path_bootstrap_branches.py
 Role: Forces the True branch of "if <dir> not in sys.path: sys.path.insert(...)" guards
-      shared across cursor_workflow dispatcher modules and workflow_mcp/server.py.
+      shared across agent_colony dispatcher modules and workflow_mcp/server.py.
       These lines only execute once per process by design (idempotent sys.path setup);
       running under pytest's shared process, an earlier test may have already inserted
       the same directory. Removing the exact path first guarantees True-branch coverage
@@ -10,7 +10,7 @@ Role: Forces the True branch of "if <dir> not in sys.path: sys.path.insert(...)"
 Used By:
  - pytest
 Depends On:
- - .ai_infra/install/cursor_workflow/{contributors_cli,doc_cli,drift_cli,integrate_cli,verify_cli}.py
+ - .ai_infra/install/agent_colony/{contributors_cli,doc_cli,drift_cli,integrate_cli,verify_cli}.py
  - .ai_infra/mcp_servers/workflow_mcp/server.py
 """
 
@@ -26,7 +26,7 @@ from typing import Iterator
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 
 if str(_PKG_DIR) not in sys.path:
     sys.path.insert(0, str(_PKG_DIR))
@@ -124,7 +124,7 @@ def test_server_activate_inserts_pkg_dir() -> None:
     _env_root()
     from workflow_mcp.server import workflow_activate
 
-    pkg = str(REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow")
+    pkg = str(REPO_ROOT / ".ai_infra" / "install" / "agent_colony")
     with _without_path(pkg):
         workflow_activate(force=False)
     assert pkg in sys.path

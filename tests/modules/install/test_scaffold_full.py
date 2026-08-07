@@ -302,7 +302,7 @@ def test_scaffold_with_mcp_json_fallback_to_example(
     mod = _load_scaffold()
     fake_source = tmp_path / "fake_source"
     shutil.copytree(REPO_ROOT, fake_source, symlinks=True, ignore=shutil.ignore_patterns(".git"))
-    mcp_manage = fake_source / ".ai_infra" / "install" / "cursor_workflow" / "mcp_manage.py"
+    mcp_manage = fake_source / ".ai_infra" / "install" / "agent_colony" / "mcp_manage.py"
     mcp_manage.unlink()
 
     target = tmp_path / "project"

@@ -3,14 +3,14 @@ File: scaffold.py
 Path: .ai_infra/scripts/install/scaffold.py
 Role: Manifest-driven install of Cursor Agent Infrastructure into a target project.
 Used By:
- - .ai_infra/install/cursor_workflow/cli.py
+ - .ai_infra/install/agent_colony/cli.py
  - Makefile install-dry-run
 Depends On:
  - .ai_infra/manifest.yaml
  - .ai_infra/bootstrap.py
 Notes:
  - Default profile: .cursor, .agents, slim .ai_infra, .local exemplars, AGENTS stub.
- - MCP merge loads mcp_manage with install/cursor_workflow on sys.path (cursor_host_paths).
+ - MCP merge loads mcp_manage with install/agent_colony on sys.path (cursor_host_paths).
 """
 
 from __future__ import annotations
@@ -315,7 +315,7 @@ def _scaffold_dashboards(ui_root: Path, target: Path, dry_run: bool, log: list[s
         _copy_file(audit_src, audit_dst, dry_run, log)
 
 
-_ACTIVATE_RUNTIME_REL = ("install/cursor_workflow", "scripts/install")
+_ACTIVATE_RUNTIME_REL = ("install/agent_colony", "scripts/install")
 _KIT_UI_TEMPLATE_FILES = DASHBOARD_HTML + DASHBOARD_ASSETS + ("pages.json",)
 _KIT_UI_TEMPLATE_DIRS = ("audits",)
 
@@ -490,7 +490,7 @@ def _load_mcp_manage(source: Path) -> Any | None:
     """
     import importlib.util
 
-    mcp_manage_path = source / ".ai_infra" / "install" / "cursor_workflow" / "mcp_manage.py"
+    mcp_manage_path = source / ".ai_infra" / "install" / "agent_colony" / "mcp_manage.py"
     if not mcp_manage_path.is_file():
         return None
     cw_dir = str(mcp_manage_path.parent)
@@ -538,7 +538,7 @@ def _verify_retry_hint(target: Path) -> str:
     if req.is_file():
         return (
             f"Retry: {py} -m pip install -r requirements-dev.txt && "
-            f"{py} -m cursor_workflow activate --directory {target}"
+            f"{py} -m agent_colony activate --directory {target}"
         )
     return f"Retry: re-run activate with --verify after fixing the failing gate above"
 

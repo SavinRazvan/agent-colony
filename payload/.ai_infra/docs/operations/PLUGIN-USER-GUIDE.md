@@ -37,10 +37,10 @@ flowchart LR
   end
   subgraph disk [Your project folder]
     P1["Plane 1: .cursor/ + .agents/ + AGENTS.md"]
-    P2["Plane 2: .ai_infra/ + cursor_workflow/"]
+    P2["Plane 2: .ai_infra/ + agent_colony/"]
     P3["Plane 3: .local/ + .venv"]
   end
-  Chat --> Activate["cursor_workflow activate"]
+  Chat --> Activate["agent_colony activate"]
   Activate --> P1
   Activate --> P2
   Activate --> P3
@@ -50,7 +50,7 @@ flowchart LR
 | Plane | Paths | Cursor sees? | Purpose |
 |-------|-------|--------------|---------|
 | **Cursor contract** | `.cursor/`, `.agents/`, `AGENTS.md` | Yes | Agents, skills, rules, MCP config |
-| **Infrastructure** | `.ai_infra/`, `cursor_workflow/` | No | Scripts, docs, templates, optional MCP server |
+| **Infrastructure** | `.ai_infra/`, `agent_colony/` | No | Scripts, docs, templates, optional MCP server |
 | **Runtime** | `.local/`, `.venv` | No | Trackers, deprecated HTML dashboards, user settings (gitignored) |
 
 **Important:** Enabling the plugin does **not** replace activate. Open **your app folder** in Cursor, then run **`/workflow-activate`** once (safe to re-run — idempotent).
@@ -87,11 +87,11 @@ This loads agents, skills, and rules into Cursor. Your project may only get `.cu
 |------|--------|
 | 1. Plugin | Agent chat: `/add-plugin https://github.com/SavinRazvan/agent-colony` *(or Marketplace when listed)* |
 | 2. Activate | Open **your app** → Agent chat → **`/workflow-activate`** → wait for **`VERIFY PASS`** |
-| 3. Identity | Edit `github.collaboration.yaml` → `display_name` + `github_user` → `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` |
+| 3. Identity | Edit `github.collaboration.yaml` → `display_name` + `github_user` → `source .venv/bin/activate && python3 -m agent_colony contributors validate` |
 | 3b. GitHub auth | `gh auth status` — refresh Project scopes only if missing (`gh auth refresh -h github.com -s read:project,project`) |
 | 3c. Wire board | Agent chat **`/board`** + **Project URL + repo URL** → confirm proposed `project_ssot` ids → `project doctor` + `project status` |
 | 4. Board shell | **Minimal 2-view** ([Playground #3](https://github.com/users/SavinRazvan/projects/3)) or **six-view default** → `/board` CONSENT + TURN → `board-bootstrap --check` exit **0** |
-| 5. Build | **`/implementer`** · Entry = `python3 -m cursor_workflow project status` when board SSOT on |
+| 5. Build | **`/implementer`** · Entry = `python3 -m agent_colony project status` when board SSOT on |
 
 **Step 2 — in Agent chat (not the terminal):**
 
@@ -107,7 +107,7 @@ Use this when your team opts into **GitHub Project as the only writable SSOT** (
 
 #### Product promise
 
-Install the **Agent Colony** plugin, open **your app repo** (not the kit product repo), and run **`/workflow-activate`**. Activate copies the **full kit infrastructure** — the same three planes kit maintainers use: Cursor contract (`.cursor/` agents, skills, rules; `.agents/skills/`; `AGENTS.md`), infrastructure (`.ai_infra/`, `cursor_workflow/` CLI), and runtime scaffold (`.local/` including `user_settings/` exemplars). You then wire **your** identity and **your** GitHub Project in `.local/user_settings/github.collaboration.yaml`.
+Install the **Agent Colony** plugin, open **your app repo** (not the kit product repo), and run **`/workflow-activate`**. Activate copies the **full kit infrastructure** — the same three planes kit maintainers use: Cursor contract (`.cursor/` agents, skills, rules; `.agents/skills/`; `AGENTS.md`), infrastructure (`.ai_infra/`, `agent_colony/` CLI), and runtime scaffold (`.local/` including `user_settings/` exemplars). You then wire **your** identity and **your** GitHub Project in `.local/user_settings/github.collaboration.yaml`.
 
 **Ready for `/implementer` requires:** `contributors validate` + `project doctor` + **`project board-bootstrap --check` exit 0** (Tier-1 columns on Status board + Prioritized backlog + non-empty README). Accept either:
 
@@ -142,7 +142,7 @@ After API wiring + shell green, agents use claim/handoff/Tier-1 the same way as 
 | **Estimate** (number) | numeric field id (points) |
 | **Start date** (date) | date field id |
 
-Discover ids: manually via `gh project view <N> --owner <login>` / `gh project field-list <N> --owner <login>`, **or** after GitHub auth paste your **Project URL + app repo URL** in Agent chat and ask **`/board`** to propose YAML (you confirm before save). Optional field create: `python3 -m cursor_workflow project board-bootstrap --check --ensure-fields` (prints suggested YAML ids — human confirms before paste). After setup, run `python3 -m cursor_workflow project doctor` → `python3 -m cursor_workflow project board-bootstrap --check` → `python3 -m cursor_workflow project status` (views/README stay human-owned unless `--apply-readme`).
+Discover ids: manually via `gh project view <N> --owner <login>` / `gh project field-list <N> --owner <login>`, **or** after GitHub auth paste your **Project URL + app repo URL** in Agent chat and ask **`/board`** to propose YAML (you confirm before save). Optional field create: `python3 -m agent_colony project board-bootstrap --check --ensure-fields` (prints suggested YAML ids — human confirms before paste). After setup, run `python3 -m agent_colony project doctor` → `python3 -m agent_colony project board-bootstrap --check` → `python3 -m agent_colony project status` (views/README stay human-owned unless `--apply-readme`).
 
 | Step | Action |
 |------|--------|
@@ -151,8 +151,8 @@ Discover ids: manually via `gh project view <N> --owner <login>` / `gh project f
 | 3. GitHub auth | `gh auth status` first — refresh only if Project scopes missing. See **§ GitHub CLI auth (Projects)** below. |
 | 3b. Wire board ids (agent-assisted) | Paste **Project URL** (`https://github.com/users/YOU/projects/N` or `…/orgs/ORG/projects/N`) **and** this **repo URL** in Agent chat → **`/board`** fills `name` / `number` / `owner` / `project_id` / `fields.*` / `default_repo` via `gh` (or you copy from `gh project view` / `field-list` yourself). Human confirms YAML before save. |
 | 4. Doctor + board shell | `project doctor` → optional **minimal overlay** (`board-shell.schema.minimal.yaml` → `.local/user_settings/board-shell.schema.yaml`) for **2 views** matching [Playground #3](https://github.com/users/SavinRazvan/projects/3), **or** six-view default without overlay. → **`/board`** CONSENT GATE + TURN PROTOCOL → `board-bootstrap --check` until **exit 0** → `project status`. |
-| 5. First card | `python3 -m cursor_workflow project create-from-template --template slice --title "…" --priority p1 --size s --estimate 1 --agent implementer` (assigns `owner.github_user` on Issues) → `claim --last --agent implementer` (sets Start date). Prefer `project guide`. |
-| 6. Rate-limit buffer | Writes may **precheck** GraphQL quota (cached REST) or queue on throttle / Forbidden / 429. If a write returns **EXIT_QUEUED (6)**, do **not** retry-loop — continue local evidence; after quota recovers run `python3 -m cursor_workflow project outbox status` then `project outbox flush`. Configure `project_ssot.outbox` (`precheck_writes`, `dedupe_pending`, …) in collaboration YAML. Outbox is a local buffer, not a second Status SSOT. |
+| 5. First card | `python3 -m agent_colony project create-from-template --template slice --title "…" --priority p1 --size s --estimate 1 --agent implementer` (assigns `owner.github_user` on Issues) → `claim --last --agent implementer` (sets Start date). Prefer `project guide`. |
+| 6. Rate-limit buffer | Writes may **precheck** GraphQL quota (cached REST) or queue on throttle / Forbidden / 429. If a write returns **EXIT_QUEUED (6)**, do **not** retry-loop — continue local evidence; after quota recovers run `python3 -m agent_colony project outbox status` then `project outbox flush`. Configure `project_ssot.outbox` (`precheck_writes`, `dedupe_pending`, …) in collaboration YAML. Outbox is a local buffer, not a second Status SSOT. |
 
 #### GitHub CLI auth (Projects)
 
@@ -195,8 +195,8 @@ gh auth status
 # Logged in · Token scopes should include: repo, project
 # (read:project may show separately or be covered when project is present)
 
-python3 -m cursor_workflow project doctor
-python3 -m cursor_workflow project status
+python3 -m agent_colony project doctor
+python3 -m agent_colony project status
 ```
 
 If `gh` reports **missing required scopes `[read:project]` / `[project]`**, re-run `gh auth refresh -h github.com -s read:project,project` and complete the device link again.
@@ -222,7 +222,7 @@ your-project/
 │   ├── manifest.yaml
 │   ├── install-contract.json
 │   ├── scripts/pr|architecture|integration|workflow|install/
-│   ├── install/cursor_workflow/   # CLI package
+│   ├── install/agent_colony/   # CLI package
 │   ├── docs/operations|governance|roadmap|decisions|architecture/
 │   ├── templates/local-workspace|user-settings|agent-integration/
 │   ├── mcp_servers/workflow_mcp/  # with_mcp profile
@@ -231,7 +231,7 @@ your-project/
 │   ├── index-and-planning/current/
 │   ├── user_settings/             # YOU edit these
 │   └── agents-control-center/
-├── cursor_workflow/               # python3 -m cursor_workflow shim
+├── agent_colony/               # python3 -m agent_colony shim
 ├── .venv/                         # created on activate
 └── tests/modules/smoke/           # install smoke test only
 ```
@@ -247,7 +247,7 @@ your-project/
 | Where | Use for |
 |-------|---------|
 | **Agent chat** (`/` menu) | Plugin install, activate, subagents, skills, PR slash workflow |
-| **Terminal** | `python3 -m cursor_workflow …`, pytest, serving deprecated dashboards |
+| **Terminal** | `python3 -m agent_colony …`, pytest, serving deprecated dashboards |
 
 ### Agent chat commands
 
@@ -269,12 +269,12 @@ source .venv/bin/activate
 
 | Command | Purpose |
 |---------|---------|
-| `python3 -m cursor_workflow activate --directory .` | Install, re-activate, refresh dashboards |
-| `python3 -m cursor_workflow contributors validate` | After editing collaboration YAML |
-| `python3 -m cursor_workflow health` | Layout + version |
-| `python3 -m cursor_workflow integrate validate` | Integration checks |
-| `python3 -m cursor_workflow gates` | Full smoke gates |
-| `python3 -m cursor_workflow drift validate --profile consumer` | Consumer drift (no agent required) — see [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
+| `python3 -m agent_colony activate --directory .` | Install, re-activate, refresh dashboards |
+| `python3 -m agent_colony contributors validate` | After editing collaboration YAML |
+| `python3 -m agent_colony health` | Layout + version |
+| `python3 -m agent_colony integrate validate` | Integration checks |
+| `python3 -m agent_colony gates` | Full smoke gates |
+| `python3 -m agent_colony drift validate --profile consumer` | Consumer drift (no agent required) — see [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
 | `python3 -m pytest -q tests/modules/smoke/` | Install smoke |
 
 Full list: [consumer-quickstart.md](consumer-quickstart.md) § Terminal commands cheat sheet.
@@ -283,7 +283,7 @@ Full list: [consumer-quickstart.md](consumer-quickstart.md) § Terminal commands
 
 ## 5. Control Center dashboards (deprecated)
 
-> **Deprecated (2026-07-19).** Prefer the **GitHub Project board** (`python3 -m cursor_workflow project status`)
+> **Deprecated (2026-07-19).** Prefer the **GitHub Project board** (`python3 -m agent_colony project status`)
 > and **Ctrl+Shift+P → Open Canvas**. HTML under `.local/agents-control-center/` is offline fallback only (ADR-008).
 
 ### Kit canvases (Open Canvas)
@@ -299,14 +299,14 @@ Clicking a file in the repo explorer opens **source**, not the visualization. To
 **Three-tier model (ADR-010):** repo `canvases/` (git SSOT) → sync → Cursor managed path (preview) → optional save → `.local/canvases/` (session evidence). Plan snapshots: `.local/plans/` (history only; live plan stays on board or `plan.md`). Agents execute plans from `.local/plans/`; humans bridge to IDE Build with `plan open --slug <slug>` (requires `--force` if a Cursor twin already exists).
 
 ```bash
-python3 -m cursor_workflow canvas doctor
-python3 -m cursor_workflow canvas list
-python3 -m cursor_workflow canvas sync --name mcp-onboarding
-python3 -m cursor_workflow canvas save --name <stem>
-python3 -m cursor_workflow canvas sync --missing
-python3 -m cursor_workflow plan snapshot --slug my-slice
-python3 -m cursor_workflow plan list
-python3 -m cursor_workflow plan open --slug my-slice
+python3 -m agent_colony canvas doctor
+python3 -m agent_colony canvas list
+python3 -m agent_colony canvas sync --name mcp-onboarding
+python3 -m agent_colony canvas save --name <stem>
+python3 -m agent_colony canvas sync --missing
+python3 -m agent_colony plan snapshot --slug my-slice
+python3 -m agent_colony plan list
+python3 -m agent_colony plan open --slug my-slice
 ```
 
 Skill: `.cursor/skills/canvas-artifacts/SKILL.md`
@@ -328,7 +328,7 @@ python3 -m http.server 8000
 | Control Center | http://localhost:8000/.local/agents-control-center/dashboards/implementation-control-center.html |
 | Module audit | http://localhost:8000/.local/agents-control-center/audits/module-audit.html |
 
-Refresh after kit update: **`/workflow-activate`** or `python3 -m cursor_workflow activate --directory .`
+Refresh after kit update: **`/workflow-activate`** or `python3 -m agent_colony activate --directory .`
 
 Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dashboards.
 
@@ -338,19 +338,19 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 
 | I want to… | Type in chat | Or run | Deep dive |
 |------------|--------------|--------|-----------|
-| **First-time setup** | `/workflow-activate` | `python3 -m cursor_workflow activate --directory .` | §2 above · [workflow-activate skill](../../.cursor/skills/workflow-activate/SKILL.md) |
+| **First-time setup** | `/workflow-activate` | `python3 -m agent_colony activate --directory .` | §2 above · [workflow-activate skill](../../.cursor/skills/workflow-activate/SKILL.md) |
 | **First-run board shell** *(SSOT on)* | `/board` | paste Project+repo URLs → wire YAML → `project doctor` → `board-bootstrap --check` | [board-shell](../../.cursor/skills/board-shell/SKILL.md) · checklist §3b–4 |
 | **Implement a feature slice** | `/implementer` | — | [implementer-loop](../../.cursor/skills/implementer-loop/SKILL.md) |
 | **Run tests / coverage** | `/test-runner` | `pytest -q` | [workflow-complete.md](workflow-complete.md) §C |
 | **Verify a claim** | `/verifier` | — | Evidence-only checks |
 | **Architecture audit** *(not day-0)* | `/auditor` | — (subagent only; no dedicated MCP tool) | [agent-workflow-procedures.md](agent-workflow-procedures.md) §1 — after board shell |
-| **Operational drift** (plan ↔ tracker) | `/drift-guard` (optional) | `python3 -m cursor_workflow drift validate --profile consumer` on app projects | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) · [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
+| **Operational drift** (plan ↔ tracker) | `/drift-guard` (optional) | `python3 -m agent_colony drift validate --profile consumer` on app projects | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) · [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
 | **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` `resolve_gates()` | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
 | **Add agents / skills / MCP** | `/integrator` + `/integrator-protocol` | `integrate validate` | [integrator-protocol skill](../../.cursor/skills/integrator-protocol/SKILL.md) · [mas-infrastructure-integration.md](mas-infrastructure-integration.md) (ops filename kept) |
 | **Connect external MCP** | `/mcp-connect` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
-| **Upgrade / refresh dashboards** | `/workflow-activate` | `python3 -m cursor_workflow activate --directory .` | [upgrade-kit.md](upgrade-kit.md) |
-| **Check install health** | — | `python3 -m cursor_workflow health` | [gate-matrix.md](gate-matrix.md) |
-| **Dry-run install preview** | — | `python3 -m cursor_workflow install --target <dir> --dry-run` | [install-dry-run.md](install-dry-run.md) |
+| **Upgrade / refresh dashboards** | `/workflow-activate` | `python3 -m agent_colony activate --directory .` | [upgrade-kit.md](upgrade-kit.md) |
+| **Check install health** | — | `python3 -m agent_colony health` | [gate-matrix.md](gate-matrix.md) |
+| **Dry-run install preview** | — | `python3 -m agent_colony install --target <dir> --dry-run` | [install-dry-run.md](install-dry-run.md) |
 
 ### Full `/` menu (8 agents + skills)
 
@@ -380,9 +380,9 @@ Cursor may also auto-delegate subagents when the task matches their `description
 
 Every session:
 
-1. When `project_ssot.enabled`: `python3 -m cursor_workflow project status` (board first); else `.local/index-and-planning/current/session-pointer.md`
+1. When `project_ssot.enabled`: `python3 -m agent_colony project status` (board first); else `.local/index-and-planning/current/session-pointer.md`
 2. Board card Status/Notes — attribution `@user/agent · <ISO-8601-UTC> · …` (CLI stamps); local `history/continuity-index.md` rolls ≥3 days (local `plan.md` / `work-tracker.md` = offline fallback under `board_only`)
-3. Rate-limit / precheck: EXIT_QUEUED (6) → do not retry-loop; `python3 -m cursor_workflow project outbox flush` after quota recovers (`project_ssot.outbox` in collaboration YAML — includes `precheck_writes` / `dedupe_pending`)
+3. Rate-limit / precheck: EXIT_QUEUED (6) → do not retry-loop; `python3 -m agent_colony project outbox flush` after quota recovers (`project_ssot.outbox` in collaboration YAML — includes `precheck_writes` / `dedupe_pending`)
 4. **`/implementer`** (or specialist agent from §6)
 5. Optional: [Control Center dashboards (deprecated)](#5-control-center-dashboards-deprecated) — `http.server` + full URL in §5
 
@@ -423,9 +423,9 @@ Procedure: [agent-workflow-procedures.md](agent-workflow-procedures.md).
 | `.local/user_settings/mcp.agents.yaml` | Per-agent MCP attachments (optional) |
 
 ```bash
-python3 -m cursor_workflow contributors validate   # must PASS before first PR
-python3 -m cursor_workflow integrate validate      # P0 must be 0
-python3 -m cursor_workflow health
+python3 -m agent_colony contributors validate   # must PASS before first PR
+python3 -m agent_colony integrate validate      # P0 must be 0
+python3 -m agent_colony health
 ```
 
 Use project `.venv`: `source .venv/bin/activate` before CLI commands.
@@ -436,10 +436,10 @@ Use project `.venv`: `source .venv/bin/activate` before CLI commands.
 
 | Command | When | Steps |
 |---------|------|-------|
-| `python3 -m cursor_workflow gates` | Post-change smoke | 4 on consumer (no doc-facts) |
-| `python3 -m cursor_workflow health` | Anytime | Layout + version |
-| `python3 -m cursor_workflow drift validate` | Slice closure (kit-dev) | Plan ↔ tracker coherence |
-| `python3 -m cursor_workflow drift validate --profile consumer` | Consumer verify | DRIFT-005 + DRIFT-008 only; no agent required. **DRIFT-005 FAIL** on missing `IMPLEMENTATION-STATUS.md` = kit bug (false positive on older payloads) — see [consumer-quickstart](consumer-quickstart.md#drift-005-fail--kit-bug-not-your-app) |
+| `python3 -m agent_colony gates` | Post-change smoke | 4 on consumer (no doc-facts) |
+| `python3 -m agent_colony health` | Anytime | Layout + version |
+| `python3 -m agent_colony drift validate` | Slice closure (kit-dev) | Plan ↔ tracker coherence |
+| `python3 -m agent_colony drift validate --profile consumer` | Consumer verify | DRIFT-005 + DRIFT-008 only; no agent required. **DRIFT-005 FAIL** on missing `IMPLEMENTATION-STATUS.md` = kit bug (false positive on older payloads) — see [consumer-quickstart](consumer-quickstart.md#drift-005-fail--kit-bug-not-your-app) |
 
 Details: [gate-matrix.md](gate-matrix.md). **`make gates`** / **`make verify-all`** are **kit maintainer only**.
 
@@ -449,8 +449,8 @@ Details: [gate-matrix.md](gate-matrix.md). **`make gates`** / **`make verify-all
 
 | Problem | Fix |
 |---------|-----|
-| `No module named 'cursor_workflow'` on first activate | **Expected** in empty app — run activate from kit **payload** entrypoint; see [consumer-quickstart § First activate troubleshooting](consumer-quickstart.md#first-activate-troubleshooting) |
-| VERIFY FAIL / missing pytest after activate | `source .venv/bin/activate && pip install -r requirements-dev.txt && python3 -m cursor_workflow activate --directory .` |
+| `No module named 'agent_colony'` on first activate | **Expected** in empty app — run activate from kit **payload** entrypoint; see [consumer-quickstart § First activate troubleshooting](consumer-quickstart.md#first-activate-troubleshooting) |
+| VERIFY FAIL / missing pytest after activate | `source .venv/bin/activate && pip install -r requirements-dev.txt && python3 -m agent_colony activate --directory .` |
 | `bash: /add-plugin: No such file or directory` | Use **Agent chat**, not terminal — paste the GitHub URL after `/add-plugin` |
 | Only `.cursor/settings.json` after plugin | Expected — run **`/workflow-activate`** for `.ai_infra/`, `.local/`, etc. |
 | Subagents missing in `/` menu | Open **your activated project**, not kit repo; re-run `/workflow-activate` |
@@ -461,7 +461,7 @@ Details: [gate-matrix.md](gate-matrix.md). **`make gates`** / **`make verify-all
 | Control Center **Failed to fetch** | `python3 -m http.server 8000` from project root, then http://localhost:8000/.local/agents-control-center/dashboards/index.html — not `file://` |
 | Stale dashboard after kit update | Re-run `/workflow-activate` or `activate --directory .` |
 | `DRIFT-005 FAIL` on consumer drift | **Kit bug (not your app)** — upgrade kit or ignore until skip-if-absent fix ships. Details: [consumer-quickstart](consumer-quickstart.md#drift-005-fail--kit-bug-not-your-app) |
-| `mcp validate` → typer required | Use `python3 -m cursor_workflow mcp validate` — not bare `mcp validate` |
+| `mcp validate` → typer required | Use `python3 -m agent_colony mcp validate` — not bare `mcp validate` |
 
 More: [consumer-quickstart.md](consumer-quickstart.md) § Troubleshooting.
 

@@ -11,7 +11,7 @@ First-run coach: `/board` + `.cursor/skills/board-shell/SKILL.md`.
 **Product rule:** apply this **default shell** so the board matches Playground (Status board, Prioritized backlog, Roadmap, Bugs, In review, My items) with Tier-1 columns. Customize cosmetics later. Verify with:
 
 ```bash
-python3 -m cursor_workflow project board-bootstrap --check
+python3 -m agent_colony project board-bootstrap --check
 ```
 
 ---
@@ -65,7 +65,7 @@ Kit **default** remains six Playground views ([`board-shell.schema.yaml`](board-
 
 4. On **Status board** and **Prioritized backlog**: **+** → show **Priority**, **Size**, **Estimate**, **Start date**.
 5. README: `--apply-readme` or paste `project-readme.md`.
-6. `python3 -m cursor_workflow project board-bootstrap --check` until green.
+6. `python3 -m agent_colony project board-bootstrap --check` until green.
 
 Agents coach this as **TURN PROTOCOL** in `board-shell` (one view per chat turn). **Default:** human clicks. **If the user asks** for browser help, agents may use browser MCP and follow **Browser assist map** below.
 
@@ -89,7 +89,7 @@ No consumer-specific URLs. Open the Project from `project status`. Use when the 
 
 **Minimal fast path:** Status board (Board + Group by Status + Tier-1) → Prioritized backlog (Table + Tier-1) → README → re-check. **Group by Priority** on the backlog is optional and **not** required for `--check` exit 0.
 
-Verify after each change: `python3 -m cursor_workflow project board-bootstrap --check`.
+Verify after each change: `python3 -m agent_colony project board-bootstrap --check`.
 
 ---
 
@@ -144,14 +144,14 @@ Other views (Roadmap, Bugs, In review, My items) should show Status / Priority /
 2. Paste the **contents** of `.ai_infra/templates/project-board/project-readme.md`.
 3. Edit the HTML comment placeholders (`PROJECT_TITLE`, `DEFAULT_REPO`, links) for your repo.
 4. Do **not** paste `views-setup.md` into the README — only **follow** this file in the UI.  
-   Or opt-in: `python3 -m cursor_workflow project board-bootstrap --check --apply-readme`.
+   Or opt-in: `python3 -m agent_colony project board-bootstrap --check --apply-readme`.
 
 ---
 
 ## 4. Verify
 
 ```bash
-python3 -m cursor_workflow project board-bootstrap --check
+python3 -m agent_colony project board-bootstrap --check
 ```
 
 | Outcome | Meaning |
@@ -160,10 +160,10 @@ python3 -m cursor_workflow project board-bootstrap --check
 | **WARN (exit 0)** | Leftover `View N` names; layout mismatch; recommended view missing — fix before relying on agents |
 | **ok (exit 0)** | Default shell ready → `project status` → `/implementer` |
 
-Then: `python3 -m cursor_workflow project status`.
+Then: `python3 -m agent_colony project status`.
 
 ---
 
 ## 5. Keep views API-free (browser opt-in)
 
-Agents write card fields and Notes via `cursor_workflow project`. They do not use undocumented GraphQL for views. Default shell setup is human UI + coach; **if asked**, browser MCP follows the **Browser assist map**. Opt-in CLI: `--apply-readme` / `--ensure-fields`.
+Agents write card fields and Notes via `agent_colony project`. They do not use undocumented GraphQL for views. Default shell setup is human UI + coach; **if asked**, browser MCP follows the **Browser assist map**. Opt-in CLI: `--apply-readme` / `--ensure-fields`.

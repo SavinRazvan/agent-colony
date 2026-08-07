@@ -28,7 +28,7 @@ Notes:
 |--------|---------|
 | **SSOT** | Edit here; other trees are generated or copied |
 | **Generated** | Run `make sync-plugin`; commit the diff |
-| **Consumer** | Lands on disk after `cursor_workflow activate` in an app project |
+| **Consumer** | Lands on disk after `agent_colony activate` in an app project |
 | **Kit-dev only** | Stays in this repo; not in consumer `payload/` |
 
 ---
@@ -47,7 +47,7 @@ agent-colony/
 ├── .ai_infra/                  SSOT — scripts, docs, templates, MCP, workflows, manifest.yaml
 ├── assets/                     Marketplace logo (`logo.png`)
 ├── .github/                    CI workflows (kit-dev only)
-├── cursor_workflow/            SSOT — thin CLI shim (also copied to consumer)
+├── agent_colony/            SSOT — thin CLI shim (also copied to consumer)
 ├── schemas/                    Legacy gate.json stub (`resolve_gates()` in prepare.py; `GATES` = alias)
 ├── .local/                     Kit-dev runtime (gitignored); CI seed fixture — not consumer exemplars
 ├── tests/                      Kit-dev only — full pytest suite (1427; see IMPLEMENTATION-STATUS)
@@ -91,12 +91,12 @@ my-app/
 ├── .agents/skills/                 6 maintainer slash folders (incl. full-pr-workflow; + audit-alignment stub)
 ├── .ai_infra/                      Slim bundle (manifest copy_ai_infra only)
 │   ├── scripts/pr|architecture|integration|workflow|install/
-│   ├── install/cursor_workflow/
+│   ├── install/agent_colony/
 │   ├── docs/operations|governance|roadmap|decisions|architecture/
 │   ├── templates/local-workspace|user-settings|agent-integration|project-board|research-corpus/
 │   ├── workflows/                  PR lane hub (shipped — see workflows/README.md)
 │   └── mcp_servers/workflow_mcp/   (with_mcp profile)
-├── cursor_workflow/                CLI entrypoint
+├── agent_colony/                CLI entrypoint
 └── .local/                         Scaffolded trackers + artifact buckets (gitignored)
 ```
 

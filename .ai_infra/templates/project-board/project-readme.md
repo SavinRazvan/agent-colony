@@ -27,15 +27,15 @@ This GitHub Project is the **only writable SSOT** for backlog, Status, and multi
 ## Agents (CLI — never paste this README into a shell)
 
 ```bash
-python3 -m cursor_workflow project doctor
-python3 -m cursor_workflow project board-bootstrap --check
-python3 -m cursor_workflow project guide --agent implementer
-python3 -m cursor_workflow project outbox status
-python3 -m cursor_workflow project create-from-template --title "[SLICE] short-name" --template slice --status ready --priority p1 --size s --estimate 1 --agent implementer
-python3 -m cursor_workflow project claim --last --agent implementer   # + Start date (UTC) when configured
-python3 -m cursor_workflow project promote-to-issue --last --agent implementer   # Draft→Issue; same PVTI_; before PR if not using mention-pr auto
-python3 -m cursor_workflow project mention-pr --pr <n> --last --agent implementer   # auto-promotes Draft when promote_to_issue_on_pr (default true)
-python3 -m cursor_workflow project handoff --last --agent implementer --next verifier --to in_review
+python3 -m agent_colony project doctor
+python3 -m agent_colony project board-bootstrap --check
+python3 -m agent_colony project guide --agent implementer
+python3 -m agent_colony project outbox status
+python3 -m agent_colony project create-from-template --title "[SLICE] short-name" --template slice --status ready --priority p1 --size s --estimate 1 --agent implementer
+python3 -m agent_colony project claim --last --agent implementer   # + Start date (UTC) when configured
+python3 -m agent_colony project promote-to-issue --last --agent implementer   # Draft→Issue; same PVTI_; before PR if not using mention-pr auto
+python3 -m agent_colony project mention-pr --pr <n> --last --agent implementer   # auto-promotes Draft when promote_to_issue_on_pr (default true)
+python3 -m agent_colony project handoff --last --agent implementer --next verifier --to in_review
 ```
 
 Use `--last` after create (saved under `.local/generated-data/project-last-item.json`). Do **not** invent or paste placeholder ids from docs.

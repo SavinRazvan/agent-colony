@@ -1,12 +1,12 @@
 """
 File: test_drift_cli.py
 Path: tests/modules/workflow_drift/test_drift_cli.py
-Role: Tests for check_drift CLI entry and cursor_workflow drift validate wiring.
+Role: Tests for check_drift CLI entry and agent_colony drift validate wiring.
 Used By:
  - pytest
 Depends On:
  - .ai_infra/scripts/workflow/check_drift.py
- - .ai_infra/install/cursor_workflow/drift_cli.py
+ - .ai_infra/install/agent_colony/drift_cli.py
 """
 
 from __future__ import annotations
@@ -49,12 +49,12 @@ def test_check_drift_main_json(tmp_path: Path) -> None:
     assert "DRIFT-001" in proc.stdout
 
 
-def test_cursor_workflow_drift_validate_on_kit_repo() -> None:
+def test_agent_colony_drift_validate_on_kit_repo() -> None:
     proc = subprocess.run(
         [
             sys.executable,
             "-m",
-            "cursor_workflow",
+            "agent_colony",
             "drift",
             "validate",
             "--directory",
@@ -69,7 +69,7 @@ def test_cursor_workflow_drift_validate_on_kit_repo() -> None:
     assert "DRIFT-005" in proc.stdout
 
 
-def test_cursor_workflow_drift_validate_consumer_profile_skips_drift005(tmp_path: Path) -> None:
+def test_agent_colony_drift_validate_consumer_profile_skips_drift005(tmp_path: Path) -> None:
     planning = tmp_path / ".local/index-and-planning/current"
     planning.mkdir(parents=True)
     (planning / "plan.md").write_text("# Plan\n", encoding="utf-8")
@@ -96,7 +96,7 @@ def test_cursor_workflow_drift_validate_consumer_profile_skips_drift005(tmp_path
     assert "skipped" in proc.stdout.lower()
 
 
-def test_cursor_workflow_drift_validate_accepts_consumer_board_profile(
+def test_agent_colony_drift_validate_accepts_consumer_board_profile(
     tmp_path: Path,
 ) -> None:
     planning = tmp_path / ".local/index-and-planning/current"

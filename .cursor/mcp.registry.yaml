@@ -6,4 +6,4 @@ servers:
     agents: [implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard]
     tools_hint: [workflow_run_prepare, workflow_get_tracker, workflow_list_mcp_registry, workflow_integrate_validate, workflow_drift_validate]
 # External servers (deepwiki, …): copy mcp.registry.yaml.example + mcp.user.example.json,
-# then `python3 -m cursor_workflow mcp validate` / health. Do not commit user fragment.
+# then `python3 -m agent_colony mcp validate` / health. Do not commit user fragment.

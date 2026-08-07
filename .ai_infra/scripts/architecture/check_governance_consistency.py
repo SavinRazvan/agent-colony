@@ -82,7 +82,7 @@ BRAND_DRIFT_SURFACES = (
     ROOT / "README.md",
     ROOT / ".ai_infra" / "docs",
     ROOT / "tests",
-    ROOT / "cursor_workflow",
+    ROOT / "agent_colony",
 )
 
 BRAND_DRIFT_SKIP = frozenset(

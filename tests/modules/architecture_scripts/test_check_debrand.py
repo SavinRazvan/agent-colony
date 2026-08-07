@@ -52,25 +52,37 @@ def test_governance_brand_scan_passes() -> None:
 
 def test_debrand_flags_legacy_product_slug() -> None:
     mod = _load_debrand_module()
+    pattern = dict(mod.BANNED_PATTERNS)["mas-workflow-kit-project-ssot"]
     assert mod.text_has_banned_pattern(
         "Install from mas-workflow-kit-project-ssot today.",
-        mod.BANNED_PATTERNS[9][1],
+        pattern,
     )
 
 
 def test_debrand_allows_formerly_line() -> None:
     mod = _load_debrand_module()
     # Formerly is now banned, so this must be flagged
+    pattern = dict(mod.BANNED_PATTERNS)["Formerly"]
     assert mod.text_has_banned_pattern(
         "Formerly MAS Workflow Kit — Project SSOT.",
-        mod.BANNED_PATTERNS[15][1],
+        pattern,
     )
 
 
 def test_debrand_allows_upstream_lineage() -> None:
     mod = _load_debrand_module()
     # upstream is now banned, so this must be flagged
+    pattern = dict(mod.BANNED_PATTERNS)["upstream"]
     assert mod.text_has_banned_pattern(
         "Do not mutate upstream mas-workflow-kit.",
-        mod.BANNED_PATTERNS[16][1],
+        pattern,
+    )
+
+
+def test_debrand_flags_legacy_cli_module_name() -> None:
+    mod = _load_debrand_module()
+    pattern = dict(mod.BANNED_PATTERNS)["cursor_workflow"]
+    assert mod.text_has_banned_pattern(
+        "Run python -m cursor_workflow health",
+        pattern,
     )

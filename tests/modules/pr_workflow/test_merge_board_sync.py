@@ -6,7 +6,7 @@ Used By:
  - pytest
 Depends On:
  - .ai_infra/scripts/pr/merge.py
- - .ai_infra/install/cursor_workflow/project_cli.py
+ - .ai_infra/install/agent_colony/project_cli.py
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 _PR_DIR = REPO_ROOT / ".ai_infra" / "scripts" / "pr"
-_CW_DIR = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+_CW_DIR = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 for p in (_PR_DIR, _CW_DIR):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))

@@ -285,7 +285,7 @@ const ARTIFACT_FLOWS = [
   ],
   [
     ".local/generated-data/board-outbox.jsonl",
-    "cursor_workflow project CLI",
+    "agent_colony project CLI",
     "EXIT_QUEUED (6) on rate-limit",
     "Any agent / human (outbox flush)",
     "Local buffer — not a second Status SSOT",

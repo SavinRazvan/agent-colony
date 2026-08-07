@@ -5,7 +5,7 @@ Role: Tests kit + user MCP JSON merge preserves user keys.
 Used By:
  - pytest
 Depends On:
- - .ai_infra/install/cursor_workflow/mcp_manage.py
+ - .ai_infra/install/agent_colony/mcp_manage.py
 """
 
 from __future__ import annotations
@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-MCP_MANAGE = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow" / "mcp_manage.py"
+MCP_MANAGE = REPO_ROOT / ".ai_infra" / "install" / "agent_colony" / "mcp_manage.py"
 
 
 def _load_mcp_manage():

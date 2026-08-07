@@ -178,7 +178,7 @@ const GAPS = [
   {
     gap: "Raw gh / GraphQL outside Pattern A CLI",
     risk: "Bypasses outbox + precheck entirely",
-    note: "Policy-only — require cursor_workflow project …; cannot sandbox Cursor shell",
+    note: "Policy-only — require agent_colony project …; cannot sandbox Cursor shell",
   },
   {
     gap: "EXIT_QUEUED obedience is soft",
@@ -229,7 +229,7 @@ export default function GithubApiSafetyCanvas() {
         Pattern A writes use cached precheck + Forbidden/429 queue + pending
         dedupe. Reads use project entry tiers (live / conserve /
         offline_artifacts) plus export --reuse-if-fresh. Safe when agents use{" "}
-        <Text weight="semibold">python3 -m cursor_workflow project …</Text> and
+        <Text weight="semibold">python3 -m agent_colony project …</Text> and
         treat EXIT_QUEUED (6) as soft-success (no retry loop).
       </Callout>
 

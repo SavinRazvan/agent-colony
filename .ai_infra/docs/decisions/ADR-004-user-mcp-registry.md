@@ -20,7 +20,7 @@ Registry maps agent ids → server keys → tool hints. Agents read registry bef
 
 ## Consequences
 
-- `cursor_workflow mcp link` / `mcp validate` / `mcp seed` CLI (Phase 5b + DeepWiki default seed)
+- `agent_colony mcp link` / `mcp validate` / `mcp seed` CLI (Phase 5b + DeepWiki default seed)
 - Pattern A transport: `mcp doctor|list-tools|call|auth|smoke|seed` — see [ADR-009](ADR-009-mcp-pattern-a-cli.md)
 - `mcp-connect` skill and ops doc
 - Transport in `.cursor/mcp.user.json` (gitignored); auth secrets in `.local/user_settings/mcp.secrets.yaml`

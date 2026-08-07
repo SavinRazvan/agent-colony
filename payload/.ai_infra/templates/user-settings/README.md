@@ -26,7 +26,7 @@ Notes:
 **Agents:** Read completed files for attribution defaults and MCP intent. Wired integration:
 
 - PR scripts: `review.py`, `prepare.py`, `merge.py` — `--pipeline default` reads owner + agents from YAML
-- CLI: `python -m cursor_workflow contributors {validate|show|commit-trailers|pr-body}`
+- CLI: `python -m agent_colony contributors {validate|show|commit-trailers|pr-body}`
 - MCP: `workflow_render_commit_trailers`, `workflow_render_pr_body`, `workflow_contributors_validate`
 
 **Examples:** [RENDERED-EXAMPLES.md](RENDERED-EXAMPLES.md) — kit vs legacy commit/PR formats.

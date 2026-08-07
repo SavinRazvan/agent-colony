@@ -3,7 +3,7 @@ File: README.md
 Path: .ai_infra/templates/research-corpus/README.md
 Role: Index for research corpus pack templates and CLI enablement.
 Used By:
- - .ai_infra/install/cursor_workflow/research_cli.py
+ - .ai_infra/install/agent_colony/research_cli.py
  - .cursor/skills/research-corpus/SKILL.md
  - .cursor/agents/researcher.md
 Depends On:
@@ -17,11 +17,11 @@ Notes:
 Copy into `_research_results/` via:
 
 ```bash
-python3 -m cursor_workflow research init --slug <slug> [--brief path/to/brief.md]
-python3 -m cursor_workflow research fetch --slug <slug> --source path:/abs/or/rel
+python3 -m agent_colony research init --slug <slug> [--brief path/to/brief.md]
+python3 -m agent_colony research fetch --slug <slug> --source path:/abs/or/rel
 # or: --source github:owner/repo[@ref]
 # or: --source https://github.com/owner/repo[/tree/ref]
-python3 -m cursor_workflow research validate --slug <slug>
+python3 -m agent_colony research validate --slug <slug>
 ```
 
 Terse chat (`/researcher https://github.com/owner/repo`) is valid: agent derives Brief defaults per skill § Intake.

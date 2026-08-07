@@ -3,14 +3,14 @@ File: test_bootstrap_and_misc.py
 Path: tests/modules/ai_infra/test_bootstrap_and_misc.py
 Role: Coverage for small, otherwise-untested kit surfaces: .ai_infra/__init__.py,
       .ai_infra/bootstrap.py, .ai_infra/scripts/architecture/consumer_bundle_paths.py,
-      cursor_workflow/__main__.py.
+      agent_colony/__main__.py.
 Used By:
  - pytest
 Depends On:
  - .ai_infra/__init__.py
  - .ai_infra/bootstrap.py
  - .ai_infra/scripts/architecture/consumer_bundle_paths.py
- - cursor_workflow/__main__.py
+ - agent_colony/__main__.py
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ def test_ai_infra_package_exposes_version() -> None:
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    assert mod.__version__ == "0.5.0"
+    assert mod.__version__ == "0.6.0"
 
 
 def test_bootstrap_ensure_paths_import_inserts_ai_infra_dir() -> None:
@@ -104,15 +104,15 @@ def test_consumer_bundle_paths_ignore_returns_empty_when_no_ci_dir() -> None:
     assert mod.is_local_workspace_copy("other/path") is False
 
 
-def test_cursor_workflow_dunder_main_guard(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(sys, "argv", ["cursor_workflow", "--version"])
+def test_agent_colony_dunder_main_guard(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(sys, "argv", ["agent_colony", "--version"])
     with pytest.raises(SystemExit) as exc_info:
-        runpy.run_path(str(REPO_ROOT / "cursor_workflow" / "__main__.py"), run_name="__main__")
+        runpy.run_path(str(REPO_ROOT / "agent_colony" / "__main__.py"), run_name="__main__")
     assert exc_info.value.code == 0
 
 
-def test_cursor_workflow_dunder_main_module_load_without_guard() -> None:
+def test_agent_colony_dunder_main_module_load_without_guard() -> None:
     module = runpy.run_path(
-        str(REPO_ROOT / "cursor_workflow" / "__main__.py"), run_name="cursor_workflow_main_test"
+        str(REPO_ROOT / "agent_colony" / "__main__.py"), run_name="agent_colony_main_test"
     )
     assert "_mod" in module

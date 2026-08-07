@@ -397,7 +397,7 @@ export default function AgentImplementerCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP">
-        Kit server agent-colony-mcp for PR scripts/gates — prefer cursor_workflow
+        Kit server agent-colony-mcp for PR scripts/gates — prefer agent_colony
         project for board. External: only servers listed for this agent in
         mcp.registry.yaml.
       </Callout>

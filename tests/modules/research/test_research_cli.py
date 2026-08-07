@@ -5,7 +5,7 @@ Role: Unit tests for research init/fetch/validate CLI (local path; no network).
 Used By:
  - pytest
 Depends On:
- - .ai_infra/install/cursor_workflow/research_cli.py
+ - .ai_infra/install/agent_colony/research_cli.py
  - .ai_infra/templates/research-corpus/
 """
 
@@ -19,7 +19,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-CW_DIR = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+CW_DIR = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 if str(CW_DIR) not in sys.path:
     sys.path.insert(0, str(CW_DIR))
 

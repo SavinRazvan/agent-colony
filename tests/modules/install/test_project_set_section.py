@@ -5,8 +5,8 @@ Role: Tests for set-section CLI and body gates on handoff/set-status → in_revi
 Used By:
  - pytest
 Depends On:
- - .ai_infra/install/cursor_workflow/project_cli.py
- - .ai_infra/install/cursor_workflow/project_atomics.py
+ - .ai_infra/install/agent_colony/project_cli.py
+ - .ai_infra/install/agent_colony/project_atomics.py
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from types import SimpleNamespace
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 if str(_PKG_DIR) not in sys.path:
     sys.path.insert(0, str(_PKG_DIR))
 

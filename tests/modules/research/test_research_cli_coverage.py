@@ -5,7 +5,7 @@ Role: Branch and error-path coverage for research_cli.py beyond happy local path
 Used By:
  - pytest
 Depends On:
- - .ai_infra/install/cursor_workflow/research_cli.py
+ - .ai_infra/install/agent_colony/research_cli.py
 Notes:
  - No live network; mocks subprocess for git/gh clone paths.
 """
@@ -21,7 +21,7 @@ from types import SimpleNamespace
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-CW_DIR = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+CW_DIR = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 if str(CW_DIR) not in sys.path:
     sys.path.insert(0, str(CW_DIR))
 

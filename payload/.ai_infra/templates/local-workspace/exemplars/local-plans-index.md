@@ -15,4 +15,4 @@ Dated plan-mode history only. **Do not** treat rows here as active backlog or sl
 | Snapshot | Slug | Agent | Board item | Source |
 |----------|------|-------|------------|--------|
 
-List: `python3 -m cursor_workflow plan list` · Create: `python3 -m cursor_workflow plan snapshot --slug <slug>` · Human Build bridge: `python3 -m cursor_workflow plan open --slug <slug> [--force]`
+List: `python3 -m agent_colony plan list` · Create: `python3 -m agent_colony plan snapshot --slug <slug>` · Human Build bridge: `python3 -m agent_colony plan open --slug <slug> [--force]`

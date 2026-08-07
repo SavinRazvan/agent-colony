@@ -9,7 +9,7 @@
 | | |
 |--|--|
 | **Product repo** | [agent-colony](https://github.com/SavinRazvan/agent-colony) |
-| **Version** | `0.5.0` · **Tests** · 1455 · **Agents** · 8 · **Rules** · **7 universal** |
+| **Version** | `0.6.0` · **Tests** · 1456 · **Agents** · 8 · **Rules** · **7 universal** |
 | **Board (kit-dev)** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) — reference layout for **Prioritized backlog** + **Status board** |
 
 ---
@@ -27,7 +27,7 @@
 
 - **8 agents:** `implementer`, `test-runner`, `verifier`, `auditor`, `researcher`, `integrator`, `drift-guard`, `board`
 - **12 canonical skills** + maintainer PR slash skills (`/review-pr` → `/prepare-pr` → `/merge-pr`)
-- **Board Pattern A CLI:** `python3 -m cursor_workflow project …` (claim, handoff, Tier-1 fields, outbox)
+- **Board Pattern A CLI:** `python3 -m agent_colony project …` (claim, handoff, Tier-1 fields, outbox)
 - **PR gates** via `prepare.py` · optional MCP (`workflow_mcp`) · research corpus under `_research_results/` (opt-in)
 
 **North star:** Entry = read the Project; Exit = update Status + Notes. Details: [ADR-008](.ai_infra/docs/decisions/ADR-008-project-board-ssot.md) · [project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md).
@@ -63,7 +63,7 @@ Wait for **`VERIFY PASS`** and all three planes **ready**. Activate is idempoten
 | Plane | Paths | Purpose |
 |-------|-------|---------|
 | Cursor contract | `.cursor/`, `.agents/`, `AGENTS.md` | Agents, skills, rules |
-| Infrastructure | `.ai_infra/`, `cursor_workflow/` | CLI, scripts, docs, templates |
+| Infrastructure | `.ai_infra/`, `agent_colony/` | CLI, scripts, docs, templates |
 | Runtime | `.local/`, `.venv` | Trackers, **user settings** (gitignored) |
 
 ### 3. Your identity, then wire the board (Project SSOT)
@@ -84,8 +84,8 @@ Set **`project_ssot.enabled: true`** when you want the GitHub Project as SSOT (y
 
 ```bash
 source .venv/bin/activate
-python3 -m cursor_workflow contributors validate   # must PASS
-python3 -m cursor_workflow health
+python3 -m agent_colony contributors validate   # must PASS
+python3 -m agent_colony health
 ```
 
 #### 3b. GitHub CLI (Project SSOT only)
@@ -125,8 +125,8 @@ Then verify the API slice:
 
 ```bash
 source .venv/bin/activate
-python3 -m cursor_workflow project doctor
-python3 -m cursor_workflow project status
+python3 -m agent_colony project doctor
+python3 -m agent_colony project status
 ```
 
 Expect:
@@ -161,7 +161,7 @@ Choose **one** shell path:
 **New installs:** activate auto-seeds `.local/user_settings/board-shell.schema.yaml` from the minimal exemplar (consumer repos only). **Existing installs:**
 
 ```bash
-python3 -m cursor_workflow project board-shell init --minimal
+python3 -m agent_colony project board-shell init --minimal
 ```
 
 Or copy manually:
@@ -183,7 +183,7 @@ See table in §4B below — use when you do **not** copy the minimal overlay.
 
 | Action | Where | Command / prompt |
 |--------|--------|------------------|
-| Check shell | Terminal | `python3 -m cursor_workflow project board-bootstrap --check` |
+| Check shell | Terminal | `python3 -m agent_colony project board-bootstrap --check` |
 | Create missing **fields** | Terminal (optional) | `… board-bootstrap --check --ensure-fields` |
 | Push Project **README** | Terminal (optional) | `… board-bootstrap --check --apply-readme` |
 | Create/rename **views** + **columns** | Browser + **`/board`** | CONSENT GATE + TURN PROTOCOL — **no view CLI** |
@@ -220,8 +220,8 @@ On **Status board** and **Prioritized backlog**, show: **Priority**, **Size**, *
 
 ```bash
 source .venv/bin/activate
-python3 -m cursor_workflow project board-bootstrap --check
-python3 -m cursor_workflow project status
+python3 -m agent_colony project board-bootstrap --check
+python3 -m agent_colony project status
 ```
 
 Schema path should show `.local/user_settings/board-shell.schema.yaml` when using the minimal overlay.
@@ -242,7 +242,7 @@ Schema path should show `.local/user_settings/board-shell.schema.yaml` when usin
 | Extend agents/skills/MCP | `/integrator` |
 | Architecture audit *(later)* | `/auditor` — not day-0 onboarding |
 
-**Every session Entry:** if `project_ssot.enabled` → `python3 -m cursor_workflow project status`; else → `.local/index-and-planning/current/session-pointer.md`.
+**Every session Entry:** if `project_ssot.enabled` → `python3 -m agent_colony project status`; else → `.local/index-and-planning/current/session-pointer.md`.
 
 Shorter path: [consumer-quickstart.md](.ai_infra/docs/operations/consumer-quickstart.md).
 
@@ -267,17 +267,17 @@ Or terminal:
 
 ```bash
 source .venv/bin/activate
-python3 -m cursor_workflow activate --directory .
+python3 -m agent_colony activate --directory .
 ```
 
 4. Sanity check:
 
 ```bash
-python3 -m cursor_workflow health
-python3 -m cursor_workflow project board-bootstrap --check   # still FAIL until you finish step 4 views in GitHub UI
+python3 -m agent_colony health
+python3 -m agent_colony project board-bootstrap --check   # still FAIL until you finish step 4 views in GitHub UI
 ```
 
-**Force** full overwrite of agents/skills/scripts (review diffs): `python3 -m cursor_workflow activate --directory . --force`  
+**Force** full overwrite of agents/skills/scripts (review diffs): `python3 -m agent_colony activate --directory . --force`  
 Details: [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md).
 
 **Board views are not fixed by a plugin update.** `board-bootstrap --check` FAIL on missing views only clears after you complete **step 4** (`/board` + human UI). Updating the plugin only refreshes docs/coaching text.
@@ -299,9 +299,9 @@ pip install -e ".[dev,mcp]"
 4. Start:
 
 ```bash
-python3 -m cursor_workflow project status
-python3 -m cursor_workflow project list --status ready
-# create / claim — see: python3 -m cursor_workflow project guide
+python3 -m agent_colony project status
+python3 -m agent_colony project list --status ready
+# create / claim — see: python3 -m agent_colony project guide
 ```
 
 Maintainer gates: `make gates` · `make drift-validate` · `make doc-validate` · shipped matrix: [IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md). Kit canvases: **15** files under `canvases/` (**11** agent/roster hubs + 4 concept hubs — see IMPLEMENTATION-STATUS § Kit canvases). Canvas/plan local artifacts: [ADR-010](.ai_infra/docs/decisions/ADR-010-canvas-plan-local-artifacts.md) · [canvas-artifacts](.cursor/skills/canvas-artifacts/SKILL.md).

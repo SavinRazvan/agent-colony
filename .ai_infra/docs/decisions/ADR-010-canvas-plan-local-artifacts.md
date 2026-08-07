@@ -11,7 +11,7 @@ Kit canvases live in git under `canvases/*.canvas.tsx`, but Cursor IDE only comp
 
 1. **Three canvas tiers:** repo `canvases/` (git SSOT for product docs), Cursor managed path (render bridge only), `.local/canvases/` (session evidence, gitignored).
 2. **Two plan tiers:** live plan on board card body (or `plan.md` offline fallback); `.local/plans/` holds dated **snapshots only** — never competing backlog/status.
-3. **CLI is canonical:** `python3 -m cursor_workflow canvas doctor|list|sync|save` and `plan snapshot|list|open`.
+3. **CLI is canonical:** `python3 -m agent_colony canvas doctor|list|sync|save` and `plan snapshot|list|open`.
 4. **Explicit sync:** no silent overwrite of Cursor managed canvases on activate; `canvas sync --all` requires `--force`; `--missing` copies only absent managed files.
 5. **Evidence:** optional doctor reports under `.local/workflow-artifacts/canvas/`.
 

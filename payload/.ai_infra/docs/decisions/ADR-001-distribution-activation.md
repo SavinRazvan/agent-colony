@@ -5,11 +5,11 @@
 
 ## Context
 
-The kit ships via CLI (`cursor_workflow install`) and will ship as a Cursor Marketplace plugin. Agents reference `.ai_infra/scripts/` which must exist in consumer projects.
+The kit ships via CLI (`agent_colony install`) and will ship as a Cursor Marketplace plugin. Agents reference `.ai_infra/scripts/` which must exist in consumer projects.
 
 ## Decision
 
-**Option B (locked):** Marketplace plugin ships `payload/.ai_infra/` plus a `workflow-activate` skill that runs `cursor_workflow activate` (install/verify into `${workspace}`). Plugin is self-contained without requiring a separate kit clone.
+**Option B (locked):** Marketplace plugin ships `payload/.ai_infra/` plus a `workflow-activate` skill that runs `agent_colony activate` (install/verify into `${workspace}`). Plugin is self-contained without requiring a separate kit clone.
 
 ## Consequences
 
