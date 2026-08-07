@@ -603,7 +603,10 @@ def _append_gitignore_lines(root: Path, lines: tuple[str, ...], *, header: str) 
     gitignore = root / ".gitignore"
     if gitignore.is_file():
         text = gitignore.read_text(encoding="utf-8")
-        additions = [ln for ln in lines if ln not in text]
+        # Exact line match — substring checks wrongly skip ".local/" when
+        # ".local/user_settings/mcp.secrets.yaml" is already present.
+        existing = set(text.splitlines())
+        additions = [ln for ln in lines if ln not in existing]
         if additions:
             gitignore.write_text(text.rstrip() + "\n" + "\n".join(additions) + "\n", encoding="utf-8")
         return

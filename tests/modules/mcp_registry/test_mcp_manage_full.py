@@ -500,6 +500,18 @@ def test_ensure_runtime_gitignore_appends_when_missing(tmp_path: Path) -> None:
     assert ".venv/" in text
 
 
+def test_ensure_runtime_gitignore_adds_local_despite_secrets_path(tmp_path: Path) -> None:
+    """Substring '.local/' must not block when only a nested .local path exists."""
+    (tmp_path / ".gitignore").write_text(
+        ".local/user_settings/mcp.secrets.yaml\n.venv/\n",
+        encoding="utf-8",
+    )
+    mcp_manage.ensure_runtime_gitignore(tmp_path)
+    lines = (tmp_path / ".gitignore").read_text(encoding="utf-8").splitlines()
+    assert ".local/" in lines
+    assert ".venv/" in lines
+
+
 def test_ensure_consumer_gitignore_combines_runtime_and_mcp(tmp_path: Path) -> None:
     mcp_manage.ensure_consumer_gitignore(tmp_path)
     text = (tmp_path / ".gitignore").read_text(encoding="utf-8")

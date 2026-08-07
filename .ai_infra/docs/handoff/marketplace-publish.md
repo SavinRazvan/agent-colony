@@ -227,7 +227,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-08-07 consumer activate hardening):** Re-verified after activate gitignore/venv/STARTER/MCP-tool hardening — **1465** tests; agent/skill/rule counts (**8** / **13** / **7**); kit version **0.6.1**.
 
-**Listing copy refresh (2026-08-07 update-agent-colony command):** Added `/update-agent-colony` + `agent_colony update` version-gated upgrade — **1478** tests; agent/skill/rule counts (**8** / **14** / **7**); kit version **0.6.1**.
+**Listing copy refresh (2026-08-07 update-agent-colony command):** Added `/update-agent-colony` + `agent_colony update` version-gated upgrade — **1479** tests; agent/skill/rule counts (**8** / **14** / **7**); kit version **0.6.1**.
 
 **Listing copy refresh (2026-07-20 DOC-CANVAS-ALIGN):** Canvases re-aligned to live CLI (**22** leaves incl. `board-bootstrap`), board-shell day-0 story, test-runner `coverage.json` + post-100% doc sync, VERIFIED **2026-07-20**; metrics unchanged (**1178** / **7089** / **100%**; **8** / **12** / **7**).
 
