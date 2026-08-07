@@ -65,8 +65,14 @@ def run_claim(args: argparse.Namespace) -> int:
             return queued
         return pc.fail('claim', pc.EXIT_GH, err)
     item = pc.find_item_by_id(items, item_id)
+    # Large boards: item may fall outside --limit page; resolve by PVTI_ node id.
     if item is None:
-        return pc.fail('claim', pc.EXIT_NOT_FOUND, f'item not found: {item_id}')
+        item, by_id_err = pc.fetch_project_item_by_id(ssot, item_id)
+        if item is None:
+            detail = by_id_err or f'item not found: {item_id}'
+            if 'not found' in detail.lower():
+                return pc.fail('claim', pc.EXIT_NOT_FOUND, f'item not found: {item_id}')
+            return pc.fail('claim', pc.EXIT_GH, detail)
     before = pc._normalize_status(str(item.get('status') or ''))
     if conventions.get('one_in_progress_per_assignee', True):
         conflicts = pc.in_progress_conflicts_for_user(items, user_handle=user, exclude_id=item_id)
@@ -153,7 +159,12 @@ def run_handoff(args: argparse.Namespace) -> int:
         return pc.fail('handoff', pc.EXIT_GH, err)
     item = pc.find_item_by_id(items, item_id)
     if item is None:
-        return pc.fail('handoff', pc.EXIT_NOT_FOUND, f'item not found: {item_id}')
+        item, by_id_err = pc.fetch_project_item_by_id(ssot, item_id)
+        if item is None:
+            detail = by_id_err or f'item not found: {item_id}'
+            if 'not found' in detail.lower():
+                return pc.fail('handoff', pc.EXIT_NOT_FOUND, f'item not found: {item_id}')
+            return pc.fail('handoff', pc.EXIT_GH, detail)
     before = pc._normalize_status(str(item.get('status') or ''))
     if status_to and pc._normalize_status(status_to) in pc.BODY_GATE_STATUSES:
         ok_body, body_detail = pc.assert_body_ready_for_status(ssot, item, status_to)

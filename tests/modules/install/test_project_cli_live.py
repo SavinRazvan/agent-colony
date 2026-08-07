@@ -55,6 +55,7 @@ def test_live_create_claim_handoff_validate_done() -> None:
         acceptance="live smoke",
         rollback="done",
     )
+    # Draft cards avoid polluting default_repo with smoke Issues; claim resolves by id.
     item_id, raw, err = project_cli.create_draft_item(
         ssot, "[LIVE-SMOKE] board Pattern A (auto-cleanup)", body
     )
@@ -63,12 +64,13 @@ def test_live_create_claim_handoff_validate_done() -> None:
     try:
         ok, _ = project_cli.set_item_status(ssot, item_id, "ready")
         assert ok
+        # Board can exceed default page size (Playground ~130+); match CLI --limit 200+.
         claim = argparse.Namespace(
             directory=REPO_ROOT,
             id=item_id,
             agent="implementer",
             text="live claim",
-            limit=100,
+            limit=500,
         )
         # GraphQL eventual consistency: newly created items may 404 briefly.
         claim_rc = 1
@@ -85,10 +87,10 @@ def test_live_create_claim_handoff_validate_done() -> None:
             next="verifier",
             to="in_review",
             text="live handoff",
-            limit=100,
+            limit=500,
         )
         assert project_cli.cmd_handoff(handoff) == 0
-        val = argparse.Namespace(directory=REPO_ROOT, id=item_id, limit=100)
+        val = argparse.Namespace(directory=REPO_ROOT, id=item_id, limit=500)
         assert project_cli.cmd_validate_item(val) == 0
     finally:
         project_cli.set_item_status(ssot, item_id, "done")
