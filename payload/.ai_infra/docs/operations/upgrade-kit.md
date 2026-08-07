@@ -79,6 +79,8 @@ Same as Agent chat **`/update-agent-colony`**. See [update-agent-colony skill](.
 
 **Kit-dev product repo:** do not run `update --force` here (scaffold is consumer-only and will refuse). Sync mirrors with `make sync-plugin` instead. Light `update` / heal on kit-dev refreshes dashboards only and does not overwrite authoring `install/` from `payload/`.
 
+**Plan orphans:** only `*.plan.md` files (via `plan snapshot`) are indexed under `.local/plans/`. Plain `.md` files in that folder are ignored by `plan list` — delete them or re-snapshot with `--from`.
+
 **Advanced aliases** (same underlying scaffold paths):
 
 ```bash
