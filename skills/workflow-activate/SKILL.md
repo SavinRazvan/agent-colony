@@ -50,29 +50,36 @@ Do **not** dump gate lists or maintainer `make` commands.
 
 ## One command
 
-From the **open workspace** (Pattern A — one script command):
+From the **open workspace** (Pattern A — one script command). Defaults: **`with_mcp`**, **`.venv`**, **verify gates** — full consumer kit (8 agents, 14 skills, MCP, PR scripts, `.local/` scaffold, runtime `.gitignore`, `STARTER-001`).
 
 ```bash
 python3 -m agent_colony activate --directory .
 ```
 
-**Auto source resolution:** `WORKFLOW_KIT_PAYLOAD` env → `./payload/` → kit `payload/` (plugin bundle). Override with `--source /path/to/payload`.
+**Auto source resolution:** `WORKFLOW_KIT_PAYLOAD` → `./payload/` → kit `payload/` → **`~/.cursor/plugins/cache/agent-colony/*/payload`** (after `/add-plugin`). Override with `--source /path/to/payload`.
 
 **MCP:** `workflow_activate` on the `agent-colony-mcp` server (same behavior).
 
 ### First install (`agent_colony` module absent)
 
-On a **brand-new app repo**, `python3 -m agent_colony` fails until activate copies infrastructure. **Do not stop** — run activate from the **plugin payload** (or kit checkout):
+On a **brand-new app repo**, `python3 -m agent_colony` fails until activate copies infrastructure. **Do not stop** — prefer the **Cursor plugin cache** (created by `/add-plugin`):
 
 ```bash
-export KIT=~/Projects/agent-colony   # or plugin cache path
-export TARGET=~/Projects/my-app
-cd "$TARGET"
-"$KIT/.venv/bin/python" "$KIT/payload/agent_colony" activate \
-  --directory "$TARGET" --source "$KIT/payload"
+cd /path/to/your-app
+PAYLOAD="$(ls -1dt ~/.cursor/plugins/cache/agent-colony/agent-colony/*/payload 2>/dev/null | head -1)"
+test -n "$PAYLOAD" || { echo "Plugin payload missing — re-run /add-plugin"; exit 1; }
+python3 "$PAYLOAD/agent_colony" activate --directory . --source "$PAYLOAD"
 ```
 
-Or set `WORKFLOW_KIT_PAYLOAD` to the payload directory and invoke the payload entrypoint the same way. After **VERIFY PASS**, all later commands use:
+Equivalent zero-dep helper (same payload):
+
+```bash
+python3 "$PAYLOAD/.ai_infra/scripts/install/bootstrap_activate.py" --directory .
+```
+
+Kit-dev checkout (optional): `KIT=~/Projects/agent-colony` then `python3 "$KIT/payload/agent_colony" activate --directory . --source "$KIT/payload"`.
+
+After **VERIFY PASS**, all later commands use:
 
 ```bash
 source .venv/bin/activate && python3 -m agent_colony …

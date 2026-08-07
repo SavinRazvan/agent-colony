@@ -16,7 +16,14 @@
 /workflow-activate
 ```
 
-**First install note:** if activate fails with *No module named agent_colony*, run from kit payload per [consumer-quickstart § First activate troubleshooting](.ai_infra/docs/operations/consumer-quickstart.md#first-activate-troubleshooting).
+**First install note:** if activate fails with *No module named agent_colony*, use the Cursor plugin cache payload (after `/add-plugin`):
+
+```bash
+PAYLOAD="$(ls -1dt ~/.cursor/plugins/cache/agent-colony/agent-colony/*/payload 2>/dev/null | head -1)"
+python3 "$PAYLOAD/agent_colony" activate --directory . --source "$PAYLOAD"
+```
+
+Details: [consumer-quickstart § First activate troubleshooting](.ai_infra/docs/operations/consumer-quickstart.md#first-activate-troubleshooting).
 
 ## Just installed?
 

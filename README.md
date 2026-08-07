@@ -60,6 +60,8 @@ Still in **your app** folder, Agent chat:
 
 Wait for **`VERIFY PASS`** and all three planes **ready**. Activate is idempotent (safe to re-run).
 
+This copies the **full consumer kit** from the plugin `payload/` (same surface kit maintainers ship): **8 agents**, **14 skills** (incl. `/update-agent-colony`), **7 rules**, maintainer PR slash skills, `agent_colony` CLI (project/PR/drift/MCP/canvas/plan/update), MCP server, ops docs, `.local/` scaffold, `.venv`, and runtime `.gitignore` (`.local/` + `.venv/`). You only personalize identity / board YAML in step 3 — you do **not** pick optional install profiles.
+
 | Plane | Paths | Purpose |
 |-------|-------|---------|
 | Cursor contract | `.cursor/`, `.agents/`, `AGENTS.md` | Agents, skills, rules |
@@ -248,27 +250,29 @@ Shorter path: [consumer-quickstart.md](.ai_infra/docs/operations/consumer-quicks
 
 ### Optional — Update the kit / plugin later
 
-Docs and agents in **your app** come from the plugin payload + `/workflow-activate`. Re-reading the kit README on GitHub does **not** change Smart-Notes until you refresh.
+Docs and agents in **your app** come from the plugin payload. Re-reading this README on GitHub does **not** refresh your app until you update the plugin + run the upgrade command.
 
 1. **Ship on the kit repo first** (maintainer): merge the change to `main` (PR workflow).
-2. **In your app** (e.g. Smart-Notes), Agent chat — refresh the plugin from GitHub:
+2. **In your app**, Agent chat — refresh the plugin from GitHub:
 
 ```text
 /add-plugin https://github.com/SavinRazvan/agent-colony
 ```
 
-3. Re-activate (safe / idempotent — keeps `.local/user_settings/` and existing `AGENTS.md`):
+3. **Upgrade** (version-gated heal vs full kit-managed refresh — preferred):
 
 ```text
-/workflow-activate
+/update-agent-colony
 ```
 
 Or terminal:
 
 ```bash
 source .venv/bin/activate
-python3 -m agent_colony activate --directory .
+python3 -m agent_colony update --directory .
 ```
+
+Plain `/workflow-activate` / `activate` only **heals** (dashboards, gitignore, STARTER, missing `.venv`) when planes are already ready — it does **not** overwrite agents/skills/scripts unless you use `update` (or advanced `activate --force`).
 
 4. Sanity check:
 
@@ -277,8 +281,7 @@ python3 -m agent_colony health
 python3 -m agent_colony project board-bootstrap --check   # still FAIL until you finish step 4 views in GitHub UI
 ```
 
-**Force** full overwrite of agents/skills/scripts (review diffs): `python3 -m agent_colony activate --directory . --force`  
-Details: [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md).
+Details: [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md) · skill [update-agent-colony](.cursor/skills/update-agent-colony/SKILL.md).
 
 **Board views are not fixed by a plugin update.** `board-bootstrap --check` FAIL on missing views only clears after you complete **step 4** (`/board` + human UI). Updating the plugin only refreshes docs/coaching text.
 
