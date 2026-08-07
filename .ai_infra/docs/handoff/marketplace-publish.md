@@ -28,7 +28,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 4. `make sync-plugin` — rebuild `agents/`, `rules/`, `skills/`, `payload/` (commit the result)
 5. `make check-plugin` — bundle parity green
 6. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
-7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02)
+7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02); **done** 0.4.0 → 0.5.0 (2026-08-07)
 8. [x] `assets/logo.png` (1:1, background plate) — see `assets/README.md` — **present** (commit `1f16af1`, 1024×1024 PNG RGBA, ~1.5 MB; verified 2026-07-02)
 9. [x] Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — **PASS 2026-07-08**
    on **Smart-Notes** (`~/Projects/Smart-Notes`): chat activate + terminal matrix green.
@@ -40,7 +40,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 
 ## Versioning
 
-**Current release:** `0.4.0` (git tag `v0.4.0`).
+**Current release:** `0.5.0` (git tag `v0.5.0`).
 
 **Superseded:** `v0.3.0` (`1f16af1`) predates `PLUGIN-FLATTEN` (#15) — its tagged tree has **zero**
 files under `agents/`, `rules/`, `skills/`, `payload/` (the gitignore bug #15 fixed). Do not
@@ -64,6 +64,9 @@ On every release, bump **in lockstep**:
 | `tests/modules/install/test_install_contract.py` | `.kit-version` assertion |
 | `tests/modules/install/test_editable_install.py` | `__version__` assertion |
 | `tests/modules/install/test_cursor_workflow.py` | `__version__` assertion |
+| `tests/modules/install/test_cursor_workflow_entrypoints.py` | `__version__` assertion |
+| `tests/modules/ai_infra/test_bootstrap_and_misc.py` | `__version__` assertion |
+| `tests/modules/install/test_cursor_workflow_cli_full.py` | fixture `.kit-version` + `--version` assert |
 
 **Consumer installs** receive version via `.ai_infra/.kit-version` (written fresh from manifest `kit_version` at scaffold/activate — no manual action needed there). **The kit-dev repo's own `.ai_infra/.kit-version` is git-tracked** and is *not* regenerated automatically (scaffold only runs on install targets), so it must be bumped by hand in this table too — `python3 -m cursor_workflow health` in this repo reads it directly and will report a stale version if it's missed (caught in v0.4.0: file was left at `0.3.0` after the version bump). **Not versioned with kit:** `workflow_mcp.__version__` (MCP server package semver).
 

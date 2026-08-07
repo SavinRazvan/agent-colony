@@ -63,4 +63,4 @@ def test_gates_invokes_five_steps(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_version_in_package() -> None:
     import cursor_workflow
 
-    assert cursor_workflow.__version__ == "0.4.0"
+    assert cursor_workflow.__version__ == "0.5.0"

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-colony"
-version = "0.4.0"
+version = "0.5.0"
 description = "Agent Colony — multi-agent Cursor workflow with GitHub Projects as coordination SSOT"
 readme = "README.md"
 requires-python = ">=3.11"
