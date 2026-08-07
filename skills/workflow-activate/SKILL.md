@@ -98,6 +98,8 @@ See [consumer-quickstart.md](../../.ai_infra/docs/operations/consumer-quickstart
 
 Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear when agents/scripts run. See [local-workspace-layout.md](../../.ai_infra/docs/operations/local-workspace-layout.md) § Artifact tiers. Re-activate does not overwrite existing trackers, `user_settings/`, or `AGENTS.md`. Kit-managed dashboard HTML, JS/CSS assets, `module-audit.html`, and `pages.json` are refreshed from the activate source (plugin `payload/` when resolved) or embedded `.ai_infra/templates/local-workspace/` when not.
 
+**Later upgrades** (after Marketplace/plugin kit bump): use **`/update-agent-colony`** (`python3 -m agent_colony update`) — version-gated heal vs full kit-managed refresh. Plain re-activate does **not** overwrite agents/skills/scripts unless `--force`. See [update-agent-colony](update-agent-colony/SKILL.md) and [upgrade-kit.md](../../.ai_infra/docs/operations/upgrade-kit.md).
+
 - Idempotent: skips full install when all planes already pass `install-contract.json`, but still refreshes dashboards
 - Creates `.venv`, merges MCP json, runs verify gates
 - Prints **settings-only** next steps (no re-install)

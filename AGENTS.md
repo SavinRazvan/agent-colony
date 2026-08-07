@@ -113,7 +113,7 @@ Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc
 | Root | Role |
 |------|------|
 | `.cursor/agents/` | Subagent cards (8) — Task delegation; **`model: auto`**; audit agents write `.local/` artifacts only |
-| `.cursor/skills/` | **Canonical protocols** (13 folders: `auditor-protocol`, `audit-orchestration`, `audit-module-map`, `board-ssot`, `board-shell`, `canvas-artifacts`, `drift-audit`, `implementer-loop`, `integrator-protocol`, `mcp-connect`, `research-corpus`, `test-coverage`, `workflow-activate`) — see [repository-map](.ai_infra/docs/handoff/repository-map.md) |
+| `.cursor/skills/` | **Canonical protocols** (14 folders: `auditor-protocol`, `audit-orchestration`, `audit-module-map`, `board-ssot`, `board-shell`, `canvas-artifacts`, `drift-audit`, `implementer-loop`, `integrator-protocol`, `mcp-connect`, `research-corpus`, `test-coverage`, `update-agent-colony`, `workflow-activate`) — see [repository-map](.ai_infra/docs/handoff/repository-map.md) |
 | `.agents/skills/` | **Maintainer slash skills** (6 folders: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `full-pr-workflow`, `audit-alignment` stub → `auditor`) — additive in plugin sync |
 | `.cursor/rules/` | **7** `alwaysApply` rules in this product repo (6 kit + `project-ssot-precedence`) — high context cost by design |
 

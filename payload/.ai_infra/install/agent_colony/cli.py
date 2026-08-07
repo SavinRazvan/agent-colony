@@ -9,9 +9,12 @@ Depends On:
  - .ai_infra/scripts/install/scaffold.py
  - .ai_infra/install/agent_colony/mcp_manage.py
  - .ai_infra/install/agent_colony/mcp_cli.py
+ - .ai_infra/install/agent_colony/activate_cli.py
+ - .ai_infra/install/agent_colony/update_cli.py
 Notes:
  - install forwards to scaffold.py; gates runs prepare-aligned checks.
  - ADR-009 MCP; ADR-010 canvas/plan Pattern A CLI.
+ - update = version-gated consumer upgrade (heal vs full refresh).
 """
 
 from __future__ import annotations
@@ -50,6 +53,7 @@ import drift_cli  # noqa: E402
 import doc_cli  # noqa: E402
 import verify_cli  # noqa: E402
 import activate_cli  # noqa: E402
+import update_cli  # noqa: E402
 import project_cli  # noqa: E402
 import research_cli  # noqa: E402
 
@@ -269,6 +273,7 @@ def build_parser() -> argparse.ArgumentParser:
     doc_cli.register_doc_subparser(sub)
     verify_cli.register_verify_subparser(sub)
     activate_cli.register_activate_subparser(sub)
+    update_cli.register_update_subparser(sub)
     project_cli.register_project_subparser(sub)
     research_cli.register_research_subparser(sub)
 

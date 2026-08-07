@@ -39,7 +39,7 @@ Install **Agent Colony** (`agent-colony`) into your project in a few minutes. No
 
 **Healthy install?** `python3 -m agent_colony health` · with board on: `gh auth status` → `project doctor` → `project board-bootstrap --check`
 
-**Update kit later (optional):** merge kit changes to `main` → in your app Agent chat `/add-plugin https://github.com/SavinRazvan/agent-colony` → `/workflow-activate` (or `python3 -m agent_colony activate --directory .`). Full force/semver: [upgrade-kit.md](upgrade-kit.md). **Does not** create GitHub Project views — finish step 4 for that.
+**Update kit later (optional):** merge kit changes to `main` → in your app Agent chat `/add-plugin https://github.com/SavinRazvan/agent-colony` → **`/update-agent-colony`** (or `python3 -m agent_colony update --directory .`). First install remains `/workflow-activate`. Full force/semver: [upgrade-kit.md](upgrade-kit.md). **Does not** create GitHub Project views — finish step 4 for that.
 
 > **Cheat sheet:** [Agent chat vs terminal](#agent-chat-vs-terminal) · [Dashboards (deprecated)](#control-center-dashboards-deprecated) · [All CLI commands](#terminal-commands-cheat-sheet)
 
