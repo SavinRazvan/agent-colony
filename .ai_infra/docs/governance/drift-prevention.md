@@ -61,9 +61,9 @@ Script-first checks for plan ↔ tracker ↔ session-pointer coherence, handoff 
 | Slice claim verification | `verifier` | Subjective verification |
 | Architecture / security / perf scorecard (CHK-*) | `auditor` | Module deep-dive / EA phases |
 
-**Command:** `python -m cursor_workflow drift validate --directory .` or `make drift-validate`.
+**Command:** `python -m agent_colony drift validate --directory .` or `make drift-validate`.
 
-**Doc facts:** `python -m cursor_workflow doc validate --directory .` or `make doc-validate` (also in `make gates` and INT-013).
+**Doc facts:** `python -m agent_colony doc validate --directory .` or `make doc-validate` (also in `make gates` and INT-013).
 
 **Verify-all:** `make verify-all` — CI-aligned maintainer matrix with optional `--write-preflight`.
 

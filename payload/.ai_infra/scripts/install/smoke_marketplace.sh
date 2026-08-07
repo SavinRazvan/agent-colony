@@ -6,7 +6,7 @@
 #  - Makefile smoke-consumer
 #  - .ai_infra/docs/handoff/marketplace-publish.md
 # Depends On:
-#  - cursor_workflow install / activate
+#  - agent_colony install / activate
 #  - check_consumer_purity.py
 # Notes:
 #  - Run from kit repo root. Requires .venv/bin/python.
@@ -34,7 +34,7 @@ cd "$KIT"
 "$PY" .ai_infra/scripts/release/sync_plugin_bundle.py --check
 
 rm -rf "$SMOKE"
-"$PY" -m cursor_workflow install \
+"$PY" -m agent_colony install \
   --target "$SMOKE" \
   --with-venv \
   --with-mcp-json \
@@ -65,13 +65,13 @@ for page in pages["pages"]:
     print(f"PASS {page['id']}: {rel}")
 PY
 
-"$SMOKE/.venv/bin/python" -m cursor_workflow gates --directory "$SMOKE"
+"$SMOKE/.venv/bin/python" -m agent_colony gates --directory "$SMOKE"
 "$SMOKE/.venv/bin/python" -m pytest -q "$SMOKE/tests/modules/smoke/"
 
 echo
 echo "=== TRACK A: user_settings idempotency ==="
 sed -i 's/Your Full Name/SMOKE_CUSTOM_USER/' "$SMOKE/.local/user_settings/github.collaboration.yaml"
-"$PY" -m cursor_workflow install \
+"$PY" -m agent_colony install \
   --target "$SMOKE" \
   --with-venv \
   --with-mcp-json \
@@ -82,10 +82,10 @@ echo
 echo "=== TRACK B: payload activate ==="
 rm -rf "$PLUGIN_TARGET"
 mkdir -p "$PLUGIN_TARGET"
-"$PY" "$KIT/payload/cursor_workflow" activate \
+"$PY" "$KIT/payload/agent_colony" activate \
   --directory "$PLUGIN_TARGET" \
   --source "$KIT/payload"
-"$PLUGIN_TARGET/.venv/bin/python" -m cursor_workflow gates --directory "$PLUGIN_TARGET"
+"$PLUGIN_TARGET/.venv/bin/python" -m agent_colony gates --directory "$PLUGIN_TARGET"
 "$PY" .ai_infra/scripts/architecture/check_consumer_purity.py --target "$PLUGIN_TARGET"
 
 echo

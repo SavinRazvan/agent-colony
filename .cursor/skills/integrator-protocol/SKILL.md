@@ -112,7 +112,7 @@ Follow `.ai_infra/docs/operations/connect-external-mcp.md` plus:
 1. Row in `.local/user_settings/mcp.agents.yaml`
 2. Fragment in `.cursor/mcp.user.json` (gitignored)
 3. Keys in `.cursor/mcp.registry.yaml` — `agents: [...]` per server
-4. `python -m cursor_workflow mcp validate`
+4. `python -m agent_colony mcp validate`
 
 ### D. Canvases / plans (ADR-010)
 
@@ -121,7 +121,7 @@ When touching `canvases/`, `.local/canvases/`, or `.local/plans/`:
 1. Read `.cursor/skills/canvas-artifacts/SKILL.md` and [ADR-010](../../.ai_infra/docs/decisions/ADR-010-canvas-plan-local-artifacts.md).
 2. Repo `canvases/` = git SSOT → `canvas sync` → optional `canvas save` to `.local/canvases/`.
 3. `.local/plans/` = snapshot history only; live plan stays on board card / `plan.md` — wire `plan snapshot|list|open` in docs/agent cards as needed.
-4. After canvas edits: `python3 -m cursor_workflow canvas sync --name <stem>` (+ `canvas doctor` smoke).
+4. After canvas edits: `python3 -m agent_colony canvas sync --name <stem>` (+ `canvas doctor` smoke).
 
 ### E. New maintainer script
 
@@ -136,14 +136,14 @@ When touching `canvases/`, `.local/canvases/`, or `.local/plans/`:
 Run applicable subset:
 
 ```bash
-python -m cursor_workflow contributors validate
-python -m cursor_workflow integrate validate
+python -m agent_colony contributors validate
+python -m agent_colony integrate validate
 python .ai_infra/scripts/architecture/check_governance_consistency.py   # if .cursor/ or workflows changed
 pytest -q tests/modules/<relevant>/
 make gates                    # kit dev
 make check-plugin             # if agents/rules/skills/payload touched
 make install-dry-run          # if manifest / scaffold changed
-python -m cursor_workflow health --directory .
+python -m agent_colony health --directory .
 ```
 
 Record PASS/FAIL in `change-index.md` and `updates-log.md`.

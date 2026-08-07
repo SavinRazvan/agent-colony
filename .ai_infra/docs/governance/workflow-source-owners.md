@@ -40,7 +40,7 @@ Notes:
 | Infrastructure integrate validate | `.ai_infra/scripts/integration/validate.py` | `make integrate-validate`, INT-001…014 |
 | CI workspace seed (kit-dev only) | `.ai_infra/scripts/ci/seed_kit_workspace.py` | `.github/workflows/kit-quality.yml` |
 | Maintainer gate matrix (non-prepare) | `.ai_infra/docs/operations/gate-matrix.md` | `make gates`, drift, integrate, check-plugin, verify-all |
-| Three-plane activate | `.ai_infra/install/cursor_workflow/activate_cli.py` | `workflow-activate` skill, MCP `workflow_activate` |
+| Three-plane activate | `.ai_infra/install/agent_colony/activate_cli.py` | `workflow-activate` skill, MCP `workflow_activate` |
 | Path resolution | `.ai_infra/paths.py` | MCP, install scaffold, tests |
 | MCP registry mapping | `.cursor/mcp.registry.yaml` | Agents, `connect-external-mcp.md` |
 | External MCP connect procedure | `.ai_infra/docs/operations/connect-external-mcp.md` | Users + agents |

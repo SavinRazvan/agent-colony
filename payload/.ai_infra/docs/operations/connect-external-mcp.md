@@ -16,8 +16,8 @@ Link **any** MCP server to kit agents without forking agent prompts.
 Re-run without full activate:
 
 ```bash
-python3 -m cursor_workflow mcp seed --deepwiki
-python3 -m cursor_workflow mcp validate
+python3 -m agent_colony mcp seed --deepwiki
+python3 -m agent_colony mcp validate
 ```
 
 1. **Registry** — copy example only if live registry is missing and you did not activate:
@@ -30,7 +30,7 @@ cp .cursor/mcp.registry.yaml.example .cursor/mcp.registry.yaml
 
 ```bash
 # preferred for DeepWiki only:
-python3 -m cursor_workflow mcp seed --deepwiki
+python3 -m agent_colony mcp seed --deepwiki
 # or full worksheet (includes my-custom-server stub):
 cp .cursor/mcp.user.example.json .cursor/mcp.user.json
 # edit mcpServers in mcp.user.json
@@ -39,13 +39,13 @@ cp .cursor/mcp.user.example.json .cursor/mcp.user.json
 Or link a fragment:
 
 ```bash
-cursor-workflow mcp link --name my-api --file .cursor/mcp.d/my-api.json
+agent-colony mcp link --name my-api --file .cursor/mcp.d/my-api.json
 ```
 
 3. **Merge + validate:**
 
 ```bash
-cursor-workflow mcp validate
+agent-colony mcp validate
 ```
 
 4. Reload Cursor MCP; agents read `.cursor/mcp.registry.yaml` for which servers apply to their role.
@@ -64,13 +64,13 @@ See [ADR-004](../decisions/ADR-004-user-mcp-registry.md) and [ADR-009](../decisi
 ## Pattern A CLI (canonical agent transport)
 
 ```bash
-python3 -m cursor_workflow mcp doctor
-python3 -m cursor_workflow mcp validate [--strict]
-python3 -m cursor_workflow mcp seed --deepwiki
-python3 -m cursor_workflow mcp list-tools --server agent-colony-mcp
-python3 -m cursor_workflow mcp call --server agent-colony-mcp --tool workflow_gate_count
-python3 -m cursor_workflow mcp auth --server my-api --token-env MY_TOKEN
-python3 -m cursor_workflow mcp smoke --server agent-colony-mcp
+python3 -m agent_colony mcp doctor
+python3 -m agent_colony mcp validate [--strict]
+python3 -m agent_colony mcp seed --deepwiki
+python3 -m agent_colony mcp list-tools --server agent-colony-mcp
+python3 -m agent_colony mcp call --server agent-colony-mcp --tool workflow_gate_count
+python3 -m agent_colony mcp auth --server my-api --token-env MY_TOKEN
+python3 -m agent_colony mcp smoke --server agent-colony-mcp
 ```
 
 Cursor IDE MCP loading is optional. Registry YAML is the allowlist for `call` / `list-tools`.
@@ -108,9 +108,9 @@ servers:
 4. **Pattern A smoke (preferred — no Cursor host required):**
 
 ```bash
-python3 -m cursor_workflow mcp doctor
-python3 -m cursor_workflow mcp smoke --server deepwiki
-python3 -m cursor_workflow mcp call --server deepwiki --tool ask_question \
+python3 -m agent_colony mcp doctor
+python3 -m agent_colony mcp smoke --server deepwiki
+python3 -m agent_colony mcp call --server deepwiki --tool ask_question \
   --args-json '{"repoName":"cloudflare/workers-sdk","question":"What are Workers KV limits?"}'
 ```
 
@@ -128,7 +128,7 @@ URL-based and command-based transport shapes side by side.
 ### Auth (Pattern A)
 
 ```bash
-python3 -m cursor_workflow mcp auth --server my-api --token-env MY_API_TOKEN
+python3 -m agent_colony mcp auth --server my-api --token-env MY_API_TOKEN
 # stores under .local/user_settings/mcp.secrets.yaml (gitignored)
 ```
 

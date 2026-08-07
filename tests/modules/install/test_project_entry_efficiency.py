@@ -5,8 +5,8 @@ Role: Unit tests for project entry modes, export --reuse-if-fresh, and list WARN
 Used By:
  - pytest
 Depends On:
- - .ai_infra/install/cursor_workflow/project_cli.py
- - .ai_infra/install/cursor_workflow/project_atomics.py
+ - .ai_infra/install/agent_colony/project_cli.py
+ - .ai_infra/install/agent_colony/project_atomics.py
 Notes:
  - Mocks GraphQL quota and gh item-list; no live network.
 """
@@ -24,7 +24,7 @@ import pytest
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 if str(_PKG_DIR) not in sys.path:
     sys.path.insert(0, str(_PKG_DIR))
 

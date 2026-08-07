@@ -22,7 +22,7 @@ Agent: **`.cursor/agents/researcher.md`**. Canvas: `canvases/agent-researcher.ca
 3. **Map/extract** — `MAP.md` + `findings/<lens>.md` with path + ~Lnn evidence
 4. **Deepen** — `rounds/round-N.md` only for open questions (cap ≤6; anti-loop)
 5. **Curate/pack** — `CURATED.md` → `AGENT_BRIEF.md` → `INDEX.json` `status=complete`
-6. **Validate** — `python3 -m cursor_workflow research validate --slug <slug>` PASS
+6. **Validate** — `python3 -m agent_colony research validate --slug <slug>` PASS
 7. **Exit** — research card Done + Notes with pack paths; handoff to consumer
 
 ## Hard boundary

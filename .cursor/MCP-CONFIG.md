@@ -10,7 +10,7 @@
 
 Install with `--with-mcp-json` merges kit + user fragments via `mcp_manage.py` → `.cursor/mcp.json`.
 Consumer activate (non–kit-dev) seeds DeepWiki into `mcp.user.json` + registry when missing.
-Re-run: `python3 -m cursor_workflow mcp seed --deepwiki`. Skill: `/mcp-connect`.
+Re-run: `python3 -m agent_colony mcp seed --deepwiki`. Skill: `/mcp-connect`.
 
 **Kit-dev allowlist:** live registry stays kit-tier; CLI smoke/call still allow servers listed in
 `mcp.registry.yaml.example` when those servers are present in merged `mcpServers` (typically via

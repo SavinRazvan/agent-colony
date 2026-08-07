@@ -78,8 +78,8 @@ slug: <derived or explicit>
 ## Procedural setup
 
 ```bash
-python3 -m cursor_workflow research init --slug <slug> --source '…' --question '…'
-python3 -m cursor_workflow research fetch --slug <slug> --source '…'
+python3 -m agent_colony research init --slug <slug> --source '…' --question '…'
+python3 -m agent_colony research fetch --slug <slug> --source '…'
 ```
 
 `--source` accepts HTTPS GitHub URLs, `github:…`, `path:…`, or bare local path. Fetch prefers `gh repo clone` (private-friendly), else `git clone --depth 1` into `_research_results/cache/<slug>/`. Re-fetch requires `--force`.
@@ -104,7 +104,7 @@ Work only under `_research_results/sources/<slug>/`. Read foreign trees read-onl
 4. **Deepen** — open questions only → `rounds/round-N.md` (N ≤ `rounds_max`). **Stop deepening when N == rounds_max.**
 5. **Curate** — `CURATED.md` rows `verified: path; ~Lnn; note: …`.
 6. **Pack** — `AGENT_BRIEF.md` (1–2 pages) + update `INDEX.json` (`status: complete`, findings array, `curated_count`, `rounds_completed` ≤ `rounds_max`).
-7. **Validate** — `python3 -m cursor_workflow research validate --slug <slug>`.
+7. **Validate** — `python3 -m agent_colony research validate --slug <slug>`.
 8. **Exit** — board Done + Notes with pack paths; handoff to named consumer (requesting agent if known). **Then stop.**
 
 ## Mode: self (optional)

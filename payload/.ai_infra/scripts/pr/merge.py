@@ -8,7 +8,7 @@ Depends On:
  - argparse
  - pathlib
  - scripts/pr/local_workflow_paths.py
- - .ai_infra/install/cursor_workflow/project_cli.py (board sync when project_ssot enabled)
+ - .ai_infra/install/agent_colony/project_cli.py (board sync when project_ssot enabled)
 Notes:
  - This script does not perform git merge; it verifies readiness and logs evidence.
  - Call AFTER gh pr merge with --merge-sha <oid> so the artifact records the correct merge commit.
@@ -26,7 +26,7 @@ from pathlib import Path
 
 _PR_DIR = Path(__file__).resolve().parent
 _REPO_ROOT = _PR_DIR.parents[2]
-_INSTALL_CW = _REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+_INSTALL_CW = _REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 if str(_PR_DIR) not in sys.path:
     sys.path.insert(0, str(_PR_DIR))
 if _INSTALL_CW.is_dir() and str(_INSTALL_CW) not in sys.path:  # pragma: no cover
@@ -155,7 +155,7 @@ def sync_board_after_merge(
         )
         print(
             "[ERROR] Remediations: "
-            "python3 -m cursor_workflow project set-section "
+            "python3 -m agent_colony project set-section "
             "--section acceptance|rollback --text '…' --last "
             "then re-run board close / set-status --to done",
             file=sys.stderr,
@@ -167,7 +167,7 @@ def sync_board_after_merge(
         if "set-section" in detail or "placeholder" in detail.casefold():
             print(
                 "[ERROR] Remediations: "
-                "python3 -m cursor_workflow project set-section "
+                "python3 -m agent_colony project set-section "
                 "--section acceptance|rollback --text '…' --last "
                 "then re-run board close / set-status --to done",
                 file=sys.stderr,

@@ -5,7 +5,7 @@
 
 ## Context
 
-Classic Agent Colony used local markdown trackers under `.local/index-and-planning/current/` as session SSOT. Collaborators cannot share that state. **This repository is the product** and configures a GitHub Project in `.local/user_settings/github.collaboration.yaml` → `project_ssot`, driven via `python3 -m cursor_workflow project`. Local artifacts remain for PR gates, audits, and evidence.
+Classic Agent Colony used local markdown trackers under `.local/index-and-planning/current/` as session SSOT. Collaborators cannot share that state. **This repository is the product** and configures a GitHub Project in `.local/user_settings/github.collaboration.yaml` → `project_ssot`, driven via `python3 -m agent_colony project`. Local artifacts remain for PR gates, audits, and evidence.
 
 Related: [ADR-006](ADR-006-agent-integration-model.md), [AGENTS.md](../../../AGENTS.md).
 
@@ -17,7 +17,7 @@ Related: [ADR-006](ADR-006-agent-integration-model.md), [AGENTS.md](../../../AGE
 4. **Rate-limit outbox:** when GraphQL quota blocks writes, `project_ssot.outbox` stores structured ops in a local JSONL (`.local/generated-data/board-outbox.jsonl`). EXIT_QUEUED (6) is soft-success; `outbox flush` restores the board after reset. Outbox is **never** authoritative Status.
 5. **Read-only exports:** optional snapshots (`project export`) may cache board state for audits/ICC later; they **must not** write Status and must never become a competing SSOT.
 6. **Config habit:** board identity and field ids live next to `owner` in `github.collaboration.yaml` (not a separate primary settings file).
-7. **Tooling:** Pattern A CLI (`cursor_workflow project`) wrapping `gh project`; MCP optional later.
+7. **Tooling:** Pattern A CLI (`agent_colony project`) wrapping `gh project`; MCP optional later.
 8. **Item kind / promote:** `item_kind_default: issue|draft` — **issue is the product default** (`gh issue create` + `gh project item-add`) so Assignees + Linked PRs work from claim. `draft` is scratch-only (DraftIssue). CLI `project promote-to-issue` converts leftover Drafts (**same PVTI_**). `mention-pr` auto-promotes Draft when `promote_to_issue_on_pr` (default true). Claim does **not** auto-promote. Do not create shippable work as Draft.
 9. **`board` agent:** independent-governed helper; not in PR pipelines. **All agents** Anchor on `project_ssot` when enabled: **Entry reads** the Project; **Exit updates** Status (and Notes) so work stays indexed for the next agent (continuation contract in `board-ssot` skill).
 10. **Post-merge card close:** Pattern A (`merge.py` + project CLI) sets Status → Done and appends Notes (PR URL + SHA) — **not** a dedicated post-merge agent. Board `Status=Done` and the GitHub Issue's own `open`/`closed` state are **independent by default** — Status is the SSOT for backlog/continuation, Issue state is a separate GitHub-native signal (visible in `gh issue list`, notifications). **Opt-in bridge:** `conventions.close_linked_issue_on_cleanup` (default `false`) — when `true`, `full-pr-workflow`'s `finalize.py` best-effort closes the linked Issue *after* branch cleanup succeeds (`project close-linked-issue --pr <n>`), never on `set-status`/`claim`/`handoff` so it can't race ahead of merge/cleanup evidence. This does not create a second Status writer; it only mirrors an already-`Done` card onto the Issue's native state.
@@ -29,7 +29,7 @@ Related: [ADR-006](ADR-006-agent-integration-model.md), [AGENTS.md](../../../AGE
 
 ## Consequences
 
-- New CLI module: `.ai_infra/install/cursor_workflow/project_cli.py` + `project_outbox.py`
+- New CLI module: `.ai_infra/install/agent_colony/project_cli.py` + `project_outbox.py`
 - Skill: `.cursor/skills/board-ssot/SKILL.md` (Continuation contract + per-agent rights)
 - Ops: `.ai_infra/docs/operations/project-board-collaboration.md`
 - Agent: `.cursor/agents/board.md`

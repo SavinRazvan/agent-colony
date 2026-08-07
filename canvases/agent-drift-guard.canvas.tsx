@@ -88,7 +88,7 @@ const FALLBACK_LABELS: Record<string, string> = {
 const READ_FIRST = [
   [".cursor/skills/drift-audit/SKILL.md", "Drift audit + goal pulse"],
   [".cursor/skills/board-ssot/SKILL.md", "Board SSOT when enabled"],
-  ["python3 -m cursor_workflow drift validate", "CLI entry"],
+  ["python3 -m agent_colony drift validate", "CLI entry"],
   ["DRIFT-009 / 010 / 011 / 012", "Board + agent roster pulse"],
   ["project export", "DRIFT-010 evidence"],
   [".local/plans/", "DRIFT-012 snapshot-only under board_only"],
@@ -315,7 +315,7 @@ export default function AgentDriftGuardCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP">
-        Kit server agent-colony-mcp for drift validate — prefer cursor_workflow project
+        Kit server agent-colony-mcp for drift validate — prefer agent_colony project
         for board. External: only servers listed for this agent in mcp.registry.yaml.
       </Callout>
 

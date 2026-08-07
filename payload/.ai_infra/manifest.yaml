@@ -1,18 +1,18 @@
 version: 1
-kit_version: "0.5.0"
+kit_version: "0.6.0"
 profiles:
   default:
     copy_dirs:
       - { src: .cursor, dst: .cursor }
       - { src: .agents, dst: .agents }
-      - { src: cursor_workflow, dst: cursor_workflow }
+      - { src: agent_colony, dst: agent_colony }
     copy_ai_infra:
       - scripts/pr
       - scripts/architecture
       - scripts/integration
       - scripts/workflow
       - scripts/install
-      - install/cursor_workflow
+      - install/agent_colony
       - docs/operations
       - docs/governance
       - docs/roadmap

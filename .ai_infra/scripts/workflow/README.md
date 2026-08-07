@@ -6,7 +6,7 @@ Operational workflow drift detection per [ADR-007](../../docs/decisions/ADR-007-
 
 ```bash
 python .ai_infra/scripts/workflow/check_drift.py --directory .
-python -m cursor_workflow drift validate --directory .
+python -m agent_colony drift validate --directory .
 make drift-validate
 ```
 

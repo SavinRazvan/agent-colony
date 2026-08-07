@@ -320,7 +320,7 @@ export default function AgentVerifierCanvas() {
 
       <Callout tone="neutral" title="MCP">
         Kit server agent-colony-mcp for PR scripts / prepare.py resolve_gates() —
-        prefer cursor_workflow project for board. External: only servers listed
+        prefer agent_colony project for board. External: only servers listed
         for this agent in mcp.registry.yaml.
       </Callout>
 

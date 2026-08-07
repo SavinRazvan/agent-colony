@@ -345,7 +345,7 @@ export default function AgentAuditorCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP">
-        Kit server agent-colony-mcp for audit scripts — prefer cursor_workflow project for
+        Kit server agent-colony-mcp for audit scripts — prefer agent_colony project for
         board. External: only servers listed for this agent in mcp.registry.yaml.
       </Callout>
 

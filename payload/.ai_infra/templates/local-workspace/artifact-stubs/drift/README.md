@@ -7,4 +7,4 @@
 | `drift-audit.md` | `drift-guard` agent |
 | `drift-todos.md` | `drift-guard` agent |
 
-Validate with `python -m cursor_workflow drift validate`. See `.ai_infra/docs/operations/local-workspace-layout.md`.
+Validate with `python -m agent_colony drift validate`. See `.ai_infra/docs/operations/local-workspace-layout.md`.

@@ -370,7 +370,7 @@ def test_main_writes_preflight_json(tmp_path: Path) -> None:
     code = cdf.main(["--directory", str(REPO_ROOT), "--preflight-out", str(out)])
     assert code == 0
     payload = json.loads(out.read_text(encoding="utf-8"))
-    assert payload["command"] == "python -m cursor_workflow doc validate"
+    assert payload["command"] == "python -m agent_colony doc validate"
     assert "results" in payload
 
 

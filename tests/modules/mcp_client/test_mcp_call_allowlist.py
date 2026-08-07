@@ -19,7 +19,7 @@ import pytest
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-CW = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+CW = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 
 
 def _load(name: str, path: Path):

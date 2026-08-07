@@ -292,7 +292,7 @@ export default function AgentBoardCanvas() {
         <CardBody>
           <Stack gap={6}>
             <Text>
-              Rights: list/create/move GitHub Project SSOT cards via cursor_workflow
+              Rights: list/create/move GitHub Project SSOT cards via agent_colony
               project CLI.
             </Text>
             <Text>
@@ -314,7 +314,7 @@ export default function AgentBoardCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP">
-        Prefer cursor_workflow project for all board operations. External: only
+        Prefer agent_colony project for all board operations. External: only
         servers listed for this agent in mcp.registry.yaml.
       </Callout>
 

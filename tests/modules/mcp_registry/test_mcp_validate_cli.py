@@ -1,11 +1,11 @@
 """
 File: test_mcp_validate_cli.py
 Path: tests/modules/mcp_registry/test_mcp_validate_cli.py
-Role: Tests cursor-workflow mcp validate against registry and mcp.json keys.
+Role: Tests agent-colony mcp validate against registry and mcp.json keys.
 Used By:
  - pytest
 Depends On:
- - .ai_infra/install/cursor_workflow/cli.py
+ - .ai_infra/install/agent_colony/cli.py
 """
 
 from __future__ import annotations
@@ -18,14 +18,14 @@ from pathlib import Path
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-CLI_PATH = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow" / "cli.py"
+CLI_PATH = REPO_ROOT / ".ai_infra" / "install" / "agent_colony" / "cli.py"
 
 
 def _load_cli():
-    spec = importlib.util.spec_from_file_location("cursor_workflow_cli", CLI_PATH)
+    spec = importlib.util.spec_from_file_location("agent_colony_cli", CLI_PATH)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
-    sys.modules["cursor_workflow_cli"] = module
+    sys.modules["agent_colony_cli"] = module
     spec.loader.exec_module(module)
     return module
 

@@ -5,7 +5,7 @@ Role: Smoke tests that kit packages import after editable install.
 Used By:
  - pytest
 Depends On:
- - cursor_workflow package
+ - agent_colony package
  - workflow_mcp package
 Notes:
  - CI runs pip install -e ".[dev,mcp]" before pytest.
@@ -14,10 +14,10 @@ Notes:
 from __future__ import annotations
 
 
-def test_import_cursor_workflow_package() -> None:
-    import cursor_workflow
+def test_import_agent_colony_package() -> None:
+    import agent_colony
 
-    assert cursor_workflow.__version__ == "0.5.0"
+    assert agent_colony.__version__ == "0.6.0"
 
 
 def test_import_workflow_mcp_package() -> None:

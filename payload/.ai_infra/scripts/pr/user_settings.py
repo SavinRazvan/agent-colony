@@ -4,7 +4,7 @@ Path: .ai_infra/scripts/pr/user_settings.py
 Role: Public API for `.local/user_settings/` — load, resolve, render, validate.
 Used By:
  - scripts/pr/review.py, prepare.py, merge.py
- - .ai_infra/install/cursor_workflow/cli.py
+ - .ai_infra/install/agent_colony/cli.py
 Depends On:
  - user_settings_load.py
  - user_settings_resolve.py

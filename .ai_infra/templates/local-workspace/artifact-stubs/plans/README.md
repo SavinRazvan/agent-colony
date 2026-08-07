@@ -4,8 +4,8 @@ Dated plan-mode snapshots — **not** live SSOT. Under `board_only`, active plan
 
 No Build chrome when opening these files directly — agents read and execute from here; humans use `plan open` for IDE Build.
 
-- **Snapshot:** `python3 -m cursor_workflow plan snapshot --slug <slug>`
-- **List:** `python3 -m cursor_workflow plan list`
-- **Build bridge (human):** `python3 -m cursor_workflow plan open --slug <slug>` (`--force` to overwrite Cursor twin)
+- **Snapshot:** `python3 -m agent_colony plan snapshot --slug <slug>`
+- **List:** `python3 -m agent_colony plan list`
+- **Build bridge (human):** `python3 -m agent_colony plan open --slug <slug>` (`--force` to overwrite Cursor twin)
 
 See ADR-010 and `.cursor/skills/canvas-artifacts/SKILL.md`.

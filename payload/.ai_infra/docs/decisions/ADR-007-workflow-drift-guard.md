@@ -27,7 +27,7 @@ Introduce a script-first drift validator and MAS-integrated agent per [ADR-006](
 | Artifact | Location |
 |----------|----------|
 | Agent id | `drift-guard` |
-| CLI | `python -m cursor_workflow drift validate` |
+| CLI | `python -m agent_colony drift validate` |
 | Script SSOT | `.ai_infra/scripts/workflow/check_drift.py` |
 | Checks module | `.ai_infra/scripts/workflow/drift_checks.py` |
 | Skill | `.cursor/skills/drift-audit/SKILL.md` |
@@ -69,7 +69,7 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 | `prepare.py` `resolve_gates()` | **Kit-dev only** — appends drift + doc facts when `IMPLEMENTATION-STATUS.md` exists |
 | `prepare.py` `resolve_gates()` (consumer) | **No** — universal 2-gate consumer contract |
 | `make gates` | **No** — use `make drift-validate` |
-| `cursor_workflow health` | Optional P0 warn (diagnostic, non-blocking) |
+| `agent_colony health` | Optional P0 warn (diagnostic, non-blocking) |
 | Implementer slice closure | **Yes (recommended)** |
 | `integrate validate` | INT-011/012 only (infrastructure parity) |
 

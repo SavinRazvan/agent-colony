@@ -27,9 +27,9 @@ Notes:
 
 Enabling the **plugin** loads agents/skills/rules in the IDE only — it does **not** write files to your project. Run activate to install all three planes on disk:
 
-1. **Plugin from GitHub (recommended):** Agent chat → `/add-plugin https://github.com/SavinRazvan/agent-colony` → open your app → **`/workflow-activate`** (or `python -m cursor_workflow activate --directory .`)
+1. **Plugin from GitHub (recommended):** Agent chat → `/add-plugin https://github.com/SavinRazvan/agent-colony` → open your app → **`/workflow-activate`** (or `python -m agent_colony activate --directory .`)
 2. **Marketplace (when listed):** same flow after **Cursor → Marketplace** install
-3. **Kit clone / advanced:** `python -m cursor_workflow install --target . --verify`
+3. **Kit clone / advanced:** `python -m agent_colony install --target . --verify`
 
 See [PLUGIN-USER-GUIDE.md](../operations/PLUGIN-USER-GUIDE.md) §1 for the plugin-vs-disk diagram and file tree.
 
@@ -42,7 +42,7 @@ Gate order: read `.ai_infra/scripts/pr/prepare.py` only — do not duplicate her
 
 ## Anchoring
 
-**When `project_ssot.enabled`** (see `github.collaboration.yaml`, [ADR-008](../decisions/ADR-008-project-board-ssot.md)): session backlog/status is the **GitHub Project** via `python -m cursor_workflow project …` and `.cursor/skills/board-ssot/SKILL.md`. **Day-0:** `/board` + `board-shell` until `board-bootstrap --check` matches `board-shell.schema.yaml` (Playground six-view default) — before `/implementer`; audit is not day-0. Local `session-pointer.md` / `plan.md` / `work-tracker.md` are **offline fallback only** under `sync_policy: board_only` (no dual-write; DRIFT-009).
+**When `project_ssot.enabled`** (see `github.collaboration.yaml`, [ADR-008](../decisions/ADR-008-project-board-ssot.md)): session backlog/status is the **GitHub Project** via `python -m agent_colony project …` and `.cursor/skills/board-ssot/SKILL.md`. **Day-0:** `/board` + `board-shell` until `board-bootstrap --check` matches `board-shell.schema.yaml` (Playground six-view default) — before `/implementer`; audit is not day-0. Local `session-pointer.md` / `plan.md` / `work-tracker.md` are **offline fallback only** under `sync_policy: board_only` (no dual-write; DRIFT-009).
 
 **Otherwise:** every session → `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
 

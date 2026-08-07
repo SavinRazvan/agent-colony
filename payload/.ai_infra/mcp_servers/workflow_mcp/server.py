@@ -263,9 +263,9 @@ def workflow_drift_validate() -> str:
 
 @mcp.tool()
 def workflow_activate(force: bool = False) -> str:
-    """Ensure all three planes are installed (cursor_workflow activate)."""
+    """Ensure all three planes are installed (agent_colony activate)."""
     root = workspace_root()
-    activate_pkg = root / ".ai_infra" / "install" / "cursor_workflow"
+    activate_pkg = root / ".ai_infra" / "install" / "agent_colony"
     if not (activate_pkg / "activate_cli.py").is_file():
         return "FAIL: missing activate_cli — run workflow-activate skill or install kit first"
     import sys

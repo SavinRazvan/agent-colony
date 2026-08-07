@@ -22,7 +22,7 @@ SCAN_ROOTS: tuple[str, ...] = (
     ".ai_infra/scripts",
     ".ai_infra/mcp_servers",
     ".ai_infra/install",
-    "cursor_workflow",
+    "agent_colony",
     "tests/modules",
 )
 

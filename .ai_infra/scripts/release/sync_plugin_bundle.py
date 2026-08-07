@@ -52,8 +52,8 @@ PAYLOAD_DIR = KIT_ROOT / "payload"
 ACTIVATE_SKILL_SRC = (
     ai_infra_dir() / "templates" / "plugin" / "skills" / "workflow-activate" / "SKILL.md"
 )
-CURSOR_WORKFLOW_SRC = KIT_ROOT / "cursor_workflow"
-PAYLOAD_EXTRA_AI_INFRA = ("install/cursor_workflow", "scripts/install")
+AGENT_COLONY_SRC = KIT_ROOT / "agent_colony"
+PAYLOAD_EXTRA_AI_INFRA = ("install/agent_colony", "scripts/install")
 CONNECT_SKILL_SRC = (
     ai_infra_dir() / "templates" / "plugin" / "skills" / "mcp-connect" / "SKILL.md"
 )
@@ -246,7 +246,7 @@ def sync_payload(payload_dir: Path, plugin_dir: Path, profile: str = "with_mcp")
                 if src.is_file():
                     _copy_file(src, mcp_d_dst / name)
 
-    _copy_tree(CURSOR_WORKFLOW_SRC, payload_dir / "cursor_workflow")
+    _copy_tree(AGENT_COLONY_SRC, payload_dir / "agent_colony")
 
     for name in LICENSE_FILES:
         _copy_file(KIT_ROOT / name, payload_dir / name)
@@ -309,7 +309,7 @@ def check_bundle(profile: str = "with_mcp") -> list[str]:
         PLUGIN_DIR / "agents" / "implementer.md",
         PAYLOAD_DIR / ".ai_infra" / "scripts" / "pr" / "prepare.py",
         PAYLOAD_DIR / ".ai_infra" / "scripts" / "install" / "scaffold.py",
-        PAYLOAD_DIR / "cursor_workflow" / "__main__.py",
+        PAYLOAD_DIR / "agent_colony" / "__main__.py",
         PAYLOAD_DIR / "LICENSE",
         PAYLOAD_DIR / "NOTICE",
     ]

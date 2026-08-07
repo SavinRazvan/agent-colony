@@ -11,7 +11,7 @@ Used By:
 Depends On:
  - .ai_infra/templates/project-board/board-shell.schema.yaml
  - .ai_infra/templates/project-board/views-setup.md
- - python -m cursor_workflow project board-bootstrap
+ - python -m agent_colony project board-bootstrap
 Notes:
  - Consent gate is mandatory before shell apply (description + proceed).
  - Views: coach TURN PROTOCOL by default; browser MCP only when user asks; opt-in CLI when official APIs allow (ADR-008).
@@ -88,12 +88,12 @@ board-onboard status: api=complete · shell=incomplete · views=ui-only · next=
 
 **Automation boundary:** API automates YAML, field defs, README; **UI required** for six views + Tier-1 column visibility (GitHub has no public view mutation API).
 
-2. `python3 -m cursor_workflow project status`
-3. `python3 -m cursor_workflow project doctor`
+2. `python3 -m agent_colony project status`
+3. `python3 -m agent_colony project doctor`
 4. Load desired state:
    - Overlay if present: `.local/user_settings/board-shell.schema.yaml`
    - Else: `.ai_infra/templates/project-board/board-shell.schema.yaml`
-5. `python3 -m cursor_workflow project board-bootstrap --check`
+5. `python3 -m agent_colony project board-bootstrap --check`
 
 ## Loop (refuse ready until default shell passes)
 
@@ -185,7 +185,7 @@ Use this when driving **cursor-ide-browser** (or when coaching clicks). Prefer *
 **Turn G — README**
 
 ```bash
-python3 -m cursor_workflow project board-bootstrap --check --apply-readme
+python3 -m agent_colony project board-bootstrap --check --apply-readme
 ```
 
 Or paste contents of `project-readme.md` into Project README settings. Re-check.
@@ -205,8 +205,8 @@ Use checklist: `.ai_infra/templates/project-board/views-checklist.md`. Canon cli
 ### Optional automation (official API only)
 
 ```bash
-python3 -m cursor_workflow project board-bootstrap --check --ensure-fields
-python3 -m cursor_workflow project board-bootstrap --check --apply-readme
+python3 -m agent_colony project board-bootstrap --check --ensure-fields
+python3 -m agent_colony project board-bootstrap --check --apply-readme
 ```
 
 - `--ensure-fields`: create missing **field definitions** by name; print suggested YAML field ids (human confirms before editing collaboration.yaml). Does **not** create views.
@@ -217,10 +217,10 @@ Respect GraphQL quota / outbox — never retry-loop.
 ### Smoke card (prove Tier-1)
 
 ```bash
-python3 -m cursor_workflow project create-from-template \
+python3 -m agent_colony project create-from-template \
   --title "[LIVE-SMOKE] board shell onboard" --template slice \
   --status ready --priority p2 --size xs --estimate 0.5 --agent board
-python3 -m cursor_workflow project validate-item --last
+python3 -m agent_colony project validate-item --last
 # cleanup: delete smoke item or set Done with Notes "smoke cleanup"
 ```
 

@@ -311,7 +311,7 @@ def test_workflow_contributors_validate() -> None:
 
 def test_workflow_activate_idempotent(monkeypatch: pytest.MonkeyPatch) -> None:
     _env_root()
-    activate_pkg = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+    activate_pkg = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
     pkg = str(activate_pkg)
     if pkg not in sys.path:
         sys.path.insert(0, pkg)

@@ -3,7 +3,7 @@ File: check_drift.py
 Path: .ai_infra/scripts/workflow/check_drift.py
 Role: Machine-enforced operational workflow drift checks (drift validate).
 Used By:
- - cursor_workflow drift validate
+ - agent_colony drift validate
  - scripts/integration/validate.py (INT-012)
  - workflow_mcp workflow_drift_validate
 Depends On:

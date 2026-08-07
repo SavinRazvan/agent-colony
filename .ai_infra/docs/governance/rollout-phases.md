@@ -22,7 +22,7 @@ Notes:
 | 3 | Agent/rules/skills prose alignment | **complete** |
 | 4 | README, workflow-architecture.md, maintainer megadocs | **complete** |
 | 5 | Kit MCP + user MCP registry | **complete** |
-| 6 | Cursor Marketplace plugin bundle + `cursor_workflow activate` | **complete** |
+| 6 | Cursor Marketplace plugin bundle + `agent_colony activate` | **complete** |
 | 7 | CI, health CLI, doc automation, marketplace prep | **in progress** |
 
 **Consumer onboarding:** use [PLUGIN-USER-GUIDE.md](../operations/PLUGIN-USER-GUIDE.md) — not this phase table.

@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-PKG = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+PKG = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 
 
 def _load(name: str):

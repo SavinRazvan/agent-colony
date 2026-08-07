@@ -6,7 +6,7 @@ Role: Full-branch in-process coverage for the thin CLI dispatcher modules
 Used By:
  - pytest
 Depends On:
- - .ai_infra/install/cursor_workflow/{doc_cli,verify_cli,drift_cli,integrate_cli,contributors_cli}.py
+ - .ai_infra/install/agent_colony/{doc_cli,verify_cli,drift_cli,integrate_cli,contributors_cli}.py
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from types import SimpleNamespace
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 
 if str(_PKG_DIR) not in sys.path:
     sys.path.insert(0, str(_PKG_DIR))

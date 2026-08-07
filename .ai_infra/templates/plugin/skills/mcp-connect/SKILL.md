@@ -16,9 +16,9 @@ User wants kit agents to use **external** MCP tools (Slack, DB, GitHub, custom A
 Consumer activate already seeds DeepWiki when `mcp.user.json` / registry keys are missing. On an existing workspace:
 
 ```bash
-python3 -m cursor_workflow mcp seed --deepwiki
-python3 -m cursor_workflow mcp validate
-python3 -m cursor_workflow mcp smoke --server deepwiki
+python3 -m agent_colony mcp seed --deepwiki
+python3 -m agent_colony mcp validate
+python3 -m agent_colony mcp smoke --server deepwiki
 ```
 
 Optional: `--force-registry-agents` to reset `deepwiki.agents` to the seven Pattern A agents.
@@ -26,18 +26,18 @@ Optional: `--force-registry-agents` to reset `deepwiki.agents` to the seven Patt
 ### 2. Link custom (auth or private)
 
 ```bash
-python3 -m cursor_workflow mcp link --name my-api --file .cursor/mcp.d/my-api.json
+python3 -m agent_colony mcp link --name my-api --file .cursor/mcp.d/my-api.json
 # edit .cursor/mcp.registry.yaml — map agents
-python3 -m cursor_workflow mcp auth --server my-api --token-env MY_TOKEN   # if needed
-python3 -m cursor_workflow mcp validate
+python3 -m agent_colony mcp auth --server my-api --token-env MY_TOKEN   # if needed
+python3 -m agent_colony mcp validate
 ```
 
 ### 3. Doctor / smoke
 
 ```bash
-python3 -m cursor_workflow mcp doctor
-python3 -m cursor_workflow mcp smoke --server agent-colony-mcp
-python3 -m cursor_workflow mcp smoke --server deepwiki
+python3 -m agent_colony mcp doctor
+python3 -m agent_colony mcp smoke --server agent-colony-mcp
+python3 -m agent_colony mcp smoke --server deepwiki
 ```
 
 ## Steps (<5 min) — first-time worksheets
@@ -47,15 +47,15 @@ python3 -m cursor_workflow mcp smoke --server deepwiki
 3. Or link a fragment:
 
 ```bash
-python3 -m cursor_workflow mcp link --name my-api --file .cursor/mcp.d/my-api.json
+python3 -m agent_colony mcp link --name my-api --file .cursor/mcp.d/my-api.json
 ```
 
 4. Map the server to agents in `mcp.registry.yaml`
 5. Merge and validate:
 
 ```bash
-python3 -m cursor_workflow mcp validate
-python3 -m cursor_workflow mcp doctor
+python3 -m agent_colony mcp validate
+python3 -m agent_colony mcp doctor
 ```
 
 6. Optional: enable MCP in Cursor settings for the workspace (`CallMcpTool` convenience).
@@ -63,18 +63,18 @@ python3 -m cursor_workflow mcp doctor
 **Pattern A (canonical):** agents call MCP via CLI — not Cursor host loading:
 
 ```bash
-python3 -m cursor_workflow mcp list-tools --server agent-colony-mcp
-python3 -m cursor_workflow mcp call --server agent-colony-mcp --tool workflow_gate_count
-python3 -m cursor_workflow mcp auth --server my-api --token-env MY_TOKEN
-python3 -m cursor_workflow mcp smoke --server agent-colony-mcp
+python3 -m agent_colony mcp list-tools --server agent-colony-mcp
+python3 -m agent_colony mcp call --server agent-colony-mcp --tool workflow_gate_count
+python3 -m agent_colony mcp auth --server my-api --token-env MY_TOKEN
+python3 -m agent_colony mcp smoke --server agent-colony-mcp
 ```
 
 Full walkthrough: `.ai_infra/docs/operations/connect-external-mcp.md` § Worked example: DeepWiki. Canon: ADR-009.
 
 ## Success
 
-- `python3 -m cursor_workflow mcp validate` exits 0
-- `python3 -m cursor_workflow mcp doctor` shows configured vs host-loaded
+- `python3 -m agent_colony mcp validate` exits 0
+- `python3 -m agent_colony mcp doctor` shows configured vs host-loaded
 - `mcp list-tools` / `mcp call` work for allowlisted servers
 - Target agent markdown includes the server under **MCP integration**
 

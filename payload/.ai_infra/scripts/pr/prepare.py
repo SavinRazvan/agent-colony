@@ -45,7 +45,7 @@ GATES_UNIVERSAL = [
 # Kit-dev only — appended when `is_kit_dev_root()` (same signal as doc-facts DOC-000 skip).
 # Strict check-plugin (no prior sync) catches stale committed agents/rules/skills/payload.
 GATES_KIT_DEV_APPEND = [
-    ["python", "-m", "cursor_workflow", "drift", "validate", "--directory", "."],
+    ["python", "-m", "agent_colony", "drift", "validate", "--directory", "."],
     ["python", ".ai_infra/scripts/architecture/check_doc_facts.py"],
     ["python", ".ai_infra/scripts/release/sync_plugin_bundle.py", "--check"],
 ]

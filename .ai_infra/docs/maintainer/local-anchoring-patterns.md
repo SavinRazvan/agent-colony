@@ -29,7 +29,7 @@ Path SSOT: `.ai_infra/scripts/pr/local_workflow_paths.py`.
 
 When `.local/user_settings/github.collaboration.yaml` → `project_ssot.enabled: true`:
 
-1. `python -m cursor_workflow project status` — board health + active card
+1. `python -m agent_colony project status` — board health + active card
 2. Claim or read In progress card; Acceptance/Rollback on **card body** (`body_sections`)
 3. `.cursor/skills/board-ssot/SKILL.md` § Continuation — Pattern A claim/handoff/mention-pr/promote
 

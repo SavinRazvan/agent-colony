@@ -8,7 +8,7 @@ description: researcher Agent Colony — Brief-driven multi-round research (GitH
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` (+ research card via `list` when one exists). Else `session-pointer.md`.
+**Entry:** If `project_ssot.enabled` → `python -m agent_colony project status` (+ research card via `list` when one exists). Else `session-pointer.md`.
 
 **Exit:** Prefer `handoff --last` / `claim --last` after create. Research packs under `_research_results/sources/<slug>/`. When a **research board card** exists: **must** `set-status --to done` and put pack paths (`AGENT_BRIEF.md`, `INDEX.json`) in Notes for continuation. Do not mutate unrelated cards or `session-pointer` as SSOT. No dual-write under `board_only`.
 
@@ -89,9 +89,9 @@ No kit-side GitHub token is stored. If clone fails, report the error and stop (d
 ## CLI (procedural)
 
 ```bash
-python3 -m cursor_workflow research init --slug <slug> --source '…' --question '…'
-python3 -m cursor_workflow research fetch --slug <slug> --source '…'
-python3 -m cursor_workflow research validate --slug <slug>
+python3 -m agent_colony research init --slug <slug> --source '…' --question '…'
+python3 -m agent_colony research fetch --slug <slug> --source '…'
+python3 -m agent_colony research validate --slug <slug>
 ```
 
 `--source` accepts `github:owner/repo[@ref]`, `https://github.com/owner/repo[/tree/ref]`, `path:…`, or bare local path.
@@ -128,7 +128,7 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 | Kit | `agent-colony-mcp` | PR scripts, trackers, gates — prefer Pattern A CLI over re-running shell |
 | External | `deepwiki` (worked example, zero-auth) — see `.cursor/mcp.registry.yaml` | GitHub repo docs/Q&A (`read_wiki_structure`, `read_wiki_contents`, `ask_question`); other listed servers only if connected for this agent id |
 
-**Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`. Example: `mcp call --server deepwiki --tool ask_question --args-json '{"repo":"org/name","question":"..."}'`.
+**Pattern A (preferred):** `python3 -m agent_colony mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`. Example: `mcp call --server deepwiki --tool ask_question --args-json '{"repo":"org/name","question":"..."}'`.
 
 Cursor **CallMcpTool** is optional when the IDE host loads the same server. Discover tools with `mcp list-tools --server <id>`; do not invent tool names.
 User setup: `.ai_infra/docs/operations/connect-external-mcp.md`

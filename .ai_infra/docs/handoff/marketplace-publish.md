@@ -28,7 +28,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 4. `make sync-plugin` — rebuild `agents/`, `rules/`, `skills/`, `payload/` (commit the result)
 5. `make check-plugin` — bundle parity green
 6. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
-7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02); **done** 0.4.0 → 0.5.0 (2026-08-07)
+7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02); **done** 0.4.0 → 0.5.0 (2026-08-07); **done** 0.5.0 → 0.6.0 (2026-08-07, CLI module rename)
 8. [x] `assets/logo.png` (1:1, background plate) — see `assets/README.md` — **present** (commit `1f16af1`, 1024×1024 PNG RGBA, ~1.5 MB; verified 2026-07-02)
 9. [x] Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — **PASS 2026-07-08**
    on **Smart-Notes** (`~/Projects/Smart-Notes`): chat activate + terminal matrix green.
@@ -40,7 +40,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 
 ## Versioning
 
-**Current release:** `0.5.0` (git tag `v0.5.0`).
+**Current release:** `0.6.0` (git tag `v0.6.0`).
 
 **Superseded:** `v0.3.0` (`1f16af1`) predates `PLUGIN-FLATTEN` (#15) — its tagged tree has **zero**
 files under `agents/`, `rules/`, `skills/`, `payload/` (the gitignore bug #15 fixed). Do not
@@ -53,22 +53,22 @@ On every release, bump **in lockstep**:
 |------|--------|
 | `.cursor-plugin/plugin.json` | `version` |
 | `pyproject.toml` | `version` |
-| `cursor_workflow/__init__.py` | `__version__` |
-| `cursor_workflow/cli.py` | `__version__` |
-| `.ai_infra/install/cursor_workflow/__init__.py` | `__version__` |
-| `.ai_infra/install/cursor_workflow/cli.py` | `--version` string |
+| `agent_colony/__init__.py` | `__version__` |
+| `agent_colony/cli.py` | `__version__` |
+| `.ai_infra/install/agent_colony/__init__.py` | `__version__` |
+| `.ai_infra/install/agent_colony/cli.py` | `--version` string |
 | `.ai_infra/__init__.py` | `__version__` |
 | `.ai_infra/manifest.yaml` | `kit_version` |
 | `.ai_infra/.kit-version` | raw version string (kit-dev repo's own checked-in copy — see note below) |
 | `.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md` | header + kit version row |
 | `tests/modules/install/test_install_contract.py` | `.kit-version` assertion |
 | `tests/modules/install/test_editable_install.py` | `__version__` assertion |
-| `tests/modules/install/test_cursor_workflow.py` | `__version__` assertion |
-| `tests/modules/install/test_cursor_workflow_entrypoints.py` | `__version__` assertion |
+| `tests/modules/install/test_agent_colony.py` | `__version__` assertion |
+| `tests/modules/install/test_agent_colony_entrypoints.py` | `__version__` assertion |
 | `tests/modules/ai_infra/test_bootstrap_and_misc.py` | `__version__` assertion |
-| `tests/modules/install/test_cursor_workflow_cli_full.py` | fixture `.kit-version` + `--version` assert |
+| `tests/modules/install/test_agent_colony_cli_full.py` | fixture `.kit-version` + `--version` assert |
 
-**Consumer installs** receive version via `.ai_infra/.kit-version` (written fresh from manifest `kit_version` at scaffold/activate — no manual action needed there). **The kit-dev repo's own `.ai_infra/.kit-version` is git-tracked** and is *not* regenerated automatically (scaffold only runs on install targets), so it must be bumped by hand in this table too — `python3 -m cursor_workflow health` in this repo reads it directly and will report a stale version if it's missed (caught in v0.4.0: file was left at `0.3.0` after the version bump). **Not versioned with kit:** `workflow_mcp.__version__` (MCP server package semver).
+**Consumer installs** receive version via `.ai_infra/.kit-version` (written fresh from manifest `kit_version` at scaffold/activate — no manual action needed there). **The kit-dev repo's own `.ai_infra/.kit-version` is git-tracked** and is *not* regenerated automatically (scaffold only runs on install targets), so it must be bumped by hand in this table too — `python3 -m agent_colony health` in this repo reads it directly and will report a stale version if it's missed (caught in v0.4.0: file was left at `0.3.0` after the version bump). **Not versioned with kit:** `workflow_mcp.__version__` (MCP server package semver).
 
 After bump: `make sync-plugin && make check-plugin`, tag `vX.Y.Z`, optional GitHub Release notes.
 
@@ -80,7 +80,7 @@ assets/logo.png    # Marketplace logotype (commit before publisher submit)
 agents/            # Cursor-loaded — sibling of .cursor-plugin/, matches cursor/plugin-template
 rules/             # Cursor-loaded — sibling of .cursor-plugin/
 skills/            # Cursor-loaded — sibling of .cursor-plugin/
-payload/           # ADR-001 install source (.ai_infra + cursor_workflow shim)
+payload/           # ADR-001 install source (.ai_infra + agent_colony shim)
 ```
 
 **All four generated trees (`agents/`, `rules/`, `skills/`, `payload/`) are committed to git** — Cursor Marketplace reads the repository directly, so nothing gitignored is visible to a reviewer or a third-party installer. `make sync-plugin` regenerates them from `.cursor/` + `.agents/skills/`; `make check-plugin` fails the build on drift. Layout and discovery match the official [`cursor/plugin-template`](https://github.com/cursor/plugin-template) starters exactly — verified by running the template's `scripts/validate-template.mjs` directly against this repo (0 errors, see `.local/workflow-artifacts/release/cursor-plugin-template-compliance-2026-07-02.md`).
@@ -97,7 +97,7 @@ mkdir -p "$TARGET"
 1. **Agent chat** (not terminal): `/add-plugin https://github.com/SavinRazvan/agent-colony` — click the **Agent Colony** card in the preview ([screenshot](../../../assets/agent-colony-install.png) · [README](https://github.com/SavinRazvan/agent-colony#1-install-the-plugin-cursor-chat--not-the-terminal))
 2. **File → Open Folder** → `"$TARGET"` (your app — not the kit repo)
 3. **Agent chat:** `/workflow-activate` → wait for **VERIFY PASS**
-4. Edit `.local/user_settings/github.collaboration.yaml` → `python3 -m cursor_workflow contributors validate`
+4. Edit `.local/user_settings/github.collaboration.yaml` → `python3 -m agent_colony contributors validate`
 
 **Alternative — local path** (if GitHub URL fails in your Cursor build):
 
@@ -114,15 +114,15 @@ export KIT=~/Projects/agent-colony
 export TARGET=~/Projects/my-app
 mkdir -p "$TARGET"
 
-"$KIT/.venv/bin/python" "$KIT/payload/cursor_workflow" activate \
+"$KIT/.venv/bin/python" "$KIT/payload/agent_colony" activate \
   --directory "$TARGET" \
   --source "$KIT/payload"
 
 cd "$TARGET"
 # Edit .local/user_settings/github.collaboration.yaml (placeholders → your name / @handle)
-python3 -m cursor_workflow contributors validate
-python3 -m cursor_workflow integrate validate
-python3 -m cursor_workflow gates
+python3 -m agent_colony contributors validate
+python3 -m agent_colony integrate validate
+python3 -m agent_colony gates
 ```
 
 Pass: `VERIFY PASS` on activate; `contributors validate: PASS` (after editing placeholders); `integrate validate` P0 = 0 (plugin parity skipped on consumer); `gates` green. Kit smoke alone: `pytest -q tests/modules/smoke/` → **1 passed**; full `gates` runs **your app tests + smoke** (e.g. 120 on Smart-Notes).
@@ -130,12 +130,12 @@ Pass: `VERIFY PASS` on activate; `contributors validate: PASS` (after editing pl
 **Drift on consumer apps:** auto profile may read `kit-dev` unless `work-tracker.md` contains `STARTER-001`. Use explicit consumer profile (no agent required):
 
 ```bash
-python3 -m cursor_workflow drift validate --directory . --profile consumer
+python3 -m agent_colony drift validate --directory . --profile consumer
 ```
 
 **DRIFT-005 on consumer:** If you see `DRIFT-005 FAIL: IMPLEMENTATION-STATUS missing **Tests:** count` — that is a **kit bug (not your app)**: false positive because `IMPLEMENTATION-STATUS.md` is maintainer-only and is not shipped to consumers. Fixed on kit `main` (skip when absent → PASS). Until your consumer project picks up the fix, ignore DRIFT-005 or upgrade the kit payload.
 
-**MCP validate:** use `python3 -m cursor_workflow mcp validate` — not bare `mcp validate` (different CLI).
+**MCP validate:** use `python3 -m agent_colony mcp validate` — not bare `mcp validate` (different CLI).
 
 ### Quick plugin smoke (from kit repo)
 
@@ -146,17 +146,17 @@ python3 -m cursor_workflow drift validate --directory . --profile consumer
 
 ```bash
 cd "$TARGET"
-python3 -m cursor_workflow activate --directory .
+python3 -m agent_colony activate --directory .
 ```
 
 Or from kit repo without opening target in Cursor:
 
 ```bash
-"$KIT/.venv/bin/python" "$KIT/payload/cursor_workflow" activate \
+"$KIT/.venv/bin/python" "$KIT/payload/agent_colony" activate \
   --directory "$TARGET" --source "$KIT/payload"
 ```
 
-5. In target: `python3 -m cursor_workflow gates --directory "$TARGET"`
+5. In target: `python3 -m agent_colony gates --directory "$TARGET"`
 
 ### Automated smoke (kit repo)
 
@@ -209,13 +209,13 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-08-05 MCP Pattern A):** Re-verified against filesystem + `IMPLEMENTATION-STATUS.md` — **1229** tests; agent/skill/rule counts (**8** / **12** / **7**); B-safe rename shipped; agent descriptions prefixed `{name} Agent Colony`.
 
-**Listing copy refresh (2026-07-18 WORKSPACE-CLEAN, archival):** Re-verified README/AGENTS.md/repository-map/canvases against shipped tree at that date — **931** tests collected (DOC-008 added), **5352** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow` per `IMPLEMENTATION-STATUS.md`; agent/skill/rule counts unchanged (8 / 11 / 7). Superseded by 2026-07-19 refreshes below.
+**Listing copy refresh (2026-07-18 WORKSPACE-CLEAN, archival):** Re-verified README/AGENTS.md/repository-map/canvases against shipped tree at that date — **931** tests collected (DOC-008 added), **5352** stmts / **100%** coverage on `--cov=.ai_infra --cov=agent_colony` per `IMPLEMENTATION-STATUS.md`; agent/skill/rule counts unchanged (8 / 11 / 7). Superseded by 2026-07-19 refreshes below.
 
-**Listing copy refresh (2026-07-19 DOC-CANVAS-ALIGN, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` — **1062** tests collected (1060 passed + 2 skipped), **6208** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts (8 / 11 / 7). Superseded by EA-019 refresh below.
+**Listing copy refresh (2026-07-19 DOC-CANVAS-ALIGN, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` — **1062** tests collected (1060 passed + 2 skipped), **6208** stmts / **100%** coverage on `--cov=.ai_infra --cov=agent_colony`; agent/skill/rule counts (8 / 11 / 7). Superseded by EA-019 refresh below.
 
-**Listing copy refresh (2026-07-19 EA-019 / PR #70, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` on `main` post Tier-1 Size/Estimate + Start date — **1072** tests collected (1070 passed + 2 skipped), **6208** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts unchanged (**8** / **11** / **7**); kit version **0.4.0**. Superseded by COV-100 doc-align refresh below.
+**Listing copy refresh (2026-07-19 EA-019 / PR #70, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` on `main` post Tier-1 Size/Estimate + Start date — **1072** tests collected (1070 passed + 2 skipped), **6208** stmts / **100%** coverage on `--cov=.ai_infra --cov=agent_colony`; agent/skill/rule counts unchanged (**8** / **11** / **7**); kit version **0.4.0**. Superseded by COV-100 doc-align refresh below.
 
-**Listing copy refresh (2026-07-19 COV-100 doc-align, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` on `main` post G1–G5 github-api-safety + `test_project_cov100_gaps.py` — **1166** tests collected, **7089** stmts / **100%** coverage on `--cov=.ai_infra --cov=cursor_workflow`; agent/skill/rule counts at that date (**8** / **11** / **7**); kit version **0.4.0**. Superseded by board-shell / DOC-ONBOARD refresh below.
+**Listing copy refresh (2026-07-19 COV-100 doc-align, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` on `main` post G1–G5 github-api-safety + `test_project_cov100_gaps.py` — **1166** tests collected, **7089** stmts / **100%** coverage on `--cov=.ai_infra --cov=agent_colony`; agent/skill/rule counts at that date (**8** / **11** / **7**); kit version **0.4.0**. Superseded by board-shell / DOC-ONBOARD refresh below.
 
 **Listing copy refresh (2026-07-20 DOC-ONBOARD / board-shell, archival):** Re-verified against `IMPLEMENTATION-STATUS.md` + `ls .cursor/skills/` — **1166** tests collected, **7089** stmts / **100%** coverage; agent/skill/rule counts (**8** / **12** / **7**) including `board-shell`; kit version **0.4.0**. Superseded by completeness refresh below.
 
@@ -256,4 +256,4 @@ Until live publish, **deployability score remains capped** at local dry-run evid
 ## Rollback
 
 - Re-publish previous plugin version
-- Consumers: reinstall prior `kit_version` via `cursor_workflow install` from tagged kit release
+- Consumers: reinstall prior `kit_version` via `agent_colony install` from tagged kit release

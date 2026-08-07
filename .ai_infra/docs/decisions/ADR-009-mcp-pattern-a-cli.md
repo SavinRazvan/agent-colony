@@ -9,7 +9,7 @@ ADR-003/004 define kit + user MCP tiers and a registry. Cursor agent sessions of
 
 ## Decision
 
-1. **CLI is canonical:** `python3 -m cursor_workflow mcp doctor|list-tools|call|auth|smoke` (plus existing `validate` / `link`).
+1. **CLI is canonical:** `python3 -m agent_colony mcp doctor|list-tools|call|auth|smoke` (plus existing `validate` / `link`).
 2. **Registry allowlist:** `mcp call` / `list-tools` only target servers present in `.cursor/mcp.registry.yaml` (when that file exists); `--agent` filters to servers that list the agent.
 3. **Secrets:** `.local/user_settings/mcp.secrets.yaml` (gitignored); `mcp.user.json` stays transport-only.
 4. **Cursor `CallMcpTool` is optional** when the IDE host loads the same server; docs/skills must not require it.

@@ -5,7 +5,7 @@ Role: Full-branch coverage for mcp_manage.py (merge, registry validate, link, gi
 Used By:
  - pytest
 Depends On:
- - .ai_infra/install/cursor_workflow/mcp_manage.py
+ - .ai_infra/install/agent_colony/mcp_manage.py
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ import pytest
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 
 if str(_PKG_DIR) not in sys.path:
     sys.path.insert(0, str(_PKG_DIR))

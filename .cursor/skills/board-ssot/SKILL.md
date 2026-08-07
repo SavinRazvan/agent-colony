@@ -1,6 +1,6 @@
 ---
 name: board-ssot
-description: Drive GitHub Project SSOT via project_ssot YAML and cursor_workflow project CLI.
+description: Drive GitHub Project SSOT via project_ssot YAML and agent_colony project CLI.
 ---
 
 <!--
@@ -12,11 +12,11 @@ Used By:
  - All kit agents when project_ssot.enabled
 Depends On:
  - .local/user_settings/github.collaboration.yaml (project_ssot)
- - .ai_infra/install/cursor_workflow/project_cli.py
- - .ai_infra/install/cursor_workflow/project_atomics.py
- - .ai_infra/install/cursor_workflow/gh_project_adapter.py
- - .ai_infra/install/cursor_workflow/project_recipes.py
- - .ai_infra/install/cursor_workflow/project_outbox.py
+ - .ai_infra/install/agent_colony/project_cli.py
+ - .ai_infra/install/agent_colony/project_atomics.py
+ - .ai_infra/install/agent_colony/gh_project_adapter.py
+ - .ai_infra/install/agent_colony/project_recipes.py
+ - .ai_infra/install/agent_colony/project_outbox.py
  - .ai_infra/docs/operations/project-board-collaboration.md
  - ADR-008-project-board-ssot.md
 Notes:
@@ -50,7 +50,7 @@ Day-0 requires the kit **default** shell: `.ai_infra/templates/project-board/boa
 0. **Wire YAML from URLs (if ids missing):** after `gh` auth, human pastes Project URL + repo URL → use `gh project view` / `field-list` → propose `project_ssot` + `default_repo` → human confirms before save. Discovery only — **no** `--ensure-fields` until CONSENT.
 1. Load `.cursor/skills/board-shell/SKILL.md` (coach) and the schema above.
 2. **CONSENT GATE (mandatory):** ask board description (or `use template default`) + `May I proceed to set up the kit default shell?` — only continue on `yes`.
-3. Run `python3 -m cursor_workflow project doctor` → `project board-bootstrap --check`.
+3. Run `python3 -m agent_colony project doctor` → `project board-bootstrap --check`.
 4. On **exit 5** (view FAIL or Tier-1 column FAIL): TURN PROTOCOL (agent coaches one view at a time; human uses `views-setup.md` as click reference). Optional `--ensure-fields` / `--apply-readme` only after consent. **No** `--apply-shell` CLI today.
 5. Refuse “ready for agents” until `board-bootstrap --check` exits **0** (README non-empty, six views, Tier-1 columns on Status board / Prioritized backlog). Then resume day-to-day Pattern A below.
 
@@ -62,7 +62,7 @@ Work is **indexed on the Project**, not in chat alone.
 
 | Phase | Required |
 |-------|----------|
-| **Entry** | Prefer `python3 -m cursor_workflow project entry` (quota-aware: live \| conserve \| offline_artifacts). Then `get` / `claim` **one** card. Read Acceptance / Rollback / Notes on that card body. Avoid unfiltered `project list` / full `export` every turn — use `export --reuse-if-fresh` when a snapshot is enough. Parallel agents may each Entry, but **one export refresh per parent wave**. |
+| **Entry** | Prefer `python3 -m agent_colony project entry` (quota-aware: live \| conserve \| offline_artifacts). Then `get` / `claim` **one** card. Read Acceptance / Rollback / Notes on that card body. Avoid unfiltered `project list` / full `export` every turn — use `export --reuse-if-fresh` when a snapshot is enough. Parallel agents may each Entry, but **one export refresh per parent wave**. |
 | **During** | Keep **one** In progress card for your assignee. Put progress notes on the card body when handing off mid-slice. |
 | **Exit** | **Always** update Status for the card you worked: → `in_review` (PR/handoff) or → `done` (your part closed) or leave `in_progress` with **Notes** naming the next agent. Notes **must** use `append-notes --agent <this-agent>` → `@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · …` (CLI stamps UTC). Print handoff line. **If EXIT_QUEUED (6)** / rate-limit / Forbidden throttle / precheck low quota: do **not** retry in a loop — op is in `.local/generated-data/board-outbox.jsonl`; continue local evidence; later `project outbox flush`. |
 | **Never** | Finish in chat only while leaving the card Stuck in Ready/Backlog. Never dual-write tracker `in_progress` under `board_only`. Never write bare `Agent: implementer` without `@user/` namespace. |
@@ -137,12 +137,12 @@ Priority is **independent** of Size (a P0 can be XS).
 
 ```bash
 # Pattern A — Tier-1 at create + Start date on claim
-python3 -m cursor_workflow project create-from-template \
+python3 -m agent_colony project create-from-template \
   --template slice --title "[P1] …" --status ready \
   --priority p1 --size s --estimate 1 --agent implementer
-python3 -m cursor_workflow project claim --last --agent implementer
+python3 -m agent_colony project claim --last --agent implementer
 # When opening a shippable PR:
-python3 -m cursor_workflow project mention-pr --pr N --last --agent implementer
+python3 -m agent_colony project mention-pr --pr N --last --agent implementer
 ```
 
 Plain `project create` (non-template) still needs follow-up `set-field` for Priority/Size/Estimate.

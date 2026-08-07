@@ -34,7 +34,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 - **Desired state:** `.ai_infra/templates/project-board/board-shell.schema.yaml` — **full Playground default** (six views + Tier-1 columns). **Or** copy `board-shell.schema.minimal.yaml` for **two views** ([Playground #3](https://github.com/users/SavinRazvan/projects/3)).
 - **Customize:** copy/edit `.local/user_settings/board-shell.schema.yaml` — `board-bootstrap --check` prefers the overlay when present. Do **not** remove Status / Priority / Size / Estimate / Start date, or hide **Priority** on Prioritized backlog.
 - **Coach:** `/board` + `.cursor/skills/board-shell/SKILL.md`.
-- **Verify:** `python3 -m cursor_workflow project board-bootstrap --check` (FAIL if a default Playground view is missing; **FAIL (exit 5)** on missing Tier-1 columns; WARN on leftover `View N` / layout mismatch).
+- **Verify:** `python3 -m agent_colony project board-bootstrap --check` (FAIL if a default Playground view is missing; **FAIL (exit 5)** on missing Tier-1 columns; WARN on leftover `View N` / layout mismatch).
 - **Optional API:** `--ensure-fields` (create missing field definitions + print suggested YAML ids); `--apply-readme` (push README). Views stay human UI (ADR-008).
 
 ## Surfaces — who may write
@@ -85,7 +85,7 @@ Handoff: `item_id=<from create or --last> · @User/implementer · Status=a→b �
 
 ## Project CLI subcommands (Pattern A)
 
-All subcommands registered in `.ai_infra/install/cursor_workflow/project_parser.py`. Prefer recipes (`entry`, `claim`, `handoff`, `guide`) over atomics.
+All subcommands registered in `.ai_infra/install/agent_colony/project_parser.py`. Prefer recipes (`entry`, `claim`, `handoff`, `guide`) over atomics.
 
 | Subcommand | Purpose | Typical agent |
 |------------|---------|---------------|
@@ -146,7 +146,7 @@ GitHub GraphQL quota (~5000/hour) can block board writes. When `project_ssot.out
 2. Live write fails with throttle (rate-limit / secondary / 429 / bare Forbidden) → CLI **enqueues** to `.local/generated-data/board-outbox.jsonl` and returns **EXIT_QUEUED (6)**. Permanent scope-miss errors are **not** queued.
 3. **Dedupe:** identical pending `op`+`item_id`+payload fingerprint reuses one outbox row (`dedupe_pending`).
 4. Agent continues local evidence (`change-index`, handoff line) — **do not** hammer `gh` / retry loops (CODE=6 = soft-success).
-5. After quota recovers: `python3 -m cursor_workflow project outbox status` then `outbox flush` (capped by `max_flush_per_run`; refuses if `remaining < min_graphql_remaining`).
+5. After quota recovers: `python3 -m agent_colony project outbox status` then `outbox flush` (capped by `max_flush_per_run`; refuses if `remaining < min_graphql_remaining`).
 6. Explicit enqueue: `project queue --op append-notes|set-status|handoff|claim|set-assignee|set-field …`
 7. Outbox is a **local buffer**, never a second Status SSOT. Prefer Pattern A CLI over raw `gh api graphql` (raw calls bypass the outbox).
 
@@ -159,9 +159,9 @@ Who flushes: any agent/human after reset; prefer implementer or board at slice c
 New Issue creates assign `owner.github_user` automatically. For older cards missing Assignees (after throttle recovery):
 
 ```bash
-python3 -m cursor_workflow project set-assignee --id PVTI_… --login <owner>
+python3 -m agent_colony project set-assignee --id PVTI_… --login <owner>
 # or: gh issue edit N --add-assignee <owner> --repo <default_repo>
-python3 -m cursor_workflow project outbox flush   # remaining queued ops — no retry-loop
+python3 -m agent_colony project outbox flush   # remaining queued ops — no retry-loop
 ```
 
 ## Exit codes (board Pattern A)
@@ -184,7 +184,7 @@ Optional end-to-end check against the real Project (skipped in default CI).
 **Last PASS:** 2026-07-19 — `make live-board-smoke` (evidence: `.local/workflow-artifacts/release/live-board-smoke-2026-07-19.md`).
 
 1. Auth with Project scopes: `gh auth refresh -h github.com -s read:project,project` (plus existing `repo` scopes). If `xdg-open` fails, open **https://github.com/login/device**, paste the one-time code, and approve **Project** permissions — see [PLUGIN-USER-GUIDE § GitHub CLI auth](PLUGIN-USER-GUIDE.md#github-cli-auth-projects).
-2. Confirm: `python3 -m cursor_workflow project doctor` and `project status`.
+2. Confirm: `python3 -m agent_colony project doctor` and `project status`.
 3. Clear any other card **In progress** for the same assignee (claim enforces `one_in_progress_per_assignee`).
 4. Run: `make live-board-smoke`  
    (sets `PROJECT_SSOT_LIVE=1` and runs `tests/modules/install/test_project_cli_live.py`; claim retries briefly for GraphQL eventual consistency).

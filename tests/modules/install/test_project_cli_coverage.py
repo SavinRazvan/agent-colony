@@ -5,7 +5,7 @@ Role: Bulk unit tests for project_cli.py helpers and command edge paths toward 1
 Used By:
  - pytest
 Depends On:
- - .ai_infra/install/cursor_workflow/project_cli.py
+ - .ai_infra/install/agent_colony/project_cli.py
  - tests/modules/install/test_project_cli.py (SAMPLE_SSOT)
 Notes:
  - Monkeypatches run_gh, load_project_ssot, GraphQL helpers — no live board.
@@ -23,7 +23,7 @@ import pytest
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+_PKG_DIR = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 if str(_PKG_DIR) not in sys.path:
     sys.path.insert(0, str(_PKG_DIR))
 

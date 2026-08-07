@@ -11,12 +11,12 @@ description: implementer Agent Colony — Disciplined implementation slices with
 **Entry (board-first when enabled):**
 
 1. Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`.
-2. If `project_ssot.enabled`: run `python -m cursor_workflow project entry`, then claim existing In progress / Ready (or create). Skill: `.cursor/skills/board-ssot/SKILL.md`. Acceptance/Rollback live on the **card body** (`body_sections`).
+2. If `project_ssot.enabled`: run `python -m agent_colony project entry`, then claim existing In progress / Ready (or create). Skill: `.cursor/skills/board-ssot/SKILL.md`. Acceptance/Rollback live on the **card body** (`body_sections`).
 3. If disabled or CLI exit non-zero with `fallback: local_trackers`: read `.local/index-and-planning/current/session-pointer.md`, then files it lists (offline path only).
 
 **Exit (board-first when enabled):**
 
-1. Prefer recipe: fill Acceptance/Rollback (`create-from-template --acceptance/--rollback` or `project set-section --section acceptance|rollback --text '…' --last --agent implementer`) then `python3 -m cursor_workflow project handoff --last --agent implementer --next verifier --to in_review` (or `--to done`). Handoff/`set-status` to `in_review`|`done` returns **EXIT_VALIDATION (5)** while placeholders remain — fix with `set-section`, then retry.
+1. Prefer recipe: fill Acceptance/Rollback (`create-from-template --acceptance/--rollback` or `project set-section --section acceptance|rollback --text '…' --last --agent implementer`) then `python3 -m agent_colony project handoff --last --agent implementer --next verifier --to in_review` (or `--to done`). Handoff/`set-status` to `in_review`|`done` returns **EXIT_VALIDATION (5)** while placeholders remain — fix with `set-section`, then retry.
 2. Claim with `project claim --last --agent implementer` (after create-from-template; never paste docs placeholder ids).
 3. Before opening a shippable PR: `promote-to-issue --last` **or** `mention-pr --pr N` (auto-promotes when `promote_to_issue_on_pr`). Claim does **not** promote.
 4. Append `change-index.md`; one line in `history/updates-log.md`.
@@ -57,7 +57,7 @@ When the slice touches tests or ownership: `test-plan.md`, `test-index.md`. Afte
 1. One primary claimed board card (`in_progress`) when SSOT enabled; else one `in_progress` in `work-tracker.md`. Scope on card body or `plan.md` (fallback).
 2. Contracts → implementation → tests. **New sources:** module header per `.cursor/rules/file-docstring-header-relations.mdc`.
 3. **Gates:** run `python .ai_infra/scripts/pr/prepare.py` (executes `resolve_gates()`; `GATES` is the 2-gate back-compat alias). Add `python .ai_infra/scripts/architecture/check_governance_consistency.py` if governance/workflows/policy docs changed.
-4. **Commits:** trailers via `python -m cursor_workflow contributors commit-trailers` (`.cursor/rules/commit-trailer-format.mdc`). Optional `Assisted-by:`. No tool-generated human sign-off.
+4. **Commits:** trailers via `python -m agent_colony contributors commit-trailers` (`.cursor/rules/commit-trailer-format.mdc`). Optional `Assisted-by:`. No tool-generated human sign-off.
 5. **Close:** board Status via CLI; `change-index.md` + `updates-log.md`; fallback tracker close only if offline. Run **`make drift-validate`**; hand off to **`drift-guard`** when P0/P1 findings need artifacts.
 
 ## Architecture
@@ -74,12 +74,12 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 
 | Tier | Server | Use when |
 |------|--------|----------|
-| Kit | `agent-colony-mcp` | PR scripts, gates — prefer `cursor_workflow project` for board |
+| Kit | `agent-colony-mcp` | PR scripts, gates — prefer `agent_colony project` for board |
 | External | See `.cursor/mcp.registry.yaml` | Only servers listed for this agent id |
 
-**Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
+**Pattern A (preferred):** `python3 -m agent_colony mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
 
 Cursor **CallMcpTool** is optional when the IDE host loads the same server. Discover tools with `mcp list-tools --server <id>`; do not invent tool names.
 User setup: `.ai_infra/docs/operations/connect-external-mcp.md`
 
-**Canvas / plan (ADR-010):** `python3 -m cursor_workflow canvas doctor|sync|save`, `plan snapshot|list|open` — agents execute from `.local/plans/`; humans use `plan open` for Build — see `.cursor/skills/canvas-artifacts/SKILL.md`.
+**Canvas / plan (ADR-010):** `python3 -m agent_colony canvas doctor|sync|save`, `plan snapshot|list|open` — agents execute from `.local/plans/`; humans use `plan open` for Build — see `.cursor/skills/canvas-artifacts/SKILL.md`.

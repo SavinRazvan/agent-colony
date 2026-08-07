@@ -9,7 +9,7 @@ alwaysApply: true
 
 - Sequence: `plan -> interfaces -> implementation -> tests -> evidence -> docs update`.
 - Before coding: confirm module boundary, acceptance criteria, rollback in `.local/index-and-planning/current/plan.md`; read **`session-pointer.md`** first, then `plan.md`, `work-tracker.md`, project `docs/architecture/` (local stub: `.local/.../current/architecture.md`), `test-plan.md`, `test-index.md`.
-- When `project_ssot.enabled` and `sync_policy: board_only`, **board Entry wins** (`python3 -m cursor_workflow project status` / claim card); local trackers are offline fallback only.
+- When `project_ssot.enabled` and `sync_policy: board_only`, **board Entry wins** (`python3 -m agent_colony project status` / claim card); local trackers are offline fallback only.
 - Treat `.local/index-and-planning/current/*`, `history/*`, and `audits/*` as live local execution state; durable workflow doctrine lives in `.ai_infra/docs/operations/*`.
 - Exactly one primary `in_progress` **Status on the Project** when `board_only`; `work-tracker.md` `in_progress` only when SSOT disabled or offline fallback. Do not implement without scope on the board card body (or `plan.md` when fallback).
 - Incremental, reversible slices; KISS. Block release on P0 failures; RCs need CI/CD evidence bundles.
@@ -19,7 +19,7 @@ alwaysApply: true
 - Place tests under `tests/modules/<module>/` matching source boundaries.
 - Cover happy, failure, and edge cases; add retry/timeout/replay where high-risk or state-changing.
 - Run targeted module tests first, then full suite before merge.
-- For medium/high-risk slices, run `pytest --cov=.ai_infra --cov=cursor_workflow --cov-report=term-missing -q`; record gaps in `work-tracker.md` and `updates-log.md`.
+- For medium/high-risk slices, run `pytest --cov=.ai_infra --cov=agent_colony --cov-report=term-missing -q`; record gaps in `work-tracker.md` and `updates-log.md`.
 - If modules/tests move or drop, update/remove tests in the same slice; note rationale in `updates-log.md`.
 
 ## Planning index updates

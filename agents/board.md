@@ -8,7 +8,7 @@ description: board Agent Colony — Independent-governed helper — list/create/
 
 ## Anchor (mandatory)
 
-**Entry:** Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`, then `.cursor/skills/board-ssot/SKILL.md`. Run `python -m cursor_workflow project entry` (quota-aware). **Wire-from-URLs (day-0):** if the human pastes a **Project URL** + **repo URL** after `gh` auth, use `gh project view` / `field-list` to propose YAML updates — human confirms before save (discovery only — **no** `--ensure-fields` until CONSENT GATE). **First-run / shell setup:** load `.cursor/skills/board-shell/SKILL.md` — **CONSENT GATE is mandatory** (ask board description + “may I proceed to create the default shell?”) before TURN PROTOCOL or `--apply-readme` / `--ensure-fields`. Then `project board-bootstrap --check` against `board-shell.schema.yaml` — refuse “ready” until the **default** Playground shell (six views + Tier-1 columns on Status board / Prioritized backlog) and README pass.
+**Entry:** Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`, then `.cursor/skills/board-ssot/SKILL.md`. Run `python -m agent_colony project entry` (quota-aware). **Wire-from-URLs (day-0):** if the human pastes a **Project URL** + **repo URL** after `gh` auth, use `gh project view` / `field-list` to propose YAML updates — human confirms before save (discovery only — **no** `--ensure-fields` until CONSENT GATE). **First-run / shell setup:** load `.cursor/skills/board-shell/SKILL.md` — **CONSENT GATE is mandatory** (ask board description + “may I proceed to create the default shell?”) before TURN PROTOCOL or `--apply-readme` / `--ensure-fields`. Then `project board-bootstrap --check` against `board-shell.schema.yaml` — refuse “ready” until the **default** Playground shell (six views + Tier-1 columns on Status board / Prioritized backlog) and README pass.
 
 **Exit:** Board Status updated via CLI for every triage action; append `change-index.md` (Agent: `board`); one line in `history/updates-log.md`. Print handoff line (`next=implementer|…`). Do **not** dual-write `work-tracker.md` when `sync_policy: board_only`.
 
@@ -65,7 +65,7 @@ Continue with CONSENT GATE + TURN PROTOCOL until `board-bootstrap --check` exit 
 
 ### Day-to-day (cards)
 
-1. `python -m cursor_workflow project entry --directory .` (or `status` + scoped `list` when already live)
+1. `python -m agent_colony project entry --directory .` (or `status` + scoped `list` when already live)
 2. Prefer Pattern A: `create-from-template --template slice|bug` then `claim --last --agent board` (or `claim --id <real PVTI_>`). Use `--template bug` for defect/`fix/` work. Avoid raw multi-step claim unless atomics are required.
 3. Print handoff line for implementer: item id, title, next Status target
 4. **Verify:** CLI exit 0 + board list reflects change
@@ -74,7 +74,7 @@ Continue with CONSENT GATE + TURN PROTOCOL until `board-bootstrap --check` exit 
 
 | Do | Do not |
 |----|--------|
-| Drive board via `cursor_workflow project` | Bypass `prepare.py` gates |
+| Drive board via `agent_colony project` | Bypass `prepare.py` gates |
 | Coach shell via schema + human UI | Create/rename Project **views** via API |
 | Use YAML field/option ids | Dual-write board + tracker SSOT |
 | Hand off code slices to implementer | Mutate unrelated repositories |
@@ -93,10 +93,10 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 
 | Tier | Server | Use when |
 |------|--------|----------|
-| Kit | `agent-colony-mcp` | Trackers/gates if needed — prefer `cursor_workflow project` for board |
+| Kit | `agent-colony-mcp` | Trackers/gates if needed — prefer `agent_colony project` for board |
 | External | See `.cursor/mcp.registry.yaml` | Only if listed for `board` |
 
-**Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
+**Pattern A (preferred):** `python3 -m agent_colony mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
 
 Cursor **CallMcpTool** is optional when the IDE host loads the same server. Discover tools with `mcp list-tools --server <id>`; do not invent tool names.
 User setup: `.ai_infra/docs/operations/connect-external-mcp.md`

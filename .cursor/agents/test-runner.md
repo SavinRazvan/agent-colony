@@ -8,7 +8,7 @@ description: test-runner Agent Colony — Module-focused tests, regressions, cov
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + claim/list board card (read Acceptance/Notes); else `session-pointer.md`. Also read `test-index.md` when tests change. Skill: `.cursor/skills/board-ssot/SKILL.md` when board SSOT is on.
+**Entry:** If `project_ssot.enabled` → `python -m agent_colony project status` + claim/list board card (read Acceptance/Notes); else `session-pointer.md`. Also read `test-index.md` when tests change. Skill: `.cursor/skills/board-ssot/SKILL.md` when board SSOT is on.
 
 **Exit:** Prefer `handoff --last` / `claim --last` after create. **Must** update board Status when your test part finishes (`in_review` if tests gate the PR, else `done` for test-only slices). Print handoff line for next agent. Update `change-index.md` and `test-index.md` / `test-plan.md` when applicable. No dual-write under `board_only`.
 
@@ -22,7 +22,7 @@ description: test-runner Agent Colony — Module-focused tests, regressions, cov
 
 - Map changes → `tests/modules/<module>/`; one clear responsibility per file.
 - Cover happy, failure, edge, and regression cases for touched behavior.
-- Run **smallest** pytest scope first; widen when needed. For risky kit-dev slices: `pytest --cov=.ai_infra --cov=cursor_workflow --cov-report=term-missing -q` (see `.cursor/skills/test-coverage/SKILL.md`).
+- Run **smallest** pytest scope first; widen when needed. For risky kit-dev slices: `pytest --cov=.ai_infra --cov=agent_colony --cov-report=term-missing -q` (see `.cursor/skills/test-coverage/SKILL.md`).
 - Before PR handoff path: **`python .ai_infra/scripts/pr/check_testing_artifacts.py`** (first entry in `.ai_infra/scripts/pr/prepare.py` `resolve_gates()`).
 - Strategy detail: `.cursor/skills/test-coverage/SKILL.md`.
 
@@ -41,7 +41,7 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 | Kit | `agent-colony-mcp` | PR scripts, trackers, gates — prefer Pattern A CLI over re-running shell |
 | External | See `.cursor/mcp.registry.yaml` | Only servers listed for this agent id |
 
-**Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
+**Pattern A (preferred):** `python3 -m agent_colony mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
 
 Cursor **CallMcpTool** is optional when the IDE host loads the same server. Discover tools with `mcp list-tools --server <id>`; do not invent tool names.
 User setup: `.ai_infra/docs/operations/connect-external-mcp.md`

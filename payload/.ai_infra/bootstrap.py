@@ -4,7 +4,7 @@ Path: .ai_infra/bootstrap.py
 Role: Add .ai_infra to sys.path so scripts can `import paths` without a pip package.
 Used By:
  - .ai_infra/scripts/install/scaffold.py
- - cursor_workflow/cli.py
+ - agent_colony/cli.py
  - tests
 Depends On:
  - pathlib

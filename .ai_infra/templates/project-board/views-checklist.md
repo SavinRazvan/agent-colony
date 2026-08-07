@@ -25,7 +25,7 @@ Kit **default** = full Playground shell (not “two views only”). Schema: `boa
 ### README + verify
 
 - [ ] Paste **contents** of `project-readme.md` into Project README (edit placeholders)
-- [ ] `python3 -m cursor_workflow project board-bootstrap --check` — **exit 0** (no view FAIL, no Tier-1 column FAIL on Status board / Prioritized backlog)
+- [ ] `python3 -m agent_colony project board-bootstrap --check` — **exit 0** (no view FAIL, no Tier-1 column FAIL on Status board / Prioritized backlog)
 - [ ] FAIL vs WARN: missing **default** view or Tier-1 **column** = **FAIL (exit 5)**; leftover `View N` rename = WARN (fix before “ready”)
 
 ## Customize later (optional)

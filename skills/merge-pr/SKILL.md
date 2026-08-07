@@ -15,7 +15,7 @@ disable-model-invocation: true
    Add `--arch-impacting` if alignment artifacts are required (enforces both alignment files; produced by **`auditor`** per `auditor-protocol` skill).
 2. No unresolved BLOCKER/IMPORTANT or alignment **P0** without documented acceptance.
 3. `python .ai_infra/scripts/pr/verify_publish.py --branch <branch>` and `gh pr view --json headRefName,state`.
-4. **PR body:** `python -m cursor_workflow contributors pr-body --summary "…" --pipeline default` → paste into `gh pr create --body-file -`.
+4. **PR body:** `python -m agent_colony contributors pr-body --summary "…" --pipeline default` → paste into `gh pr create --body-file -`.
 5. `gh pr merge <n> --merge` (or repo policy).
 6. Note merge SHA: `gh api repos/.../pulls/<n> -q .merge_commit_sha` (or `gh pr view` if working).
 7. **Record:**  

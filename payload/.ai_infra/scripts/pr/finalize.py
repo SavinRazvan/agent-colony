@@ -11,7 +11,7 @@ Depends On:
  - subprocess
  - local_workflow_paths.FINALIZE_MD
  - user_settings (optional attribution)
- - cursor_workflow project close-linked-issue (opt-in Issue closure; best-effort subprocess)
+ - agent_colony project close-linked-issue (opt-in Issue closure; best-effort subprocess)
 Notes:
  - Safe no-op when target branches are already removed.
  - Prunes stale remote-tracking refs to avoid branch-list drift.
@@ -110,7 +110,7 @@ def _maybe_close_linked_issue(
         return "SKIPPED", "no --pr provided to finalize.py"
     if not cleanup_ok:
         return "SKIPPED", "branch cleanup did not fully succeed; issue closure deferred to next run"
-    cmd = [sys.executable, "-m", "cursor_workflow", "project", "close-linked-issue", "--pr", pr_head]
+    cmd = [sys.executable, "-m", "agent_colony", "project", "close-linked-issue", "--pr", pr_head]
     if dry_run:
         cmd.append("--dry-run")
     try:

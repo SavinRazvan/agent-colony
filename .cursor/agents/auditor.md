@@ -14,7 +14,7 @@ description: auditor Agent Colony — Deep/periodic evidence architecture audit 
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + board context. If no audit card: `create-from-template --template slice --title "[AUDIT] …" --status ready --priority p1 --size s --estimate 1 --agent auditor` then `claim --last --agent auditor`. Else `session-pointer.md` + `change-index.md`.
+**Entry:** If `project_ssot.enabled` → `python -m agent_colony project status` + board context. If no audit card: `create-from-template --template slice --title "[AUDIT] …" --status ready --priority p1 --size s --estimate 1 --agent auditor` then `claim --last --agent auditor`. Else `session-pointer.md` + `change-index.md`.
 
 **Exit:** Prefer `handoff --last` / `claim --last` after create. Write alignment/audit artifacts + `change-index.md`; one line in `updates-log.md`. **Must** set audit card Status → `in_review`/`done` and put artifact paths in card Notes so implementer can continue from the board. Prefer board Status over dual-writing trackers when `board_only`. ICC still reads `.local/` — list sync actions in `enterprise-audit-actions.md`.
 
@@ -73,7 +73,7 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 | Kit | `agent-colony-mcp` | PR scripts, trackers, gates — prefer Pattern A CLI over re-running shell |
 | External | See `.cursor/mcp.registry.yaml` | Only servers listed for this agent id |
 
-**Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
+**Pattern A (preferred):** `python3 -m agent_colony mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
 
 Cursor **CallMcpTool** is optional when the IDE host loads the same server. Discover tools with `mcp list-tools --server <id>`; do not invent tool names.
 User setup: `.ai_infra/docs/operations/connect-external-mcp.md`

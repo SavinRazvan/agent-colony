@@ -15,7 +15,7 @@ alwaysApply: true
 ## Optional provenance (after the required pair)
 
 - `Assisted-by: <tool>[:<model>]` — repeat on separate lines when AI **materially** shaped code, tests, docs, or migration logic. Skip for trivial autocomplete, formatting-only, or mechanical boilerplate.
-- **Render from config:** `python -m cursor_workflow contributors commit-trailers` reads **`.local/user_settings/github.collaboration.yaml`** (copied at install).
+- **Render from config:** `python -m agent_colony contributors commit-trailers` reads **`.local/user_settings/github.collaboration.yaml`** (copied at install).
 - **Do not use `Made-with:`** — human accountability is already expressed by **`Author:`** / **`GitHub-User:`**; an extra editor/tool line is redundant with that contract.
 - `Co-authored-by:` — optional; only for real human co-authors (Git convention).
 

@@ -17,7 +17,7 @@ import pytest
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-PKG = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+PKG = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 
 if str(PKG) not in sys.path:
     sys.path.insert(0, str(PKG))

@@ -1,6 +1,6 @@
 ---
 name: canvas-artifacts
-description: Three-tier canvas and plan snapshot workflow via cursor_workflow canvas/plan CLI (ADR-010).
+description: Three-tier canvas and plan snapshot workflow via agent_colony canvas/plan CLI (ADR-010).
 ---
 
 # Canvas and plan artifacts (Pattern A)
@@ -24,11 +24,11 @@ description: Three-tier canvas and plan snapshot workflow via cursor_workflow ca
 ## Canvas CLI
 
 ```bash
-python3 -m cursor_workflow canvas doctor
-python3 -m cursor_workflow canvas list --tier all
-python3 -m cursor_workflow canvas sync --name mcp-onboarding
-python3 -m cursor_workflow canvas sync --missing
-python3 -m cursor_workflow canvas save --slug billing-review --agent implementer
+python3 -m agent_colony canvas doctor
+python3 -m agent_colony canvas list --tier all
+python3 -m agent_colony canvas sync --name mcp-onboarding
+python3 -m agent_colony canvas sync --missing
+python3 -m agent_colony canvas save --slug billing-review --agent implementer
 ```
 
 - Use `export default function NameCanvas()` in `.canvas.tsx` files.
@@ -37,11 +37,11 @@ python3 -m cursor_workflow canvas save --slug billing-review --agent implementer
 ## Plan CLI
 
 ```bash
-python3 -m cursor_workflow plan snapshot --slug slice-170 --agent implementer --board-item PVTI_xxx
-python3 -m cursor_workflow plan list
-python3 -m cursor_workflow plan open --slug slice-170          # human Build bridge
-python3 -m cursor_workflow plan open --slug slice-170 --force  # overwrite Cursor twin
-python3 -m cursor_workflow plan snapshot --slug my-plan --from cursor-plan:my-plan.plan.md
+python3 -m agent_colony plan snapshot --slug slice-170 --agent implementer --board-item PVTI_xxx
+python3 -m agent_colony plan list
+python3 -m agent_colony plan open --slug slice-170          # human Build bridge
+python3 -m agent_colony plan open --slug slice-170 --force  # overwrite Cursor twin
+python3 -m agent_colony plan snapshot --slug my-plan --from cursor-plan:my-plan.plan.md
 ```
 
 Never treat `.local/plans/` as active backlog under `board_only`.

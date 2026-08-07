@@ -46,8 +46,8 @@ Does **not** replace `auditor` (CHK-* scorecard) or `verifier`.
 
 ## Steps
 
-1. **Board first (when enabled):** `python -m cursor_workflow project status` and `project list --status in_progress` — cite board Status in artifacts. Optionally refresh the read-only snapshot: `python -m cursor_workflow project export` (never writes Status).
-2. **Script:** `python -m cursor_workflow drift validate --directory .` (or `make drift-validate`). On **consumer app projects**, use `--profile consumer`. Include **DRIFT-004b** / **DRIFT-009** / **DRIFT-010** / **DRIFT-011** / **DRIFT-012** when kit-dev / board_only as applicable (ADR-007/008/010).
+1. **Board first (when enabled):** `python -m agent_colony project status` and `project list --status in_progress` — cite board Status in artifacts. Optionally refresh the read-only snapshot: `python -m agent_colony project export` (never writes Status).
+2. **Script:** `python -m agent_colony drift validate --directory .` (or `make drift-validate`). On **consumer app projects**, use `--profile consumer`. Include **DRIFT-004b** / **DRIFT-009** / **DRIFT-010** / **DRIFT-011** / **DRIFT-012** when kit-dev / board_only as applicable (ADR-007/008/010).
 3. Capture profile, check IDs, severities, and details from output.
 4. Add prose **Goal pulse** section in drift-audit.md (board/plan/AGENTS gaps). Fuzzy “vision mismatch” stays Probable — not CI.
 5. Write artifacts under `.local/workflow-artifacts/drift/` only.
@@ -71,7 +71,7 @@ Action-By: <name>
 GitHub-User: <handle>
 Date: <ISO-8601>
 Profile: kit-dev | consumer
-Command: python -m cursor_workflow drift validate --directory . [--profile consumer]
+Command: python -m agent_colony drift validate --directory . [--profile consumer]
 ```
 
 **Consumer DRIFT-005:** When `IMPLEMENTATION-STATUS.md` is absent (normal on plugin installs), DRIFT-005 **PASSes (skip)**. A FAIL on the missing file is a **kit false positive** on older payloads — not a consumer app defect. See `consumer-quickstart.md` § Drift on consumer apps.

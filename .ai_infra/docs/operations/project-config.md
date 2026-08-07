@@ -35,7 +35,7 @@ When you add gates to `prepare.py`, update the informational `gates.labels` bloc
 Scaffold copies the example automatically:
 
 ```bash
-python -m cursor_workflow install --target /path/to/project --dry-run
+python -m agent_colony install --target /path/to/project --dry-run
 # → COPY …/.ai_infra/project.config.yaml.example
 ```
 

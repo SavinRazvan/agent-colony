@@ -2,7 +2,7 @@
 
 install-dry-run:
 	rm -rf /tmp/agent-colony-dry-run
-	.venv/bin/python -m cursor_workflow install \
+	.venv/bin/python -m agent_colony install \
 		--target /tmp/agent-colony-dry-run \
 		--with-venv \
 		--with-mcp-json \
@@ -32,7 +32,7 @@ type-check:
 	.venv/bin/pyright
 
 gates:
-	.venv/bin/python -m cursor_workflow gates
+	.venv/bin/python -m agent_colony gates
 
 sync-plugin:
 	.venv/bin/python .ai_infra/scripts/release/sync_plugin_bundle.py
@@ -41,16 +41,16 @@ check-plugin:
 	.venv/bin/python .ai_infra/scripts/release/sync_plugin_bundle.py --check
 
 integrate-validate:
-	.venv/bin/python -m cursor_workflow integrate validate --directory .
+	.venv/bin/python -m agent_colony integrate validate --directory .
 
 drift-validate:
-	.venv/bin/python -m cursor_workflow drift validate --directory .
+	.venv/bin/python -m agent_colony drift validate --directory .
 
 doc-validate:
-	.venv/bin/python -m cursor_workflow doc validate --directory .
+	.venv/bin/python -m agent_colony doc validate --directory .
 
 verify-all:
-	.venv/bin/python -m cursor_workflow verify all --directory .
+	.venv/bin/python -m agent_colony verify all --directory .
 
 ci-seed:
 	.venv/bin/python .ai_infra/scripts/ci/seed_kit_workspace.py --directory .

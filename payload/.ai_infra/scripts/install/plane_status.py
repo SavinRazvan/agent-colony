@@ -3,7 +3,7 @@ File: plane_status.py
 Path: .ai_infra/scripts/install/plane_status.py
 Role: Assess three-plane readiness (Cursor contract, infrastructure, runtime).
 Used By:
- - .ai_infra/install/cursor_workflow/activate_cli.py
+ - .ai_infra/install/agent_colony/activate_cli.py
  - workflow_mcp workflow_activate
 Depends On:
  - .ai_infra/install-contract.json
@@ -62,7 +62,7 @@ def _resolve_profile(contract: dict, name: str) -> dict:
 def _plane_for_path(rel: str) -> str:
     if rel.startswith(".local/"):
         return "runtime"
-    if rel.startswith(".ai_infra/") or rel.startswith("cursor_workflow/"):
+    if rel.startswith(".ai_infra/") or rel.startswith("agent_colony/"):
         return "infrastructure"
     if rel.startswith(".cursor/") or rel.startswith(".agents/") or rel == "AGENTS.md":
         return "cursor"

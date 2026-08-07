@@ -1,7 +1,7 @@
 {
   "name": "agent-colony",
   "displayName": "Agent Colony",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Multi-agent Cursor workflow with GitHub Projects as the coordination SSOT — install once, wire your board, ship with PR gates and evidence.",
   "author": {
     "name": "Savin Ionuț Răzvan",
@@ -15,7 +15,7 @@
     "agent-colony",
     "project-ssot",
     "multi-agent",
-    "cursor-workflow",
+    "agent-colony",
     "pr-workflow",
     "github-projects",
     "architecture-audit",

@@ -67,56 +67,56 @@ const TWO_TIER: string[][] = [
 const SEED_FLOW: Array<[string, string]> = [
   [
     "1) Seed DeepWiki (consumer default)",
-    "python3 -m cursor_workflow mcp seed --deepwiki",
+    "python3 -m agent_colony mcp seed --deepwiki",
   ],
   [
     "2) Merge + validate",
-    "python3 -m cursor_workflow mcp validate",
+    "python3 -m agent_colony mcp validate",
   ],
   [
     "3) Doctor (config vs Cursor host)",
-    "python3 -m cursor_workflow mcp doctor",
+    "python3 -m agent_colony mcp doctor",
   ],
   [
     "4) Smoke DeepWiki",
-    "python3 -m cursor_workflow mcp smoke --server deepwiki",
+    "python3 -m agent_colony mcp smoke --server deepwiki",
   ],
   [
     "5) Smoke kit server",
-    "python3 -m cursor_workflow mcp smoke --server agent-colony-mcp",
+    "python3 -m agent_colony mcp smoke --server agent-colony-mcp",
   ],
 ];
 
 const KIT_COMMANDS: Array<[string, string]> = [
   [
     "List kit tools",
-    "python3 -m cursor_workflow mcp list-tools --server agent-colony-mcp",
+    "python3 -m agent_colony mcp list-tools --server agent-colony-mcp",
   ],
   [
     "Call kit tool",
-    "python3 -m cursor_workflow mcp call --server agent-colony-mcp --tool workflow_gate_count",
+    "python3 -m agent_colony mcp call --server agent-colony-mcp --tool workflow_gate_count",
   ],
 ];
 
 const DEEPWIKI_DEMO: Array<[string, string]> = [
   [
     "List tools",
-    "python3 -m cursor_workflow mcp list-tools --server deepwiki",
+    "python3 -m agent_colony mcp list-tools --server deepwiki",
   ],
   [
     "Wiki structure",
-    "python3 -m cursor_workflow mcp call --server deepwiki --tool read_wiki_structure --args-json '{\"repoName\":\"cloudflare/workers-sdk\"}'",
+    "python3 -m agent_colony mcp call --server deepwiki --tool read_wiki_structure --args-json '{\"repoName\":\"cloudflare/workers-sdk\"}'",
   ],
   [
     "Ask a question",
-    "python3 -m cursor_workflow mcp call --server deepwiki --tool ask_question --args-json '{\"repoName\":\"cloudflare/workers-sdk\",\"question\":\"What are the Workers KV limits?\"}'",
+    "python3 -m agent_colony mcp call --server deepwiki --tool ask_question --args-json '{\"repoName\":\"cloudflare/workers-sdk\",\"question\":\"What are the Workers KV limits?\"}'",
   ],
 ];
 
 const ADD_YOURS: Array<[string, string]> = [
   [
     "Link fragment",
-    "python3 -m cursor_workflow mcp link --name my-api --file .cursor/mcp.d/my-api.json",
+    "python3 -m agent_colony mcp link --name my-api --file .cursor/mcp.d/my-api.json",
   ],
   [
     "Map agents",
@@ -124,11 +124,11 @@ const ADD_YOURS: Array<[string, string]> = [
   ],
   [
     "Auth (if needed)",
-    "python3 -m cursor_workflow mcp auth --server my-api --token-env MY_TOKEN",
+    "python3 -m agent_colony mcp auth --server my-api --token-env MY_TOKEN",
   ],
   [
     "Validate + smoke",
-    "python3 -m cursor_workflow mcp validate && python3 -m cursor_workflow mcp smoke --server my-api",
+    "python3 -m agent_colony mcp validate && python3 -m agent_colony mcp smoke --server my-api",
   ],
 ];
 
@@ -181,7 +181,7 @@ const TROUBLESHOOTING: string[][] = [
   ],
   [
     "No module named 'mcp' / workflow_mcp",
-    "Use venv: .venv/bin/python -m cursor_workflow … (pip install -e \".[dev,mcp]\").",
+    "Use venv: .venv/bin/python -m agent_colony … (pip install -e \".[dev,mcp]\").",
   ],
   [
     "Kit-dev live registry has only agent-colony-mcp",
@@ -212,7 +212,7 @@ export default function MCPOnboardingCanvas() {
         </Row>
         <Text tone="secondary">
           Canonical path for agents + CI:{" "}
-          <Text weight="semibold">cursor_workflow mcp</Text> (validate → seed /
+          <Text weight="semibold">agent_colony mcp</Text> (validate → seed /
           link → doctor → smoke → list-tools → call). Cursor IDE host loading is
           optional convenience.
         </Text>

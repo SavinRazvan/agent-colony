@@ -5,7 +5,7 @@ Role: Tests for Cursor managed path resolution.
 Used By:
  - pytest
 Depends On:
- - .ai_infra/install/cursor_workflow/cursor_host_paths.py
+ - .ai_infra/install/agent_colony/cursor_host_paths.py
 Notes:
  - Uses temporary fake ~/.cursor/projects layout; direct import for coverage.
 """
@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-PKG = REPO_ROOT / ".ai_infra" / "install" / "cursor_workflow"
+PKG = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
 
 if str(PKG) not in sys.path:
     sys.path.insert(0, str(PKG))

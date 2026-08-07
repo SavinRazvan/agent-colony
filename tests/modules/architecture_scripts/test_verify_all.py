@@ -106,7 +106,7 @@ def test_write_preflight_json_truncates_long_output(tmp_path: Path) -> None:
     out = tmp_path / "preflight" / "verify-all.json"
     va.write_preflight_json(results, out)
     payload = json.loads(out.read_text(encoding="utf-8"))
-    assert payload["command"] == "python -m cursor_workflow verify all"
+    assert payload["command"] == "python -m agent_colony verify all"
     assert len(payload["steps"][0]["output_tail"]) == 2000
     assert payload["exit_code"] == 1
 

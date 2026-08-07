@@ -20,7 +20,7 @@ Notes:
 
 | Order | Path / command | When |
 |-------|----------------|------|
-| 1 | `python -m cursor_workflow project entry` (+ `outbox status` if unsure of quota) | **Every session start** — prefer over unfiltered `list`/`export` |
+| 1 | `python -m agent_colony project entry` (+ `outbox status` if unsure of quota) | **Every session start** — prefer over unfiltered `list`/`export` |
 | 2 | Board card body (Acceptance / Rollback / Notes) | Claimed / In progress card (`get` / claim) |
 | 3 | `.cursor/skills/board-ssot/SKILL.md` § Continuation | When mutating Status |
 | 4 | `change-index.md` | Resume mid-slice (thin cache) |
@@ -45,7 +45,7 @@ Notes:
 
 **When board SSOT enabled:**
 
-1. Board Status via `cursor_workflow project set-status` (+ Notes / handoff line)
+1. Board Status via `agent_colony project set-status` (+ Notes / handoff line)
 2. `change-index.md` — one row per batch  
 3. `history/updates-log.md` — **one line** prefixed `YYYY-MM-DDTHH:MM:SSZ` (no gate dumps)
 4. `history/continuity-index.md` — optional row when board item + local artifacts touched (keep ≥3 days)
@@ -73,8 +73,8 @@ Notes:
 |--------|---------|
 | Full prepare | `python .ai_infra/scripts/pr/prepare.py --pr … --actor … --agents …` |
 | Governance drift | `python .ai_infra/scripts/architecture/check_governance_consistency.py` |
-| Operational drift | `make drift-validate` or `python -m cursor_workflow drift validate` |
-| Infrastructure parity | `make integrate-validate` or `python -m cursor_workflow integrate validate` |
+| Operational drift | `make drift-validate` or `python -m agent_colony drift validate` |
+| Infrastructure parity | `make integrate-validate` or `python -m agent_colony integrate validate` |
 | Test artifacts guard | (inside prepare) `check_testing_artifacts.py` |
 
 Do **not** run individual gates in chat when `prepare.py` exists unless `verifier` needs a targeted disproof.
@@ -83,16 +83,16 @@ Do **not** run individual gates in chat when `prepare.py` exists unless `verifie
 
 | Action | Command |
 |--------|---------|
-| Health | `python -m cursor_workflow project doctor` |
-| Entry (quota-aware) | `python -m cursor_workflow project entry` |
-| Export reuse | `python -m cursor_workflow project export --reuse-if-fresh 900` |
-| Create card | `python -m cursor_workflow project create-from-template --title "…" --template slice --priority p1 --size s --estimate 1` |
-| Claim | `python -m cursor_workflow project claim --last --agent <name>` |
-| Handoff | `python -m cursor_workflow project handoff --last --agent <name> --next <agent> [--to in_review]` |
-| Outbox status | `python -m cursor_workflow project outbox status` |
-| Queue (no live write) | `python -m cursor_workflow project queue --op … --last --agent <name>` |
-| Flush outbox | `python -m cursor_workflow project outbox flush` |
-| Safe recipes | `python -m cursor_workflow project guide` |
+| Health | `python -m agent_colony project doctor` |
+| Entry (quota-aware) | `python -m agent_colony project entry` |
+| Export reuse | `python -m agent_colony project export --reuse-if-fresh 900` |
+| Create card | `python -m agent_colony project create-from-template --title "…" --template slice --priority p1 --size s --estimate 1` |
+| Claim | `python -m agent_colony project claim --last --agent <name>` |
+| Handoff | `python -m agent_colony project handoff --last --agent <name> --next <agent> [--to in_review]` |
+| Outbox status | `python -m agent_colony project outbox status` |
+| Queue (no live write) | `python -m agent_colony project queue --op … --last --agent <name>` |
+| Flush outbox | `python -m agent_colony project outbox flush` |
+| Safe recipes | `python -m agent_colony project guide` |
 
 Prefer `--last` after `create-from-template`. Never paste docs placeholder ids. Never paste Project settings UI into the shell. On EXIT_QUEUED (6), do not retry — flush after GraphQL quota recovers.
 

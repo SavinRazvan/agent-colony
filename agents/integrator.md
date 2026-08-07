@@ -14,7 +14,7 @@ You **extend the multi-agent system** without breaking planes, gates, or procedu
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → `python -m cursor_workflow project status` + skill `.cursor/skills/integrator-protocol/SKILL.md` (and `board-ssot` when touching board wiring). Claim/create integration card (`claim --last` after create). Else `session-pointer.md` then integration skill.
+**Entry:** If `project_ssot.enabled` → `python -m agent_colony project status` + skill `.cursor/skills/integrator-protocol/SKILL.md` (and `board-ssot` when touching board wiring). Claim/create integration card (`claim --last` after create). Else `session-pointer.md` then integration skill.
 
 **Exit:** Prefer `handoff --last` / `claim --last` after create. **Must** set integration card Status → `done` (or `in_review` if verify failed); Notes with validate outcomes; print handoff line. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`.
 
@@ -60,7 +60,7 @@ Independent agents **never** skip governance scanners, file headers, or Pattern 
 2. **Plan** — when `project_ssot.enabled` and `sync_policy: board_only`: claim/create a board card (`create-from-template` with `--acceptance`/`--rollback`, or `set-section` after claim / `claim --last --agent integrator`); put Acceptance/Rollback on the card body before handoff to `in_review`|`done`; do **not** dual-write Active `in_progress` in `work-tracker.md`. Else (offline / disabled): record scope in `plan.md` / `work-tracker.md` (one `in_progress` row).
 3. **Apply templates** — `.ai_infra/templates/agent-integration/` (agent + skill stubs, checklist).
 4. **Wire surfaces** — registry, pipelines, manifest if consumer-visible, plugin sync if marketplace-facing.
-5. **Verify** — `python -m cursor_workflow contributors validate`, `make gates` or targeted pytest, `check_governance_consistency.py` when `.cursor/` or workflows change.
+5. **Verify** — `python -m agent_colony contributors validate`, `make gates` or targeted pytest, `check_governance_consistency.py` when `.cursor/` or workflows change.
 6. **Handoff** — implementer owns product code; test-runner owns tests; auditor if architecture-impacting.
 
 ## Non-negotiables
@@ -93,9 +93,9 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 | Kit | `agent-colony-mcp` | PR scripts, trackers, gates — prefer Pattern A CLI over re-running shell |
 | External | See `.cursor/mcp.registry.yaml` | Only servers listed for this agent id |
 
-**Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
+**Pattern A (preferred):** `python3 -m agent_colony mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
 
 Cursor **CallMcpTool** is optional when the IDE host loads the same server. Discover tools with `mcp list-tools --server <id>`; do not invent tool names.
 User setup: `.ai_infra/docs/operations/connect-external-mcp.md`
 
-**Canvas / plan (ADR-010):** `python3 -m cursor_workflow canvas doctor|sync|save`, `plan snapshot|list|open` — agents execute from `.local/plans/`; humans use `plan open` for Build — see `.cursor/skills/canvas-artifacts/SKILL.md`.
+**Canvas / plan (ADR-010):** `python3 -m agent_colony canvas doctor|sync|save`, `plan snapshot|list|open` — agents execute from `.local/plans/`; humans use `plan open` for Build — see `.cursor/skills/canvas-artifacts/SKILL.md`.

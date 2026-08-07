@@ -12,8 +12,8 @@
         ".local/index-and-planning/current/session-pointer.md",
         "tests/modules/smoke/test_kit_installed.py",
         "AGENTS.md",
-        "cursor_workflow/__main__.py",
-        ".ai_infra/install/cursor_workflow/cli.py"
+        "agent_colony/__main__.py",
+        ".ai_infra/install/agent_colony/cli.py"
       ],
       "forbidden_paths": [
         "examples",

@@ -10,7 +10,7 @@ Used By:
  - PLUGIN-ARCHITECTURE.md
  - sync_plugin_bundle.py (canonical; template fallback at .ai_infra/templates/plugin/skills/)
 Depends On:
- - .ai_infra/install/cursor_workflow/activate_cli.py
+ - .ai_infra/install/agent_colony/activate_cli.py
 Notes:
  - Pattern A: one script command per action.
 -->
@@ -44,7 +44,7 @@ Never list `/board-shell` before wire. Never imply views are API-automated. Defa
 3. Run activate (below) — or tell them to pick **`/workflow-activate`** from the **`/`** menu.
 4. Wire collaboration YAML — set name/@handle → **`contributors validate`** → **`gh auth status`** (refresh only if needed) → paste **Project URL + repo URL** in chat → **`/board`** wires `project_ssot` + `default_repo` → `project doctor`.
 5. When `project_ssot.enabled`: copy **minimal 2-view overlay** (optional; [Playground #3](https://github.com/users/SavinRazvan/projects/3)) → **`/board`** + [board-shell](board-shell/SKILL.md) **CONSENT GATE** + **TURN PROTOCOL** → `board-bootstrap --check` exit **0** → `project status`.
-6. Point them to **`/implementer`** (from **`/`** menu). When board SSOT on, Entry is **`python -m cursor_workflow project status`**; else read `session-pointer.md` first.
+6. Point them to **`/implementer`** (from **`/`** menu). When board SSOT on, Entry is **`python -m agent_colony project status`**; else read `session-pointer.md` first.
 
 Do **not** dump gate lists or maintainer `make` commands.
 
@@ -53,29 +53,29 @@ Do **not** dump gate lists or maintainer `make` commands.
 From the **open workspace** (Pattern A — one script command):
 
 ```bash
-python3 -m cursor_workflow activate --directory .
+python3 -m agent_colony activate --directory .
 ```
 
 **Auto source resolution:** `WORKFLOW_KIT_PAYLOAD` env → `./payload/` → kit `payload/` (plugin bundle). Override with `--source /path/to/payload`.
 
 **MCP:** `workflow_activate` on the `agent-colony-mcp` server (same behavior).
 
-### First install (`cursor_workflow` module absent)
+### First install (`agent_colony` module absent)
 
-On a **brand-new app repo**, `python3 -m cursor_workflow` fails until activate copies infrastructure. **Do not stop** — run activate from the **plugin payload** (or kit checkout):
+On a **brand-new app repo**, `python3 -m agent_colony` fails until activate copies infrastructure. **Do not stop** — run activate from the **plugin payload** (or kit checkout):
 
 ```bash
 export KIT=~/Projects/agent-colony   # or plugin cache path
 export TARGET=~/Projects/my-app
 cd "$TARGET"
-"$KIT/.venv/bin/python" "$KIT/payload/cursor_workflow" activate \
+"$KIT/.venv/bin/python" "$KIT/payload/agent_colony" activate \
   --directory "$TARGET" --source "$KIT/payload"
 ```
 
 Or set `WORKFLOW_KIT_PAYLOAD` to the payload directory and invoke the payload entrypoint the same way. After **VERIFY PASS**, all later commands use:
 
 ```bash
-source .venv/bin/activate && python3 -m cursor_workflow …
+source .venv/bin/activate && python3 -m agent_colony …
 ```
 
 If **VERIFY FAIL** on missing test deps, retry:
@@ -83,7 +83,7 @@ If **VERIFY FAIL** on missing test deps, retry:
 ```bash
 source .venv/bin/activate
 pip install -r requirements-dev.txt
-python3 -m cursor_workflow activate --directory .
+python3 -m agent_colony activate --directory .
 ```
 
 See [consumer-quickstart.md](../../.ai_infra/docs/operations/consumer-quickstart.md) § First activate troubleshooting.
@@ -93,7 +93,7 @@ See [consumer-quickstart.md](../../.ai_infra/docs/operations/consumer-quickstart
 | Plane | Paths installed | Cursor loads? |
 |-------|-----------------|---------------|
 | Cursor contract | `.cursor/`, `.agents/`, `AGENTS.md` | Yes |
-| Infrastructure | `.ai_infra/`, `cursor_workflow/` | No — scripts/CLI |
+| Infrastructure | `.ai_infra/`, `agent_colony/` | No — scripts/CLI |
 | Runtime | `.local/` Tier 1 scaffold: trackers, six `workflow-artifacts/*` buckets + README stubs, `.local/canvases/` + `.local/plans/` index stubs (ADR-010), `pages.json`, dashboards; `user_settings/` exemplars | No — gitignored |
 
 Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear when agents/scripts run. See [local-workspace-layout.md](../../.ai_infra/docs/operations/local-workspace-layout.md) § Artifact tiers. Re-activate does not overwrite existing trackers, `user_settings/`, or `AGENTS.md`. Kit-managed dashboard HTML, JS/CSS assets, `module-audit.html`, and `pages.json` are refreshed from the activate source (plugin `payload/` when resolved) or embedded `.ai_infra/templates/local-workspace/` when not.
@@ -107,11 +107,11 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 ## Post-activate (tell the user)
 
 1. Open `.local/user_settings/github.collaboration.yaml` — set **display_name**, **github_user**. For Project SSOT: enable + `board_only`.
-2. Terminal: `source .venv/bin/activate && python3 -m cursor_workflow contributors validate` (must PASS).
+2. Terminal: `source .venv/bin/activate && python3 -m agent_colony contributors validate` (must PASS).
 3. **`gh auth status`** — refresh Project scopes only if missing — [PLUGIN-USER-GUIDE § GitHub CLI auth](../../.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#github-cli-auth-projects).
 4. Paste **Project URL + repo URL** in chat → **`/board`** wires `project_ssot` + `default_repo` (confirm before save) → `project doctor` + `project status`.
 5. When board SSOT enabled: optional **minimal 2-view overlay** ([Playground #3](https://github.com/users/SavinRazvan/projects/3)) → **`/board`** + `board-shell` (**CONSENT GATE** then TURN PROTOCOL) → `board-bootstrap --check` until **exit 0** → `project status`. See [views-setup.md](../../.ai_infra/templates/project-board/views-setup.md).
-6. **`/implementer`** to start · each session Entry: **`source .venv/bin/activate && python3 -m cursor_workflow project status`** when board SSOT on; else read `session-pointer.md` first. Audit (`/auditor`) is later — not day-0.
+6. **`/implementer`** to start · each session Entry: **`source .venv/bin/activate && python3 -m agent_colony project status`** when board SSOT on; else read `session-pointer.md` first. Audit (`/auditor`) is later — not day-0.
 
 **Dashboards (optional):** from project root run `source .venv/bin/activate && python3 -m http.server 8000`, then open
 http://localhost:8000/.local/agents-control-center/dashboards/index.html (not `file://`).

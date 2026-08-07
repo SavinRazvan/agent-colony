@@ -14,7 +14,7 @@ description: drift-guard Agent Colony — Continuous goal/plan/agent-doctrine/do
 
 ## Anchor (mandatory)
 
-**Entry:** If `project_ssot.enabled` → **must** `python -m cursor_workflow project entry` (and `list --status in_progress` only when Entry mode is `live` and you need a fresh filter). Cite board Status in findings. Else `session-pointer.md`. Prefer `project export --reuse-if-fresh` before drift validate when a snapshot is needed.
+**Entry:** If `project_ssot.enabled` → **must** `python -m agent_colony project entry` (and `list --status in_progress` only when Entry mode is `live` and you need a fresh filter). Cite board Status in findings. Else `session-pointer.md`. Prefer `project export --reuse-if-fresh` before drift validate when a snapshot is needed.
 
 **Exit:** Prefer `handoff --last` / `claim --last` after create. Write drift artifacts under `.local/workflow-artifacts/drift/`. When board SSOT is on: (1) set the **drift-pass card** Status → `done` (or `in_review` if P0/P1 need human); (2) for Confirmed dual-write, add Notes on the offending card or hand off to **board** / **implementer** via Ready — do **not** auto-edit `plan.md` / `work-tracker.md` / invent competing tracker `in_progress`. One line in `updates-log.md`.
 
@@ -28,7 +28,7 @@ description: drift-guard Agent Colony — Continuous goal/plan/agent-doctrine/do
 
 **Write scope:** `.local/workflow-artifacts/drift/` only (`drift-audit.md`, `drift-todos.md` per `local_workflow_paths.py`) — no product-code edits. (`readonly` not set so Task delegation can write drift artifacts.)
 
-1. Run `python -m cursor_workflow drift validate --directory .` **before** prose findings.
+1. Run `python -m agent_colony drift validate --directory .` **before** prose findings.
 2. Map script output to `drift-audit.md` and `drift-todos.md` per skill (include **DRIFT-009** / **DRIFT-010** / **DRIFT-011** / **DRIFT-012** when applicable; prefer a fresh `project export` snapshot for DRIFT-010; **DRIFT-012** guards `.local/plans/` snapshot-only under `board_only`).
 3. Goal pulse (prose): board Acceptance/Notes vs plan pointers vs `AGENTS.md` / agent cards — flag gaps; hand off to implementer/board (do not rewrite architecture).
 4. P0 failures block prepare-pr handoff; P1 fix in same slice; P2 → backlog (preferably a Ready board card).
@@ -61,7 +61,7 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 | Kit | `agent-colony-mcp` | PR scripts, trackers, gates — prefer Pattern A CLI over re-running shell |
 | External | See `.cursor/mcp.registry.yaml` | Only servers listed for this agent id |
 
-**Pattern A (preferred):** `python3 -m cursor_workflow mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
+**Pattern A (preferred):** `python3 -m agent_colony mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
 
 Cursor **CallMcpTool** is optional when the IDE host loads the same server. Discover tools with `mcp list-tools --server <id>`; do not invent tool names.
 User setup: `.ai_infra/docs/operations/connect-external-mcp.md`

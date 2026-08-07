@@ -609,7 +609,7 @@ def _load_board_snapshot(paths: DriftPaths) -> tuple[dict | None, str]:
         / "project-board-snapshot.json"
     )
     if not snap.is_file():
-        return None, "no project-board-snapshot.json (run: python -m cursor_workflow project export)"
+        return None, "no project-board-snapshot.json (run: python -m agent_colony project export)"
     try:
         import json
 

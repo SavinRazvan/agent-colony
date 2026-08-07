@@ -4,7 +4,7 @@
 
 | File | Writer |
 |------|--------|
-| `preflight.json` | `python -m cursor_workflow verify all` |
-| `doc-facts-preflight.json` | `python -m cursor_workflow doc validate` |
+| `preflight.json` | `python -m agent_colony verify all` |
+| `doc-facts-preflight.json` | `python -m agent_colony doc validate` |
 
 See `.ai_infra/docs/operations/local-workspace-layout.md`.
