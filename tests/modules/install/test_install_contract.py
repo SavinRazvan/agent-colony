@@ -70,4 +70,4 @@ def test_install_contract_profiles(tmp_path: Path, profile: str) -> None:
     _assert_contract(target, profile)
     kit_version = target / ".ai_infra" / ".kit-version"
     assert kit_version.is_file()
-    assert kit_version.read_text(encoding="utf-8").strip() == "0.4.0"
+    assert kit_version.read_text(encoding="utf-8").strip() == "0.5.0"
