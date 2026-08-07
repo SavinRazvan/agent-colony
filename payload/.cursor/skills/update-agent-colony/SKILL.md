@@ -80,4 +80,4 @@ Optional: `integrate validate`, `canvas doctor`. Breaking renames: [upgrade-kit.
 
 - Do not tell users to re-run plain `/workflow-activate` expecting agents/skills to refresh — that path only heals when planes are ready.
 - Do not overwrite consumer `user_settings` or invent a second Status writer under `board_only`.
-- Do not run update against the kit-dev repo as a self-upgrade without an explicit external `--source`.
+- Do **not** run `update --force` inside the **kit-dev product repo** (`agent-colony`) — scaffold treats it as a consumer install and fails (`forbidden in slim install: full kit tests tree`). Kit-dev workflow: edit sources → `make sync-plugin` → commit. Use `update` only in **activated consumer apps**.

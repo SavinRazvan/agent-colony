@@ -27,6 +27,13 @@ import activate_cli
 
 
 _VERSION_RE = re.compile(r"^(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:[.-].*)?$")
+# Same marker scaffold uses to detect the kit product repo (not a consumer app).
+KIT_TESTS_MARKER = Path("tests") / "modules" / "install" / "test_scaffold.py"
+
+
+def is_kit_dev_repo(target: Path) -> bool:
+    """True when target is the Agent Colony product repo (full kit tests present)."""
+    return (target / KIT_TESTS_MARKER).is_file()
 
 
 def read_installed_version(target: Path) -> str | None:
@@ -119,15 +126,38 @@ def _run_scaffold_upgrade(
 def _run_light_heal(target: Path, source: Path, *, with_venv: bool) -> None:
     from paths import kit_root
 
+    if is_kit_dev_repo(target):
+        # Do not copy payload install/scripts onto kit-dev authoring SSOT.
+        scaffold = activate_cli._import_scaffold_refresh()
+        for line in scaffold.sync_kit_ui_templates(source, target):
+            print(line)
+        ui_root = scaffold.ui_local_workspace(source)
+        log: list[str] = []
+        scaffold._scaffold_dashboards(ui_root, target, False, log)
+        for line in log:
+            print(line)
+        activate_cli._heal_consumer_runtime(target, with_venv=with_venv)
+        return
+
     activate_cli._refresh_dashboard_templates(target, source, kit_root())
     activate_cli._heal_consumer_runtime(target, with_venv=with_venv)
+
+
+def _refuse_kit_dev_upgrade() -> int:
+    print(
+        "update: FAIL — full upgrade is for consumer apps, not the kit-dev product repo.\n"
+        "  Kit-dev: edit sources → make sync-plugin (updates payload/) → commit/push.\n"
+        "  Consumer apps: python3 -m agent_colony update --directory . "
+        "(after updating the Agent Colony plugin).",
+        file=sys.stderr,
+    )
+    return 1
 
 
 def cmd_update(args: argparse.Namespace) -> int:
     from paths import kit_root
 
     target = Path(args.directory).resolve()
-    kit_ver_path = target / ".ai_infra" / ".kit-version"
     if not (target / ".ai_infra").is_dir():
         print(
             "update: FAIL — workspace not activated (.ai_infra missing). "
@@ -162,15 +192,21 @@ def cmd_update(args: argparse.Namespace) -> int:
         available=available,
         force=bool(args.force),
     )
+    kit_dev = is_kit_dev_repo(target)
 
     print(f"installed={installed or '(none)'}")
     print(f"available={available}")
     print(f"source={source}")
     print(f"action={action}")
+    if kit_dev:
+        print("target_kind=kit-dev")
 
     if args.check:
         if action == "missing":
             print("check: would_activate (no .kit-version — run activate first)")
+            return 1
+        if action == "upgrade" and kit_dev:
+            print("check: would_refuse_kit_dev (full upgrade not allowed here)")
             return 1
         if action == "upgrade":
             print("check: would_upgrade (full kit-managed refresh)")
@@ -185,6 +221,9 @@ def cmd_update(args: argparse.Namespace) -> int:
             file=sys.stderr,
         )
         return 1
+
+    if action == "upgrade" and kit_dev:
+        return _refuse_kit_dev_upgrade()
 
     plane_status = activate_cli._import_plane_status()
 

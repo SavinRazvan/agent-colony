@@ -252,6 +252,60 @@ def test_cmd_update_force_when_equal(tmp_path: Path, monkeypatch: pytest.MonkeyP
     assert ran == ["upgrade"]
 
 
+def test_cmd_update_refuses_kit_dev_force(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target = _write_installed(tmp_path / "kit-dev", "0.6.1")
+    marker = target / update_cli.KIT_TESTS_MARKER
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    marker.write_text("# kit-dev\n", encoding="utf-8")
+    source = _write_manifest(tmp_path / "payload", "0.6.1")
+    monkeypatch.setattr(activate_cli, "resolve_activate_source", lambda *a, **k: source)
+
+    def _boom(*a, **k) -> int:
+        raise AssertionError("scaffold must not run on kit-dev")
+
+    monkeypatch.setattr(update_cli, "_run_scaffold_upgrade", _boom)
+
+    args = argparse.Namespace(
+        directory=target,
+        source=None,
+        check=False,
+        force=True,
+        with_venv=True,
+        with_mcp_json=True,
+        verify=False,
+        profile="with_mcp",
+    )
+    assert update_cli.cmd_update(args) == 1
+    err = capsys.readouterr().err
+    assert "kit-dev product repo" in err
+
+
+def test_cmd_update_check_refuses_kit_dev_upgrade(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target = _write_installed(tmp_path / "kit-dev", "0.6.0")
+    marker = target / update_cli.KIT_TESTS_MARKER
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    marker.write_text("# kit-dev\n", encoding="utf-8")
+    source = _write_manifest(tmp_path / "payload", "0.6.1")
+    monkeypatch.setattr(activate_cli, "resolve_activate_source", lambda *a, **k: source)
+    args = argparse.Namespace(
+        directory=target,
+        source=None,
+        check=True,
+        force=False,
+        with_venv=True,
+        with_mcp_json=True,
+        verify=False,
+        profile="with_mcp",
+    )
+    assert update_cli.cmd_update(args) == 1
+    out = capsys.readouterr().out
+    assert "would_refuse_kit_dev" in out
+
+
 def test_register_update_subparser() -> None:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)

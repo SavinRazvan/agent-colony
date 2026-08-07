@@ -16,7 +16,7 @@ Notes:
 # Implementation status (Agent Colony)
 
 **Last updated:** 2026-08-07 (MCP package agent_colony_mcp; kit 0.6.1)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.6.1 · **Tests:** 1476
+**Product:** `agent-colony` · CLI: `agent-colony` 0.6.1 · **Tests:** 1478
 
 ## Shipped (confirmed in repo)
 
@@ -55,7 +55,7 @@ Notes:
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Researcher agent (corpus) | **Shipped / proven** — adaptive Brief; anti-loop ≤6; CLI `research init\|fetch\|validate`; live E2E flexiai-toolsmith (18 curated, validate PASS) + verifier Claim A+B VERIFIED 2026-07-19; corpus **opt-in** after first `research init` | `.cursor/agents/researcher.md` · `research-corpus` · `canvases/agent-researcher.canvas.tsx` · Issue #74 |
 | Kit version on install | `kit_version` 0.6.1 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Tests | 1476 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1478 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

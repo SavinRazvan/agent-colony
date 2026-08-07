@@ -77,6 +77,8 @@ Compares `.ai_infra/.kit-version` to the activate source `manifest.yaml` `kit_ve
 
 Same as Agent chat **`/update-agent-colony`**. See [update-agent-colony skill](../../.cursor/skills/update-agent-colony/SKILL.md).
 
+**Kit-dev product repo:** do not run `update --force` here (scaffold is consumer-only and will refuse). Sync mirrors with `make sync-plugin` instead. Light `update` / heal on kit-dev refreshes dashboards only and does not overwrite authoring `install/` from `payload/`.
+
 **Advanced aliases** (same underlying scaffold paths):
 
 ```bash
