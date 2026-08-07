@@ -1,11 +1,11 @@
 """
 File: gates.py
-Path: .ai_infra/mcp_servers/workflow_mcp/gates.py
+Path: .ai_infra/mcp_servers/agent_colony_mcp/gates.py
 Role: Load GATES from `.ai_infra/scripts/pr/prepare.py` — never duplicate gate lists in MCP.
 Used By:
- - workflow_mcp/server.py
+ - agent_colony_mcp/server.py
 Depends On:
- - workflow_mcp/workspace.py
+ - agent_colony_mcp/workspace.py
 Notes:
  - Single source of truth remains prepare.py GATES.
 """
@@ -16,7 +16,7 @@ import importlib.util
 from pathlib import Path
 from types import ModuleType
 
-from workflow_mcp.workspace import workspace_root
+from agent_colony_mcp.workspace import workspace_root
 
 
 def _load_prepare_module(root: Path) -> ModuleType:

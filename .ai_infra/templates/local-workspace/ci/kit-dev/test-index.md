@@ -19,8 +19,8 @@
   - Coverage status: `healthy`
   - Notes: governance, debrand, path-drift, doc-facts scanners
 
-- Module: `workflow_mcp`
-  - Owned tests: `tests/modules/workflow_mcp/test_workflow_mcp.py`
+- Module: `agent_colony_mcp`
+  - Owned tests: `tests/modules/agent_colony_mcp/test_agent_colony_mcp.py`
   - Coverage status: `healthy`
   - Notes: MCP tools and tracker read
 

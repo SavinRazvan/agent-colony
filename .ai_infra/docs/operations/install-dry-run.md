@@ -135,7 +135,7 @@ Expected: all PASS (governance may skip CI workflow if `.github/` absent).
 cp .cursor/mcp.json.kit.example .cursor/mcp.json
 # or: agent-colony install --with-mcp-json (merges kit + mcp.user.json)
 # Edit python path to $TARGET/.venv/bin/python
-AGENT_COLONY_ROOT="$TARGET" .venv/bin/python -m workflow_mcp
+AGENT_COLONY_ROOT="$TARGET" .venv/bin/python -m agent_colony_mcp
 ```
 
 In Cursor: enable MCP server; call `workflow_list_agents` and `workflow_gate_count`.
@@ -158,7 +158,7 @@ In Cursor: enable MCP server; call `workflow_list_agents` and `workflow_gate_cou
 | All six `workflow-artifacts/*/README.md` stubs (recommended_paths) | yes | yes |
 | `AGENTS.md` present | yes | yes |
 | `pytest -q` green | yes | yes |
-| `workflow_mcp` / `workflow_gate_count` (`load_gates` → `resolve_gates()`) | **2** | **5** |
+| `agent_colony_mcp` / `workflow_gate_count` (`load_gates` → `resolve_gates()`) | **2** | **5** |
 
 ## Cleanup
 

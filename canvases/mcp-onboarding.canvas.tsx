@@ -48,7 +48,7 @@ const TWO_TIER: string[][] = [
     "Kit",
     "agent-colony-mcp",
     "mcp.json.kit.example → mcp.json",
-    "PR / trackers / gates (stdio workflow_mcp)",
+    "PR / trackers / gates (stdio agent_colony_mcp)",
   ],
   [
     "User (default)",
@@ -180,7 +180,7 @@ const TROUBLESHOOTING: string[][] = [
     "Normal for Pattern A — CLI still works; Cursor host load is optional.",
   ],
   [
-    "No module named 'mcp' / workflow_mcp",
+    "No module named 'mcp' / agent_colony_mcp",
     "Use venv: .venv/bin/python -m agent_colony … (pip install -e \".[dev,mcp]\").",
   ],
   [

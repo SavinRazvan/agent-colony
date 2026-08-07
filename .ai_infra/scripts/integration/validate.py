@@ -5,7 +5,7 @@ Role: Machine-enforced MAS infrastructure integration checks (integrate validate
 Used By:
  - agent_colony integrate validate
  - scripts/architecture/check_governance_consistency.py
- - workflow_mcp workflow_integrate_validate
+ - agent_colony_mcp workflow_integrate_validate
 Depends On:
  - .ai_infra/scripts/integration/checks.py
  - .ai_infra/scripts/pr/user_settings.py

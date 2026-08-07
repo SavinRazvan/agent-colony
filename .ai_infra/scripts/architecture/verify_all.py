@@ -5,7 +5,7 @@ Role: Maintainer verify-all matrix aligned with kit-quality.yml gate step.
 Used By:
  - Makefile verify-all target
  - agent_colony verify all
- - workflow_mcp workflow_verify_all
+ - agent_colony_mcp workflow_verify_all
 Depends On:
  - subprocess, sys, pathlib (stdlib)
 Notes:

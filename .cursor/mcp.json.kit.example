@@ -2,7 +2,7 @@
   "mcpServers": {
     "agent-colony-mcp": {
       "command": "${workspaceFolder}/.venv/bin/python",
-      "args": ["-m", "workflow_mcp"],
+      "args": ["-m", "agent_colony_mcp"],
       "env": {
         "AGENT_COLONY_ROOT": "${workspaceFolder}",
         "PYTHONPATH": "${workspaceFolder}/.ai_infra/mcp_servers"

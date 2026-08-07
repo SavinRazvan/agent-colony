@@ -35,12 +35,12 @@ def test_mcp_package_canonical() -> None:
     from paths import mcp_package_dir
 
     mcp = mcp_package_dir(REPO_ROOT)
-    assert mcp == (REPO_ROOT / ".ai_infra" / "mcp_servers" / "workflow_mcp").resolve()
+    assert mcp == (REPO_ROOT / ".ai_infra" / "mcp_servers" / "agent_colony_mcp").resolve()
     assert (mcp / "server.py").is_file()
 
 
-def test_workflow_mcp_import() -> None:
-    from workflow_mcp.gates import load_gates
+def test_agent_colony_mcp_import() -> None:
+    from agent_colony_mcp.gates import load_gates
 
     gates = load_gates(REPO_ROOT)
     assert len(gates) == 5

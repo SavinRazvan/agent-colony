@@ -514,8 +514,8 @@ def list_cursor_host_servers(mcps_dir: Path | None) -> list[str]:
     return sorted(p.name for p in mcps_dir.iterdir() if p.is_dir() and not p.name.startswith("."))
 
 
-def check_workflow_mcp_import(root: Path) -> dict[str, Any]:
-    """Report venv python + whether workflow_mcp is importable with kit PYTHONPATH."""
+def check_agent_colony_mcp_import(root: Path) -> dict[str, Any]:
+    """Report venv python + whether agent_colony_mcp is importable with kit PYTHONPATH."""
     venv_py = root / ".venv" / "bin" / "python"
     servers_path = root / ".ai_infra" / "mcp_servers"
     result: dict[str, Any] = {
@@ -531,7 +531,7 @@ def check_workflow_mcp_import(root: Path) -> dict[str, Any]:
 
     env = {**os.environ, "PYTHONPATH": str(servers_path)}
     proc = subprocess.run(
-        [str(venv_py), "-c", "import workflow_mcp; print(workflow_mcp.__file__)"],
+        [str(venv_py), "-c", "import agent_colony_mcp; print(agent_colony_mcp.__file__)"],
         cwd=root,
         env=env,
         capture_output=True,

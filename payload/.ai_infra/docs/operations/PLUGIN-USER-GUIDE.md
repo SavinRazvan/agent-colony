@@ -225,7 +225,7 @@ your-project/
 │   ├── install/agent_colony/   # CLI package
 │   ├── docs/operations|governance|roadmap|decisions|architecture/
 │   ├── templates/local-workspace|user-settings|agent-integration/
-│   ├── mcp_servers/workflow_mcp/  # with_mcp profile
+│   ├── mcp_servers/agent_colony_mcp/  # with_mcp profile
 │   └── workflows/
 ├── .local/                        # trackers, deprecated HTML dashboards (gitignored)
 │   ├── index-and-planning/current/

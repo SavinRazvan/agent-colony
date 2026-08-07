@@ -6,7 +6,7 @@ Used By:
  - pytest
 Depends On:
  - agent_colony package
- - workflow_mcp package
+ - agent_colony_mcp package
 Notes:
  - CI runs pip install -e ".[dev,mcp]" before pytest.
 """
@@ -17,10 +17,10 @@ from __future__ import annotations
 def test_import_agent_colony_package() -> None:
     import agent_colony
 
-    assert agent_colony.__version__ == "0.6.0"
+    assert agent_colony.__version__ == "0.6.1"
 
 
-def test_import_workflow_mcp_package() -> None:
-    import workflow_mcp
+def test_import_agent_colony_mcp_package() -> None:
+    import agent_colony_mcp
 
-    assert workflow_mcp.__name__ == "workflow_mcp"
+    assert agent_colony_mcp.__name__ == "agent_colony_mcp"

@@ -1,11 +1,11 @@
 """
-File: test_workflow_mcp.py
-Path: tests/modules/workflow_mcp/test_workflow_mcp.py
-Role: Tests for workflow_mcp skeleton (gates, workspace, list agents).
+File: test_agent_colony_mcp.py
+Path: tests/modules/agent_colony_mcp/test_agent_colony_mcp.py
+Role: Tests for agent_colony_mcp skeleton (gates, workspace, list agents).
 Used By:
  - pytest
 Depends On:
- - workflow_mcp/*
+ - agent_colony_mcp/*
 Notes:
  - Does not start stdio MCP server in tests.
 """
@@ -23,13 +23,13 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 def test_workspace_root_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("AGENT_COLONY_ROOT", str(REPO_ROOT))
-    from workflow_mcp.workspace import workspace_root
+    from agent_colony_mcp.workspace import workspace_root
 
     assert workspace_root() == REPO_ROOT.resolve()
 
 
 def test_load_gates_matches_prepare() -> None:
-    from workflow_mcp.gates import load_gates
+    from agent_colony_mcp.gates import load_gates
 
     gates = load_gates(REPO_ROOT)
     assert len(gates) == 5
@@ -41,7 +41,7 @@ def test_load_gates_matches_prepare() -> None:
     assert "sync_plugin_bundle" in joined
     assert "--check" in joined
     os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
-    from workflow_mcp.server import workflow_list_agents
+    from agent_colony_mcp.server import workflow_list_agents
 
     result = workflow_list_agents()
     assert "implementer" in result
@@ -50,7 +50,7 @@ def test_load_gates_matches_prepare() -> None:
 
 def test_get_tracker_session_pointer() -> None:
     os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
-    from workflow_mcp.server import workflow_get_tracker
+    from agent_colony_mcp.server import workflow_get_tracker
 
     text = workflow_get_tracker("session-pointer")
     assert "Next read" in text
@@ -58,13 +58,13 @@ def test_get_tracker_session_pointer() -> None:
 
 def test_gate_count() -> None:
     os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
-    from workflow_mcp.server import workflow_gate_count
+    from agent_colony_mcp.server import workflow_gate_count
 
     assert workflow_gate_count() == "5"
 
 
 def test_build_inventory() -> None:
-    from workflow_mcp.resources import build_inventory
+    from agent_colony_mcp.resources import build_inventory
 
     raw = build_inventory(REPO_ROOT)
     assert "implementer" in raw
@@ -72,14 +72,14 @@ def test_build_inventory() -> None:
 
 
 def test_read_agent() -> None:
-    from workflow_mcp.resources import read_agent
+    from agent_colony_mcp.resources import read_agent
 
     body = read_agent(REPO_ROOT, "implementer")
     assert "Implementer" in body
 
 
 def test_read_skill() -> None:
-    from workflow_mcp.resources import read_skill
+    from agent_colony_mcp.resources import read_skill
 
     body = read_skill(REPO_ROOT, "implementer-loop")
     assert "implementer loop" in body.lower()
@@ -87,14 +87,14 @@ def test_read_skill() -> None:
 
 
 def test_read_pr_artifact_invalid_phase() -> None:
-    from workflow_mcp.resources import read_pr_artifact
+    from agent_colony_mcp.resources import read_pr_artifact
 
     with pytest.raises(ValueError, match="Unknown PR phase"):
         read_pr_artifact(REPO_ROOT, "bogus")
 
 
 def test_run_script_resolves_ai_infra_layout() -> None:
-    from workflow_mcp.runner import resolve_script_path
+    from agent_colony_mcp.runner import resolve_script_path
 
     prepare = resolve_script_path(REPO_ROOT, "scripts/pr/prepare.py")
     assert prepare is not None
@@ -103,7 +103,7 @@ def test_run_script_resolves_ai_infra_layout() -> None:
 
 
 def test_run_cmd_times_out() -> None:
-    from workflow_mcp.runner import run_cmd
+    from agent_colony_mcp.runner import run_cmd
 
     code, out = run_cmd(
         [sys.executable, "-c", "import time; time.sleep(2)"],
@@ -116,14 +116,14 @@ def test_run_cmd_times_out() -> None:
 
 def test_resource_inventory_fn() -> None:
     os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
-    from workflow_mcp.server import resource_inventory
+    from agent_colony_mcp.server import resource_inventory
 
     assert "implementer" in resource_inventory()
 
 
 def test_workflow_get_project_config() -> None:
     os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
-    from workflow_mcp.server import workflow_get_project_config
+    from agent_colony_mcp.server import workflow_get_project_config
 
     text = workflow_get_project_config()
     assert "project:" in text or "project.config" in text
@@ -131,7 +131,7 @@ def test_workflow_get_project_config() -> None:
 
 def test_workflow_list_mcp_registry() -> None:
     os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
-    from workflow_mcp.server import workflow_list_mcp_registry
+    from agent_colony_mcp.server import workflow_list_mcp_registry
 
     text = workflow_list_mcp_registry()
     assert "agent-colony-mcp" in text
@@ -139,7 +139,7 @@ def test_workflow_list_mcp_registry() -> None:
 
 def test_workflow_mcp_connection_guide() -> None:
     os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
-    from workflow_mcp.server import workflow_mcp_connection_guide
+    from agent_colony_mcp.server import workflow_mcp_connection_guide
 
     text = workflow_mcp_connection_guide()
     assert "external MCP" in text or "Connect external" in text
@@ -147,7 +147,7 @@ def test_workflow_mcp_connection_guide() -> None:
 
 def test_workflow_doc_facts_validate() -> None:
     os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
-    from workflow_mcp.server import workflow_doc_facts_validate
+    from agent_colony_mcp.server import workflow_doc_facts_validate
 
     text = workflow_doc_facts_validate()
     assert "exit=0" in text
@@ -162,12 +162,12 @@ def _mock_run_script(monkeypatch: pytest.MonkeyPatch, *, code: int = 0, out: str
     def fake_run_script(relative: str, args: list[str], cwd: Path, **kwargs: object) -> tuple[int, str]:
         return code, out
 
-    monkeypatch.setattr("workflow_mcp.server.run_script", fake_run_script)
+    monkeypatch.setattr("agent_colony_mcp.server.run_script", fake_run_script)
 
 
 def test_workflow_run_gate_index_zero() -> None:
     _env_root()
-    from workflow_mcp.server import workflow_run_gate
+    from agent_colony_mcp.server import workflow_run_gate
 
     text = workflow_run_gate(0)
     assert text.startswith("exit=")
@@ -176,7 +176,7 @@ def test_workflow_run_gate_index_zero() -> None:
 
 def test_workflow_check_governance() -> None:
     _env_root()
-    from workflow_mcp.server import workflow_check_governance
+    from agent_colony_mcp.server import workflow_check_governance
 
     text = workflow_check_governance()
     assert text.startswith("exit=")
@@ -186,7 +186,7 @@ def test_workflow_check_governance() -> None:
 def test_workflow_run_prepare_skip_gates_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
     _env_root()
     _mock_run_script(monkeypatch)
-    from workflow_mcp.server import workflow_run_prepare
+    from agent_colony_mcp.server import workflow_run_prepare
 
     text = workflow_run_prepare(
         pr="https://github.com/example/repo/pull/1",
@@ -200,7 +200,7 @@ def test_workflow_run_prepare_skip_gates_smoke(monkeypatch: pytest.MonkeyPatch) 
 def test_workflow_run_review_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
     _env_root()
     _mock_run_script(monkeypatch)
-    from workflow_mcp.server import workflow_run_review
+    from agent_colony_mcp.server import workflow_run_review
 
     text = workflow_run_review(
         pr="https://github.com/example/repo/pull/1",
@@ -212,7 +212,7 @@ def test_workflow_run_review_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_workflow_run_merge_check_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
     _env_root()
     _mock_run_script(monkeypatch)
-    from workflow_mcp.server import workflow_run_merge_check
+    from agent_colony_mcp.server import workflow_run_merge_check
 
     text = workflow_run_merge_check(
         pr="https://github.com/example/repo/pull/1",
@@ -223,7 +223,7 @@ def test_workflow_run_merge_check_smoke(monkeypatch: pytest.MonkeyPatch) -> None
 
 def test_workflow_render_commit_trailers() -> None:
     _env_root()
-    from workflow_mcp.server import workflow_render_commit_trailers
+    from agent_colony_mcp.server import workflow_render_commit_trailers
 
     text = workflow_render_commit_trailers()
     assert "Author:" in text or text.startswith("error:")
@@ -231,7 +231,7 @@ def test_workflow_render_commit_trailers() -> None:
 
 def test_workflow_render_pr_body() -> None:
     _env_root()
-    from workflow_mcp.server import workflow_render_pr_body
+    from agent_colony_mcp.server import workflow_render_pr_body
 
     text = workflow_render_pr_body(pipeline="default", agents_from_session=False)
     assert "## Summary" in text or text.startswith("error:")
@@ -239,7 +239,7 @@ def test_workflow_render_pr_body() -> None:
 
 def test_workflow_list_session_agents() -> None:
     _env_root()
-    from workflow_mcp.server import workflow_list_session_agents
+    from agent_colony_mcp.server import workflow_list_session_agents
 
     text = workflow_list_session_agents()
     assert "session:" in text or text.startswith("error:") or text.startswith("(no session")
@@ -247,7 +247,7 @@ def test_workflow_list_session_agents() -> None:
 
 def test_workflow_integrate_validate() -> None:
     _env_root()
-    from workflow_mcp.server import workflow_integrate_validate
+    from agent_colony_mcp.server import workflow_integrate_validate
 
     text = workflow_integrate_validate()
     assert text.startswith("exit=0")
@@ -256,7 +256,7 @@ def test_workflow_integrate_validate() -> None:
 
 def test_workflow_drift_validate() -> None:
     _env_root()
-    from workflow_mcp.server import workflow_drift_validate
+    from agent_colony_mcp.server import workflow_drift_validate
 
     text = workflow_drift_validate()
     assert text.startswith("exit=0")
@@ -283,7 +283,7 @@ def test_workflow_verify_all(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(verify_all, "format_report", lambda results: "summary: failed=0 total=2")
     monkeypatch.setattr(verify_all, "exit_code_for", lambda results: 0)
 
-    from workflow_mcp.server import workflow_verify_all
+    from agent_colony_mcp.server import workflow_verify_all
 
     text = workflow_verify_all()
     assert text.startswith("exit=0")
@@ -295,7 +295,7 @@ def test_server_imports_mcp_sdk_v2() -> None:
     pytest.importorskip("mcp")
     from mcp.server.mcpserver import MCPServer
 
-    from workflow_mcp.server import mcp as server_instance
+    from agent_colony_mcp.server import mcp as server_instance
 
     assert isinstance(server_instance, MCPServer)
     assert server_instance.name == "agent-colony-mcp"
@@ -303,7 +303,7 @@ def test_server_imports_mcp_sdk_v2() -> None:
 
 def test_workflow_contributors_validate() -> None:
     _env_root()
-    from workflow_mcp.server import workflow_contributors_validate
+    from agent_colony_mcp.server import workflow_contributors_validate
 
     text = workflow_contributors_validate()
     assert text == "PASS" or text.startswith("FAIL")
@@ -319,15 +319,15 @@ def test_workflow_activate_idempotent(monkeypatch: pytest.MonkeyPatch) -> None:
 
     monkeypatch.setattr(activate_cli, "cmd_activate", lambda args: 0)
 
-    from workflow_mcp.server import workflow_activate
+    from agent_colony_mcp.server import workflow_activate
 
     text = workflow_activate(force=False)
     assert text.startswith("exit=0")
 
 
 @pytest.mark.live
-def test_workflow_mcp_stdio_initialize_smoke() -> None:
-    """Opt-in: spawn workflow_mcp stdio server and verify initialize handshake."""
+def test_agent_colony_mcp_stdio_initialize_smoke() -> None:
+    """Opt-in: spawn agent_colony_mcp stdio server and verify initialize handshake."""
     pytest.importorskip("mcp")
     import json
     import os
@@ -336,7 +336,7 @@ def test_workflow_mcp_stdio_initialize_smoke() -> None:
 
     env = {**os.environ, "AGENT_COLONY_ROOT": str(REPO_ROOT)}
     proc = subprocess.Popen(
-        [sys.executable, "-m", "workflow_mcp"],
+        [sys.executable, "-m", "agent_colony_mcp"],
         cwd=REPO_ROOT,
         env=env,
         stdin=subprocess.PIPE,

@@ -7,7 +7,7 @@ Used By:
  - auditor alignment passes
 Depends On:
  - .ai_infra/scripts/pr/prepare.py
- - .ai_infra/mcp_servers/workflow_mcp/
+ - .ai_infra/mcp_servers/agent_colony_mcp/
  - .ai_infra/scripts/install/scaffold.py
 Notes:
  - Update this file each material slice; do not rewrite full maintainer megadocs for every change.
@@ -15,8 +15,8 @@ Notes:
 
 # Implementation status (Agent Colony)
 
-**Last updated:** 2026-08-07 (CLI rename agent_colony; kit 0.6.0)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.6.0 · **Tests:** 1456
+**Last updated:** 2026-08-07 (MCP package agent_colony_mcp; kit 0.6.1)
+**Product:** `agent-colony` · CLI: `agent-colony` 0.6.1 · **Tests:** 1456
 
 ## Shipped (confirmed in repo)
 
@@ -43,7 +43,7 @@ Notes:
 | Kit canvases | **16** files under `canvases/`; DOC-008 counts **11** roster/agent canvases (excludes concept hubs `board-ssot-vs-trackers.canvas.tsx`, `agents-artifacts-board.canvas.tsx`, `github-api-safety.canvas.tsx`, `naming-roster-audit.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
-| MCP tools + resources | 20 tools + 6 resources | `.ai_infra/mcp_servers/workflow_mcp/` |
+| MCP tools + resources | 20 tools + 6 resources | `.ai_infra/mcp_servers/agent_colony_mcp/` |
 | Install scaffold + contract | `install-contract.json`; idempotent trackers/`AGENTS.md`/`pages.json` on re-activate | `.ai_infra/scripts/install/scaffold.py` |
 | Local artifact tiers | Tier 1 scaffold: all `workflow-artifacts/*` buckets + README stubs; SSOT `local_workflow_paths.py` | `.ai_infra/templates/local-workspace/`, `pages.json` |
 | Integrate validate | INT-001…014; INT-009/011 plugin parity **kit-dev only** | `.ai_infra/scripts/integration/validate.py` |
@@ -54,7 +54,7 @@ Notes:
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Researcher agent (corpus) | **Shipped / proven** — adaptive Brief; anti-loop ≤6; CLI `research init\|fetch\|validate`; live E2E flexiai-toolsmith (18 curated, validate PASS) + verifier Claim A+B VERIFIED 2026-07-19; corpus **opt-in** after first `research init` | `.cursor/agents/researcher.md` · `research-corpus` · `canvases/agent-researcher.canvas.tsx` · Issue #74 |
-| Kit version on install | `kit_version` 0.6.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
+| Kit version on install | `kit_version` 0.6.1 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
 | Tests | 1456 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
@@ -88,7 +88,7 @@ make check-plugin
 agent-colony activate --directory .
 agent-colony health
 agent-colony mcp validate
-pytest -m live tests/modules/workflow_mcp/test_workflow_mcp.py::test_workflow_mcp_stdio_initialize_smoke
+pytest -m live tests/modules/agent_colony_mcp/test_agent_colony_mcp.py::test_agent_colony_mcp_stdio_initialize_smoke
 agent-colony drift validate
 ```
 

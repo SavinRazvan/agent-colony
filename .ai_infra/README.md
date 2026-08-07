@@ -10,7 +10,7 @@ Versioned workflow kit assets live here. **`.cursor/` and `.agents/` stay at rep
 | `.ai_infra/scripts/architecture/` | Governance + debrand scanners |
 | `.ai_infra/scripts/install/` | `scaffold.py` — consumer install |
 | `.ai_infra/scripts/release/` | `sync_plugin_bundle.py` — marketplace payload |
-| `.ai_infra/mcp_servers/workflow_mcp/` | Optional MCP server (wraps scripts) |
+| `.ai_infra/mcp_servers/agent_colony_mcp/` | Optional MCP server (wraps scripts) |
 | `.ai_infra/docs/` | governance, operations, roadmap, handoff, architecture |
 | `.ai_infra/templates/` | AGENTS stub, local-workspace exemplars, plugin skills |
 | `.ai_infra/install/agent_colony/` | `agent-colony` CLI — twelve top-level commands (`install`, `activate`, `gates`, `health`, `mcp`, `contributors`, `integrate`, `drift`, `doc`, `verify`, `project`, `research`; see `agent-colony --help`) |
@@ -26,5 +26,5 @@ make gates
 make install-dry-run
 make check-plugin
 python -m agent_colony health
-python -m workflow_mcp   # optional; see .cursor/mcp.json.kit.example
+python -m agent_colony_mcp   # optional; see .cursor/mcp.json.kit.example
 ```

@@ -61,7 +61,7 @@ def user_settings_templates(root: Path | None = None) -> Path:
 
 def mcp_package_dir(root: Path | None = None) -> Path:
     base = root or _KIT_ROOT
-    path = ai_infra_dir(base) / "mcp_servers" / "workflow_mcp"
+    path = ai_infra_dir(base) / "mcp_servers" / "agent_colony_mcp"
     if path.is_dir():
         return path
     raise FileNotFoundError(f"not found: {path}")

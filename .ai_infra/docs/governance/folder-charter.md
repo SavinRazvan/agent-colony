@@ -39,7 +39,7 @@ Notes:
 | `templates/user-settings/` | Exemplars → `.local/user_settings/` |
 | `templates/agent-integration/` | Agent/skill templates for integrator |
 | `workflows/` | Workflow definitions referenced by agents |
-| `mcp_servers/workflow_mcp/` | Optional kit MCP server (`with_mcp` profile) |
+| `mcp_servers/agent_colony_mcp/` | Optional kit MCP server (`with_mcp` profile) |
 
 **Kit dev only (not copied to consumer by default):**
 

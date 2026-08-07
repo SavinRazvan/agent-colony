@@ -19,6 +19,18 @@ Kit **0.6.0** renames the Python CLI module and console script:
 2. Reinstall editable tooling: `pip install -e ".[dev,mcp]"` (kit-dev) so the `agent-colony` console script is on PATH
 3. Update any local scripts/CI that still call the old module or console script
 
+## Breaking change (0.6.1)
+
+Kit **0.6.1** renames the MCP Python package (Cursor server id unchanged):
+
+| Before (removed) | After |
+|------------------|-------|
+| `python -m` old MCP package | `python -m agent_colony_mcp` |
+| Package dir | `.ai_infra/mcp_servers/agent_colony_mcp/` |
+| Cursor server id | `agent-colony-mcp` (**unchanged**) |
+
+Update `.cursor/mcp.json` `args` to `["-m", "agent_colony_mcp"]` (or re-run activate / `mcp seed`). MCP **tool** names such as `workflow_*` are unchanged.
+
 ## Before upgrade
 
 1. Note current version: `cat .ai_infra/.kit-version`

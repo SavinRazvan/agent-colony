@@ -68,7 +68,7 @@ def build_doctor_report(root: Path) -> dict[str, Any]:
     host_set = set(host_loaded)
     cfg_set = set(configured)
 
-    import_info = mcp_manage.check_workflow_mcp_import(root)
+    import_info = mcp_manage.check_agent_colony_mcp_import(root)
 
     return {
         "root": str(root),
@@ -80,7 +80,7 @@ def build_doctor_report(root: Path) -> dict[str, Any]:
         "registry_servers": sorted(servers_reg.keys()),
         "effective_registry_servers": sorted(servers_effective.keys()),
         "agent_mappings": {k: sorted(v) for k, v in sorted(agent_map.items())},
-        "workflow_mcp": import_info,
+        "agent_colony_mcp": import_info,
         "cursor_mcps_dir": str(mcps_dir) if mcps_dir else None,
         "cursor_host_loaded": host_loaded,
         "configured_not_host_loaded": sorted(cfg_set - host_set),
@@ -110,13 +110,13 @@ def format_doctor_markdown(report: dict[str, Any]) -> str:
         f"- host-loaded but not in mcp.json: "
         f"{', '.join(report['host_loaded_not_configured']) or '(none)'}",
         "",
-        "## workflow_mcp import",
+        "## agent_colony_mcp import",
         "",
-        f"- venv: `{report['workflow_mcp'].get('venv_python')}`",
-        f"- import_ok: {report['workflow_mcp'].get('import_ok')}",
+        f"- venv: `{report['agent_colony_mcp'].get('venv_python')}`",
+        f"- import_ok: {report['agent_colony_mcp'].get('import_ok')}",
     ]
-    if report["workflow_mcp"].get("error"):
-        lines.append(f"- error: {report['workflow_mcp']['error']}")
+    if report["agent_colony_mcp"].get("error"):
+        lines.append(f"- error: {report['agent_colony_mcp']['error']}")
     if report.get("merge_error"):
         lines.extend(["", f"**merge error:** {report['merge_error']}"])
     lines.extend(["", "## Agent mappings", ""])
