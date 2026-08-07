@@ -32,35 +32,79 @@ def _import_plane_status() -> object:
     return plane_status
 
 
+def _manifest_root(path: Path) -> bool:
+    return (path / ".ai_infra" / "manifest.yaml").is_file()
+
+
+def discover_cursor_plugin_payload(*, home: Path | None = None) -> Path | None:
+    """Newest Agent Colony ``payload/`` under Cursor plugin cache or marketplaces.
+
+    After ``/add-plugin``, Cursor stores a checkout under
+    ``~/.cursor/plugins/cache/agent-colony/agent-colony/<sha>/`` with a full
+    ``payload/`` tree (``with_mcp`` profile). Agents on a brand-new app can
+    activate from that path without a local kit clone.
+    """
+    home_path = home if home is not None else Path.home()
+    plugins = home_path / ".cursor" / "plugins"
+    if not plugins.is_dir():
+        return None
+
+    candidates: list[Path] = []
+    patterns = (
+        "cache/agent-colony/agent-colony/*/payload",
+        "cache/agent-colony/*/payload",
+        "marketplaces/**/agent-colony/*/payload",
+        "marketplaces/**/agent-colony/payload",
+        "local/**/agent-colony/*/payload",
+        "local/**/agent-colony/payload",
+    )
+    for pattern in patterns:
+        for match in plugins.glob(pattern):
+            if match.is_dir() and _manifest_root(match):
+                candidates.append(match.resolve())
+
+    if not candidates:
+        return None
+    # Newest checkout wins (mtime of payload dir).
+    return max(set(candidates), key=lambda p: p.stat().st_mtime)
+
+
 def resolve_activate_source(raw: Path | None, target: Path, default_kit_root: Path) -> Path:
     if raw is not None:
         resolved = raw.resolve()
-        if (resolved / ".ai_infra" / "manifest.yaml").is_file():
+        if _manifest_root(resolved):
             return resolved
-        if (resolved / "payload" / ".ai_infra" / "manifest.yaml").is_file():
+        if _manifest_root(resolved / "payload"):
             return (resolved / "payload").resolve()
         raise FileNotFoundError(f"invalid activate source (no manifest): {resolved}")
 
     env_payload = os.environ.get("WORKFLOW_KIT_PAYLOAD", "").strip()
     if env_payload:
         candidate = Path(env_payload).resolve()
-        if (candidate / ".ai_infra" / "manifest.yaml").is_file():
+        if _manifest_root(candidate):
             return candidate
+        if _manifest_root(candidate / "payload"):
+            return (candidate / "payload").resolve()
 
     for candidate in (
         target / "payload",
         default_kit_root / "payload",
     ):
-        if (candidate / ".ai_infra" / "manifest.yaml").is_file():
+        if _manifest_root(candidate):
             return candidate.resolve()
 
-    if (default_kit_root / ".ai_infra" / "manifest.yaml").is_file():
+    if _manifest_root(default_kit_root):
         if target.resolve() != default_kit_root.resolve():
             return default_kit_root.resolve()
 
+    plugin_payload = discover_cursor_plugin_payload()
+    if plugin_payload is not None:
+        return plugin_payload
+
     raise FileNotFoundError(
         "activate source not found. Set WORKFLOW_KIT_PAYLOAD to the plugin payload/ directory, "
-        "or pass --source <kit-root|payload/>."
+        "pass --source <kit-root|payload/>, or install the Agent Colony plugin "
+        "(/add-plugin) so ~/.cursor/plugins/cache/agent-colony/*/payload is available."
     )
 
 
@@ -350,7 +394,10 @@ def register_activate_subparser(sub: argparse._SubParsersAction) -> None:
         "--source",
         type=Path,
         default=None,
-        help="Kit root or payload/ (default: auto — WORKFLOW_KIT_PAYLOAD, ./payload, kit root)",
+        help=(
+            "Kit root or payload/ (default: auto — WORKFLOW_KIT_PAYLOAD, ./payload, "
+            "kit root, then ~/.cursor/plugins/cache/agent-colony/*/payload)"
+        ),
     )
     activate.add_argument(
         "--profile",

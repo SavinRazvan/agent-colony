@@ -118,13 +118,24 @@ python3 -m agent_colony activate --directory .
 
 ### First activate troubleshooting
 
-On a **brand-new app repo**, `python3 -m agent_colony` fails with *No module named agent_colony* until activate copies infrastructure. **Agents:** run activate from the plugin **payload** entrypoint (not bare `python3 -m agent_colony` in an empty folder):
+On a **brand-new app repo**, `python3 -m agent_colony` fails with *No module named agent_colony* until activate copies infrastructure. **Agents:** run activate from the **Cursor plugin cache payload** (created by `/add-plugin`) — not bare `python3 -m agent_colony` in an empty folder:
 
 ```bash
-export KIT=~/Projects/agent-colony   # or plugin cache checkout
+cd ~/Projects/my-app
+PAYLOAD="$(ls -1dt ~/.cursor/plugins/cache/agent-colony/agent-colony/*/payload 2>/dev/null | head -1)"
+test -n "$PAYLOAD" || { echo "Re-run /add-plugin first"; exit 1; }
+python3 "$PAYLOAD/agent_colony" activate --directory . --source "$PAYLOAD"
+# or: python3 "$PAYLOAD/.ai_infra/scripts/install/bootstrap_activate.py" --directory .
+source .venv/bin/activate
+```
+
+Kit-dev checkout (optional alternative):
+
+```bash
+export KIT=~/Projects/agent-colony
 export TARGET=~/Projects/my-app
 mkdir -p "$TARGET"
-"$KIT/.venv/bin/python" "$KIT/payload/agent_colony" activate \
+python3 "$KIT/payload/agent_colony" activate \
   --directory "$TARGET" --source "$KIT/payload"
 cd "$TARGET"
 source .venv/bin/activate

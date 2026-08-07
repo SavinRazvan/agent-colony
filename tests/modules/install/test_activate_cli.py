@@ -106,6 +106,7 @@ def test_resolve_source_default_kit_root_equals_target_raises(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.delenv("WORKFLOW_KIT_PAYLOAD", raising=False)
+    monkeypatch.setattr(activate_cli, "discover_cursor_plugin_payload", lambda **k: None)
     default_root = _manifest_dir(tmp_path / "same")
     with pytest.raises(FileNotFoundError, match="activate source not found"):
         activate_cli.resolve_activate_source(None, default_root, default_root)
@@ -113,8 +114,40 @@ def test_resolve_source_default_kit_root_equals_target_raises(
 
 def test_resolve_source_nothing_found_raises(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("WORKFLOW_KIT_PAYLOAD", raising=False)
+    monkeypatch.setattr(activate_cli, "discover_cursor_plugin_payload", lambda **k: None)
     with pytest.raises(FileNotFoundError, match="activate source not found"):
         activate_cli.resolve_activate_source(None, tmp_path / "target", tmp_path / "default")
+
+
+def test_discover_cursor_plugin_payload_newest(tmp_path: Path) -> None:
+    plugins = tmp_path / ".cursor" / "plugins"
+    older = plugins / "cache" / "agent-colony" / "agent-colony" / "aaa" / "payload"
+    newer = plugins / "cache" / "agent-colony" / "agent-colony" / "bbb" / "payload"
+    _manifest_dir(older)
+    _manifest_dir(newer)
+    import os
+    import time
+
+    now = time.time()
+    os.utime(older, (now - 100, now - 100))
+    os.utime(newer, (now, now))
+    found = activate_cli.discover_cursor_plugin_payload(home=tmp_path)
+    assert found == newer.resolve()
+
+
+def test_resolve_source_falls_back_to_cursor_plugin_cache(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("WORKFLOW_KIT_PAYLOAD", raising=False)
+    payload = (
+        tmp_path / ".cursor" / "plugins" / "cache" / "agent-colony" / "agent-colony" / "deadbeef" / "payload"
+    )
+    _manifest_dir(payload)
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
+    result = activate_cli.resolve_activate_source(
+        None, tmp_path / "empty-app", tmp_path / "no-kit"
+    )
+    assert result == payload.resolve()
 
 
 # ---------------------------------------------------------------------------
@@ -398,6 +431,7 @@ def test_cmd_activate_source_not_found(tmp_path: Path, monkeypatch: pytest.Monke
     target.mkdir()
     monkeypatch.delenv("WORKFLOW_KIT_PAYLOAD", raising=False)
     monkeypatch.setattr(paths, "kit_root", lambda: tmp_path / "no-manifest-here")
+    monkeypatch.setattr(activate_cli, "discover_cursor_plugin_payload", lambda **k: None)
     code = activate_cli.cmd_activate(_args(directory=target, source=None))
     assert code == 1
 
