@@ -22,7 +22,7 @@
 
 ## First reads (onboarding)
 
-1. [`README.md`](README.md) — install, Pattern A, overlay model, `.local/` anchoring
+1. [`README.md`](README.md) — public landing · [`CONTRIBUTING.md`](CONTRIBUTING.md) — kit-dev setup · consumer install → [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md)
 2. [`.ai_infra/docs/README.md`](.ai_infra/docs/README.md) — docs index (linked navigation)
 3. [`.ai_infra/docs/handoff/repository-map.md`](.ai_infra/docs/handoff/repository-map.md) — **kit repo only** — SSOT vs generated vs consumer install (not shipped to consumers)
 4. [`.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md`](.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md) — plugin bundle, install profiles

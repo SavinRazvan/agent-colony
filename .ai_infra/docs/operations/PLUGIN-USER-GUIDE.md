@@ -16,6 +16,8 @@ Notes:
 
 # Agent Colony · Plugin User Guide
 
+> **From the [kit README](https://github.com/SavinRazvan/agent-colony):** public landing lives on GitHub. Prefer the short path? [consumer-quickstart.md](consumer-quickstart.md). This guide is the full consumer manual.
+
 Single entry point for **installing**, **activating**, and **using** the kit in your project. Deeper runbooks are linked as chapters — you do not need the kit maintainer repo open.
 
 ---
@@ -474,10 +476,14 @@ More: [consumer-quickstart.md](consumer-quickstart.md) § Troubleshooting.
 
 | Topic | Doc |
 |-------|-----|
+| 5-step cheat sheet | [consumer-quickstart.md](consumer-quickstart.md) |
 | All runbooks | [operations README](README.md) |
 | Three-plane architecture | [workflow-architecture.md](../architecture/workflow-architecture.md) |
+| Board day-to-day | skill `board-ssot` · shell coach `board-shell` |
+| MCP (DeepWiki, custom) | [connect-external-mcp.md](connect-external-mcp.md) |
+| Research packs | skill `research-corpus` |
 | Why plugin + payload | [ADR-001](../decisions/ADR-001-distribution-activation.md) |
 | Upgrade / semver | [upgrade-kit.md](upgrade-kit.md) |
 | Optional project metadata | [project-config.md](project-config.md) |
 
-**Kit maintainers** (not copied to your project): `PLUGIN-ARCHITECTURE.md` and `IMPLEMENTATION-STATUS.md` in the [GitHub kit repo](https://github.com/SavinRazvan/agent-colony/tree/main/.ai_infra/docs/handoff).
+**Kit maintainers** (not copied to your project): [CONTRIBUTING.md](https://github.com/SavinRazvan/agent-colony/blob/main/CONTRIBUTING.md), `PLUGIN-ARCHITECTURE.md`, and `IMPLEMENTATION-STATUS.md` in the [GitHub kit repo](https://github.com/SavinRazvan/agent-colony/tree/main/.ai_infra/docs/handoff).

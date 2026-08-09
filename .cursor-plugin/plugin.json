@@ -2,7 +2,7 @@
   "name": "agent-colony",
   "displayName": "Agent Colony",
   "version": "0.6.1",
-  "description": "Multi-agent Cursor workflow with GitHub Projects as the coordination SSOT — install once, wire your board, ship with PR gates and evidence.",
+  "description": "Stop losing Status in chat — install Agent Colony into your Cursor app: 8 agents, optional GitHub Project coordination, PR gates, local evidence.",
   "author": {
     "name": "Savin Ionuț Răzvan",
     "email": "razvan.i.savin@gmail.com"

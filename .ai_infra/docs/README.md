@@ -6,8 +6,9 @@
 
 | You are | Read first |
 |---------|------------|
-| **New consumer** | [PLUGIN-USER-GUIDE](operations/PLUGIN-USER-GUIDE.md) → [consumer-quickstart](operations/consumer-quickstart.md) |
-| **Kit maintainer** | [repository-map](handoff/repository-map.md) → [PLUGIN-ARCHITECTURE](handoff/PLUGIN-ARCHITECTURE.md) → [IMPLEMENTATION-STATUS](handoff/IMPLEMENTATION-STATUS.md) |
+| **Visitor / public** | Root [README.md](../../README.md) (landing) → [consumer-quickstart](operations/consumer-quickstart.md) |
+| **New consumer** | [consumer-quickstart](operations/consumer-quickstart.md) → [PLUGIN-USER-GUIDE](operations/PLUGIN-USER-GUIDE.md) |
+| **Kit maintainer** | [CONTRIBUTING.md](../../CONTRIBUTING.md) → [AGENTS.md](../../AGENTS.md) → [repository-map](handoff/repository-map.md) → [PLUGIN-ARCHITECTURE](handoff/PLUGIN-ARCHITECTURE.md) → [IMPLEMENTATION-STATUS](handoff/IMPLEMENTATION-STATUS.md) |
 | **Governance / policy** | [governance/README](governance/README.md) |
 
 ## Folders

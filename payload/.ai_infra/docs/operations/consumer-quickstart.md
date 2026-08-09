@@ -15,11 +15,13 @@ Notes:
 
 # Consumer quickstart
 
+> **From the [kit README](https://github.com/SavinRazvan/agent-colony#install-consumers):** this is the 5-step install path after `/add-plugin` + `/workflow-activate`. Full manual: [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md).
+
 Install **Agent Colony** (`agent-colony`) into your project in a few minutes. No special git setup required.
 
 **Product promise:** Install the plugin → open **your app repo** → **`/workflow-activate`** installs the **full kit**. Customize identity in `github.collaboration.yaml`, then **`/board`** wires board ids from Project + repo URLs. **Ready for agents** requires `board-bootstrap --check` **exit 0** — either **two views** (minimal overlay, matches [Playground #3](https://github.com/users/SavinRazvan/projects/3)) or **six Playground views** (kit default). Wire-only is not enough. Details: [PLUGIN-USER-GUIDE § Product promise](PLUGIN-USER-GUIDE.md#product-promise).
 
-> **Full manual:** [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) — plugin vs activate, complete file tree, use-case matrix, PR and audit chapters.
+> **Also:** [MCP](connect-external-mcp.md) · [upgrade](upgrade-kit.md) · skill `research-corpus` · skill `board-shell`
 
 ---
 
