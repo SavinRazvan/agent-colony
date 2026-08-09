@@ -265,14 +265,38 @@ def test_sync_board_set_status_failure(
         lambda *a, **k: (_ready_item(), None),
     )
     monkeypatch.setattr(
-        project_cli, "set_item_status", lambda *a, **k: (False, "rate limited")
+        project_cli, "set_item_status", lambda *a, **k: (False, "permanent board error")
     )
+    monkeypatch.setattr(project_cli, "_try_queue_rate_limit", lambda *a, **k: None)
     line = merge_mod.sync_board_after_merge(
         root=tmp_path, pr="1", merge_sha="abc", item_id="PVTI_x"
     )
     assert "set-status failed" in line
-    assert "rate limited" in line
+    assert "permanent board error" in line
     assert "[WARN] board sync set-status failed" in capsys.readouterr().err
+
+
+def test_sync_board_set_status_queues_on_rate_limit(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_item_by_id",
+        lambda *a, **k: (_ready_item(), None),
+    )
+    monkeypatch.setattr(
+        project_cli, "set_item_status", lambda *a, **k: (False, "API rate limit exceeded")
+    )
+    monkeypatch.setattr(
+        project_cli, "_try_queue_rate_limit", lambda *a, **k: project_cli.EXIT_QUEUED
+    )
+    line = merge_mod.sync_board_after_merge(
+        root=tmp_path, pr="1", merge_sha="abc", item_id="PVTI_x"
+    )
+    assert "queued" in line
+    assert "set-status" in line
+    assert "QUEUED" in capsys.readouterr().err
 
 
 def test_sync_board_list_failure_before_status(

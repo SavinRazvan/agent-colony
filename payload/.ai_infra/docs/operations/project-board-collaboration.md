@@ -55,7 +55,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Card Notes (`append-notes --agent`) | Yes | Yes — `@user/agent · YYYY-MM-DDTHH:MM:SSZ · …`; `next=@user/agent` | — |
 | PR / audits / secrets | Local | Local | — |
 | Post-merge Status → Done | — | Via `merge.py` (Pattern A); Notes `@user/merge.py` | — |
-| Linked Issue close (opt-in) | — | `full-pr-workflow` finalize.py → `close-linked-issue --pr N`, after branch cleanup; gated by `conventions.close_linked_issue_on_cleanup` (default false) | Board `Status=Done` and Issue `open`/`closed` are independent by default — this is the opt-in bridge, not a second Status writer (ADR-008 §10) |
+| Linked Issue close (opt-in) | — | `full-pr-workflow` finalize.py → `close-linked-issue --pr N`, after branch cleanup; gated by `conventions.close_linked_issue_on_cleanup` (default false); **requires board Status=Done** | Board `Status=Done` and Issue `open`/`closed` are independent by default — this is the opt-in bridge, not a second Status writer (ADR-008 §10) |
 | Read-only board export | Consume | `project export` (never writes Status) | — |
 
 ## Per-agent Entry / Exit
@@ -103,10 +103,11 @@ All subcommands registered in `.ai_infra/install/agent_colony/project_parser.py`
 | `mention-pr` | Notes with PR URL; auto-promote Draft when configured | implementer |
 | `promote-to-issue` | Convert DraftIssue → Issue (same `PVTI_`) | implementer (before shippable PR) |
 | `handoff` | Pattern A: Notes `next=@user/agent` + optional set-status; gates `in_review`\|`done` | Any (Exit) |
-| `validate-item` | Check body + Tier-1 fields + status-scoped Notes (exit 5 on fail) | verifier, board |
+| `validate-item` | Check body + Tier-1 fields + Status (flags empty Status) + status-scoped Notes (exit 5 on fail) | verifier, board |
+| `heal-cards` | Inventory incomplete Status/Tier-1; `--apply` sets Done when Issue CLOSED + Status empty/non-done | board, maintainer |
 | `last` | Print last saved item_id (after create/claim) | Any (with `--last` recipes) |
 | `guide` | Print safe recipes using `--last` (no placeholder ids) | Any (Entry) |
-| `doctor` | Validate project_ssot config, templates, and gh project access | Maintainer / human |
+| `doctor` | Validate project_ssot config, templates, gh access; WARN incomplete card counts | Maintainer / human |
 | `board-bootstrap` | Schema-aware shell check (`--check`); opt-in `--ensure-fields` / `--apply-readme` | board first-run / human |
 | `set-assignee` | Assign GitHub human user (Issue-backed items) | board, implementer |
 | `find-by-pr` | Resolve project item id from PR number or URL | verifier, merge.py |

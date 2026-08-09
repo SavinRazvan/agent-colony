@@ -23,9 +23,9 @@ Kit **0.6.0** renames the Python CLI module and console script:
 
 
 
-## Breaking change (0.6.1)
+## Breaking change (0.6.2)
 
-Kit **0.6.1** renames the MCP Python package (Cursor server id unchanged):
+Kit **0.6.2** renames the MCP Python package (Cursor server id unchanged):
 
 
 | Before (removed)            | After                                     |

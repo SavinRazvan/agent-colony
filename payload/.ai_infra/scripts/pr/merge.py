@@ -173,6 +173,42 @@ def sync_board_after_merge(
                 file=sys.stderr,
             )
             return f"board sync: error — set-status validation ({detail})"
+        queued = project_cli._try_queue_rate_limit(
+            root,
+            ssot,
+            cmd="merge.py",
+            err_detail=detail,
+            op="set-status",
+            item_id=resolved,
+            agent="merge.py",
+            payload={"to": done_logical},
+        )
+        if queued is not None:
+            pr_url_q = _pr_url(root, pr, str(ssot.get("default_repo") or ""))
+            note_q = f"Merged: {pr_url_q} @ {merge_sha}"
+            try:
+                note_q = project_cli.format_note_line(root, "merge.py", note_q)
+            except Exception:  # noqa: BLE001 — never block merge on attribution
+                pass
+            project_cli._try_queue_rate_limit(
+                root,
+                ssot,
+                cmd="merge.py",
+                err_detail=detail,
+                op="append-notes",
+                item_id=resolved,
+                agent="merge.py",
+                payload={"text": note_q},
+            )
+            print(
+                f"[WARN] board sync QUEUED set-status → {done_logical} on {resolved}; "
+                "run: python3 -m agent_colony project outbox flush",
+                file=sys.stderr,
+            )
+            return (
+                f"board sync: queued — set-status → {done_logical} on {resolved} "
+                f"({detail})"
+            )
         return f"board sync: warn — set-status failed ({detail})"
 
     pr_url = _pr_url(root, pr, str(ssot.get("default_repo") or ""))
@@ -187,6 +223,21 @@ def sync_board_after_merge(
         nok, ndetail = project_cli.edit_item_body(ssot, resolved, new_body)
         if not nok:
             print(f"[WARN] board sync append-notes failed: {ndetail}", file=sys.stderr)
+            queued_n = project_cli._try_queue_rate_limit(
+                root,
+                ssot,
+                cmd="merge.py",
+                err_detail=ndetail,
+                op="append-notes",
+                item_id=resolved,
+                agent="merge.py",
+                payload={"text": note},
+            )
+            if queued_n is not None:
+                return (
+                    f"board sync: status→{done_logical} on {resolved}; "
+                    f"notes queued ({ndetail})"
+                )
             return f"board sync: status→{done_logical} on {resolved}; notes warn ({ndetail})"
     print(f"[PASS] board sync: {resolved} → {done_logical}; Notes updated")
     return f"board sync: {resolved} → {done_logical}; Notes: {note}"

@@ -17,7 +17,7 @@ from __future__ import annotations
 def test_import_agent_colony_package() -> None:
     import agent_colony
 
-    assert agent_colony.__version__ == "0.6.1"
+    assert agent_colony.__version__ == "0.6.2"
 
 
 def test_import_agent_colony_mcp_package() -> None:

@@ -430,12 +430,13 @@ def fetch_project_item_by_id(
         "query($id:ID!){node(id:$id){...on ProjectV2Item{id content{"
         "__typename "
         "...on DraftIssue{id title body} "
-        "...on Issue{id number title body repository{nameWithOwner}}"
+        "...on Issue{id number title body state repository{nameWithOwner}}"
         "}"
         "fieldValues(first:50){nodes{__typename "
         "...on ProjectV2ItemFieldSingleSelectValue{name field{name}} "
         "...on ProjectV2ItemFieldTextValue{text field{name}} "
         "...on ProjectV2ItemFieldDateValue{date field{name}} "
+        "...on ProjectV2ItemFieldNumberValue{number field{name}} "
         "}}}}}"
     )
     proc = _cli().run_gh(
@@ -459,14 +460,30 @@ def fetch_project_item_by_id(
 
     content = node.get("content")
     body = ""
+    content_out: dict[str, Any] = {}
     if isinstance(content, dict):
         maybe_body = content.get("body")
         if isinstance(maybe_body, str):
             body = maybe_body
+            content_out["body"] = body
+        state = content.get("state")
+        if isinstance(state, str) and state.strip():
+            content_out["state"] = state.strip().upper()
+        number = content.get("number")
+        if number is not None:
+            content_out["number"] = number
+        type_name = content.get("__typename")
+        if isinstance(type_name, str) and type_name.strip():
+            content_out["type"] = type_name.strip()
+        repo = content.get("repository")
+        if isinstance(repo, dict) and repo.get("nameWithOwner"):
+            content_out["repository"] = str(repo["nameWithOwner"])
+    if "body" not in content_out:
+        content_out["body"] = body
 
     out: dict[str, Any] = {
         "id": str(node.get("id") or iid),
-        "content": {"body": body},
+        "content": content_out,
     }
 
     field_values = node.get("fieldValues") or {}

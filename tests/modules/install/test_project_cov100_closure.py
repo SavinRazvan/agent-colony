@@ -1058,6 +1058,11 @@ def test_run_close_linked_issue_invalid_json_state(
     )
     monkeypatch.setattr(
         project_cli,
+        "fetch_project_item_by_id",
+        lambda *a, **k: ({"id": "PVTI_lAHOBl46-84A9KZxtest01", "status": "Done"}, None),
+    )
+    monkeypatch.setattr(
+        project_cli,
         "run_gh",
         lambda *a, **k: _gh_ok("not-valid-json"),
     )

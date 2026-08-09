@@ -40,7 +40,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 
 ## Versioning
 
-**Current release:** `0.6.1` (git tag `v0.6.1`).
+**Current release:** `0.6.2` (git tag `v0.6.2`).
 
 **Superseded:** `v0.3.0` (`1f16af1`) predates `PLUGIN-FLATTEN` (#15) — its tagged tree has **zero**
 files under `agents/`, `rules/`, `skills/`, `payload/` (the gitignore bug #15 fixed). Do not

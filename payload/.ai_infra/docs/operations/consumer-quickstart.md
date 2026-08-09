@@ -222,6 +222,7 @@ The agent fills **`project_ssot`** field ids and **`default_repo`**. Confirm bef
 ```bash
 python3 -m agent_colony project doctor
 python3 -m agent_colony project status
+# If doctor WARNs incomplete cards: project heal-cards --check  (then --apply if CLOSED+empty Status)
 ```
 
 Expect `api=complete · shell=incomplete` until step 4.
@@ -327,6 +328,7 @@ source .venv/bin/activate          # recommended; gates auto-use `.venv/bin/pyth
 | `python3 -m agent_colony gates` | Full smoke gates (pytest skipped when consumer has no tests/) |
 | `python3 -m agent_colony drift validate` | Plan ↔ tracker coherence |
 | `python3 -m agent_colony drift validate --profile consumer` | **Use on consumer apps** — no agent required; see [Drift on consumer apps](#drift-on-consumer-apps) |
+| `python3 -m agent_colony project heal-cards --check` | Board SSOT: inventory empty Status / incomplete Tier-1 (`--apply` repairs CLOSED+empty→Done) |
 | `python3 -m agent_colony mcp validate` | MCP config after edits |
 | `python3 -m http.server 8000` | Serve dashboards — open http://localhost:8000/.local/agents-control-center/dashboards/index.html |
 

@@ -124,7 +124,11 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     cft.add_argument("--acceptance", default="")
     cft.add_argument("--rollback", default="")
     cft.add_argument("--notes", default="")
-    cft.add_argument("--status", default="", help="Optional: ready|backlog|…")
+    cft.add_argument(
+        "--status",
+        default="ready",
+        help="Status after create (default: ready)",
+    )
     cft.add_argument(
         "--priority",
         required=True,
@@ -382,6 +386,41 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         "--dry-run", action="store_true", help="Print planned action without closing the Issue"
     )
     close_issue_cmd.set_defaults(func=pc.cmd_close_linked_issue)
+
+    heal_cmd = project_sub.add_parser(
+        "heal-cards",
+        help="Inventory incomplete Status/Tier-1 cards; optionally set Done on CLOSED Issues",
+    )
+    heal_cmd.add_argument("--directory", type=Path, default=".")
+    heal_cmd.add_argument(
+        "--check",
+        action="store_true",
+        default=True,
+        help="Print incomplete inventory (default)",
+    )
+    heal_cmd.add_argument(
+        "--apply",
+        action="store_true",
+        help="Set Status→Done when linked Issue is CLOSED and Status empty/non-done",
+    )
+    heal_cmd.add_argument(
+        "--fill-tier1",
+        action="store_true",
+        help="With --apply: fill missing Priority=p2 / Size=s / Estimate=1 when configured",
+    )
+    heal_cmd.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="With --apply: print planned writes without mutating the board",
+    )
+    heal_cmd.add_argument("--limit", type=int, default=200)
+    heal_cmd.add_argument("--json", action="store_true", help="JSON inventory (check mode)")
+    heal_cmd.add_argument(
+        "--agent",
+        default="heal-cards",
+        help="Agent id for outbox attribution",
+    )
+    heal_cmd.set_defaults(func=pc.cmd_heal_cards)
 
     find_cmd = project_sub.add_parser(
         "find-by-pr", help="Resolve project item id from PR (Board-Item or body scan)"
