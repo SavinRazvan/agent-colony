@@ -213,6 +213,7 @@ def test_create_from_template_priority_keyerror_after_create(
         "create_board_item",
         lambda *a, **k: ("PVTI_x", "", None),
     )
+    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "oid"))
 
     def raise_priority(ssot, field, value):
         if field == "priority":
@@ -233,6 +234,7 @@ def test_create_from_template_priority_gh_fail(
         "create_board_item",
         lambda *a, **k: ("PVTI_x", "", None),
     )
+    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "oid"))
     monkeypatch.setattr(
         project_cli,
         "run_gh",
@@ -242,7 +244,7 @@ def test_create_from_template_priority_gh_fail(
     assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_GH
 
 
-def test_create_from_template_size_and_estimate_warn_paths(
+def test_create_from_template_size_and_estimate_fail_when_configured(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
@@ -251,6 +253,7 @@ def test_create_from_template_size_and_estimate_warn_paths(
         "create_board_item",
         lambda *a, **k: ("PVTI_x", "", None),
     )
+    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "oid"))
     calls = {"n": 0}
 
     def fake_gh(args: list[str], *, timeout_s: float = 60.0):
@@ -274,13 +277,11 @@ def test_create_from_template_size_and_estimate_warn_paths(
     )
     _stub_create_assignee(monkeypatch)
     args = _create_template_args(size="m", estimate="2")
-    assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_OK
-    err = capsys.readouterr().err
-    assert "size skipped" in err
-    assert "estimate skipped" in err
+    assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_GH
+    assert "size failed" in capsys.readouterr().err
 
 
-def test_create_from_template_size_keyerror_warn(
+def test_create_from_template_size_keyerror_fail_when_configured(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
@@ -289,6 +290,7 @@ def test_create_from_template_size_keyerror_warn(
         "create_board_item",
         lambda *a, **k: ("PVTI_x", "", None),
     )
+    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "oid"))
     monkeypatch.setattr(
         project_cli,
         "run_gh",
@@ -297,15 +299,79 @@ def test_create_from_template_size_keyerror_warn(
 
     def resolve(ssot, field, value):
         if field == "size":
-            raise KeyError("size field missing")
+            raise KeyError("unknown size 'm' — known: s")
         return "fid", "oid"
 
     monkeypatch.setattr(project_cli, "resolve_field_option_id", resolve)
     monkeypatch.setattr(project_cli, "set_item_number", lambda *a, **k: (True, "ok"))
     _stub_create_assignee(monkeypatch)
     args = _create_template_args(size="m", estimate="2")
+    assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_USAGE
+    assert "size failed" in capsys.readouterr().err
+
+
+def test_create_from_template_size_warn_when_field_missing(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    ssot = _ssot()
+    ssot["fields"] = {
+        **ssot["fields"],
+        "size": {"field_id": "", "options": {}},
+        "estimate": {"field_id": ""},
+    }
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(
+        project_cli,
+        "create_board_item",
+        lambda *a, **k: ("PVTI_x", "", None),
+    )
+    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "oid"))
+    monkeypatch.setattr(
+        project_cli,
+        "run_gh",
+        lambda *a, **k: SimpleNamespace(returncode=0, stdout="", stderr=""),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_field_option_id",
+        lambda ssot, field, value: ("fid", "oid"),
+    )
+    _stub_create_assignee(monkeypatch)
+    args = _create_template_args(size="m", estimate="2")
     assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_OK
-    assert "size skipped" in capsys.readouterr().err
+    err = capsys.readouterr().err
+    assert "size skipped" in err
+    assert "estimate skipped" in err
+
+
+def test_create_from_template_defaults_status_ready(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (_ssot(), []))
+    monkeypatch.setattr(
+        project_cli,
+        "create_board_item",
+        lambda *a, **k: ("PVTI_x", "", None),
+    )
+    seen: list[str] = []
+
+    def _set_status(ssot, item_id, logical):
+        seen.append(logical)
+        return True, "oid"
+
+    monkeypatch.setattr(project_cli, "set_item_status", _set_status)
+    monkeypatch.setattr(project_cli, "run_gh", _fake_create_gh())
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_field_option_id",
+        lambda ssot, field, value: ("fid", "oid"),
+    )
+    monkeypatch.setattr(project_cli, "set_item_number", lambda *a, **k: (True, "1"))
+    _stub_create_assignee(monkeypatch)
+    args = _create_template_args(status="")
+    assert project_cli.cmd_create_from_template(args) == project_cli.EXIT_OK
+    assert seen == ["ready"]
+    assert "status=ready" in capsys.readouterr().out
 
 
 def test_create_from_template_guessed_notes_with_agent(

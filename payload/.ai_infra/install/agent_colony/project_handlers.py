@@ -335,6 +335,21 @@ def run_close_linked_issue(args: argparse.Namespace) -> int:
         print(f'close-linked-issue: SKIPPED — item {item_id} has no linked Issue ({kerr or kind})')
         return pc.EXIT_OK
 
+    done_logical = pc.done_status_logical(ssot)
+    item_snap, item_err = pc.fetch_project_item_by_id(ssot, item_id)
+    if item_err:
+        print(f'close-linked-issue: DEFERRED — fetch board item failed: {item_err}')
+        return pc.EXIT_GH
+    board_status = pc._normalize_status(str((item_snap or {}).get('status') or ''))
+    if board_status != done_logical:
+        label = board_status or '(empty)'
+        print(
+            f'close-linked-issue: SKIPPED — board Status={label} '
+            f'(need {done_logical}); run: python3 -m agent_colony project set-status '
+            f'--to {done_logical} --id {item_id}  OR  project heal-cards --apply'
+        )
+        return pc.EXIT_OK
+
     repo = repo_arg or str((meta or {}).get('repo') or ssot.get('default_repo') or '').strip()
     issue_number = str(cid)
 
@@ -355,7 +370,11 @@ def run_close_linked_issue(args: argparse.Namespace) -> int:
         print(f'close-linked-issue: SKIPPED — issue #{issue_number} already closed')
         return pc.EXIT_OK
 
-    comment = f'Closed via full-pr-workflow cleanup (Board-Item: {item_id}, Status=Done, PR {pr_ref}).'
+    status_label = str((item_snap or {}).get('status') or done_logical).strip() or done_logical
+    comment = (
+        f'Closed via full-pr-workflow cleanup '
+        f'(Board-Item: {item_id}, Status={status_label}, PR {pr_ref}).'
+    )
     if dry_run:
         print(f'close-linked-issue: DRY-RUN — would close issue #{issue_number} ({repo or "default repo"})')
         return pc.EXIT_OK
@@ -521,6 +540,195 @@ def run_doctor(args: argparse.Namespace) -> int:
             print(f'doctor: WARN — GraphQL remaining {rem_i} < min_graphql_remaining {cfg['min_graphql_remaining']}; prefer outbox queue; flush after {reset}', file=sys.stderr)
     if counts['pending'] > 0:
         print(f'doctor: WARN — {counts['pending']} pending outbox ops; run: python3 -m agent_colony project outbox flush', file=sys.stderr)
+    if not skip_live:
+        items, items_err = pc.fetch_project_items(ssot, limit=100)
+        if items_err:
+            print(f'doctor: WARN — card completeness scan skipped: {items_err}', file=sys.stderr)
+        else:
+            summary = pc.summarize_card_completeness(ssot, items)
+            print(
+                'cards: '
+                f'total={summary["total"]} incomplete={summary["incomplete"]} '
+                f'empty_status={summary["empty_status"]} '
+                f'closed_not_done={summary["closed_not_done"]} '
+                f'missing_priority={summary["missing_priority"]} '
+                f'missing_size={summary["missing_size"]}'
+            )
+            if summary['incomplete']:
+                print(
+                    f'doctor: WARN — {summary["incomplete"]} incomplete card(s); '
+                    'run: python3 -m agent_colony project heal-cards --check',
+                    file=sys.stderr,
+                )
+    return pc.EXIT_OK
+
+
+def run_heal_cards(args: argparse.Namespace) -> int:
+    """Inventory incomplete cards; optionally set Status=Done on CLOSED Issue items."""
+    import project_cli as pc
+
+    root = Path(args.directory).resolve()
+    ssot, code = pc._load_enabled_ssot(root, 'heal-cards')
+    if ssot is None:
+        return code
+    apply = bool(getattr(args, 'apply', False))
+    fill_tier1 = bool(getattr(args, 'fill_tier1', False))
+    dry_run = bool(getattr(args, 'dry_run', False))
+    limit = int(getattr(args, 'limit', 200) or 200)
+    as_json = bool(getattr(args, 'json', False))
+    agent = str(getattr(args, 'agent', None) or 'heal-cards').strip() or 'heal-cards'
+
+    items, err = pc.fetch_project_items(ssot, limit=limit)
+    if err:
+        return pc.fail('heal-cards', pc.EXIT_GH, err)
+    summary = pc.summarize_card_completeness(ssot, items)
+    if as_json and not apply:
+        print(json.dumps(summary, indent=2))
+        return pc.EXIT_OK
+
+    print(
+        f'heal-cards: check total={summary["total"]} incomplete={summary["incomplete"]} '
+        f'empty_status={summary["empty_status"]} closed_not_done={summary["closed_not_done"]}'
+    )
+    for row in summary['rows']:
+        probs = '; '.join(row.get('problems') or []) or '(none)'
+        print(
+            f'  {row.get("id")}\tstatus={row.get("status") or "(empty)"}\t'
+            f'issue={row.get("issue_state") or "?"}\t{probs}\t{row.get("title")}'
+        )
+
+    if not apply:
+        if summary['incomplete']:
+            print(
+                'next: python3 -m agent_colony project heal-cards --apply '
+                '[--fill-tier1] [--dry-run]'
+            )
+        return pc.EXIT_OK
+
+    done_logical = pc.done_status_logical(ssot)
+    applied = 0
+    queued = 0
+    skipped = 0
+    for row in summary['rows']:
+        item_id = str(row.get('id') or '').strip()
+        if not item_id:
+            continue
+        actions: list[str] = []
+        if row.get('heal_done_candidate'):
+            actions.append(f'set-status→{done_logical}')
+        if fill_tier1:
+            if row.get('missing_priority') and pc.ssot_field_configured(ssot, 'priority'):
+                actions.append('priority→p2')
+            if row.get('missing_size') and pc.ssot_field_configured(ssot, 'size'):
+                actions.append('size→s')
+            if row.get('missing_estimate') and pc.ssot_field_configured(ssot, 'estimate'):
+                actions.append('estimate→1')
+        if not actions:
+            skipped += 1
+            continue
+        if dry_run:
+            print(f'heal-cards: DRY-RUN {item_id} — {", ".join(actions)}')
+            applied += 1
+            continue
+        if row.get('heal_done_candidate'):
+            pre = pc.guard_write_or_queue(
+                root,
+                ssot,
+                cmd='heal-cards',
+                op='set-status',
+                item_id=item_id,
+                agent=agent,
+                payload={'to': done_logical},
+            )
+            if pre is not None:
+                queued += 1
+                print(f'heal-cards: QUEUED set-status {item_id} → {done_logical}')
+                continue
+            ok, detail = pc.set_item_status(ssot, item_id, done_logical)
+            if not ok:
+                q = pc._try_queue_rate_limit(
+                    root,
+                    ssot,
+                    cmd='heal-cards',
+                    err_detail=detail,
+                    op='set-status',
+                    item_id=item_id,
+                    agent=agent,
+                    payload={'to': done_logical},
+                )
+                if q is not None:
+                    queued += 1
+                    print(f'heal-cards: QUEUED set-status {item_id} ({detail})')
+                else:
+                    print(f'heal-cards: FAIL set-status {item_id}: {detail}', file=sys.stderr)
+                    return pc.fail('heal-cards', pc.EXIT_GH, detail)
+            else:
+                print(f'heal-cards: set-status {item_id} → {done_logical}')
+                applied += 1
+        if fill_tier1:
+            if row.get('missing_priority') and pc.ssot_field_configured(ssot, 'priority'):
+                try:
+                    field_id, option_id = pc.resolve_field_option_id(ssot, 'priority', 'p2')
+                except KeyError as exc:
+                    print(f'heal-cards: WARN — priority skip {item_id}: {exc}', file=sys.stderr)
+                else:
+                    proc = pc.run_gh(
+                        [
+                            'project',
+                            'item-edit',
+                            '--project-id',
+                            str(ssot['project_id']),
+                            '--id',
+                            item_id,
+                            '--field-id',
+                            field_id,
+                            '--single-select-option-id',
+                            option_id,
+                        ]
+                    )
+                    if proc.returncode != 0:
+                        detail = (proc.stderr or proc.stdout or 'item-edit failed').strip()
+                        print(f'heal-cards: WARN — priority fail {item_id}: {detail}', file=sys.stderr)
+                    else:
+                        print(f'heal-cards: priority {item_id} → p2')
+                        applied += 1
+            if row.get('missing_size') and pc.ssot_field_configured(ssot, 'size'):
+                try:
+                    field_id, option_id = pc.resolve_field_option_id(ssot, 'size', 's')
+                except KeyError as exc:
+                    print(f'heal-cards: WARN — size skip {item_id}: {exc}', file=sys.stderr)
+                else:
+                    proc = pc.run_gh(
+                        [
+                            'project',
+                            'item-edit',
+                            '--project-id',
+                            str(ssot['project_id']),
+                            '--id',
+                            item_id,
+                            '--field-id',
+                            field_id,
+                            '--single-select-option-id',
+                            option_id,
+                        ]
+                    )
+                    if proc.returncode != 0:
+                        detail = (proc.stderr or proc.stdout or 'item-edit failed').strip()
+                        print(f'heal-cards: WARN — size fail {item_id}: {detail}', file=sys.stderr)
+                    else:
+                        print(f'heal-cards: size {item_id} → s')
+                        applied += 1
+            if row.get('missing_estimate') and pc.ssot_field_configured(ssot, 'estimate'):
+                ok, detail = pc.set_item_number(ssot, item_id, 'estimate', 1.0)
+                if not ok:
+                    print(f'heal-cards: WARN — estimate fail {item_id}: {detail}', file=sys.stderr)
+                else:
+                    print(f'heal-cards: estimate {item_id} → 1')
+                    applied += 1
+
+    print(f'heal-cards: apply done applied={applied} queued={queued} skipped={skipped} dry_run={dry_run}')
+    if queued:
+        print('next: python3 -m agent_colony project outbox flush')
     return pc.EXIT_OK
 
 

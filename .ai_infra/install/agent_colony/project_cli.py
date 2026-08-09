@@ -74,9 +74,14 @@ from project_atomics import (
     format_agent_attribution,
     format_note_line,
     collect_validate_item_problems,
+    summarize_card_completeness,
+    classify_card_completeness,
     is_placeholder_item_id,
     is_placeholder_section_content,
     item_field_value,
+    item_issue_state,
+    done_status_logical,
+    ssot_field_configured,
     latest_notes_line,
     load_card_template,
     load_efficiency_config,
@@ -319,11 +324,15 @@ def cmd_create_from_template(args: argparse.Namespace) -> int:
     item_id, raw, err = create_board_item(ssot, args.title, body)
     if err:
         return fail("create-from-template", EXIT_GH, err)
-    status_to = (getattr(args, "status", None) or "").strip()
-    if status_to and item_id:
+    status_to = (getattr(args, "status", None) or "").strip() or "ready"
+    if item_id:
         ok, detail = set_item_status(ssot, item_id, status_to)
         if not ok:
-            return fail("create-from-template", EXIT_GH, f"created but set-status failed: {detail}")
+            return fail(
+                "create-from-template",
+                EXIT_GH,
+                f"created but set-status failed: {detail}",
+            )
     if item_id:
         try:
             field_id, option_id = resolve_field_option_id(ssot, "priority", priority)
@@ -356,8 +365,15 @@ def cmd_create_from_template(args: argparse.Namespace) -> int:
                 f"created but priority failed: {detail}",
             )
         print(f"priority={priority}")
-        try:
-            size_fid, size_oid = resolve_field_option_id(ssot, "size", size)
+        if ssot_field_configured(ssot, "size"):
+            try:
+                size_fid, size_oid = resolve_field_option_id(ssot, "size", size)
+            except KeyError as exc:
+                return fail(
+                    "create-from-template",
+                    EXIT_USAGE,
+                    f"created but size failed: {exc}",
+                )
             proc = run_gh(
                 [
                     "project",
@@ -374,16 +390,32 @@ def cmd_create_from_template(args: argparse.Namespace) -> int:
             )
             if proc.returncode != 0:
                 detail = (proc.stderr or proc.stdout or "gh project item-edit failed").strip()
-                print(f"create-from-template: WARN — size skipped: {detail}", file=sys.stderr)
-            else:
-                print(f"size={size}")
-        except KeyError as exc:
-            print(f"create-from-template: WARN — size skipped: {exc}", file=sys.stderr)
-        ok, detail = set_item_number(ssot, item_id, "estimate", estimate_num)
-        if not ok:
-            print(f"create-from-template: WARN — estimate skipped: {detail}", file=sys.stderr)
+                return fail(
+                    "create-from-template",
+                    EXIT_GH,
+                    f"created but size failed: {detail}",
+                )
+            print(f"size={size}")
         else:
+            print(
+                "create-from-template: WARN — size skipped: fields.size.field_id missing",
+                file=sys.stderr,
+            )
+        if ssot_field_configured(ssot, "estimate"):
+            ok, detail = set_item_number(ssot, item_id, "estimate", estimate_num)
+            if not ok:
+                return fail(
+                    "create-from-template",
+                    EXIT_GH,
+                    f"created but estimate failed: {detail}",
+                )
             print(f"estimate={estimate_num}")
+        else:
+            print(
+                "create-from-template: WARN — estimate skipped: "
+                "fields.estimate.field_id missing",
+                file=sys.stderr,
+            )
         if guessed:
             guess_note = "Size/Estimate guessed (default s/1)"
             if agent:
@@ -451,8 +483,7 @@ def cmd_create_from_template(args: argparse.Namespace) -> int:
     if item_id:
         save_last_item_id(root, item_id, title=args.title, action="create-from-template")
         print(f"item_id={item_id}")
-        if status_to:
-            print(f"status={status_to}")
+        print(f"status={status_to}")
         print("next: python3 -m agent_colony project claim --last --agent <agent>")
     return EXIT_OK
 
@@ -1341,8 +1372,15 @@ def cmd_guide(args: argparse.Namespace) -> int:
         "# auto-promotes Draft when promote_to_issue_on_pr"
     )
     print("python3 -m agent_colony project validate-item --last")
+    print(
+        "python3 -m agent_colony project heal-cards --check  "
+        "# incomplete Status/Tier-1 inventory; --apply for CLOSED+empty→Done"
+    )
     print("# If EXIT_QUEUED (6): python3 -m agent_colony project outbox flush")
     return EXIT_OK
+def cmd_heal_cards(args: argparse.Namespace) -> int:
+    from project_handlers import run_heal_cards
+    return run_heal_cards(args)
 def cmd_queue(args: argparse.Namespace) -> int:
     from project_handlers import run_queue
     return run_queue(args)

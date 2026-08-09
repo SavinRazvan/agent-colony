@@ -127,7 +127,7 @@ Priority is **independent** of Size (a P0 can be XS).
 
 | Field | When | CLI | Rules |
 |-------|------|-----|-------|
-| **Status** | Always | `claim` / `handoff` / `set-status` | Create → `ready` (or claim → `in_progress`); Exit → `in_review` / `done` |
+| **Status** | Always | `claim` / `handoff` / `set-status` | Create defaults `--status ready` (overridable); Exit → `in_review` / `done` |
 | **Priority** | Create / claim / own | `create-from-template --priority p0\|p1\|p2` or `set-field` | Required on template create — no silent default |
 | **Size** | Create / claim / own | `--size` / `set-field --field size --to xs\|s\|m\|l\|xl` | Per Size↔Estimate table; default `s` + Notes if guessed |
 | **Estimate** | Create / claim / own | `--estimate` / `set-field --field estimate --to N` | Points per table; default `1` + Notes if guessed |
@@ -205,8 +205,21 @@ Rules:
 Board `Status=Done` and the linked GitHub Issue's own `open`/`closed` state are **separate signals** — Status is the continuation SSOT; Issue state is GitHub-native (Issues list, notifications). A card can be `Done` while its Issue stays `open` — this is expected, not a bug, unless you opt in below.
 
 - **Opt-in bridge:** `conventions.close_linked_issue_on_cleanup` (default `false`). When `true`, `full-pr-workflow`'s `finalize.py` best-effort closes the Issue linked to the merged PR's board item, **after** branch cleanup succeeds — never on `set-status`/`claim`/`handoff`, so it can't race ahead of merge/cleanup evidence.
-- **CLI:** `project close-linked-issue --pr N [--dry-run]` — resolves the item via `find-by-pr`, skips silently (no error) when there's no linked Issue, the flag is off, or the Issue is already closed; a `gh` error is `DEFERRED` (non-blocking, printed but never fails cleanup).
+- **CLI:** `project close-linked-issue --pr N [--dry-run]` — resolves the item via `find-by-pr`; **requires board Status=Done** first (else SKIPPED with remediation); skips when there's no linked Issue, the flag is off, or the Issue is already closed; a `gh` error is `DEFERRED` (non-blocking).
 - **Evidence:** outcome recorded in `finalize.md § Linked Issue Closure` (`PASS` / `SKIPPED` / `DEFERRED` / `DRY-RUN` when `finalize.py --dry-run` is used).
+
+### Repair incomplete cards
+
+Empty Status (especially with a CLOSED Issue) breaks Status views. Detection and repair:
+
+```bash
+python3 -m agent_colony project doctor          # WARN counts + heal hint
+python3 -m agent_colony project heal-cards --check
+python3 -m agent_colony project heal-cards --apply [--fill-tier1] [--dry-run]
+python3 -m agent_colony project outbox flush    # if QUEUED
+```
+
+`heal-cards --apply` sets Status→Done only when the linked Issue is CLOSED and Status is empty/non-done. `--fill-tier1` optionally fills missing Priority=`p2` / Size=`s` / Estimate=`1`. `validate-item` flags `missing Status` (and Tier-1 when configured) so empty cards never soft-pass.
 
 ### Rules
 

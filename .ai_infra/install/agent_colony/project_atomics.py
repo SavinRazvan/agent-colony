@@ -484,6 +484,29 @@ ACTIVE_STATUSES = {"in_progress", "in_review", "done"}
 TRIAGE_STATUSES = {"ready", "backlog", "todo"}
 
 
+def ssot_field_configured(ssot: dict[str, Any], field_key: str) -> bool:
+    """True when project_ssot.fields.<key>.field_id is non-empty."""
+    fields = ssot.get("fields") if isinstance(ssot.get("fields"), dict) else {}
+    block = fields.get(field_key) if isinstance(fields, dict) else None
+    return isinstance(block, dict) and bool(str(block.get("field_id") or "").strip())
+
+
+def item_issue_state(item: dict[str, Any] | None) -> str:
+    """Return linked Issue state (OPEN|CLOSED|…) when present on the snapshot."""
+    if not isinstance(item, dict):
+        return ""
+    content = item.get("content")
+    if isinstance(content, dict):
+        return str(content.get("state") or "").strip().upper()
+    return str(item.get("state") or "").strip().upper()
+
+
+def done_status_logical(ssot: dict[str, Any]) -> str:
+    """Normalize conventions.done_status (default done)."""
+    conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
+    return _normalize_status(str(conventions.get("done_status") or "done"))
+
+
 def item_assignees_present(item: dict[str, Any]) -> bool:
     """True when the item snapshot includes an assignees-related key."""
     return any(k in item for k in ("assignees", "assignees.login", "Assignees"))
@@ -550,8 +573,37 @@ def collect_validate_item_problems(
     if raw_status and status not in set(options):
         problems.append(f"unknown status {item.get('status')!r}")
 
-    if status not in ACTIVE_STATUSES | TRIAGE_STATUSES:
+    conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
+    done_logical = done_status_logical(ssot)
+    issue_state = item_issue_state(item)
+
+    def _warn_closed_not_done() -> None:
+        if issue_state == "CLOSED" and status != done_logical:
+            label = raw_status or "(empty)"
+            warnings.append(
+                f"linked Issue CLOSED but Status={label!r} "
+                "(not Done) — run: python3 -m agent_colony project heal-cards"
+            )
+
+    if not raw_status:
+        problems.append("missing Status")
+        for field_name, label in (
+            ("priority", "Priority"),
+            ("size", "Size"),
+            ("estimate", "Estimate"),
+        ):
+            if ssot_field_configured(ssot, field_name) and not item_field_value(
+                item, field_name, label
+            ):
+                problems.append(f"missing {label}")
+        _warn_closed_not_done()
         return problems, warnings
+
+    if status not in ACTIVE_STATUSES | TRIAGE_STATUSES:
+        _warn_closed_not_done()
+        return problems, warnings
+
+    _warn_closed_not_done()
 
     for field_name, label in (("priority", "Priority"), ("size", "Size"), ("estimate", "Estimate")):
         if not item_field_value(item, field_name, label):
@@ -568,7 +620,6 @@ def collect_validate_item_problems(
         warnings.append("start_date.field_id missing; skipping Start date validation")
 
     kind = item_content_kind(item)
-    conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
     kind_default = str(conventions.get("item_kind_default") or "issue").strip().lower()
     if kind == "draft" or kind_default == "draft":
         warnings.append("assignee N/A until promote (Draft)")
@@ -600,6 +651,52 @@ def collect_validate_item_problems(
             problems.append(f"latest Notes line not attributed: {latest[:80]}")
 
     return problems, warnings
+
+
+def classify_card_completeness(
+    ssot: dict[str, Any], item: dict[str, Any]
+) -> dict[str, Any]:
+    """Classify one board item for Status/Tier-1 heal inventory."""
+    problems, warnings = collect_validate_item_problems(ssot, item)
+    status = _normalize_status(str(item.get("status") or ""))
+    raw_status = str(item.get("status") or "").strip()
+    done_logical = done_status_logical(ssot)
+    issue_state = item_issue_state(item)
+    heal_done = issue_state == "CLOSED" and status != done_logical
+    return {
+        "id": str(item.get("id") or ""),
+        "title": _item_title(item),
+        "status": raw_status,
+        "status_normalized": status,
+        "issue_state": issue_state,
+        "problems": list(problems),
+        "warnings": list(warnings),
+        "heal_done_candidate": heal_done,
+        "incomplete": bool(problems) or heal_done,
+        "missing_priority": "missing Priority" in problems,
+        "missing_size": "missing Size" in problems,
+        "missing_estimate": "missing Estimate" in problems,
+        "missing_status": "missing Status" in problems,
+    }
+
+
+def summarize_card_completeness(
+    ssot: dict[str, Any], items: list[dict[str, Any]]
+) -> dict[str, Any]:
+    """Aggregate incomplete-card counts for doctor / heal-cards --check."""
+    rows = [
+        classify_card_completeness(ssot, it) for it in items if isinstance(it, dict)
+    ]
+    incomplete = [r for r in rows if r.get("incomplete")]
+    return {
+        "total": len(rows),
+        "incomplete": len(incomplete),
+        "empty_status": sum(1 for r in rows if r.get("missing_status")),
+        "closed_not_done": sum(1 for r in rows if r.get("heal_done_candidate")),
+        "missing_priority": sum(1 for r in rows if r.get("missing_priority")),
+        "missing_size": sum(1 for r in rows if r.get("missing_size")),
+        "rows": incomplete,
+    }
 
 
 def ensure_start_date_if_starting(

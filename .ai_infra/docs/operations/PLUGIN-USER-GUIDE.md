@@ -155,6 +155,7 @@ Discover ids: manually via `gh project view <N> --owner <login>` / `gh project f
 | 4. Doctor + board shell | `project doctor` → optional **minimal overlay** (`board-shell.schema.minimal.yaml` → `.local/user_settings/board-shell.schema.yaml`) for **2 views** matching [Playground #3](https://github.com/users/SavinRazvan/projects/3), **or** six-view default without overlay. → **`/board`** CONSENT GATE + TURN PROTOCOL → `board-bootstrap --check` until **exit 0** → `project status`. |
 | 5. First card | `python3 -m agent_colony project create-from-template --template slice --title "…" --priority p1 --size s --estimate 1 --agent implementer` (assigns `owner.github_user` on Issues) → `claim --last --agent implementer` (sets Start date). Prefer `project guide`. |
 | 6. Rate-limit buffer | Writes may **precheck** GraphQL quota (cached REST) or queue on throttle / Forbidden / 429. If a write returns **EXIT_QUEUED (6)**, do **not** retry-loop — continue local evidence; after quota recovers run `python3 -m agent_colony project outbox status` then `project outbox flush`. Configure `project_ssot.outbox` (`precheck_writes`, `dedupe_pending`, …) in collaboration YAML. Outbox is a local buffer, not a second Status SSOT. |
+| 7. Incomplete cards | `project doctor` WARNs empty Status / CLOSED-not-Done counts. Repair: `project heal-cards --check` then `heal-cards --apply` (optional `--fill-tier1`). |
 
 #### GitHub CLI auth (Projects)
 
