@@ -1,4 +1,7 @@
-https://github.com/user-attachments/assets/f9015ab5-28bf-47f7-a065-2127c098b80e
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/f9015ab5-28bf-47f7-a065-2127c098b80e" width="420" controls>
+  </video>
+</p>
 
 # Agent Colony
 
