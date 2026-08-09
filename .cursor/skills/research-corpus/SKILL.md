@@ -41,6 +41,8 @@ Build a Brief from **any** of:
 | `github:owner/repo[@ref]` | Canonical |
 | Local path | `path:…` or bare path |
 
+**DeepWiki is not a research source locator.** Packs clone from GitHub/`path:`. Optional wiki Q&A uses MCP `deepwiki` with **`repoName":"owner/repo"`** (must be indexed on [deepwiki.com](https://deepwiki.com)) — see `researcher` MCP section and `/mcp-connect`. Do not pass a deepwiki.com URL to `research init --source`.
+
 ### Defaults (terse chat)
 
 If only a link/path is given:

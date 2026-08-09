@@ -38,7 +38,19 @@ python3 -m agent_colony mcp validate
 python3 -m agent_colony mcp doctor
 python3 -m agent_colony mcp smoke --server agent-colony-mcp
 python3 -m agent_colony mcp smoke --server deepwiki
+# DeepWiki live call (repoName; repo must be indexed on deepwiki.com):
+python3 -m agent_colony mcp call --server deepwiki --tool ask_question \
+  --args-json '{"repoName":"karpathy/nanochat","question":"What is nanochat in one sentence?"}'
 ```
+
+### Agent contract — DeepWiki
+
+| Do | Do not |
+|----|--------|
+| `list-tools --server deepwiki` before inventing args | Guess `repo` — the tool wants **`repoName`** |
+| Pass `owner/repo` as `repoName` (same slug as GitHub) | Pass a deepwiki.com URL as the MCP arg |
+| Prefer indexed smoke targets (e.g. `karpathy/nanochat`) | Treat “Repository not found” as a kit bug — index on deepwiki.com first |
+| Use GitHub URL / `github:` for `research init\|fetch` | Use DeepWiki MCP as a substitute for cloning the corpus |
 
 ## Steps (<5 min) — first-time worksheets
 
