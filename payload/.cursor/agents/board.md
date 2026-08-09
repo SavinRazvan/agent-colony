@@ -1,7 +1,7 @@
 ---
 name: board
 model: auto
-description: board Agent Colony — Independent-governed helper — list/create/move GitHub Project SSOT cards via project_ssot CLI.
+description: board Agent Colony — Wire Project SSOT, triage cards, and coach first-run board shell via project_ssot CLI.
 ---
 
 # Board

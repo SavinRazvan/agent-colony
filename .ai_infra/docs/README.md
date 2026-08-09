@@ -7,8 +7,8 @@
 | You are | Read first |
 |---------|------------|
 | **Visitor / public** | Root [README.md](../../README.md) (landing) → [consumer-quickstart](operations/consumer-quickstart.md) |
-| **New consumer** | [consumer-quickstart](operations/consumer-quickstart.md) → [PLUGIN-USER-GUIDE](operations/PLUGIN-USER-GUIDE.md) |
-| **Kit maintainer** | [CONTRIBUTING.md](../../CONTRIBUTING.md) → [AGENTS.md](../../AGENTS.md) → [repository-map](handoff/repository-map.md) → [PLUGIN-ARCHITECTURE](handoff/PLUGIN-ARCHITECTURE.md) → [IMPLEMENTATION-STATUS](handoff/IMPLEMENTATION-STATUS.md) |
+| **New consumer** | [consumer-quickstart](operations/consumer-quickstart.md) → [PLUGIN-USER-GUIDE](operations/PLUGIN-USER-GUIDE.md) · glossary: [abbreviations-notepad](operations/abbreviations-notepad.md) |
+| **Kit maintainer** | [CONTRIBUTING.md](../../CONTRIBUTING.md) → [AGENTS.md](../../AGENTS.md) → [repository-map](handoff/repository-map.md) → [PLUGIN-ARCHITECTURE](handoff/PLUGIN-ARCHITECTURE.md) → [IMPLEMENTATION-STATUS](handoff/IMPLEMENTATION-STATUS.md) · glossary: [abbreviations-notepad](operations/abbreviations-notepad.md) |
 | **Governance / policy** | [governance/README](governance/README.md) |
 
 ## Folders
@@ -39,6 +39,7 @@
 | [workflow-architecture.md](architecture/workflow-architecture.md) | Three planes (C4-lite) — copied on activate |
 | [PLUGIN-USER-GUIDE.md](operations/PLUGIN-USER-GUIDE.md) | Plugin manual — copied on activate |
 | [consumer-quickstart.md](operations/consumer-quickstart.md) | Install + verify cheat sheet — copied on activate |
+| [abbreviations-notepad.md](operations/abbreviations-notepad.md) | Glossary (SSOT, DRIFT, Pattern A, agents) — copied on activate |
 
 ## UI templates
 

@@ -232,8 +232,8 @@ export default function AgentAuditorCanvas() {
         </Row>
         <Text tone="secondary">
           auditor Agent Colony — Deep/periodic evidence architecture audit
-          (CHK-* security/perf/granularity/docs); continuous plan pulse is
-          drift-guard. Writes workflow artifacts for other agents.
+          (CHK-* security/perf/granularity/docs); not continuous plan pulse.
+          Writes workflow artifacts for other agents.
         </Text>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only

@@ -28,7 +28,8 @@ const AGENTS = [
   },
   {
     id: "verifier",
-    description: "verifier Agent Colony — Claims vs evidence; minimal high-signal checks.",
+    description:
+      "verifier Agent Colony — Check “done” claims against fresh evidence (try to disprove; no code fixes).",
   },
   {
     id: "test-runner",
@@ -47,7 +48,7 @@ const AGENTS = [
   {
     id: "board",
     description:
-      "board Agent Colony — Independent-governed helper — list/create/move GitHub Project SSOT cards via project_ssot CLI.",
+      "board Agent Colony — Wire Project SSOT, triage cards, and coach first-run board shell via project_ssot CLI.",
   },
   {
     id: "integrator",
@@ -181,7 +182,7 @@ const ROSTER_EDGES: RosterEdge[] = [
 
 const RESEARCHER_REDIRECTS = [
   ["implementer", "Product code / commits"],
-  ["verifier", "Claims vs evidence"],
+  ["verifier", "Claims vs evidence (no code fixes)"],
   ["auditor", "Architecture audits"],
   ["drift-guard", "Drift / tracker coherence"],
   ["integrator", "Kit surface integration"],

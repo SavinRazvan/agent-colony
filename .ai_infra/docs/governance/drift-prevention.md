@@ -58,7 +58,7 @@ Script-first checks for plan ↔ tracker ↔ session-pointer coherence, handoff 
 | Canonical doc facts (roster, counts) | `check_doc_facts.py` / INT-013 | Path/brand scans |
 | test-plan/index existence | `check_testing_artifacts.py` | File exists checks |
 | Plugin/payload SHA drift | `sync_plugin_bundle.py --check` | Bundle sync |
-| Slice claim verification | `verifier` | Subjective verification |
+| Slice claim verification | `verifier` | Evidence-based claim verification (Verified\|Partial\|Not verified) |
 | Architecture / security / perf scorecard (CHK-*) | `auditor` | Module deep-dive / EA phases |
 
 **Command:** `python -m agent_colony drift validate --directory .` or `make drift-validate`.

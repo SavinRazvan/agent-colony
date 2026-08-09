@@ -209,8 +209,8 @@ export default function AgentBoardCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          board Agent Colony — Independent-governed helper — list/create/move
-          GitHub Project SSOT cards via project_ssot CLI.
+          board Agent Colony — Wire Project SSOT, triage cards, and coach
+          first-run board shell via project_ssot CLI.
         </Text>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only

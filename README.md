@@ -48,14 +48,16 @@ Agent chats lose Status. Trackers and docs drift. Teams re-explain the same slic
 
 | Agent | Job |
 |-------|-----|
-| `implementer` | Ship disciplined slices |
-| `test-runner` | Module tests and coverage evidence |
-| `verifier` | Falsify claims with fresh evidence |
-| `auditor` | Deep / periodic architecture audit |
-| `researcher` | Brief-driven research packs |
-| `integrator` | Add agents, skills, MCP, kit expansions |
-| `drift-guard` | Goal/plan/doctrine + DRIFT scripts |
-| `board` | Wire Project SSOT and coach the board shell |
+| `implementer` | Disciplined implementation slices with trackers and Pattern A gates |
+| `test-runner` | Module-focused tests, regressions, and coverage |
+| `verifier` | Check “done” claims against fresh evidence (try to disprove; no code fixes) |
+| `auditor` | Deep/periodic evidence architecture audit (CHK-*; not plan pulse) |
+| `researcher` | Brief-driven multi-round research packs; no product code |
+| `integrator` | Integrate agents, skills, MCP expansions (procedural, Pattern A) |
+| `drift-guard` | Continuous goal/plan/doctrine coherence + DRIFT scripts (handoff remediations only) |
+| `board` | Wire Project SSOT, triage cards, and coach first-run board shell |
+
+When `project_ssot.enabled`, agents **enter** by reading the board and **exit** by updating Status and Notes — see [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md).
 
 Slash skills cover activate, update, board protocols, PR lifecycle (`/review-pr` → `/prepare-pr` → `/merge-pr`), and more — see the [Plugin User Guide](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md).
 
@@ -139,6 +141,7 @@ Developing **this** repository? See **[CONTRIBUTING.md](CONTRIBUTING.md)** (clon
 |-----|----------|
 | [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md) | Consumers — 5-step install |
 | [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) | Consumers — full manual |
+| [Abbreviations notepad](.ai_infra/docs/operations/abbreviations-notepad.md) | Consumers + kit-dev — glossary (SSOT, DRIFT, Pattern A, agents) |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Kit-dev setup |
 | [AGENTS.md](AGENTS.md) | Kit-dev agent doctrine |
 | [Docs index](.ai_infra/docs/README.md) | Full `.ai_infra/docs/` navigation |

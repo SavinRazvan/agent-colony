@@ -346,9 +346,9 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | **First-run board shell** *(SSOT on)* | `/board` | paste Project+repo URLs → wire YAML → `project doctor` → `board-bootstrap --check` | [board-shell](../../.cursor/skills/board-shell/SKILL.md) · checklist §3b–4 |
 | **Implement a feature slice** | `/implementer` | — | [implementer-loop](../../.cursor/skills/implementer-loop/SKILL.md) |
 | **Run tests / coverage** | `/test-runner` | `pytest -q` | [workflow-complete.md](workflow-complete.md) §C |
-| **Verify a claim** | `/verifier` | — | Evidence-only checks |
+| **Verify a claim** | `/verifier` | — | Check done claims vs evidence (no code fixes) |
 | **Architecture audit** *(not day-0)* | `/auditor` | — (subagent only; no dedicated MCP tool) | [agent-workflow-procedures.md](agent-workflow-procedures.md) §1 — after board shell |
-| **Operational drift** (plan ↔ tracker) | `/drift-guard` (optional) | `python3 -m agent_colony drift validate --profile consumer` on app projects | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) · [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
+| **Operational drift** (goal/plan/doctrine/docs + DRIFT; board-first when SSOT on) | `/drift-guard` (optional) | `python3 -m agent_colony drift validate --profile consumer` on app projects | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) · [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
 | **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` `resolve_gates()` | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
 | **Add agents / skills / MCP** | `/integrator` + `/integrator-protocol` | `integrate validate` | [integrator-protocol skill](../../.cursor/skills/integrator-protocol/SKILL.md) · [mas-infrastructure-integration.md](mas-infrastructure-integration.md) (ops filename kept) |
 | **Connect external MCP** | `/mcp-connect` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
@@ -477,6 +477,7 @@ More: [consumer-quickstart.md](consumer-quickstart.md) § Troubleshooting.
 | Topic | Doc |
 |-------|-----|
 | 5-step cheat sheet | [consumer-quickstart.md](consumer-quickstart.md) |
+| Glossary / abbreviations | [abbreviations-notepad.md](abbreviations-notepad.md) |
 | All runbooks | [operations README](README.md) |
 | Three-plane architecture | [workflow-architecture.md](../architecture/workflow-architecture.md) |
 | Board day-to-day | skill `board-ssot` · shell coach `board-shell` |

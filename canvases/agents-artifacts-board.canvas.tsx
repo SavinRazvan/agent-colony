@@ -116,7 +116,7 @@ const WHO_WRITES: string[][] = [
     "verifier",
     "Done or In review + failure Notes",
     ".local/workflow-artifacts/pr/ (claims vs evidence Notes)",
-    "Claims vs evidence",
+    "Claims vs evidence (no code fixes)",
   ],
   [
     "auditor",

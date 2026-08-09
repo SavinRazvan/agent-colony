@@ -62,6 +62,7 @@ Do **not** run `agent_colony update --force` against this kit-dev tree — use `
 | Doc | Role |
 |-----|------|
 | [AGENTS.md](AGENTS.md) | Agent doctrine, continuation, commit trailers |
+| [abbreviations-notepad.md](.ai_infra/docs/operations/abbreviations-notepad.md) | Glossary for kit terms (SSOT, DRIFT, Pattern A, agents) |
 | [repository-map.md](.ai_infra/docs/handoff/repository-map.md) | SSOT vs generated vs consumer install |
 | [PLUGIN-ARCHITECTURE.md](.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md) | Plugin bundle, three planes |
 | [IMPLEMENTATION-STATUS.md](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) | Shipped vs spec, test counts, canvases |

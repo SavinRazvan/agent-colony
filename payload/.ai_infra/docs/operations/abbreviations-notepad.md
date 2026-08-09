@@ -3,19 +3,25 @@ File: abbreviations-notepad.md
 Path: .ai_infra/docs/operations/abbreviations-notepad.md
 Role: Glossary for Agent Colony workflow terminology.
 Used By:
- - README.md
+ - README.md (Documentation map)
+ - CONTRIBUTING.md
  - AGENTS.md
+ - .ai_infra/docs/README.md
+ - PLUGIN-USER-GUIDE.md
+ - consumer-quickstart.md
+ - operations/README.md
 Depends On:
  - .ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md
  - .ai_infra/docs/decisions/README.md
 Notes:
  - Keep definitions short for newcomers.
  - Numbered catalogs (ADR-NNN, DRIFT-NNN, EA-NNN, INT-NNN, DOC-NNN) live in their index docs — list stems here only.
+ - Linked for both consumers (activate payload) and kit-dev onboarding.
 -->
 
 # Abbreviations Notepad
 
-Quick reference for reading `README.md`, `AGENTS.md`, and kit docs.
+Quick reference for reading `README.md`, `AGENTS.md`, and kit docs — for **consumers** (after activate) and **kit-dev**.
 
 ## Agent Colony flow (plain language)
 
@@ -98,11 +104,11 @@ High-signal drift ids you will see often: **DRIFT-009** (no competing tracker `i
 
 | Agent | Role |
 |-------|------|
-| board | Board triage, Status, Tier-1 fields; hand off to implementer |
+| board | Wire Project SSOT, triage, Tier-1; coach board shell; hand off to implementer |
 | implementer | Slice implementation |
 | integrator | Extend agents/skills/MCP into kit infrastructure |
 | test-runner | Module tests and coverage |
-| verifier | Evidence-based verification |
+| verifier | Check done claims vs evidence (no code fixes) |
 | auditor | Architecture audits (alignment / scorecard artifacts) |
 | drift-guard | Operational drift audit + board Exit for drift-pass cards |
 | researcher | Brief-driven research packs; CLI `research init\|fetch\|validate` |
