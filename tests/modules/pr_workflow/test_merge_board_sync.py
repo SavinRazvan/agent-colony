@@ -117,6 +117,49 @@ def test_sync_board_happy_with_item_id(
     assert "@test/merge.py" in line
 
 
+def test_sync_board_sets_end_date_when_configured(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    ssot = {
+        **SAMPLE_SSOT,
+        "fields": {
+            **SAMPLE_SSOT["fields"],
+            "end_date": {"field_id": "PVTF_end"},
+        },
+        "conventions": {
+            **SAMPLE_SSOT["conventions"],
+            "set_end_date_on_done": True,
+        },
+    }
+    end_calls: list[tuple] = []
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(project_cli, "set_item_status", lambda *a, **k: (True, "98236657"))
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_item_by_id",
+        lambda *a, **k: (_ready_item(), None),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "ensure_end_date_if_done",
+        lambda *a, **k: end_calls.append(a) or (True, "2026-08-09", True),
+    )
+    monkeypatch.setattr(project_cli, "edit_item_body", lambda *a, **k: (True, "ok"))
+    monkeypatch.setattr(
+        project_cli,
+        "format_note_line",
+        lambda root, agent, text: f"@test/{agent} · {text}",
+    )
+    line = merge_mod.sync_board_after_merge(
+        root=tmp_path, pr="42", merge_sha="deadbeef", item_id="PVTI_x"
+    )
+    assert end_calls, f"ensure_end_date_if_done not called; line={line}"
+    assert "PVTI_x" in line
+    out = capsys.readouterr()
+    assert "end_date=2026-08-09" in out.out or "end_date=2026-08-09" in out.err
+    assert len(end_calls) == 1
+
+
 def test_sync_board_warn_when_no_item(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

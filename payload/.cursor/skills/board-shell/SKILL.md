@@ -134,7 +134,7 @@ Use this when driving **cursor-ide-browser** (or when coaching clicks). Prefer *
 | New view | **+ New view** (or **New view**) → pick layout → name it | New tab exists with correct name |
 | Layout | View menu / **⋯** → **Layout** → **Board** / **Table** / **Roadmap** | Layout matches turn |
 | Group by (required) | View menu / toolbar **Group by** → **Status** (Status board) | Board columns are Status groups |
-| Show Tier-1 columns | Active view → **+** / field picker / **Fields** / **View settings → Fields** → enable **Priority**, **Size**, **Estimate**, **Start date** | `--check` no longer FAILs those columns on that view |
+| Show Tier-1 columns | Active view → **+** / field picker / **Fields** / **View settings → Fields** → enable **Priority**, **Size**, **Estimate**, **Start date**, **End date** | `--check` no longer FAILs those columns on that view |
 | Clear Slice by (if set by mistake) | View menu → **Slice by** → **No slicing** (or clear) | No slice chips; groups only if Group by set |
 | Save view | If UI shows unsaved / **Save** on the view | Changes persist after reload |
 | README | Prefer CLI `--apply-readme` after consent; else Project **⋯** / Settings → **README** | README non-empty; `--check` OK |
@@ -150,7 +150,7 @@ Use this when driving **cursor-ide-browser** (or when coaching clicks). Prefer *
 1. Tell human: open the Project → click the view tab named **View 1** (or similar).
 2. Rename it to **Status board**.
 3. Layout = **Board**; Group by = **Status**.
-4. Show fields/columns: Title, Assignees, Status, **Priority**, **Size**, **Estimate**, **Start date**, Linked pull requests.
+4. Show fields/columns: Title, Assignees, Status, **Priority**, **Size**, **Estimate**, **Start date**, **End date**, Linked pull requests.
 5. Ask: reply `done` when Status board exists. Then re-run `--check` (expect fewer FAILs).
 
 **Turn B — Prioritized backlog (new Table view)**
@@ -192,7 +192,7 @@ Or paste contents of `project-readme.md` into Project README settings. Re-check.
 
 **Turn H — clear Tier-1 column FAILs**
 
-If `--check` still FAILs missing Priority/Size/Estimate/Start date on Status board or Prioritized backlog: open that view → **+** field picker → show the missing columns. Re-check until `board-bootstrap --check` exits **0** (no view FAIL and no Tier-1 column FAILs). Leftover `View N` WARNs are cosmetic and can be cleared separately.
+If `--check` still FAILs missing Priority/Size/Estimate/Start date/End date on Status board or Prioritized backlog: open that view → **+** field picker → show the missing columns. Re-check until `board-bootstrap --check` exits **0** (no view FAIL and no Tier-1 column FAILs). Leftover `View N` WARNs are cosmetic and can be cleared separately.
 
 Between every turn print:
 
@@ -239,7 +239,7 @@ When the user asks for a **simple board** (Status board + Prioritized backlog on
 
 - Edit overlay `.local/user_settings/board-shell.schema.yaml` only if your team intentionally drops a Playground view (expect FAIL→WARN tradeoffs).
 - **Safe:** Insights, Iteration columns, filters. (End date is Tier-1 — keep visible on Status board / Prioritized backlog.)
-- **Unsafe:** remove Status / Priority / Size / Estimate / Start date fields, or hide **Priority** on Prioritized backlog.
+- **Unsafe:** remove Status / Priority / Size / Estimate / Start date / End date fields, or hide **Priority** on Prioritized backlog.
 
 ## Exit
 

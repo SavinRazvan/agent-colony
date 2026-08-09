@@ -235,3 +235,25 @@ def test_cmd_heal_cards_delegates(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(project_handlers, "run_heal_cards", fake_run)
     assert project_cli.cmd_heal_cards(argparse.Namespace()) == project_cli.EXIT_OK
     assert called["n"] == 1
+
+
+def test_assert_body_ready_ignores_missing_end_date() -> None:
+    """Done body gate must not deadlock on End date (set after Status write)."""
+    item = {
+        "id": "PVTI_done",
+        "title": "closing",
+        "status": "In review",
+        "priority": "p1",
+        "size": "s",
+        "estimate": "1",
+        "start date": "2026-08-01",
+        "content": {
+            "body": (
+                "## Acceptance\n\n- ok\n\n## Rollback\n\n- revert\n\n"
+                "## Notes\n\n- @u/a · note\n"
+            ),
+        },
+    }
+    ok, detail = pa.assert_body_ready_for_status(SAMPLE_SSOT, item, "done")
+    assert ok, detail
+    assert "missing End date" not in detail

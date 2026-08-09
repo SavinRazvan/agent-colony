@@ -163,6 +163,9 @@ def assert_body_ready_for_status(
     Gate Status → in_review|done using collect_validate_item_problems on a target snapshot.
 
     Returns (ok, detail). detail is empty when ok; otherwise problems + set-section remediation.
+
+    End date is omitted from the gate when targeting Done — callers set it via
+    ensure_end_date_if_done after the status write (mirror of Start date on In progress).
     """
     target = _normalize_status(str(target_status or ""))
     if target not in BODY_GATE_STATUSES:
@@ -172,6 +175,9 @@ def assert_body_ready_for_status(
     snapshot = dict(item)
     snapshot["status"] = target
     problems, _warnings = collect_validate_item_problems(ssot, snapshot)
+    # Auto-filled after Status→Done; requiring it here deadlocks the transition.
+    if target == done_status_logical(ssot):
+        problems = [p for p in problems if p != "missing End date"]
     if not problems:
         return True, ""
     rem = (
