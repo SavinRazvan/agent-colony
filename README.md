@@ -1,5 +1,15 @@
 <p align="center">
-  <img src="assets/agent-colony-logo.png" alt="Agent Colony" width="160" height="160" />
+  <video
+    src="https://github.com/SavinRazvan/agent-colony/releases/download/media/agent-colony-hero.mp4"
+    poster="assets/agent-colony-logo.png"
+    autoplay
+    loop
+    muted
+    playsinline
+    width="420"
+  >
+    <img src="assets/agent-colony-logo.png" alt="Agent Colony" width="160" height="160" />
+  </video>
 </p>
 
 # Agent Colony
