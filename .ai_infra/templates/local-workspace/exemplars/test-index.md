@@ -24,9 +24,9 @@ Notes:
 ## Current index
 
 - Module: `_project_`
-  - Owned tests: `tests/modules/smoke/`
+  - Owned tests: `(none yet — add tests/modules/<name>/ as you ship product tests)`
   - Coverage status: `gap`
-  - Notes: rename module; add paths as you add product tests
+  - Notes: kit activate does not leave a smoke pytest; rename module when known
 
 ## Template row (copy per module)
 

@@ -125,7 +125,7 @@ python3 -m agent_colony integrate validate
 python3 -m agent_colony gates
 ```
 
-Pass: `VERIFY PASS` on activate; `contributors validate: PASS` (after editing placeholders); `integrate validate` P0 = 0 (plugin parity skipped on consumer); `gates` green. Kit smoke alone: `pytest -q tests/modules/smoke/` → **1 passed**; full `gates` runs **your app tests + smoke** (e.g. 120 on Smart-Notes).
+Pass: `VERIFY PASS` on activate; `contributors validate: PASS` (after editing placeholders); `integrate validate` P0 = 0 (plugin parity skipped on consumer); `gates` green. Layout is checked in-process (no `tests/modules/smoke/` by default); full `gates` runs **your app tests** when present (e.g. 120 on Smart-Notes).
 
 **Drift on consumer apps:** auto profile may read `kit-dev` unless `work-tracker.md` contains `STARTER-001`. Use explicit consumer profile (no agent required):
 

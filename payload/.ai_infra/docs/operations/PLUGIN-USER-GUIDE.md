@@ -235,7 +235,7 @@ your-project/
 │   └── agents-control-center/
 ├── agent_colony/               # python3 -m agent_colony shim
 ├── .venv/                         # created on activate
-└── tests/modules/smoke/           # install smoke test only
+└── (your app tests under tests/ — kit does not leave a smoke pytest by default)
 ```
 
 **Not installed:** kit full `tests/`, `Makefile`, `docs/handoff/`, CI/release scripts, maintainer megadocs. Those exist only in the [kit repository](https://github.com/SavinRazvan/agent-colony).
@@ -279,7 +279,7 @@ source .venv/bin/activate
 | `python3 -m agent_colony integrate validate` | Integration checks |
 | `python3 -m agent_colony gates` | Full smoke gates |
 | `python3 -m agent_colony drift validate --profile consumer` | Consumer drift (no agent required) — see [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
-| `python3 -m pytest -q tests/modules/smoke/` | Install smoke |
+| `python3 -m agent_colony health` | Layout check (activate VERIFY; no kit smoke pytest by default) |
 
 Full list: [consumer-quickstart.md](consumer-quickstart.md) § Terminal commands cheat sheet.
 

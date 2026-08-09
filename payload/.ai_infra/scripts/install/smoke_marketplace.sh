@@ -66,7 +66,8 @@ for page in pages["pages"]:
 PY
 
 "$SMOKE/.venv/bin/python" -m agent_colony gates --directory "$SMOKE"
-"$SMOKE/.venv/bin/python" -m pytest -q "$SMOKE/tests/modules/smoke/"
+"$SMOKE/.venv/bin/python" -m agent_colony health --directory "$SMOKE"
+test ! -f "$SMOKE/tests/modules/smoke/test_kit_installed.py"
 
 echo
 echo "=== TRACK A: user_settings idempotency ==="

@@ -224,7 +224,7 @@ def consumer_overlay_path(root: Path) -> Path:
 
 
 def is_kit_dev_install(root: Path) -> bool:
-    """Kit product repo ships install test marker; consumer smoke layout does not."""
+    """Kit product repo ships install test marker; consumer installs do not."""
     return (
         Path(root).resolve() / "tests" / "modules" / "install" / "test_scaffold.py"
     ).is_file()

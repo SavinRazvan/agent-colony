@@ -10,7 +10,6 @@
         ".ai_infra/paths.py",
         ".ai_infra/manifest.yaml",
         ".local/index-and-planning/current/session-pointer.md",
-        "tests/modules/smoke/test_kit_installed.py",
         "AGENTS.md",
         "agent_colony/__main__.py",
         ".ai_infra/install/agent_colony/cli.py"

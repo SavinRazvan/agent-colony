@@ -154,7 +154,9 @@ def test_sanity_check_reports_all_failure_branches(tmp_path: Path) -> None:
     assert any("CHECK FAIL" in line for line in log)
 
 
-def test_run_verify_uses_sys_executable_fallback(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_run_verify_skips_pytest_when_no_tests(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     mod = _load_scaffold()
     target = tmp_path / "project"
     (target / ".ai_infra" / "scripts" / "pr").mkdir(parents=True)
@@ -167,7 +169,6 @@ def test_run_verify_uses_sys_executable_fallback(tmp_path: Path, monkeypatch: py
             "import sys\nsys.exit(0)\n", encoding="utf-8"
         )
     log: list[str] = []
-    monkeypatch.chdir(target)
     calls: list[list[str]] = []
 
     def _fake_run(cmd, cwd=None, check=False):  # noqa: ANN001
@@ -177,7 +178,39 @@ def test_run_verify_uses_sys_executable_fallback(tmp_path: Path, monkeypatch: py
     monkeypatch.setattr(mod.subprocess, "run", _fake_run)
     code = mod._run_verify(target, log)
     assert code == 0
-    assert calls[0][0] == sys.executable
+    assert any("VERIFY SKIP pytest" in line for line in log)
+    assert not any(len(c) >= 3 and c[1] == "-m" and c[2] == "pytest" for c in calls)
+
+
+def test_run_verify_runs_pytest_when_tests_present(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    (target / ".ai_infra" / "scripts" / "pr").mkdir(parents=True)
+    (target / ".ai_infra" / "scripts" / "pr" / "check_testing_artifacts.py").write_text(
+        "import sys\nsys.exit(0)\n", encoding="utf-8"
+    )
+    (target / ".ai_infra" / "scripts" / "architecture").mkdir(parents=True)
+    for name in ("check_governance_consistency.py", "check_debrand.py"):
+        (target / ".ai_infra" / "scripts" / "architecture" / name).write_text(
+            "import sys\nsys.exit(0)\n", encoding="utf-8"
+        )
+    (target / "tests" / "modules" / "app").mkdir(parents=True)
+    (target / "tests" / "modules" / "app" / "test_ok.py").write_text(
+        "def test_ok():\n    assert True\n", encoding="utf-8"
+    )
+    log: list[str] = []
+    calls: list[list[str]] = []
+
+    def _fake_run(cmd, cwd=None, check=False):  # noqa: ANN001
+        calls.append(cmd)
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(mod.subprocess, "run", _fake_run)
+    code = mod._run_verify(target, log)
+    assert code == 0
+    assert any(len(c) >= 3 and c[1] == "-m" and c[2] == "pytest" for c in calls)
 
 
 def test_run_verify_returns_first_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
