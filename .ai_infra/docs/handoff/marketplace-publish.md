@@ -29,7 +29,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 5. `make check-plugin` — bundle parity green
 6. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
 7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02); **done** 0.4.0 → 0.5.0 (2026-08-07); **done** 0.5.0 → 0.6.0 (2026-08-07, CLI module rename); **done** 0.6.0 → 0.6.1 (2026-08-07, MCP package rename)
-8. [x] `assets/agent-colony-logo` (1:1, background plate) — see `assets/README.md` — **present** (commit `1f16af1`, 1024×1024 PNG RGBA, ~1.5 MB; verified 2026-07-02)
+8. [x] `assets/agent-colony-logo.png` (1:1, background plate) — see `assets/README.md` — **present** (~1254×1254 PNG; include `.png` in URLs)
 9. [x] Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — **PASS 2026-07-08**
    on **Smart-Notes** (`~/Projects/Smart-Notes`): chat activate + terminal matrix green.
    Historical local evidence paths (recreate on next UI smoke under `.local/workflow-artifacts/release/`):
@@ -76,7 +76,7 @@ After bump: `make sync-plugin && make check-plugin`, tag `vX.Y.Z`, optional GitH
 
 ```text
 .cursor-plugin/plugin.json   # no path-override fields — spec-exact discovery
-assets/agent-colony-logo    # Marketplace logotype (commit before publisher submit)
+assets/agent-colony-logo.png    # Marketplace logotype (commit before publisher submit)
 agents/            # Cursor-loaded — sibling of .cursor-plugin/, matches cursor/plugin-template
 rules/             # Cursor-loaded — sibling of .cursor-plugin/
 skills/            # Cursor-loaded — sibling of .cursor-plugin/
@@ -197,7 +197,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 | Organization name | Savin Ionuț Răzvan |
 | Organization handle | `savin-razvan` (or `agent-colony`) |
 | Contact email | razvan.i.savin@gmail.com |
-| Logotype URL | `https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/agent-colony-logo` |
+| Logotype URL | `https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/agent-colony-logo.png` |
 | Description | Agent Colony installs multi-agent workflow into any Cursor project (8 agents, 14 skills, 7 rules): GitHub Project as writable backlog/status SSOT, PR lifecycle scripts, `.local/` evidence, optional MCP. Run **`/workflow-activate`**, then first-run **`/board`** (Playground board shell) before **`/implementer`**. Pattern A: one script per maintainer action. |
 | GitHub repository | https://github.com/SavinRazvan/agent-colony |
 | Owner | Individual · razvan.i.savin@gmail.com |

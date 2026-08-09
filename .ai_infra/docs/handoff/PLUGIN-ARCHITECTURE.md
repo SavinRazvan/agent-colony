@@ -74,7 +74,7 @@ agent-colony/
 ├── rules/                      # generated — COMMITTED
 ├── skills/                     # generated — COMMITTED
 ├── payload/                    # generated (ADR-001 install source) — COMMITTED
-├── assets/agent-colony-logo
+├── assets/agent-colony-logo.png
 ├── .cursor/                    # canonical dev source for agents/rules/skills above
 ├── .agents/                    # maintainer-only slash skills, merged into skills/
 ├── .ai_infra/              # canonical product tree

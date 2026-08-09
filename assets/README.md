@@ -6,17 +6,18 @@ Marketplace logotype and docs screenshots for **Agent Colony** (`agent-colony`).
 
 | File | Use |
 |------|-----|
-| `agent-colony-logo` | Marketplace logotype + **README** hero (centered at top) |
+| `agent-colony-logo.png` | Marketplace logotype + **README** hero (centered at top) |
 | `agent-colony-install.png` | Root `README.md` § Install in your project — `/add-plugin` preview |
+| `logo.png` | Optional wide hero/banner (not used by README/plugin.json) |
 
 **Consumer copy:** same screenshot ships at `.ai_infra/docs/operations/assets/agent-colony-install.png` (installed projects + `consumer-quickstart.md` / `PLUGIN-USER-GUIDE.md`).
 
 ## Logo
 
-**`agent-colony-logo`** (1:1; recommended 512×512 or 1024×1024 PNG). After commit to `main`, Marketplace **Logotype URL**:
+**`agent-colony-logo.png`** (1:1; recommended 512×512 or 1024×1024 PNG). After commit to `main`, Marketplace **Logotype URL**:
 
 ```text
-https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/agent-colony-logo
+https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/agent-colony-logo.png
 ```
 
 ## Install screenshot
