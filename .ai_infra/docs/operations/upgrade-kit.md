@@ -23,9 +23,9 @@ Kit **0.6.0** renames the Python CLI module and console script:
 
 
 
-## Breaking change (0.6.2)
+## Breaking change (0.6.1)
 
-Kit **0.6.2** renames the MCP Python package (Cursor server id unchanged):
+Kit **0.6.1** renames the MCP Python package (Cursor server id unchanged):
 
 
 | Before (removed)            | After                                     |
@@ -36,6 +36,19 @@ Kit **0.6.2** renames the MCP Python package (Cursor server id unchanged):
 
 
 Update `.cursor/mcp.json` `args` to `["-m", "agent_colony_mcp"]` (or re-run activate / `mcp seed`). MCP **tool** names such as `workflow_`* are unchanged.
+
+## Changes in 0.6.2
+
+Kit **0.6.2** hardens board Status + Tier-1 completeness (no rename):
+
+- `create-from-template` defaults Status to `ready`; Size/Estimate writes FAIL when `field_id` is configured
+- `validate-item` / `doctor` flag empty Status and incomplete Tier-1 (no early-return skip)
+- `project heal-cards --check|--apply|--fill-tier1` inventories and repairs CLOSED+non-Done / empty Status cards
+- `close-linked-issue` requires board Status=`done` before closing the GitHub Issue
+- merge board sync queues `set-status` / Notes on queueable GraphQL failures (EXIT_QUEUED / outbox)
+- Consumer activate no longer leaves `tests/modules/smoke/test_kit_installed.py` by default (`--keep-smoke-test` opt-in)
+
+Consumers: `python3 -m agent_colony update` after the plugin marketplace refreshes to **0.6.2**.
 
 ## Consumer heal (activate hardening on main → next tag)
 

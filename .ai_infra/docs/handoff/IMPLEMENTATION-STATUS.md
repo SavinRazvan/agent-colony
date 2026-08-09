@@ -15,7 +15,7 @@ Notes:
 
 # Implementation status (Agent Colony)
 
-**Last updated:** 2026-08-07 (MCP package agent_colony_mcp; kit 0.6.2)
+**Last updated:** 2026-08-09 (board Status + Tier-1 completeness / heal-cards; kit 0.6.2)
 **Product:** `agent-colony` · CLI: `agent-colony` 0.6.2 · **Tests:** 1496
 
 ## Shipped (confirmed in repo)
@@ -36,7 +36,8 @@ Notes:
 | Local continuity-index | Rolling ≥3-day UTC rows; board Notes = full card lifetime | `history/continuity-index.md` (+ exemplar) |
 | Board outbox (rate-limit) | `project queue` / `outbox status|flush`; EXIT_QUEUED=6; precheck + Forbidden/429 queue + dedupe; **77 mocked unit tests** | `project_outbox.py` + `project_atomics.py` / `project_cli.py` + `tests/modules/install/test_project_outbox.py` |
 | Board shell schema + coach | `board-shell.schema.yaml` + `board-shell` skill; schema-aware `board-bootstrap --check`; opt-in `--ensure-fields` / `--apply-readme` | templates/project-board · project_handlers · board_shell.py |
-| Board CLI subcommands | **23+** leaf commands (incl. `entry`; full table in ops doc) | [project-board-collaboration.md](../operations/project-board-collaboration.md) § Project CLI subcommands |
+| Board CLI subcommands | **27** leaf commands (incl. `entry`, `heal-cards`; full table in ops doc) | [project-board-collaboration.md](../operations/project-board-collaboration.md) § Project CLI subcommands |
+| Board Status + Tier-1 heal | `create-from-template` Status default `ready`; `heal-cards`; validate empty Status; close-issue Done gate; merge outbox queue | `project_handlers.run_heal_cards` · `project_atomics.collect_validate_item_problems` · PR #217 |
 | GraphQL-efficient Entry | `project entry` live \| conserve \| offline_artifacts; `export --reuse-if-fresh` | `project_cli.py` · `project_ssot.efficiency` |
 | EA-001 residual thin CLI | `project_cli.py` facade (~660 LOC) + parser/handlers split; board CLI modules under `.ai_infra/install/agent_colony/`: `project_cli.py`, `project_parser.py`, `project_handlers.py`, `project_atomics.py`, `gh_project_adapter.py`, `project_recipes.py`, `project_outbox.py` | PR #36 |
 | Doc facts validate | DOC-001…008 | `.ai_infra/scripts/architecture/check_doc_facts.py` |

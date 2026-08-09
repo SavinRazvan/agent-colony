@@ -16,7 +16,7 @@
  *  - Roster scorecard 2026-08-04 (AA-ROSTER-001…008) mirrored on Stack/Future views.
  *  - Intentional non-renames: artifact dir enterprise-architecture-audit/, ops doc
  *    project-board-collaboration.md, snapshot project-board-snapshot.json.
- *  - CLI/MCP stack as of v0.6.0/v0.6.1: agent_colony / agent-colony console;
+ *  - CLI/MCP stack (renames v0.6.0/v0.6.1; current kit 0.6.2): agent_colony / agent-colony console;
  *    agent_colony_mcp package; Cursor server id agent-colony-mcp unchanged.
  *  - Avoid "star-slash" globs in this block comment — they terminate the comment early.
  */
@@ -1121,8 +1121,9 @@ export default function NamingRosterAuditCanvas() {
             auditor · drift-guard · researcher. KEEP all 8 — residual score debt
             (drift-guard 16 / auditor 17) is naming debt, not redundancy.
           </Callout>
-          <Callout tone="neutral" title="CLI / MCP stack (v0.6.0 / v0.6.1)">
-            Python CLI module agent_colony · console agent-colony · MCP package
+          <Callout tone="neutral" title="CLI / MCP stack (kit 0.6.2)">
+            Renames landed in v0.6.0 (CLI) / v0.6.1 (MCP). Current kit 0.6.2:
+            Python module agent_colony · console agent-colony · MCP package
             agent_colony_mcp · Cursor server id agent-colony-mcp (unchanged).
           </Callout>
           <H2>Scorecard keep (agent /25)</H2>

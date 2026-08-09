@@ -28,7 +28,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 4. `make sync-plugin` — rebuild `agents/`, `rules/`, `skills/`, `payload/` (commit the result)
 5. `make check-plugin` — bundle parity green
 6. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
-7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02); **done** 0.4.0 → 0.5.0 (2026-08-07); **done** 0.5.0 → 0.6.0 (2026-08-07, CLI module rename); **done** 0.6.0 → 0.6.1 (2026-08-07, MCP package rename)
+7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02); **done** 0.4.0 → 0.5.0 (2026-08-07); **done** 0.5.0 → 0.6.0 (2026-08-07, CLI module rename); **done** 0.6.0 → 0.6.1 (2026-08-07, MCP package rename); **done** 0.6.1 → 0.6.2 (2026-08-09, board Status + Tier-1 / heal-cards)
 8. [x] `assets/agent-colony-logo.png` (1:1, background plate) — see `assets/README.md` — **present** (~1254×1254 PNG; include `.png` in URLs)
 9. [x] Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — **PASS 2026-07-08**
    on **Smart-Notes** (`~/Projects/Smart-Notes`): chat activate + terminal matrix green.
@@ -234,6 +234,8 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 **Listing copy refresh (2026-08-09 slim README + docs routing):** Public README is a landing page (video, two-speed CTA); consumer depth in quickstart/PLUGIN-USER-GUIDE; kit-dev setup in root `CONTRIBUTING.md`. Marketplace Description row + `plugin.json` tagline aligned; **1484** tests; **8** / **14** / **7**; kit version **0.6.1**.
 
 **Listing copy refresh (2026-08-09 pitch + factual onboard):** Outcome pitch (“Stop losing Status in chat”) with optional board SSOT wording; README full-board ladder mirrors quickstart (`contributors validate` → `/board` → `board-bootstrap --check`); **1484** tests; **8** / **14** / **7**; kit version **0.6.1**.
+
+**Listing copy refresh (2026-08-09 board Status + Tier-1 / heal-cards):** `project heal-cards`, create Status default `ready`, validate empty Status + Tier-1, close-linked-issue Done gate, merge outbox queue, ephemeral consumer smoke; **1496** tests; **8** / **14** / **7**; kit version **0.6.2**.
 
 **Listing copy refresh (2026-07-20 DOC-CANVAS-ALIGN):** Canvases re-aligned to live CLI (**22** leaves incl. `board-bootstrap`), board-shell day-0 story, test-runner `coverage.json` + post-100% doc sync, VERIFIED **2026-07-20**; metrics unchanged (**1178** / **7089** / **100%**; **8** / **12** / **7**).
 
