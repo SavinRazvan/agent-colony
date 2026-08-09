@@ -76,6 +76,7 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 **Pattern A (preferred):** `python3 -m agent_colony mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
 
 Cursor **CallMcpTool** is optional when the IDE host loads the same server. Discover tools with `mcp list-tools --server <id>`; do not invent tool names.
+DeepWiki (when listed): `mcp call --server deepwiki --tool ask_question --args-json '{"repoName":"owner/repo","question":"..."}'` (arg is **repoName**, not `repo`; repo must be indexed on deepwiki.com).
 User setup: `.ai_infra/docs/operations/connect-external-mcp.md`
 
 **Canvas / plan (ADR-010):** When producing audit or alignment artifacts, persist session evidence via `canvas save` / `plan snapshot` under `.local/canvases/` and `.local/plans/` — see `.cursor/skills/canvas-artifacts/SKILL.md`.

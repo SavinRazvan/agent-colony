@@ -1,10 +1,16 @@
 <p align="center">
-  <video src="https://github.com/user-attachments/assets/f9015ab5-28bf-47f7-a065-2127c098b80e" width="100%" controls></video>
+  <img src="assets/agent-colony-logo.png" alt="Agent Colony" width="180" />
 </p>
 
 # Agent Colony
 
 **Stop losing Status in chat.** Agent Colony installs a full multi-agent kit into *your* [Cursor](https://cursor.com) app repo — **8** agents, PR gates, and optional GitHub Project coordination so backlog and Status live on the board when you enable it.
+
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/f9015ab5-28bf-47f7-a065-2127c098b80e" width="720" controls></video>
+</p>
+
+<p align="center"><em>Agent Colony at work</em></p>
 
 | | |
 |--|--|

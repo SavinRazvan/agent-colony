@@ -111,8 +111,17 @@ servers:
 python3 -m agent_colony mcp doctor
 python3 -m agent_colony mcp smoke --server deepwiki
 python3 -m agent_colony mcp call --server deepwiki --tool ask_question \
-  --args-json '{"repoName":"cloudflare/workers-sdk","question":"What are Workers KV limits?"}'
+  --args-json '{"repoName":"karpathy/nanochat","question":"What is nanochat in one sentence?"}'
 ```
+
+Tool args use **`repoName`** (not `repo`). The target GitHub repo must already be indexed on
+[deepwiki.com](https://deepwiki.com) or the call returns “Repository not found.”
+
+**Two URLs, one slug:** for nanochat, GitHub is
+[github.com/karpathy/nanochat](https://github.com/karpathy/nanochat) (clone / `research fetch`);
+DeepWiki is [deepwiki.com/karpathy/nanochat](https://deepwiki.com/karpathy/nanochat) (wiki index).
+MCP still takes `"repoName":"karpathy/nanochat"` — not either full URL. Use any indexed wiki for
+a first smoke; index your own product repo on DeepWiki before querying it.
 
 Optional: reload Cursor MCP so `CallMcpTool` also works when the IDE host loads the server.
 
@@ -146,5 +155,6 @@ token sent as a `Bearer` header — use `mcp auth --server github-remote --token
 - `mcp validate` fails: ensure every registry `servers` key exists in merged `mcp.json` `mcpServers`
 - `mcp validate --strict` fails without a live `.cursor/mcp.registry.yaml` — copy the example when enforcing user tier
 - `mcp doctor` shows configured but NOT host-loaded: expected until Cursor enables project `mcp.json`; use Pattern A CLI anyway
+- DeepWiki `ask_question` / `read_wiki_*`: use **`repoName`** (not `repo`). “Repository not found” means the repo is not indexed on [deepwiki.com](https://deepwiki.com) yet — open/index it there, or smoke with an already-indexed repo (e.g. `karpathy/nanochat`)
 - Secrets: never commit `mcp.user.json` or `.local/user_settings/mcp.secrets.yaml` — `mcp link` / `mcp auth` update `.gitignore`
 - **Kit-dev:** committed `.cursor/mcp.registry.yaml` and on-disk `.cursor/mcp.json` stay **kit-tier only** (`agent-colony-mcp`). Put DeepWiki (and other externals) in gitignored `mcp.user.json`; do **not** add `tier: external` to the live registry (`mcp validate` rejects that). Pattern A `mcp smoke` / `mcp call` / `mcp list-tools` use an **in-memory effective registry**: live kit entries plus matching servers from `mcp.registry.yaml.example` that exist in merged kit+user `mcpServers`. Consumers still get DeepWiki written into the live registry on activate / `mcp seed`.

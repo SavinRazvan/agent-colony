@@ -126,11 +126,25 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 | Tier | Server | Use when |
 |------|--------|----------|
 | Kit | `agent-colony-mcp` | PR scripts, trackers, gates — prefer Pattern A CLI over re-running shell |
-| External | `deepwiki` (worked example, zero-auth) — see `.cursor/mcp.registry.yaml` | GitHub repo docs/Q&A (`read_wiki_structure`, `read_wiki_contents`, `ask_question`); other listed servers only if connected for this agent id |
+| External | `deepwiki` (worked example, zero-auth) — see `.cursor/mcp.registry.yaml` | Indexed wiki Q&A (`read_wiki_structure`, `read_wiki_contents`, `ask_question`); other listed servers only if connected for this agent id |
 
-**Pattern A (preferred):** `python3 -m agent_colony mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`. Example: `mcp call --server deepwiki --tool ask_question --args-json '{"repo":"org/name","question":"..."}'`.
+### Two sources (do not mix)
 
-Cursor **CallMcpTool** is optional when the IDE host loads the same server. Discover tools with `mcp list-tools --server <id>`; do not invent tool names.
+| Need | Use | Example |
+|------|-----|---------|
+| Clone / pack corpus (`research init\|fetch`) | **GitHub** URL or `github:owner/repo` | `https://github.com/karpathy/nanochat` |
+| Wiki Q&A via MCP | **DeepWiki** MCP · arg **`repoName`** (not `repo`) | `repoName":"karpathy/nanochat"` — wiki must exist at [deepwiki.com/…](https://deepwiki.com/karpathy/nanochat) |
+
+Same `owner/repo` string in both places; different transports. DeepWiki does **not** replace `research fetch` — it answers questions about an already-indexed wiki. If DeepWiki returns “Repository not found,” index the repo on deepwiki.com (or pick an indexed example) — do not invent a `repo` arg.
+
+**Pattern A (preferred):** `python3 -m agent_colony mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
+
+```bash
+python3 -m agent_colony mcp call --server deepwiki --tool ask_question \
+  --args-json '{"repoName":"karpathy/nanochat","question":"What is nanochat in one sentence?"}'
+```
+
+Cursor **CallMcpTool** is optional when the IDE host loads the same server. Discover tools with `mcp list-tools --server <id>`; do not invent tool names or arg keys.
 User setup: `.ai_infra/docs/operations/connect-external-mcp.md`
 
 **Canvas / plan (ADR-010):** Ephemeral analysis → persist via `canvas save`; not git SSOT — research packs stay under `_research_results/` — see `.cursor/skills/canvas-artifacts/SKILL.md`.

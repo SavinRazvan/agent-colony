@@ -370,7 +370,15 @@ def register_mcp_subcommands(mcp_sub: Any) -> None:
     call.add_argument("--directory", type=Path, default=".")
     call.add_argument("--server", required=True)
     call.add_argument("--tool", required=True)
-    call.add_argument("--args-json", default=None, help='JSON object, e.g. \'{"repo":"org/name"}\'')
+    call.add_argument(
+        "--args-json",
+        default=None,
+        help=(
+            "JSON object of tool args. DeepWiki ask_question uses "
+            '\'{"repoName":"owner/repo","question":"..."}\' '
+            "(repo must be indexed on deepwiki.com)"
+        ),
+    )
     call.add_argument("--agent", default=None)
     call.set_defaults(func=cmd_mcp_call)
 
