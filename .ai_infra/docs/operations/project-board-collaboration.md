@@ -27,7 +27,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Status drifts from reality | Status column = truth (DRIFT-009 watches dual-write) |
 | Humans cannot see progress | Project UI is the shared dashboard |
 
-**Rule:** Entry = read board. Exit = update Status and **attributed Notes** for the card you touched. `validate-item` checks the card body, Tier-1 fields (including Assignee when present on the snapshot), and status-scoped Notes; it is not just a section-presence check. **Enforcement:** `handoff` and `set-status` to `in_review`|`done` call the same checks and return EXIT_VALIDATION (5) while Acceptance/Rollback are empty or `(TBD)` (including `- (TBD)` list form). Fill via `create-from-template --acceptance/--rollback` or `project set-section --section acceptance|rollback --text '…' --last`. Prefer Pattern A recipes: `project claim` / `project handoff` (one command each). Atomics (`append-notes --agent`, `set-section`) remain for power use. **Never** paste Project settings UI text into a shell — humans **follow** `.ai_infra/templates/project-board/views-setup.md` and paste **contents of** `project-readme.md` into Project README settings (or opt-in `board-bootstrap --check --apply-readme`).
+**Rule:** Entry = read board. Exit = update Status and **attributed Notes** for the card you touched. `validate-item` checks the card body, Tier-1 fields (including Assignee when present on the snapshot), and status-scoped Notes; it is not just a section-presence check. **Enforcement:** `handoff` and `set-status` to `in_review`|`done` call the same checks and return EXIT_VALIDATION (5) while Acceptance/Rollback are empty or `(TBD)` (including `- (TBD)` list form). Fill via `create-from-template --acceptance/--rollback` or `project set-section --section acceptance|rollback --text '…' --last`. Prefer Pattern A recipes: `project claim` / `project handoff` (one command each). Atomics (`append-notes --agent`, `set-section`) remain for power use. **Never** paste Project settings UI text into a shell — humans **follow** `.ai_infra/templates/project-board/views-setup.md` and paste **contents of** `project-readme.md` (board brief — not a CLI dump) into Project README settings (or opt-in `board-bootstrap --check --apply-readme`). Day-to-day CLI: `project guide`.
 
 ### Board shell starter (first-run)
 
@@ -195,4 +195,4 @@ Do **not** add this to default PR gates — it mutates the live board.
 
 ## Human-only
 
-Views, workflows, Insights, Project README, status updates, Ready prioritization / product roadmap. Paste README from `.ai_infra/templates/project-board/project-readme.md` in the GitHub UI only.
+Views, workflows, Insights, Project README, status updates, Ready prioritization / product roadmap. Paste the board brief from `.ai_infra/templates/project-board/project-readme.md` in the GitHub UI only (or `--apply-readme`). CLI recipes: `project guide` — not the Project README.

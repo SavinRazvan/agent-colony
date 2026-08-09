@@ -249,7 +249,7 @@ Ready → In progress → In review → Done
 
 **Never paste docs placeholders as `--id`.** After create, use `--last`. Print recipes: `project guide`.
 
-Human Project README: paste `.ai_infra/templates/project-board/project-readme.md` in the Project settings UI (not into a shell).
+Human Project README: paste `.ai_infra/templates/project-board/project-readme.md` in the Project settings UI (board brief only — not into a shell). CLI recipes stay in `project guide` and `project-board-collaboration.md`.
 
 ### Template routing
 
@@ -260,7 +260,7 @@ Human Project README: paste `.ai_infra/templates/project-board/project-readme.md
 | external / corpus research | researcher, board | `create-from-template --template research` |
 | audit pass | auditor | `--template slice` + title `[AUDIT] …` then `claim --last` |
 | consume existing card | test-runner, verifier | **No** `create-from-template` — claim/continue only |
-| Project README | **Humans only** | paste `project-readme.md` in Project settings UI |
+| Project README | **Humans only** | paste `project-readme.md` (board brief) in Project settings UI — or `--apply-readme` |
 
 Index: `.ai_infra/templates/project-board/README.md`. After create, always `claim --last` / `handoff --last` (never invent ids).
 
