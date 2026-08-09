@@ -27,7 +27,7 @@ const VERIFIED = "2026-08-06";
 const SOURCES = ".cursor/agents/verifier.md · board-ssot/SKILL.md § Continuation";
 
 const GOALS = [
-  "Claims vs evidence; minimal high-signal checks",
+  "Check “done” claims against fresh evidence (try to disprove; no code fixes)",
   "Restate claim, gather evidence, run smallest decisive checks",
   "Verdict: Verified | Partial | Not verified with one next action",
 ];
@@ -211,8 +211,9 @@ export default function AgentVerifierCanvas() {
           </Pill>
         </Row>
         <Text tone="secondary">
-          verifier Agent Colony — Claims vs evidence; minimal high-signal checks.
-          No primary skill folder (agent card is canon).
+          verifier Agent Colony — Check “done” claims against fresh evidence
+          (try to disprove; no code fixes). No primary skill folder (agent card is
+          canon).
         </Text>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only

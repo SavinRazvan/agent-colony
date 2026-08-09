@@ -41,7 +41,7 @@ type AgentId =
 const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
   {
     id: "board",
-    role: "board Agent Colony · skill board-ssot (+ board-shell)",
+    role: "board Agent Colony · wire SSOT + coach board-shell · skill board-ssot",
     lane: "Coordination",
   },
   {
@@ -56,7 +56,7 @@ const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
   },
   {
     id: "verifier",
-    role: "verifier Agent Colony · claims vs evidence (no primary skill folder)",
+    role: "verifier Agent Colony · check done claims vs evidence; no code fixes (no primary skill folder)",
     lane: "Delivery",
   },
   {
@@ -176,7 +176,7 @@ const RELATIONS: {
 
 const RESEARCHER_REDIRECTS: [string, string][] = [
   ["implementer", "Product code / commits"],
-  ["verifier", "Claims vs evidence"],
+  ["verifier", "Claims vs evidence (no code fixes)"],
   ["auditor", "Architecture audits"],
   ["drift-guard", "Drift / tracker coherence"],
   ["integrator", "Kit surface integration"],

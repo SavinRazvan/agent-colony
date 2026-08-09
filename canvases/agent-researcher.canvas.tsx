@@ -137,7 +137,7 @@ const ARTIFACTS = [
 
 const PEERS = [
   ["Use instead", "implementer", "Product code / commits"],
-  ["Use instead", "verifier", "Claims vs evidence"],
+  ["Use instead", "verifier", "Claims vs evidence (no code fixes)"],
   ["Use instead", "auditor", "Architecture audits"],
   ["Use instead", "drift-guard", "Drift / tracker coherence"],
   ["Use instead", "integrator", "Kit surface integration"],

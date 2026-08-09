@@ -146,7 +146,7 @@ Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. Staged `/
 | Board shell first-run | `/board` + `.cursor/skills/board-shell/SKILL.md` + `board-shell.schema.yaml` |
 | Integrate infrastructure | `.cursor/agents/integrator.md` + `.cursor/skills/integrator-protocol/SKILL.md` — validate with `python3 -m agent_colony integrate validate` |
 | Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-coverage/SKILL.md` |
-| Verify claims | `.cursor/agents/verifier.md` |
+| Verify claims (evidence-only; no code fixes) | `.cursor/agents/verifier.md` |
 | Continuous goal/plan/agent-doctrine coherence + DRIFT scripts | **`drift-guard`** — `.cursor/agents/drift-guard.md` + `.cursor/skills/drift-audit/SKILL.md` — `python3 -m agent_colony drift validate` (incl. DRIFT-011, DRIFT-012) |
 | Deep / periodic architecture + CHK-* (security/perf/granularity/docs) | **`auditor`** — `.cursor/agents/auditor.md` + `.cursor/skills/auditor-protocol/SKILL.md` — not continuous plan pulse |
 | Audit orchestration | `.cursor/skills/audit-orchestration/SKILL.md` — parent runs verify-all + Task delegation (no dedicated agent) |

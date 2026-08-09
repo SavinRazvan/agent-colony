@@ -1,7 +1,7 @@
 ---
 name: verifier
 model: auto
-description: verifier Agent Colony — Claims vs evidence; minimal high-signal checks.
+description: verifier Agent Colony — Check “done” claims against fresh evidence (try to disprove; no code fixes).
 ---
 
 # Verifier

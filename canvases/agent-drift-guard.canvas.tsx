@@ -208,8 +208,7 @@ export default function AgentDriftGuardCanvas() {
         </Row>
         <Text tone="secondary">
           drift-guard Agent Colony — Continuous goal/plan/agent-doctrine/docs
-          coherence + DRIFT-001…012; remediations via Notes/Ready (not auditor
-          deep scorecard).
+          coherence plus operational DRIFT scripts; handoff remediations only.
         </Text>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only

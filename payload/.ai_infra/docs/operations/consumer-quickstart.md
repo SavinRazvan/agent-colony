@@ -21,7 +21,7 @@ Install **Agent Colony** (`agent-colony`) into your project in a few minutes. No
 
 **Product promise:** Install the plugin → open **your app repo** → **`/workflow-activate`** installs the **full kit**. Customize identity in `github.collaboration.yaml`, then **`/board`** wires board ids from Project + repo URLs. **Ready for agents** requires `board-bootstrap --check` **exit 0** — either **two views** (minimal overlay, matches [Playground #3](https://github.com/users/SavinRazvan/projects/3)) or **six Playground views** (kit default). Wire-only is not enough. Details: [PLUGIN-USER-GUIDE § Product promise](PLUGIN-USER-GUIDE.md#product-promise).
 
-> **Also:** [MCP](connect-external-mcp.md) · [upgrade](upgrade-kit.md) · skill `research-corpus` · skill `board-shell`
+> **Also:** [MCP](connect-external-mcp.md) · [upgrade](upgrade-kit.md) · [abbreviations](abbreviations-notepad.md) · skill `research-corpus` · skill `board-shell`
 
 ---
 
