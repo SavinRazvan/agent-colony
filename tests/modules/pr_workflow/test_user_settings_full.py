@@ -580,6 +580,29 @@ def test_check_testing_artifacts_all_pass(tmp_path: Path, monkeypatch: pytest.Mo
     assert cta.main() == 0
 
 
+def test_check_testing_artifacts_consumer_optional_tests_dir(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Consumers without product tests yet may omit tests/modules/."""
+    planning = tmp_path / "planning"
+    _write(planning, "test-plan.md", "plan content")
+    _write(planning, "test-index.md", "Module: foo\nCoverage status: gap\n")
+    monkeypatch.chdir(tmp_path)
+    missing = tmp_path / "tests" / "modules"
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "check_testing_artifacts.py",
+            "--planning-dir",
+            str(planning),
+            "--tests-dir",
+            str(missing),
+        ],
+    )
+    assert cta.main() == 0
+
+
 def test_check_testing_artifacts_legacy_flag(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     planning = tmp_path / "legacy"
     tests_dir = tmp_path / "tests" / "modules"

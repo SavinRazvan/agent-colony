@@ -42,6 +42,19 @@ def _check_test_index_structure(path: Path) -> tuple[bool, str]:
     return False, f"FAIL: expected markers not found (`Module:` and `Coverage status:`) -> {path}"
 
 
+def _check_tests_dir(path: Path) -> tuple[bool, str]:
+    """Require tests/modules on kit-dev; optional on consumer until product tests exist."""
+    if path.exists():
+        return True, f"PASS: exists -> {path}"
+    kit_dev_marker = Path("tests") / "modules" / "install" / "test_scaffold.py"
+    if kit_dev_marker.is_file():
+        return False, f"FAIL: missing -> {path}"
+    return True, (
+        f"PASS: optional on consumer — missing {path} "
+        "(add tests/modules/<name>/ when you ship product tests)"
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate required testing artifacts for PR prepare.")
     parser.add_argument(
@@ -71,7 +84,7 @@ def main() -> int:
 
     checks = [
         _check_exists(control_center),
-        _check_exists(tests_dir),
+        _check_tests_dir(tests_dir),
         _check_nonempty(test_plan),
         _check_nonempty(test_index),
         _check_test_index_structure(test_index),
