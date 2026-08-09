@@ -50,6 +50,17 @@ Kit **0.6.2** hardens board Status + Tier-1 completeness (no rename):
 
 Consumers: `python3 -m agent_colony update` after the plugin marketplace refreshes to **0.6.2**.
 
+## Changes in 0.6.3
+
+Kit **0.6.3** adds agent-written **End date** (mirror of Start date):
+
+- Auto-set UTC End date when Status becomes **Done** if empty (`conventions.set_end_date_on_done`, default true)
+- Wired on `set-status` / `handoff` / merge board sync / `heal-cards --apply` / outbox flush
+- `validate-item` / `doctor` / `heal-cards --check` flag missing End date on Done cards
+- Board shell Tier-1: End date required field + visible on Status board / Prioritized backlog
+
+Consumers: `python3 -m agent_colony update` after the plugin marketplace refreshes to **0.6.3**. Show **End date** on Status board and Prioritized backlog if `board-bootstrap --check` fails on columns.
+
 ## Consumer heal (activate hardening on main → next tag)
 
 If an older activate left only MCP secret lines in `.gitignore`, or omitted the consumer `STARTER-001` drift marker:

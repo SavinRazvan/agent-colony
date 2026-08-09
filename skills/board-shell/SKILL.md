@@ -238,7 +238,7 @@ When the user asks for a **simple board** (Status board + Prioritized backlog on
 ### Playground default (six views)
 
 - Edit overlay `.local/user_settings/board-shell.schema.yaml` only if your team intentionally drops a Playground view (expect FAIL→WARN tradeoffs).
-- **Safe:** Insights, Iteration/End date columns, filters.
+- **Safe:** Insights, Iteration columns, filters. (End date is Tier-1 — keep visible on Status board / Prioritized backlog.)
 - **Unsafe:** remove Status / Priority / Size / Estimate / Start date fields, or hide **Priority** on Prioritized backlog.
 
 ## Exit

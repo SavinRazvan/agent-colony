@@ -250,7 +250,7 @@ GitHub UI — two views only:
 | **Prioritized backlog** | Table + Tier-1 columns |
 | **Status board** | Board · group by Status + Tier-1 columns |
 
-Tier-1 columns on **both**: Priority, Size, Estimate, Start date.
+Tier-1 columns on **both**: Priority, Size, Estimate, Start date, End date.
 
 Agent chat: **`/board`** → CONSENT GATE → TURN PROTOCOL (Turn A + Turn B for minimal overlay).
 

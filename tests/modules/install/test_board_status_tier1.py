@@ -56,11 +56,13 @@ SAMPLE_SSOT = {
             "options": {"s": "9592a5a3"},
         },
         "estimate": {"field_id": "PVTF_estimate"},
+        "end_date": {"field_id": "PVTF_end"},
     },
     "conventions": {
         "done_status": "done",
         "body_sections": ["Acceptance", "Rollback", "Notes"],
         "require_attribution_on_exit": False,
+        "set_end_date_on_done": True,
     },
 }
 
@@ -111,6 +113,50 @@ def test_summarize_card_completeness_counts() -> None:
     assert summary["empty_status"] == 1
     assert summary["closed_not_done"] == 1
     assert summary["incomplete"] >= 1
+
+
+def test_collect_validate_done_missing_end_date() -> None:
+    item = {
+        "id": "PVTI_done",
+        "title": "done no end",
+        "status": "Done",
+        "priority": "p1",
+        "size": "s",
+        "estimate": "1",
+        "start date": "2026-08-01",
+        "content": {
+            "body": (
+                "## Acceptance\n\n- ok\n\n## Rollback\n\n- revert\n\n"
+                "## Notes\n\n- @u/a · note\n"
+            ),
+            "state": "CLOSED",
+        },
+    }
+    problems, warnings = pa.collect_validate_item_problems(SAMPLE_SSOT, item)
+    assert "missing End date" in problems
+
+
+def test_ensure_end_date_and_classify_missing_flag() -> None:
+    item = {
+        "id": "PVTI_done",
+        "title": "done",
+        "status": "Done",
+        "priority": "p1",
+        "size": "s",
+        "estimate": "1",
+        "start date": "2026-08-01",
+        "content": {
+            "body": (
+                "## Acceptance\n\n- ok\n\n## Rollback\n\n- revert\n\n"
+                "## Notes\n\n- @u/a · note\n"
+            ),
+            "state": "CLOSED",
+        },
+    }
+    row = pa.classify_card_completeness(SAMPLE_SSOT, item)
+    assert row["missing_end_date"] is True
+    summary = pa.summarize_card_completeness(SAMPLE_SSOT, [item])
+    assert summary["missing_end_date"] == 1
 
 
 def test_heal_cards_check_and_dry_run_apply(

@@ -41,6 +41,7 @@ def _tier1_ssot(**overrides):
     data["conventions"] = {
         **data.get("conventions", {}),
         "set_start_date_on_claim": True,
+        "set_end_date_on_done": True,
         "claim": "set_assignee",
         "one_in_progress_per_assignee": False,
         "body_sections": ["Acceptance", "Rollback", "Notes"],
@@ -454,6 +455,60 @@ def test_ensure_start_date_missing_field() -> None:
     ssot = _tier1_ssot()
     ssot["fields"] = {k: v for k, v in ssot["fields"].items() if k != "start_date"}
     ok, detail, applied = project_cli.ensure_start_date_if_starting(ssot, VALID_PVTI)
+    assert ok and not applied
+    assert "field_id missing" in detail
+
+
+def test_ensure_end_date_if_done_sets_when_empty(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ssot = _tier1_ssot()
+    date_calls: list[tuple[str, str]] = []
+    monkeypatch.setattr(
+        project_cli,
+        "set_item_date",
+        lambda s, iid, key, d: date_calls.append((key, d)) or (True, d),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot, limit=100: ([{"id": VALID_PVTI, "title": "W"}], None),
+    )
+    ok, detail, applied = project_cli.ensure_end_date_if_done(ssot, VALID_PVTI)
+    assert ok and applied
+    assert date_calls and date_calls[0][0] == "end_date"
+    assert len(date_calls[0][1]) == 10
+
+
+def test_ensure_end_date_no_overwrite(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ssot = _tier1_ssot()
+    monkeypatch.setattr(
+        project_cli,
+        "set_item_date",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("should not set")),
+    )
+    ok, detail, applied = project_cli.ensure_end_date_if_done(
+        ssot,
+        VALID_PVTI,
+        item={"id": VALID_PVTI, "end date": "2026-01-02"},
+    )
+    assert ok and not applied
+    assert detail == "2026-01-02"
+
+
+def test_ensure_end_date_convention_off() -> None:
+    ssot = _tier1_ssot(conventions={"set_end_date_on_done": False})
+    ok, detail, applied = project_cli.ensure_end_date_if_done(ssot, VALID_PVTI)
+    assert ok and not applied
+    assert "false" in detail
+
+
+def test_ensure_end_date_missing_field() -> None:
+    ssot = _tier1_ssot()
+    ssot["fields"] = {k: v for k, v in ssot["fields"].items() if k != "end_date"}
+    ok, detail, applied = project_cli.ensure_end_date_if_done(ssot, VALID_PVTI)
     assert ok and not applied
     assert "field_id missing" in detail
 

@@ -77,6 +77,7 @@ def _tier1_fields() -> list[str]:
         "Size",
         "Estimate",
         "Start date",
+        "End date",
         "Linked pull requests",
     ]
 
@@ -118,6 +119,7 @@ def _patch_common(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, ssot: dict) -
                 {"id": "PVTF_size", "name": "Size", "dataType": "SINGLE_SELECT"},
                 {"id": "PVTF_est", "name": "Estimate", "dataType": "NUMBER"},
                 {"id": "PVTF_start", "name": "Start date", "dataType": "DATE"},
+                {"id": "PVTF_end", "name": "End date", "dataType": "DATE"},
             ],
             None,
         ),
@@ -159,6 +161,7 @@ def test_board_bootstrap_ok_readme_reports_next_steps(
         "Size",
         "Estimate",
         "Start date",
+        "End date",
     ]
     monkeypatch.setattr(
         project_cli,
@@ -189,6 +192,7 @@ def test_board_bootstrap_fails_when_status_board_missing_priority_only(
         "Size",
         "Estimate",
         "Start date",
+        "End date",
         "Linked pull requests",
     ]
     tier_full = [
@@ -199,6 +203,7 @@ def test_board_bootstrap_fails_when_status_board_missing_priority_only(
         "Size",
         "Estimate",
         "Start date",
+        "End date",
         "Linked pull requests",
     ]
     monkeypatch.setattr(
@@ -277,12 +282,12 @@ def test_board_bootstrap_fails_when_default_playground_views_missing(
                 {
                     "name": "Status board",
                     "layout": "BOARD_LAYOUT",
-                    "fields": ["Title", "Status", "Priority", "Size", "Estimate", "Start date"],
+                    "fields": ["Title", "Status", "Priority", "Size", "Estimate", "Start date", "End date"],
                 },
                 {
                     "name": "Prioritized backlog",
                     "layout": "TABLE_LAYOUT",
-                    "fields": ["Title", "Status", "Priority", "Size", "Estimate", "Start date"],
+                    "fields": ["Title", "Status", "Priority", "Size", "Estimate", "Start date", "End date"],
                 },
             ],
             None,
@@ -304,7 +309,7 @@ def test_board_bootstrap_warns_when_prioritized_backlog_missing_priority(
     ssot = _ssot()
     _patch_common(monkeypatch, tmp_path, ssot)
     monkeypatch.setattr(project_cli, "read_project_readme", lambda ssot_arg: ("# README\n", None))
-    tier = ["Title", "Assignees", "Status", "Size", "Estimate", "Start date", "Linked pull requests"]
+    tier = ["Title", "Assignees", "Status", "Size", "Estimate", "Start date", "End date", "Linked pull requests"]
     monkeypatch.setattr(
         project_cli,
         "read_project_views",
@@ -313,7 +318,7 @@ def test_board_bootstrap_warns_when_prioritized_backlog_missing_priority(
                 {
                     "name": "Status board",
                     "layout": "BOARD_LAYOUT",
-                    "fields": ["Title", "Status", "Priority", "Size", "Estimate", "Start date"],
+                    "fields": ["Title", "Status", "Priority", "Size", "Estimate", "Start date", "End date"],
                 },
                 {
                     "name": "Prioritized backlog",
@@ -354,7 +359,7 @@ def test_board_bootstrap_fails_when_minimum_views_missing(
                 {
                     "name": "View 1",
                     "layout": "BOARD_LAYOUT",
-                    "fields": ["Title", "Status", "Priority", "Size", "Estimate", "Start date"],
+                    "fields": ["Title", "Status", "Priority", "Size", "Estimate", "Start date", "End date"],
                 },
             ],
             None,
@@ -375,7 +380,7 @@ def test_board_bootstrap_ok_with_full_playground_views(
     ssot = _ssot()
     _patch_common(monkeypatch, tmp_path, ssot)
     monkeypatch.setattr(project_cli, "read_project_readme", lambda ssot_arg: ("# README\n", None))
-    tier = ["Title", "Assignees", "Status", "Priority", "Size", "Estimate", "Start date", "Linked pull requests"]
+    tier = ["Title", "Assignees", "Status", "Priority", "Size", "Estimate", "Start date", "End date", "Linked pull requests"]
     monkeypatch.setattr(
         project_cli,
         "read_project_views",

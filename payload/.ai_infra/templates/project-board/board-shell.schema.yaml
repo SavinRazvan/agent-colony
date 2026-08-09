@@ -12,7 +12,8 @@
 #  - Overlay: .local/user_settings/board-shell.schema.yaml (optional; wins when present).
 #  - Views are human UI only (ADR-008). Schema encodes desired names for check/coach — not API mutation.
 #  - Default minimum = full Playground view set (not “2 views + recommended later”).
-#  - Agents write Tier-1 fields via CLI; Iteration / End date / Labels / Reviewers stay human/cosmetic.
+#  - Agents write Tier-1 fields via CLI (incl. Start date on In progress, End date on Done);
+#    Iteration / Labels / Reviewers stay human/cosmetic.
 
 version: 1
 name: playground-parity-starter
@@ -46,13 +47,12 @@ fields:
       data_type: number
     - name: Start date
       data_type: date
-  optional:
     - name: End date
       data_type: date
 
 views:
   # Tier-1 visible columns agents need on board/table shells (Prioritized backlog + Status board).
-  # Title / Assignees / Status / Linked pull requests are assumed; these four are checked.
+  # Title / Assignees / Status / Linked pull requests are assumed; these are checked.
   visible_columns:
     - Title
     - Assignees
@@ -61,10 +61,11 @@ views:
     - Size
     - Estimate
     - Start date
+    - End date
     - Linked pull requests
 
   # Kit default = full Playground set (FAIL if any missing).
-  # Tier-1 column checks (Priority/Size/Estimate/Start date) only on views with check_columns: true.
+  # Tier-1 column checks (Priority/Size/Estimate/Start date/End date) only on views with check_columns: true.
   minimum:
     - name: Status board
       layout: BOARD_LAYOUT
@@ -106,8 +107,8 @@ card_create:
 customization:
   overlay_path: .local/user_settings/board-shell.schema.yaml
   safe: |
-    Add Insights/filters; keep or drop cosmetic columns (Iteration, End date, Labels, Reviewers).
-    Keep required field names (Status, Priority, Size, Estimate, Start date).
+    Add Insights/filters; keep or drop cosmetic columns (Iteration, Labels, Reviewers).
+    Keep required field names (Status, Priority, Size, Estimate, Start date, End date).
     Overlay may move a view from minimum → recommended only if your team accepts FAIL→WARN.
   unsafe: |
     Removing Tier-1 fields or Priority from Prioritized backlog / Status board breaks agents.

@@ -13,7 +13,7 @@
 
 - **No dual-write** of Status to `work-tracker.md` / `session-pointer.md` when `board_only`.
 - Create shippable cards as **Issues** (`item_kind_default: issue`). Draft is scratch-only.
-- Fill **Tier-1** fields (Status, Priority, Size/Estimate, Start date on first In progress, Assignee, Linked PR via `mention-pr`).
+- Fill **Tier-1** fields (Status, Priority, Size/Estimate, Start date on first In progress, End date on Done, Assignee, Linked PR via `mention-pr`).
 - GraphQL throttle / Forbidden / precheck low quota → **EXIT_QUEUED (6)** / `project outbox` (do not retry-loop); outbox is not SSOT.
 
 **Consumer install:** plugin + `/workflow-activate` in the app repo installs the full kit; consumers wire only identity + board YAML — see [PLUGIN-USER-GUIDE § Product promise](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
@@ -57,7 +57,7 @@ Abbreviations: [`.ai_infra/docs/operations/abbreviations-notepad.md`](.ai_infra/
 1. If `project_ssot.enabled` → `python -m agent_colony project entry` (then claim/get one card; `.cursor/skills/board-ssot/SKILL.md` § Continuation contract). Read card Notes for prior handoffs. **First-run only:** if `board-bootstrap --check` exits non-zero (views, Tier-1 columns, README) → `/board` + `board-shell` (**CONSENT GATE** + TURN PROTOCOL) before `/implementer` (audit is not day-0).
 2. Else → `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
 
-**After every agent part:** update board Status (`in_review` / `done` / Notes + next agent) so continuation is indexed on the Project — not chat-only. **Tier-1 fields are mandatory** on cards you create/own: Status, Priority (`p0|p1|p2`), Size/Estimate per skill **Size↔Estimate** table (points, not hours), Start date on first **In progress** (`claim` / `set-status` / `handoff --to in_progress`), Assignee (human — **create as Issue** via `item_kind_default: issue`), and Linked PR via `mention-pr` when a PR exists. Exit task lists use `[P0]`…`[P3]`. Notes attribution: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC). Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime. Ops: `.ai_infra/docs/operations/project-board-collaboration.md`. Canon: `.cursor/skills/board-ssot/SKILL.md` § Tier-1 card fields contract.
+**After every agent part:** update board Status (`in_review` / `done` / Notes + next agent) so continuation is indexed on the Project — not chat-only. **Tier-1 fields are mandatory** on cards you create/own: Status, Priority (`p0|p1|p2`), Size/Estimate per skill **Size↔Estimate** table (points, not hours), Start date on first **In progress** (`claim` / `set-status` / `handoff --to in_progress`), End date on **Done** (`set-status` / `handoff` / merge / `heal-cards` when configured), Assignee (human — **create as Issue** via `item_kind_default: issue`), and Linked PR via `mention-pr` when a PR exists. Exit task lists use `[P0]`…`[P3]`. Notes attribution: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC). Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime. Ops: `.ai_infra/docs/operations/project-board-collaboration.md`. Canon: `.cursor/skills/board-ssot/SKILL.md` § Tier-1 card fields contract.
 
 ### Board SSOT (Pattern A + Tier-1)
 
@@ -66,6 +66,7 @@ When `project_ssot.enabled`, prefer CLI recipes over multi-step atomics (`projec
 | Step | Command | Notes |
 |------|---------|--------|
 | Claim | `project claim --last --agent <name>` | In progress; sets **Start date** (UTC) if empty when configured |
+| Done | `project set-status --to done` / `handoff --to done` | Sets **End date** (UTC) if empty when configured |
 | Entry | `project entry` | Quota-aware scoped read (prefer over unfiltered `list`) |
 | Triage | `project set-field --field priority\|size\|estimate --to … --last` | Agents may set on triage/own cards; humans own Ready *ordering* |
 | Promote | `project promote-to-issue --last --agent <name>` | Draft→Issue (same `PVTI_`); claim does **not** auto-promote |

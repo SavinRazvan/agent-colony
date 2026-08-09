@@ -201,6 +201,14 @@ def run_handoff(args: argparse.Namespace) -> int:
                 print(f'handoff: start_date={d_detail}')
             elif 'field_id missing' in d_detail:
                 print(f'handoff: WARN — start_date skipped: {d_detail}', file=sys.stderr)
+        if pc._normalize_status(status_to) == pc.done_status_logical(ssot):
+            e_ok, e_detail, e_applied = pc.ensure_end_date_if_done(ssot, item_id, item=item)
+            if not e_ok:
+                print(f'handoff: WARN — end_date skipped: {e_detail}', file=sys.stderr)
+            elif e_applied:
+                print(f'handoff: end_date={e_detail}')
+            elif 'field_id missing' in e_detail:
+                print(f'handoff: WARN — end_date skipped: {e_detail}', file=sys.stderr)
     n_ok, n_detail, n_code = pc.append_notes_helper(
         root, ssot, item_id, agent=agent, text=note_core, limit=args.limit, skip_precheck=True
     )
@@ -504,7 +512,7 @@ def run_doctor(args: argparse.Namespace) -> int:
     print(f'human: {user}')
     print(f'templates: {tpl_dir}')
     fields = ssot.get('fields') if isinstance(ssot.get('fields'), dict) else {}
-    for key in ('start_date', 'estimate', 'size'):
+    for key in ('start_date', 'end_date', 'estimate', 'size'):
         block = fields.get(key) if isinstance(fields, dict) else None
         if isinstance(block, dict) and block.get('field_id'):
             print(f'tier1.{key}: {block['field_id']}')
@@ -512,6 +520,7 @@ def run_doctor(args: argparse.Namespace) -> int:
             print(f'doctor: WARN — fields.{key}.field_id missing (Tier-1)', file=sys.stderr)
     conventions = ssot.get('conventions') if isinstance(ssot.get('conventions'), dict) else {}
     print(f"set_start_date_on_claim: {conventions.get('set_start_date_on_claim', True)}")
+    print(f"set_end_date_on_done: {conventions.get('set_end_date_on_done', True)}")
     print('doctor: note — Size/Estimate use points table in board-ssot skill (not hours)')
     print(f"item_kind_default: {conventions.get('item_kind_default', 'issue')}")
     print(f'promote_to_issue_on_pr: {conventions.get('promote_to_issue_on_pr', True)}')
@@ -552,7 +561,8 @@ def run_doctor(args: argparse.Namespace) -> int:
                 f'empty_status={summary["empty_status"]} '
                 f'closed_not_done={summary["closed_not_done"]} '
                 f'missing_priority={summary["missing_priority"]} '
-                f'missing_size={summary["missing_size"]}'
+                f'missing_size={summary["missing_size"]} '
+                f'missing_end_date={summary["missing_end_date"]}'
             )
             if summary['incomplete']:
                 print(
@@ -616,6 +626,8 @@ def run_heal_cards(args: argparse.Namespace) -> int:
         actions: list[str] = []
         if row.get('heal_done_candidate'):
             actions.append(f'set-status→{done_logical}')
+        if row.get('missing_end_date') and pc.ssot_field_configured(ssot, 'end_date'):
+            actions.append('end_date→today')
         if fill_tier1:
             if row.get('missing_priority') and pc.ssot_field_configured(ssot, 'priority'):
                 actions.append('priority→p2')
@@ -665,6 +677,21 @@ def run_heal_cards(args: argparse.Namespace) -> int:
             else:
                 print(f'heal-cards: set-status {item_id} → {done_logical}')
                 applied += 1
+                e_ok, e_detail, e_applied = pc.ensure_end_date_if_done(ssot, item_id)
+                if not e_ok:
+                    print(f'heal-cards: WARN — end_date skipped {item_id}: {e_detail}', file=sys.stderr)
+                elif e_applied:
+                    print(f'heal-cards: end_date {item_id}={e_detail}')
+                    applied += 1
+        elif row.get('missing_end_date') and pc.ssot_field_configured(ssot, 'end_date'):
+            e_ok, e_detail, e_applied = pc.ensure_end_date_if_done(ssot, item_id)
+            if not e_ok:
+                print(f'heal-cards: WARN — end_date skipped {item_id}: {e_detail}', file=sys.stderr)
+            elif e_applied:
+                print(f'heal-cards: end_date {item_id}={e_detail}')
+                applied += 1
+            elif e_detail and 'skipped' not in e_detail:
+                print(f'heal-cards: end_date {item_id} already={e_detail}')
         if fill_tier1:
             if row.get('missing_priority') and pc.ssot_field_configured(ssot, 'priority'):
                 try:

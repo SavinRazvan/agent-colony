@@ -480,6 +480,19 @@ def item_start_date_value(item: dict[str, Any] | None) -> str:
     return str(raw).strip()
 
 
+def item_end_date_value(item: dict[str, Any] | None) -> str:
+    """Best-effort End date string from a gh project item dict."""
+    if not isinstance(item, dict):
+        return ""
+    raw = (
+        item.get("end date")
+        or item.get("End date")
+        or item.get("end_date")
+        or ""
+    )
+    return str(raw).strip()
+
+
 ACTIVE_STATUSES = {"in_progress", "in_review", "done"}
 TRIAGE_STATUSES = {"ready", "backlog", "todo"}
 
@@ -619,6 +632,16 @@ def collect_validate_item_problems(
     elif status in ACTIVE_STATUSES:
         warnings.append("start_date.field_id missing; skipping Start date validation")
 
+    end_cfg = (ssot.get("fields") or {}).get("end_date")
+    end_field_id = ""
+    if isinstance(end_cfg, dict):
+        end_field_id = str(end_cfg.get("field_id") or "").strip()
+    if end_field_id and status == done_logical:
+        if not item_end_date_value(item):
+            problems.append("missing End date")
+    elif status == done_logical:
+        warnings.append("end_date.field_id missing; skipping End date validation")
+
     kind = item_content_kind(item)
     kind_default = str(conventions.get("item_kind_default") or "issue").strip().lower()
     if kind == "draft" or kind_default == "draft":
@@ -677,6 +700,7 @@ def classify_card_completeness(
         "missing_size": "missing Size" in problems,
         "missing_estimate": "missing Estimate" in problems,
         "missing_status": "missing Status" in problems,
+        "missing_end_date": "missing End date" in problems,
     }
 
 
@@ -695,6 +719,7 @@ def summarize_card_completeness(
         "closed_not_done": sum(1 for r in rows if r.get("heal_done_candidate")),
         "missing_priority": sum(1 for r in rows if r.get("missing_priority")),
         "missing_size": sum(1 for r in rows if r.get("missing_size")),
+        "missing_end_date": sum(1 for r in rows if r.get("missing_end_date")),
         "rows": incomplete,
     }
 
@@ -727,6 +752,40 @@ def ensure_start_date_if_starting(
         return True, existing, False
     today = utc_today_iso()
     ok, detail = _cli().set_item_date(ssot, item_id, "start_date", today)
+    if not ok:
+        return False, detail, False
+    return True, detail, True
+
+
+def ensure_end_date_if_done(
+    ssot: dict[str, Any],
+    item_id: str,
+    *,
+    item: dict[str, Any] | None = None,
+) -> tuple[bool, str, bool]:
+    """
+    If set_end_date_on_done and end_date field configured and empty, set UTC today.
+
+    Returns (ok, detail, applied). ok is False only when a write was attempted and failed.
+    Caller must only invoke after Status is (or will be) Done.
+    """
+    conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
+    if not conventions.get("set_end_date_on_done", True):
+        return True, "skipped: set_end_date_on_done=false", False
+    fields = ssot.get("fields") if isinstance(ssot.get("fields"), dict) else {}
+    end_cfg = fields.get("end_date") if isinstance(fields, dict) else None
+    if not isinstance(end_cfg, dict) or not str(end_cfg.get("field_id") or "").strip():
+        return True, "skipped: fields.end_date.field_id missing", False
+    snapshot = item
+    if snapshot is None:
+        items, err = _cli().fetch_project_items(ssot, limit=200)
+        if not err:
+            snapshot = _cli().find_item_by_id(items, item_id)
+    existing = item_end_date_value(snapshot if isinstance(snapshot, dict) else None)
+    if existing:
+        return True, existing, False
+    today = utc_today_iso()
+    ok, detail = _cli().set_item_date(ssot, item_id, "end_date", today)
     if not ok:
         return False, detail, False
     return True, detail, True

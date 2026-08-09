@@ -26,7 +26,7 @@ Agents never paste this README into a shell. Day-to-day commands live in the app
 - Status: **Ready → In progress → In review → Done**
 - Card body (Acceptance / Rollback / Notes) = continuation between agents — not chat alone
 - Notes: `@github_user/agent · UTC · text`
-- Agents set Priority / Size / Estimate (points), Assignee on Issue create, Start date on first In progress; open PRs via `mention-pr`. They do **not** set Iteration, Labels, Reviewers, or End date by default.
+- Agents set Priority / Size / Estimate (points), Assignee on Issue create, Start date on first In progress, End date on Done; open PRs via `mention-pr`. They do **not** set Iteration, Labels, or Reviewers by default.
 
 ## Links
 

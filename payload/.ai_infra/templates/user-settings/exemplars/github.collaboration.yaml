@@ -99,7 +99,8 @@ project_ssot:
       # Set on claim / first in_progress when set_start_date_on_claim: true
       field_id: PVTF_PLACEHOLDER_START_DATE
     end_date:
-      field_id: PVTF_PLACEHOLDER_END_DATE   # reserved; no CLI write yet
+      # Set on Status→Done when set_end_date_on_done: true (UTC today if empty)
+      field_id: PVTF_PLACEHOLDER_END_DATE
     estimate:
       # Points (not hours) — align with Size band in skill
       field_id: PVTF_PLACEHOLDER_ESTIMATE
@@ -112,6 +113,7 @@ project_ssot:
     done_status: done
     claim: set_assignee                   # set_assignee | title_prefix | none
     set_start_date_on_claim: true         # also first set-status/handoff → in_progress if empty
+    set_end_date_on_done: true            # set-status/handoff/merge/heal → done if empty
     one_in_progress_per_assignee: true
     item_kind_default: issue              # issue (default — Assignees + Linked PRs) | draft (scratch only)
     promote_to_issue_on_pr: true

@@ -21,7 +21,7 @@ python3 -m agent_colony project board-bootstrap --check
 | Tier | What | When |
 |------|------|------|
 | **Default minimum (required)** | **Six Playground views** (kit default schema) **or two views** with minimal overlay — plus Tier-1 columns on Status board and Prioritized backlog + Project README | Right after activate + `project doctor` |
-| **Customize later** | Iteration / End date / Labels / Reviewers columns, Insights, extra filters | Anytime after bootstrap is clean |
+| **Customize later** | Iteration / Labels / Reviewers columns, Insights, extra filters | Anytime after bootstrap is clean |
 
 GitHub may create a blank Project with names like `View 1`. That is **not** the kit default — rename/create until the board matches the table below.
 
@@ -43,7 +43,7 @@ cp .ai_infra/templates/user-settings/exemplars/board-shell.schema.minimal.yaml \
 | **Prioritized backlog** | Table |
 | **Status board** | Board · group by **Status** |
 
-3. On **both** views: show **Priority**, **Size**, **Estimate**, **Start date** (Tier-1 contract unchanged).
+3. On **both** views: show **Priority**, **Size**, **Estimate**, **Start date**, **End date** (Tier-1 contract).
 4. Paste README (`project-readme.md` or `--apply-readme`).
 5. `board-bootstrap --check` until exit **0** — schema path should show `.local/user_settings/board-shell.schema.yaml`.
 
@@ -63,7 +63,7 @@ Kit **default** remains six Playground views ([`board-shell.schema.yaml`](board-
 | **In review** | Table | Status = In review |
 | **My items** | Table | Assignees = `@me` |
 
-4. On **Status board** and **Prioritized backlog**: **+** → show **Priority**, **Size**, **Estimate**, **Start date**.
+4. On **Status board** and **Prioritized backlog**: **+** → show **Priority**, **Size**, **Estimate**, **Start date**, **End date**.
 5. README: `--apply-readme` or paste `project-readme.md`.
 6. `python3 -m agent_colony project board-bootstrap --check` until green.
 
@@ -82,7 +82,7 @@ No consumer-specific URLs. Open the Project from `project status`. Use when the 
 | New view | **+ New view** | Layout + name from turn |
 | Layout | View menu → **Layout** | Board / Table / Roadmap |
 | Group by | View menu / toolbar **Group by** | **Status** on Status board; optional **Priority** on Prioritized backlog (polish only) |
-| Tier-1 columns | **+** / **Fields** / View settings → Fields | Priority, Size, Estimate, Start date |
+| Tier-1 columns | **+** / **Fields** / View settings → Fields | Priority, Size, Estimate, Start date, End date |
 | Undo bad Slice | View menu → **Slice by** → clear | Groups without slice chips |
 | Persist | **Save** on view if shown | Survives reload |
 | README | Settings → README **or** `--apply-readme` | Non-empty README |
@@ -123,15 +123,16 @@ These are the columns agents and humans need for Pattern A. **Prioritized backlo
 | **Size** | **yes** | **yes** | xs–xl |
 | **Estimate** | **yes** | **yes** | Points (not hours) |
 | **Start date** | **yes** | **yes** | Set on first In progress |
+| **End date** | **yes** | **yes** | Set on Done |
 | Linked pull requests | yes | yes | Via Issue↔PR / `mention-pr` |
 
-**Optional / cosmetic (not required for bootstrap Tier-1 check):** Iteration, End date, Labels, Reviewers, Repository, Sub-issues.
+**Optional / cosmetic (not required for bootstrap Tier-1 check):** Iteration, Labels, Reviewers, Repository, Sub-issues.
 
 ### How to add a missing column (GitHub UI)
 
 1. Open the view (e.g. **Prioritized backlog**).
-2. **+** / field picker → show **Priority** (and Size, Estimate, Start date if missing).
-3. Drag columns into a sensible order: Title → Assignees → Status → Priority → Size → Estimate → Start date → Linked pull requests.
+2. **+** / field picker → show **Priority** (and Size, Estimate, Start date, End date if missing).
+3. Drag columns into a sensible order: Title → Assignees → Status → Priority → Size → Estimate → Start date → End date → Linked pull requests.
 4. Re-run `board-bootstrap --check` until exit **0** (no view FAIL and no Tier-1 column FAILs; leftover `View N` WARNs are OK).
 
 Other views (Roadmap, Bugs, In review, My items) should show Status / Priority / Size where useful; bootstrap enforces Tier-1 column checks on the two primary board/table shells.

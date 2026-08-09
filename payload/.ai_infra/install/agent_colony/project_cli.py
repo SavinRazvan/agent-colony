@@ -109,7 +109,9 @@ from project_atomics import (
     utc_today_iso,
     validate_card_body,
     ensure_start_date_if_starting,
+    ensure_end_date_if_done,
     item_start_date_value,
+    item_end_date_value,
 )
 
 def _load_enabled_ssot(root: Path, cmd: str) -> tuple[dict[str, Any] | None, int]:
@@ -860,6 +862,14 @@ def cmd_set_status(args: argparse.Namespace) -> int:
             "field_id"
         ):
             queue_payload["start_date"] = utc_today_iso()
+    if _normalize_status(str(args.to)) == done_status_logical(ssot):
+        conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
+        fields_block = ssot.get("fields") if isinstance(ssot.get("fields"), dict) else {}
+        end_cfg = fields_block.get("end_date") if isinstance(fields_block, dict) else None
+        if conventions.get("set_end_date_on_done", True) and isinstance(end_cfg, dict) and end_cfg.get(
+            "field_id"
+        ):
+            queue_payload["end_date"] = utc_today_iso()
     # Body gate before precheck/queue so EXIT_VALIDATION never enqueues a doomed close.
     if _normalize_status(str(args.to)) in BODY_GATE_STATUSES:
         items, list_err = fetch_project_items(ssot, limit=200)
@@ -921,6 +931,14 @@ def cmd_set_status(args: argparse.Namespace) -> int:
             print(f"set-status: start_date={d_detail}")
         elif "field_id missing" in d_detail:
             print(f"set-status: WARN — start_date skipped: {d_detail}", file=sys.stderr)
+    if _normalize_status(str(args.to)) == done_status_logical(ssot):
+        e_ok, e_detail, e_applied = ensure_end_date_if_done(ssot, item_id)
+        if not e_ok:
+            print(f"set-status: WARN — end_date skipped: {e_detail}", file=sys.stderr)
+        elif e_applied:
+            print(f"set-status: end_date={e_detail}")
+        elif "field_id missing" in e_detail:
+            print(f"set-status: WARN — end_date skipped: {e_detail}", file=sys.stderr)
     return EXIT_OK
 def cmd_set_field(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()

@@ -20,6 +20,7 @@ Kit **default** = full Playground shell (not “two views only”). Schema: `boa
 - [ ] **Size** (xs–xl)
 - [ ] **Estimate** (points)
 - [ ] **Start date**
+- [ ] **End date**
 - [ ] Title, Assignees, Status, Linked pull requests present
 
 ### README + verify
@@ -30,7 +31,7 @@ Kit **default** = full Playground shell (not “two views only”). Schema: `boa
 
 ## Customize later (optional)
 
-- [ ] Iteration / End date / Labels / Reviewers columns (cosmetic)
+- [ ] Iteration / Labels / Reviewers columns (cosmetic)
 - [ ] Insights / extra filters
 
 ## Policy

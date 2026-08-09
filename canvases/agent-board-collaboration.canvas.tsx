@@ -197,6 +197,13 @@ const BOARD_TIER1 = [
     "WARN only on failure; parent op still succeeds",
   ],
   [
+    "End date",
+    "set-status / handoff / merge / heal → done",
+    "UTC today if empty when set_end_date_on_done + fields.end_date.field_id",
+    "All agents on Done",
+    "WARN only on failure; parent op still succeeds",
+  ],
+  [
     "Size / Estimate",
     "create-from-template / set-field",
     "Points table in board-ssot skill (defaults s/1 when guessed)",
@@ -658,7 +665,7 @@ export default function AgentBoardCollaborationCanvas() {
           />
           <Spacer size={8} />
           <Text tone="tertiary" size="small">
-            Out of scope for agents by default: Iteration, Labels, Reviewers, End date
+            Out of scope for agents by default: Iteration, Labels, Reviewers
             (human / UI).
           </Text>
         </CardBody>
