@@ -45,7 +45,7 @@ agent-colony/
 ├── payload/                    Generated → activate/install source tree (ADR-001)
 ├── .cursor-plugin/plugin.json  SSOT — Marketplace manifest
 ├── .ai_infra/                  SSOT — scripts, docs, templates, MCP, workflows, manifest.yaml
-├── assets/                     Marketplace logo (`logo.png`)
+├── assets/                     Marketplace logo (`agent-colony-logo`)
 ├── .github/                    CI workflows (kit-dev only)
 ├── agent_colony/            SSOT — thin CLI shim (also copied to consumer)
 ├── schemas/                    Legacy gate.json stub (`resolve_gates()` in prepare.py; `GATES` = alias)
