@@ -198,7 +198,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 | Organization handle | `savin-razvan` (or `agent-colony`) |
 | Contact email | razvan.i.savin@gmail.com |
 | Logotype URL | `https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/agent-colony-logo.png` |
-| Description | Agent Colony installs multi-agent workflow into any Cursor project (8 agents, 14 skills, 7 rules): GitHub Project as writable backlog/status SSOT, PR lifecycle scripts, `.local/` evidence, optional MCP. Run **`/workflow-activate`**, then first-run **`/board`** (Playground board shell) before **`/implementer`**. Pattern A: one script per maintainer action. |
+| Description | Stop losing Status in chat — install Agent Colony into your Cursor app: 8 agents, optional GitHub Project coordination, PR gates, local evidence. `/add-plugin` → `/workflow-activate`; enable Project SSOT then `/board` + shell until `board-bootstrap --check` exits 0. |
 | GitHub repository | https://github.com/SavinRazvan/agent-colony |
 | Owner | Individual · razvan.i.savin@gmail.com |
 | Website URL | https://razvansavin.com/ |
@@ -230,6 +230,10 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 **Listing copy refresh (2026-08-07 update-agent-colony command):** Added `/update-agent-colony` + `agent_colony update` version-gated upgrade — **1479** tests; agent/skill/rule counts (**8** / **14** / **7**); kit version **0.6.1**.
 
 **Listing copy refresh (2026-08-07 plugin-cache activate bootstrap):** Auto-discover Cursor plugin cache payload + `bootstrap_activate.py` — **1484** tests; agent/skill/rule counts (**8** / **14** / **7**); kit version **0.6.1**.
+
+**Listing copy refresh (2026-08-09 slim README + docs routing):** Public README is a landing page (video, two-speed CTA); consumer depth in quickstart/PLUGIN-USER-GUIDE; kit-dev setup in root `CONTRIBUTING.md`. Marketplace Description row + `plugin.json` tagline aligned; **1484** tests; **8** / **14** / **7**; kit version **0.6.1**.
+
+**Listing copy refresh (2026-08-09 pitch + factual onboard):** Outcome pitch (“Stop losing Status in chat”) with optional board SSOT wording; README full-board ladder mirrors quickstart (`contributors validate` → `/board` → `board-bootstrap --check`); **1484** tests; **8** / **14** / **7**; kit version **0.6.1**.
 
 **Listing copy refresh (2026-07-20 DOC-CANVAS-ALIGN):** Canvases re-aligned to live CLI (**22** leaves incl. `board-bootstrap`), board-shell day-0 story, test-runner `coverage.json` + post-100% doc sync, VERIFIED **2026-07-20**; metrics unchanged (**1178** / **7089** / **100%**; **8** / **12** / **7**).
 

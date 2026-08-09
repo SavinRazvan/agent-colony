@@ -1,46 +1,77 @@
 <p align="center">
-  <video src="https://github.com/user-attachments/assets/f9015ab5-28bf-47f7-a065-2127c098b80e" width="100%" controls>
-  </video>
+  <video src="https://github.com/user-attachments/assets/f9015ab5-28bf-47f7-a065-2127c098b80e" width="100%" controls></video>
 </p>
-
 
 # Agent Colony
 
-**Installable multi-agent workflow infrastructure for Cursor**, with a **GitHub Project** as the only writable SSOT for backlog, Status, and agent continuation when `project_ssot.enabled` and `sync_policy: board_only`. Local `.local/` holds PR gates, audits, and evidence — never a second Status writer.
+**Stop losing Status in chat.** Agent Colony installs a full multi-agent kit into *your* [Cursor](https://cursor.com) app repo — **8** agents, PR gates, and optional GitHub Project coordination so backlog and Status live on the board when you enable it.
 
 | | |
 |--|--|
-| **Product repo** | [agent-colony](https://github.com/SavinRazvan/agent-colony) |
-| **Version** | `0.6.1` · **Tests** · 1484 · **Agents** · 8 · **Rules** · **7 universal** |
-| **Board (kit-dev)** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) — reference layout for **Prioritized backlog** + **Status board** |
+| **Version** | [`0.6.1`](https://github.com/SavinRazvan/agent-colony/releases) · **Tests** · 1484 · **Agents** · 8 · **Skills** · 14 · **Rules** · **7 universal** · **License** · [Apache-2.0](LICENSE) |
+| **Reference board** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
 
 ---
 
-## Who is this for?
+## The problem
 
-| Audience | Start here |
-|----------|------------|
-| **Consumer** — install into *your* app repo | [§ Install in your project](#install-in-your-project-consumers) → [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) |
-| **Kit maintainer / agent** — develop *this* repo | [§ Work in this repository](#work-in-this-repository-kit-dev) → **[AGENTS.md](AGENTS.md)** (read first) |
+Agent chats lose Status. Trackers and docs drift. Teams re-explain the same slice every session.
 
----
+## The solution
 
-## What you get
+**Agent Colony** installs a full Cursor kit into *your* app repo (not this kit repo). When Project SSOT is on, the **GitHub Project** is the only writable place for backlog and Status — agents **enter** by reading the board and **exit** by updating Status and Notes. Local `.local/` holds gates, audits, and evidence — not a second Status writer.
 
-- **8 agents:** `implementer`, `test-runner`, `verifier`, `auditor`, `researcher`, `integrator`, `drift-guard`, `board`
-- **14 canonical skills** + maintainer PR slash skills (`/review-pr` → `/prepare-pr` → `/merge-pr`)
-- **Board Pattern A CLI:** `python3 -m agent_colony project …` (claim, handoff, Tier-1 fields, outbox)
-- **PR gates** via `prepare.py` · optional MCP (`agent_colony_mcp`) · research corpus under `_research_results/` (opt-in)
-
-**North star:** Entry = read the Project; Exit = update Status + Notes. Details: [ADR-008](.ai_infra/docs/decisions/ADR-008-project-board-ssot.md) · [project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md).
+**Proof:** 1484 tests · 8 agents · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
 
 ---
 
-## Install in your project (consumers)
+## What this is / is not
 
-**Need:** [Cursor](https://cursor.com) · Python 3.11+ · **your app folder** open (not this kit repo).
+| | |
+|--|--|
+| **Is** | Installable Cursor workflow kit: 8 agents, PR gates, local evidence; optional GitHub Project coordination, MCP, and research packs |
+| **Is not** | A new LLM runtime, chatbot framework, or hosted SaaS |
 
-### 1. Add the plugin (Agent chat — not the terminal)
+---
+
+## Why teams use it
+
+- **Optional board SSOT** — when enabled, backlog and Status stay on the GitHub Project; chat is execution, not the source of truth
+- **Eight specialized agents** — implement, test, verify, audit, research, integrate, drift-check, board coach
+- **PR gates** — prepare/merge evidence before ship
+- **MCP-ready** — kit MCP server; DeepWiki seeded on consumer activate by default
+- **Local evidence** — `.local/` for audits, coverage, and workflow artifacts (gitignored)
+
+---
+
+## Agents
+
+| Agent | Job |
+|-------|-----|
+| `implementer` | Ship disciplined slices |
+| `test-runner` | Module tests and coverage evidence |
+| `verifier` | Falsify claims with fresh evidence |
+| `auditor` | Deep / periodic architecture audit |
+| `researcher` | Brief-driven research packs |
+| `integrator` | Add agents, skills, MCP, kit expansions |
+| `drift-guard` | Goal/plan/doctrine + DRIFT scripts |
+| `board` | Wire Project SSOT and coach the board shell |
+
+Slash skills cover activate, update, board protocols, PR lifecycle (`/review-pr` → `/prepare-pr` → `/merge-pr`), and more — see the [Plugin User Guide](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md).
+
+---
+
+## Requirements
+
+[Cursor](https://cursor.com) · Python 3.11+ · open **your app folder** (not this kit repo) · for board SSOT: [GitHub CLI](https://cli.github.com/) with Project access
+
+---
+
+## Install (consumers)
+
+### Try in ~2 minutes
+
+In **Agent chat** (not the terminal):
 
 ```text
 /add-plugin https://github.com/SavinRazvan/agent-colony
@@ -50,266 +81,55 @@ Click the **Agent Colony** card:
 
 ![Install Agent Colony from Agent chat](assets/agent-colony-install.png)
 
-*Marketplace listing is deferred; `/add-plugin` from GitHub is the supported path today.*
-
-### 2. Activate into your workspace
-
-Still in **your app** folder, Agent chat:
+Then in **your app** folder:
 
 ```text
 /workflow-activate
 ```
 
-Wait for **`VERIFY PASS`** and all three planes **ready**. Activate is idempotent (safe to re-run).
-
-This copies the **full consumer kit** from the plugin `payload/` (same surface kit maintainers ship): **8 agents**, **14 skills** (incl. `/update-agent-colony`), **7 rules**, maintainer PR slash skills, `agent_colony` CLI (project/PR/drift/MCP/canvas/plan/update), MCP server, ops docs, `.local/` scaffold, `.venv`, and runtime `.gitignore` (`.local/` + `.venv/`). You only personalize identity / board YAML in step 3 — you do **not** pick optional install profiles.
-
-| Plane | Paths | Purpose |
-|-------|-------|---------|
-| Cursor contract | `.cursor/`, `.agents/`, `AGENTS.md` | Agents, skills, rules |
-| Infrastructure | `.ai_infra/`, `agent_colony/` | CLI, scripts, docs, templates |
-| Runtime | `.local/`, `.venv` | Trackers, **user settings** (gitignored) |
-
-### 3. Your identity, then wire the board (Project SSOT)
-
-**Order matters:** set identity → validate → (optional) `gh` check → **`/board`** wires YAML → shell UI.
-
-#### 3a. Identity
-
-Edit **`.local/user_settings/github.collaboration.yaml`**:
-
-```yaml
-owner:
-  display_name: "Your Full Name"    # → Author: / Action-By:
-  github_user: "@yourhandle"        # → GitHub-User:
-```
-
-Set **`project_ssot.enabled: true`** when you want the GitHub Project as SSOT (you can leave board ids empty until step 3c).
+Wait for **`VERIFY PASS`**. Sanity check:
 
 ```bash
 source .venv/bin/activate
-python3 -m agent_colony contributors validate   # must PASS
 python3 -m agent_colony health
 ```
 
-#### 3b. GitHub CLI (Project SSOT only)
+### Full board experience (when Project SSOT is on)
 
-Agents call **`gh`** for board operations. Check scopes first — **skip refresh** if you already have Project access:
+Same Try steps, then finish this ladder (detail: [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md) · [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md)):
 
-```bash
-gh auth status   # need: repo + project (read:project may appear too)
-```
-
-If Project scopes are missing:
+1. **Identity** — edit `.local/user_settings/github.collaboration.yaml` (`display_name`, `github_user`; enable `project_ssot`) → `python3 -m agent_colony contributors validate`
+2. **Wire board** — Agent chat `/board` with your **Project URL** and **repo URL** → confirm proposed ids → `python3 -m agent_colony project doctor` and `project status`
+3. **Board shell** — create the required views/columns in the GitHub UI (coach: `/board`) until:
 
 ```bash
-gh auth login -h github.com
-# or add scopes on an existing login:
-gh auth refresh -h github.com -s read:project,project
-```
-
-WSL / no browser: copy the one-time code → [github.com/login/device](https://github.com/login/device) → approve → return to terminal.
-
-#### 3c. Wire `project_ssot` (API slice) — use **`/board`**
-
-After **`contributors validate`** passes, paste **both URLs** in Agent chat (same message):
-
-```text
-/board
-
-Project: https://github.com/users/YOU/projects/N
-Repo:    https://github.com/YOU/your-app
-```
-
-The **`/board`** agent uses `gh project view` / `field-list` to propose **`project_ssot`** (board ids, Status/Priority/Size/Estimate/Start date field ids) and **`default_repo`**. **Confirm before save.**
-
-Day-to-day board protocol lives in the **`board-ssot`** skill; onboarding wiring + shell coach is always **`/board`**.
-
-Then verify the API slice:
-
-```bash
-source .venv/bin/activate
-python3 -m agent_colony project doctor
-python3 -m agent_colony project status
-```
-
-Expect:
-
-```text
-board-onboard status: api=complete · shell=incomplete · views=ui-only · next=/board CONSENT+TURN
-```
-
-**API slice done ≠ board ready.** Views and column visibility are **human UI only** (§4).
-
-**Expected on a brand-new Project:** `doctor: ok` but `board-bootstrap --check` **FAIL** until you finish §4 — do **not** start `/implementer` yet.
-
-Full checklist: [PLUGIN-USER-GUIDE § Consumer project_ssot onboarding](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist).
-
----
-
-### 4. Prepare the board shell (required when SSOT is on)
-
-> **After §3c.** Skip this and `/implementer` will fight a blank `View 1` board.
-
-**You are here** when `project doctor` is ok but `board-bootstrap --check` prints `FAIL — missing minimum view …` and/or column FAILs.
-
-Choose **one** shell path:
-
-| Path | Views required | When |
-|------|----------------|------|
-| **Minimal 2-view** (recommended for small teams) | **Prioritized backlog** + **Status board** only | Match [AI Project Playground #3](https://github.com/users/SavinRazvan/projects/3) |
-| **Playground default** | Six views (Roadmap, Bugs, In review, My items, …) | Kit default schema — no overlay |
-
-#### Minimal 2-view (matches Playground #3)
-
-**New installs:** activate auto-seeds `.local/user_settings/board-shell.schema.yaml` from the minimal exemplar (consumer repos only). **Existing installs:**
-
-```bash
-python3 -m agent_colony project board-shell init --minimal
-```
-
-Or copy manually:
-
-In GitHub UI, mirror [Playground #3](https://github.com/users/SavinRazvan/projects/3):
-
-| View | Layout |
-|------|--------|
-| **Prioritized backlog** | Table · show Priority, Size, Estimate, Start date |
-| **Status board** | Board · group by **Status** · same Tier-1 columns |
-
-Tab order does not matter — bootstrap matches by **view name**.
-
-#### Playground default (six views)
-
-See table in §4B below — use when you do **not** copy the minimal overlay.
-
-#### What runs where
-
-| Action | Where | Command / prompt |
-|--------|--------|------------------|
-| Check shell | Terminal | `python3 -m agent_colony project board-bootstrap --check` |
-| Create missing **fields** | Terminal (optional) | `… board-bootstrap --check --ensure-fields` |
-| Push Project **README** | Terminal (optional) | `… board-bootstrap --check --apply-readme` |
-| Create/rename **views** + **columns** | Browser + **`/board`** | CONSENT GATE + TURN PROTOCOL — **no view CLI** |
-| Day-to-day cards | After `--check` green | `/implementer` |
-
-#### A. Agent chat (copy/paste)
-
-```text
-/board
-
-Using minimal 2-view overlay (or: Playground six-view default).
-board-bootstrap --check still FAIL — coach CONSENT GATE then TURN PROTOCOL:
-one view per turn, wait for "done", re-run --check after each turn.
-Project: https://github.com/users/YOU/projects/N
-Repo: https://github.com/YOU/your-app
-```
-
-Skill: [board-shell](.cursor/skills/board-shell/SKILL.md) · [views-setup.md](.ai_infra/templates/project-board/views-setup.md)
-
-#### B. GitHub UI — Playground default (six views)
-
-| View | Layout (short) |
-|------|----------------|
-| **Status board** | Board · group by Status |
-| **Prioritized backlog** | Table · Tier-1 columns |
-| **Roadmap** | Roadmap |
-| **Bugs** | Table · filter title contains `[BUG]` |
-| **In review** | Table · Status = In review |
-| **My items** | Table · Assignees = `@me` |
-
-On **Status board** and **Prioritized backlog**, show: **Priority**, **Size**, **Estimate**, **Start date**.
-
-#### C. Prove the shell (repeat until exit 0)
-
-```bash
-source .venv/bin/activate
 python3 -m agent_colony project board-bootstrap --check
-python3 -m agent_colony project status
 ```
 
-Schema path should show `.local/user_settings/board-shell.schema.yaml` when using the minimal overlay.
+exits **0**. Wire-only is not enough.
 
-**Do not** start with `/auditor`. When bootstrap is green → **§5** `/implementer`.
+4. **Build** — `/implementer` (not day-0 `/auditor`)
+
+**Ready when:** `health` passes after activate; **and** (if board SSOT is on) `board-bootstrap --check` exits 0 before day-to-day agents.
 
 ---
 
-### 5. Start building
+## What happens next
 
-| Goal | In Agent chat |
-|------|----------------|
-| Implement a slice | `/implementer` |
-| Tests / coverage | `/test-runner` |
-| Verify a claim | `/verifier` |
-| PR lifecycle | `/review-pr` → `/prepare-pr` → `/merge-pr` |
-| Research a repo | `/researcher` + a GitHub URL |
-| Extend agents/skills/MCP | `/integrator` |
-| Architecture audit *(later)* | `/auditor` — not day-0 onboarding |
-
-**Every session Entry:** if `project_ssot.enabled` → `python3 -m agent_colony project status`; else → `.local/index-and-planning/current/session-pointer.md`.
-
-Shorter path: [consumer-quickstart.md](.ai_infra/docs/operations/consumer-quickstart.md).
-
-### Optional — Update the kit / plugin later
-
-Docs and agents in **your app** come from the plugin payload. Re-reading this README on GitHub does **not** refresh your app until you update the plugin + run the upgrade command.
-
-1. **Ship on the kit repo first** (maintainer): merge the change to `main` (PR workflow).
-2. **In your app**, Agent chat — refresh the plugin from GitHub:
-
-```text
-/add-plugin https://github.com/SavinRazvan/agent-colony
-```
-
-3. **Upgrade** (version-gated heal vs full kit-managed refresh — preferred):
-
-```text
-/update-agent-colony
-```
-
-Or terminal:
-
-```bash
-source .venv/bin/activate
-python3 -m agent_colony update --directory .
-```
-
-Plain `/workflow-activate` / `activate` only **heals** (dashboards, gitignore, STARTER, missing `.venv`) when planes are already ready — it does **not** overwrite agents/skills/scripts unless you use `update` (or advanced `activate --force`).
-
-4. Sanity check:
-
-```bash
-python3 -m agent_colony health
-python3 -m agent_colony project board-bootstrap --check   # still FAIL until you finish step 4 views in GitHub UI
-```
-
-Details: [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md) · skill [update-agent-colony](.cursor/skills/update-agent-colony/SKILL.md).
-
-**Board views are not fixed by a plugin update.** `board-bootstrap --check` FAIL on missing views only clears after you complete **step 4** (`/board` + human UI). Updating the plugin only refreshes docs/coaching text.
+| Topic | Go to |
+|-------|--------|
+| Identity / user settings | [PLUGIN-USER-GUIDE § Personalize](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#10-personalize-settings) |
+| Board wire + shell | [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md) · [`board-shell`](.cursor/skills/board-shell/SKILL.md) |
+| MCP (DeepWiki, custom servers) | [connect-external-mcp.md](.ai_infra/docs/operations/connect-external-mcp.md) |
+| Research packs | [`research-corpus`](.cursor/skills/research-corpus/SKILL.md) · Guide [use-case matrix](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#6-use-case-matrix) |
+| Upgrade an existing install | `/update-agent-colony` · [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md) |
+| Three planes (architecture) | [workflow-architecture.md](.ai_infra/docs/architecture/workflow-architecture.md) |
 
 ---
 
-## Work in this repository (kit-dev)
+## Kit maintainers
 
-```bash
-gh repo clone SavinRazvan/agent-colony
-cd agent-colony
-python3 -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev,mcp]"
-```
-
-1. Open the folder in Cursor.
-2. Read **[AGENTS.md](AGENTS.md)** first.
-3. Confirm collaboration YAML under `.local/user_settings/` (owner + `project_ssot`).
-4. Start:
-
-```bash
-python3 -m agent_colony project status
-python3 -m agent_colony project list --status ready
-# create / claim — see: python3 -m agent_colony project guide
-```
-
-Maintainer gates: `make gates` · `make drift-validate` · `make doc-validate` · shipped matrix: [IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md). Kit canvases: **15** files under `canvases/` (**11** agent/roster hubs + 4 concept hubs — see IMPLEMENTATION-STATUS § Kit canvases). Canvas/plan local artifacts: [ADR-010](.ai_infra/docs/decisions/ADR-010-canvas-plan-local-artifacts.md) · [canvas-artifacts](.cursor/skills/canvas-artifacts/SKILL.md).
+Developing **this** repository? See **[CONTRIBUTING.md](CONTRIBUTING.md)** (clone, venv, gates), then **[AGENTS.md](AGENTS.md)** for agent doctrine.
 
 ---
 
@@ -317,12 +137,13 @@ Maintainer gates: `make gates` · `make drift-validate` · `make doc-validate` �
 
 | Doc | Audience |
 |-----|----------|
-| [AGENTS.md](AGENTS.md) | Kit-dev front door — identity, north star, execution roster |
-| [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) | Consumers — install, activate, board onboarding |
-| [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md) | 5-minute consumer path |
+| [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md) | Consumers — 5-step install |
+| [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) | Consumers — full manual |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Kit-dev setup |
+| [AGENTS.md](AGENTS.md) | Kit-dev agent doctrine |
 | [Docs index](.ai_infra/docs/README.md) | Full `.ai_infra/docs/` navigation |
 | [repository-map](.ai_infra/docs/handoff/repository-map.md) | Kit vs payload vs consumer install |
-| [assets/](assets/README.md) | Logo + install screenshot |
+| [assets/](assets/README.md) | Logo, video, install screenshot |
 
 ---
 
