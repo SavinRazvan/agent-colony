@@ -53,7 +53,7 @@ What short description should appear on this Project board?
 ```
 
 - If they give text → keep it for README placeholders / `--apply-readme` body merge.
-- If `use template default` → use `.ai_infra/templates/project-board/project-readme.md` as-is (title/repo filled from YAML).
+- If `use template default` → use `.ai_infra/templates/project-board/project-readme.md` as-is (board brief; title/repo filled from YAML).
 - If README already non-empty and they say keep it → record that; skip overwrite unless they ask.
 
 ### Q2 — Proceed to create / coach the default shell?

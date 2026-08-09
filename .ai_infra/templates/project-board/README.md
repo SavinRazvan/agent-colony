@@ -23,7 +23,7 @@ Notes:
 | `board-shell.schema.yaml` | Coach / CLI | Desired-state Playground parity; overlay `.local/user_settings/board-shell.schema.yaml` |
 | `outbox-entry.schema.json` | Agents / CLI | Validate lines in `.local/generated-data/board-outbox.jsonl` |
 | `outbox-entry.example.json` | Docs | Exemplar outbox line (never paste fake `item_id` as `--id`) |
-| `project-readme.md` | **Humans** (or `--apply-readme`) | Paste **contents** into Project settings → README (edit placeholders). Do **not** paste into a terminal. |
+| `project-readme.md` | **Humans** (or `--apply-readme`) | Board brief for Project settings → README (what/who/how). **Not** a CLI cheat sheet — use `project guide` for commands. Do **not** paste into a terminal. |
 | `views-setup.md` | **Humans** | **Follow** in GitHub UI (rename views / add columns). Do **not** paste this file into Project README. |
 | `views-checklist.md` | **Humans** | Checkbox checklist for the Playground default shell + Tier-1 columns. |
 
@@ -39,7 +39,7 @@ Card bodies always include `## Acceptance`, `## Rollback`, and `## Notes` so `va
 | bug fix | `create-from-template --template bug --priority p1` |
 | external / corpus research | `create-from-template --template research --priority p2` |
 | Project board bootstrap | `project doctor` → `/board` first-run (`board-shell`) → follow `views-setup.md` → paste `project-readme.md` → `project board-bootstrap --check` → `project status` |
-| Project README | **Humans** paste **contents of** `project-readme.md`, or opt-in `board-bootstrap --check --apply-readme` |
+| Project README | **Humans** paste **contents of** `project-readme.md` (board brief), or opt-in `board-bootstrap --check --apply-readme`. CLI: `project guide` |
 
 **Do not** paste Project settings labels (`Project name`, `Short description`, `README`, …) into bash — use `agent_colony project` recipes instead.
 

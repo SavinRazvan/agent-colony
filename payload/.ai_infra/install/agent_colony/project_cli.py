@@ -769,9 +769,17 @@ def apply_board_shell_readme(
     body = path.read_text(encoding="utf-8")
     title = str(ssot.get("name") or "Board SSOT").strip()
     repo = str(ssot.get("default_repo") or "owner/repo").strip()
-    body = body.replace("Your Board Name (board SSOT)", f"{title} (board SSOT)")
+    heading = title if title.endswith("(board SSOT)") else f"{title} (board SSOT)"
+    body = body.replace("Your Board Name (board SSOT)", heading)
     body = body.replace("`owner/repo`", f"`{repo}`")
-    # Strip HTML comment guide lines at top for cleaner Project README (keep placeholders notes)
+    # Strip HTML comments for a cleaner Project README (UI paste / --apply-readme).
+    while "<!--" in body:
+        start = body.find("<!--")
+        end = body.find("-->", start)
+        if end < 0:
+            break
+        body = body[:start] + body[end + 3 :]
+    body = "\n".join(line for line in body.splitlines() if line.strip() or line == "").strip() + "\n"
     mutation = (
         "mutation($input:UpdateProjectV2Input!){"
         "updateProjectV2(input:$input){projectV2{id}}}"
