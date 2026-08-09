@@ -1,16 +1,4 @@
-<p align="center">
-  <video
-    src="https://github.com/SavinRazvan/agent-colony/releases/download/media/agent-colony-hero.mp4"
-    poster="assets/agent-colony-logo.png"
-    autoplay
-    loop
-    muted
-    playsinline
-    width="420"
-  >
-    <img src="assets/agent-colony-logo.png" alt="Agent Colony" width="160" height="160" />
-  </video>
-</p>
+https://github.com/user-attachments/assets/f9015ab5-28bf-47f7-a065-2127c098b80e
 
 # Agent Colony
 
