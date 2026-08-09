@@ -51,7 +51,6 @@ def test_assess_planes_require_venv_missing_runtime(tmp_path: Path) -> None:
         ".ai_infra/bootstrap.py",
         ".ai_infra/paths.py",
         ".ai_infra/manifest.yaml",
-        "tests/modules/smoke/test_kit_installed.py",
         "agent_colony/__main__.py",
         ".ai_infra/install/agent_colony/cli.py",
         ".ai_infra/scripts/architecture/check_governance_consistency.py",

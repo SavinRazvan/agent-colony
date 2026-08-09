@@ -358,6 +358,8 @@ def cmd_activate(args: argparse.Namespace) -> int:
         cmd.append("--with-mcp-json")
     if args.verify:
         cmd.append("--verify")
+    if getattr(args, "keep_smoke_test", False):
+        cmd.append("--keep-smoke-test")
     proc = subprocess.run(cmd, cwd=kit_root())
     code = int(proc.returncode)
     if code != 0:
@@ -411,6 +413,11 @@ def register_activate_subparser(sub: argparse._SubParsersAction) -> None:
     activate.add_argument("--no-mcp-json", action="store_false", dest="with_mcp_json")
     activate.add_argument("--verify", action="store_true", default=True)
     activate.add_argument("--no-verify", action="store_false", dest="verify")
+    activate.add_argument(
+        "--keep-smoke-test",
+        action="store_true",
+        help="Opt-in: leave tests/modules/smoke/test_kit_installed.py (default: omit)",
+    )
     activate.add_argument(
         "--force",
         action="store_true",

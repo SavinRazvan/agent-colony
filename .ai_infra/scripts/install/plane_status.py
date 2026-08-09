@@ -75,13 +75,6 @@ def is_kit_dev_repo(root: Path) -> bool:
     return (root / "tests" / "modules" / "install" / "test_scaffold.py").is_file()
 
 
-CONSUMER_ONLY_PATHS = frozenset(
-    {
-        "tests/modules/smoke/test_kit_installed.py",
-    }
-)
-
-
 def assess_planes(
     root: Path, *, profile: str = "with_mcp", require_venv: bool = False
 ) -> PlaneStatus:
@@ -94,8 +87,6 @@ def assess_planes(
         ".local/index-and-planning/current/session-pointer.md",
         "AGENTS.md",
     ])
-    if is_kit_dev_repo(project_root):
-        required = [rel for rel in required if rel not in CONSUMER_ONLY_PATHS]
 
     missing: list[str] = []
     plane_hits = {"cursor": True, "infrastructure": True, "runtime": True}

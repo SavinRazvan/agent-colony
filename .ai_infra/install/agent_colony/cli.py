@@ -102,6 +102,8 @@ def cmd_install(args: argparse.Namespace) -> int:
         cmd.append("--with-readme")
     if args.with_tests:
         cmd.append("--with-tests")
+    if getattr(args, "keep_smoke_test", False):
+        cmd.append("--keep-smoke-test")
     if args.with_venv:
         cmd.append("--with-venv")
     if args.with_mcp_json:
@@ -121,11 +123,22 @@ def cmd_gates(args: argparse.Namespace) -> int:
         arch = scripts_dir("architecture", root)
     steps = [
         [py, str(pr / "check_testing_artifacts.py")],
-        [py, "-m", "pytest", "-q"],
-        [py, str(arch / "check_governance_consistency.py")],
-        [py, str(arch / "check_debrand.py")],
-        [py, str(arch / "check_doc_facts.py")],
     ]
+    tests_dir = root / "tests"
+    has_tests = tests_dir.is_dir() and (
+        any(tests_dir.rglob("test_*.py")) or any(tests_dir.rglob("*_test.py"))
+    )
+    if has_tests:
+        steps.append([py, "-m", "pytest", "-q"])
+    else:
+        print("gates: SKIP pytest (no tests under tests/)")
+    steps.extend(
+        [
+            [py, str(arch / "check_governance_consistency.py")],
+            [py, str(arch / "check_debrand.py")],
+            [py, str(arch / "check_doc_facts.py")],
+        ]
+    )
     for cmd in steps:
         code = _run(cmd, root)
         if code != 0:
@@ -223,6 +236,11 @@ def build_parser() -> argparse.ArgumentParser:
     install.add_argument("--dry-run", action="store_true")
     install.add_argument("--with-readme", action="store_true")
     install.add_argument("--with-tests", action="store_true")
+    install.add_argument(
+        "--keep-smoke-test",
+        action="store_true",
+        help="Opt-in: write tests/modules/smoke/test_kit_installed.py",
+    )
     install.add_argument("--with-venv", action="store_true")
     install.add_argument("--with-mcp-json", action="store_true")
     install.add_argument("--verify", action="store_true")

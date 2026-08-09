@@ -183,7 +183,8 @@ def test_cmd_gates_uses_resolve_project_python(monkeypatch: pytest.MonkeyPatch, 
     args = argparse.Namespace(directory=tmp_path)
     assert cli.cmd_gates(args) == 0
     assert resolved_roots == [tmp_path.resolve()]
-    assert seen_interpreters == ["/tmp/fake-project-python"] * 5
+    # No tests/ under tmp_path → pytest step skipped (4 remaining gates).
+    assert seen_interpreters == ["/tmp/fake-project-python"] * 4
 
 
 def test_cmd_gates_fallback_scripts_dir_raises_when_absent(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

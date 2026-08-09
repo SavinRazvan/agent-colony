@@ -10,7 +10,7 @@ From the **agent-colony** product repo root:
 # Preview
 python .ai_infra/scripts/install/scaffold.py --target /path/to/new-project --dry-run
 
-# Consumer install (minimal smoke test scaffolded automatically)
+# Consumer install (layout verified in-process; no tests/ smoke file by default)
 python .ai_infra/scripts/install/scaffold.py \
   --target /path/to/new-project \
   --with-venv \
@@ -35,7 +35,8 @@ Copies `project.config.yaml.example` to the target (rename to `project.config.ya
 | `--source` | Kit root (default: auto-detect) |
 | `--dry-run` | Print copy plan only |
 | `--with-readme` | Copy kit `README.md` |
-| `--with-tests` | Copy full kit `tests/` (kit dev only; consumer default uses minimal smoke scaffold) |
+| `--with-tests` | Copy full kit `tests/` (kit dev only) |
+| `--keep-smoke-test` | Opt-in: write `tests/modules/smoke/test_kit_installed.py` (default: omit; layout checked in-process) |
 | `--with-venv` | Create `.venv`, install pytest + mcp |
 | `--with-mcp-json` | Merge `mcp.json.kit.example` (+ `mcp.user.json` if present) → `mcp.json` |
 | `--verify` | Run `check_testing_artifacts`, `pytest -q`, governance + debrand |

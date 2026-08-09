@@ -41,7 +41,7 @@ def test_scaffold_dry_run_lists_copies(tmp_path: Path) -> None:
     assert ".cursor" in joined
     assert "session-pointer.md" in joined
     assert "project.config.yaml.example" in joined
-    assert "minimal smoke" in joined
+    assert "SKIP consumer smoke test file" in joined
     assert "examples" not in joined
 
 
@@ -56,12 +56,17 @@ def test_scaffold_creates_core_layout(tmp_path: Path) -> None:
     assert not (target / ".cursor" / "agents" / "workflow-intelligence-mapper.md").exists()
     assert not (target / ".cursor" / "rules" / mod.ADAPTER_WALL_RULE).exists()
     assert not (target / "examples").exists()
-    assert (target / "tests" / "modules" / "smoke" / "test_kit_installed.py").is_file()
+    assert not (target / "tests" / "modules" / "smoke" / "test_kit_installed.py").exists()
     assert not (target / "tests" / "modules" / "install" / "test_scaffold.py").exists()
-    smoke = (target / "tests" / "modules" / "smoke" / "test_kit_installed.py").read_text(
-        encoding="utf-8"
-    )
-    assert "workflow-artifacts/drift" in smoke
+
+
+def test_scaffold_keep_smoke_test_opt_in(tmp_path: Path) -> None:
+    mod = _load_scaffold()
+    target = tmp_path / "project"
+    mod.scaffold(target, REPO_ROOT, keep_smoke_test=True)
+    smoke = target / "tests" / "modules" / "smoke" / "test_kit_installed.py"
+    assert smoke.is_file()
+    assert "workflow-artifacts/drift" in smoke.read_text(encoding="utf-8")
 
 
 def test_scaffold_writes_runtime_gitignore_and_starter(tmp_path: Path) -> None:

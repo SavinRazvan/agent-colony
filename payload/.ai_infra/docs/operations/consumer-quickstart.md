@@ -322,13 +322,12 @@ source .venv/bin/activate          # recommended; gates auto-use `.venv/bin/pyth
 |---------|------|
 | `python3 -m agent_colony activate --directory .` | First install, re-activate, or refresh dashboards |
 | `python3 -m agent_colony contributors validate` | After editing `github.collaboration.yaml` — must PASS before PR |
-| `python3 -m agent_colony health` | Quick layout + `kit_version` check |
+| `python3 -m agent_colony health` | Quick layout + `kit_version` (no kit smoke pytest under `tests/` by default) |
 | `python3 -m agent_colony integrate validate` | Agent/skill/MCP integration sanity (P0 = 0) |
-| `python3 -m agent_colony gates` | Full smoke gates (4 checks on consumer) |
+| `python3 -m agent_colony gates` | Full smoke gates (pytest skipped when consumer has no tests/) |
 | `python3 -m agent_colony drift validate` | Plan ↔ tracker coherence |
 | `python3 -m agent_colony drift validate --profile consumer` | **Use on consumer apps** — no agent required; see [Drift on consumer apps](#drift-on-consumer-apps) |
 | `python3 -m agent_colony mcp validate` | MCP config after edits |
-| `python3 -m pytest -q tests/modules/smoke/` | Install smoke test |
 | `python3 -m http.server 8000` | Serve dashboards — open http://localhost:8000/.local/agents-control-center/dashboards/index.html |
 
 Commit trailer preview: `python3 -m agent_colony contributors commit-trailers`
@@ -528,7 +527,7 @@ your-project/
 ├── .ai_infra/     scripts + docs
 ├── .local/        trackers (gitignored)
 ├── agent_colony/
-└── tests/modules/smoke/
+└── (app tests optional — kit leaves no tests/modules/smoke/ by default)
 ```
 
 **CLI:** `source .venv/bin/activate && python3 -m agent_colony` from your project root.

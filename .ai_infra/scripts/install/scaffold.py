@@ -92,15 +92,17 @@ KIT_TESTS_MARKER = Path("tests") / "modules" / "install" / "test_scaffold.py"
 SMOKE_TEST_REL = Path("tests") / "modules" / "smoke" / "test_kit_installed.py"
 # Live MCP files stay local to kit-dev / consumer; only examples ship via copy.
 CURSOR_LIVE_MCP_IGNORE = ("mcp.user.json", "mcp.json", "mcp.registry.yaml")
+# Opt-in only (--keep-smoke-test). Default consumers get in-process layout VERIFY — no tests/ smoke file.
 SMOKE_TEST_BODY = '''"""
 File: test_kit_installed.py
 Path: tests/modules/smoke/test_kit_installed.py
-Role: Smoke test that core kit paths exist after consumer install.
+Role: Optional smoke test that core kit paths exist after consumer install.
 Used By:
- - pytest (consumer default scaffold)
+ - pytest when scaffold --keep-smoke-test (opt-in)
 Depends On:
- - scaffold minimal test layout
+ - scaffold optional smoke layout
 Notes:
+ - Default consumer install does not write this file; layout is checked in-process.
  - Replaced when install uses --with-tests (kit dev only).
 """
 from pathlib import Path
@@ -113,6 +115,15 @@ def test_core_layout_installed() -> None:
     assert Path(".local/index-and-planning/current/session-pointer.md").is_file()
     assert Path(".local/workflow-artifacts/drift").is_dir()
 '''
+
+# Same paths the optional smoke pytest asserts — checked in _sanity_check for all consumers.
+CONSUMER_LAYOUT_RELS: tuple[tuple[str, str], ...] = (
+    (".cursor/agents/implementer.md", "file"),
+    (".ai_infra/scripts/pr/prepare.py", "file"),
+    ("AGENTS.md", "file"),
+    (".local/index-and-planning/current/session-pointer.md", "file"),
+    (".local/workflow-artifacts/drift", "dir"),
+)
 
 
 def _log(messages: list[str], line: str) -> None:
@@ -486,14 +497,34 @@ def _scaffold_board_shell_overlay(source: Path, target: Path, dry_run: bool, log
     _copy_file_if_missing(minimal, dest, dry_run, log)
 
 
-def _scaffold_minimal_tests(target: Path, dry_run: bool, log: list[str]) -> None:
+def _scaffold_minimal_tests(
+    target: Path,
+    dry_run: bool,
+    log: list[str],
+    *,
+    keep_smoke_test: bool = False,
+) -> None:
+    """Default: do not leave kit smoke under tests/. Opt-in via keep_smoke_test."""
+    if not keep_smoke_test:
+        _log(
+            log,
+            "SKIP consumer smoke test file (layout verified in-process at CHECK/VERIFY)",
+        )
+        return
     smoke_file = target / SMOKE_TEST_REL
     if dry_run:
-        _log(log, f"DRY-RUN write minimal smoke {smoke_file}")
+        _log(log, f"DRY-RUN write optional smoke {smoke_file}")
         return
     smoke_file.parent.mkdir(parents=True, exist_ok=True)
     smoke_file.write_text(SMOKE_TEST_BODY, encoding="utf-8")
     _log(log, f"WRITE {smoke_file}")
+
+
+def _has_pytest_targets(target: Path) -> bool:
+    tests = target / "tests"
+    if not tests.is_dir():
+        return False
+    return any(tests.rglob("test_*.py")) or any(tests.rglob("*_test.py"))
 
 
 def _apply_overlay_rules(source: Path, target: Path, rel_overlay: str, dry_run: bool, log: list[str]) -> None:
@@ -532,23 +563,22 @@ def _sanity_check(target: Path, log: list[str], *, with_tests: bool = False) -> 
     errors: list[str] = []
     agents = target / ".cursor" / "agents"
     rules = target / ".cursor" / "rules"
-    if not (agents / "implementer.md").is_file():
-        errors.append("missing .cursor/agents/implementer.md")
+    for rel, kind in CONSUMER_LAYOUT_RELS:
+        path = target / rel
+        if kind == "dir":
+            if not path.is_dir():
+                errors.append(f"missing {rel}/")
+        elif not path.is_file():
+            errors.append(f"missing {rel}")
     if (rules / ADAPTER_WALL_RULE).is_file():
         errors.append(f"adapter wall must not be in core rules: {ADAPTER_WALL_RULE}")
     mapper = agents / "workflow-intelligence-mapper.md"
     if mapper.is_file():
         errors.append("workflow-intelligence-mapper should not ship in core")
-    session = target / ".local" / "index-and-planning" / "current" / "session-pointer.md"
-    if not session.is_file():
-        errors.append("missing session-pointer.md")
     if (target / "examples").exists():
         errors.append("forbidden in slim install: examples")
     if not with_tests and (target / KIT_TESTS_MARKER).is_file():
         errors.append("forbidden in slim install: full kit tests tree")
-    smoke = target / SMOKE_TEST_REL
-    if not with_tests and not smoke.is_file():
-        errors.append(f"missing consumer smoke test: {SMOKE_TEST_REL}")
     for err in errors:
         _log(log, f"CHECK FAIL: {err}")
     if not errors:
@@ -570,12 +600,20 @@ def _verify_retry_hint(target: Path) -> str:
 def _run_verify(target: Path, log: list[str]) -> int:
     py = Path(resolve_project_python(target))
     infra = target / ".ai_infra"
-    cmds = [
+    # Layout already asserted in _sanity_check (ephemeral consumer VERIFY — no smoke file required).
+    cmds: list[list[str]] = [
         [str(py), str(infra / "scripts" / "pr" / "check_testing_artifacts.py")],
-        [str(py), "-m", "pytest", "-q"],
-        [str(py), str(infra / "scripts" / "architecture" / "check_governance_consistency.py")],
-        [str(py), str(infra / "scripts" / "architecture" / "check_debrand.py")],
     ]
+    if _has_pytest_targets(target):
+        cmds.append([str(py), "-m", "pytest", "-q"])
+    else:
+        _log(log, "VERIFY SKIP pytest (no tests under tests/ — layout checked in-process)")
+    cmds.extend(
+        [
+            [str(py), str(infra / "scripts" / "architecture" / "check_governance_consistency.py")],
+            [str(py), str(infra / "scripts" / "architecture" / "check_debrand.py")],
+        ]
+    )
     for cmd in cmds:
         _log(log, f"RUN {' '.join(cmd)}")
         proc = subprocess.run(cmd, cwd=target, check=False)
@@ -619,6 +657,7 @@ def scaffold(
     with_venv: bool = False,
     with_mcp_json: bool = False,
     verify: bool = False,
+    keep_smoke_test: bool = False,
 ) -> list[str]:
     log: list[str] = []
     target = target.resolve()
@@ -678,7 +717,9 @@ def scaffold(
     if with_tests:
         _copy_tree(source / "tests", target / "tests", dry_run, log)
     else:
-        _scaffold_minimal_tests(target, dry_run, log)
+        _scaffold_minimal_tests(
+            target, dry_run, log, keep_smoke_test=keep_smoke_test
+        )
 
     if spec.get("scaffold_local"):
         _scaffold_local(source, target, dry_run, log)
@@ -748,6 +789,11 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true", help="Print actions only")
     parser.add_argument("--with-readme", action="store_true", help="Copy kit README.md")
     parser.add_argument("--with-tests", action="store_true", help="Copy tests/ (kit dev only)")
+    parser.add_argument(
+        "--keep-smoke-test",
+        action="store_true",
+        help="Opt-in: write tests/modules/smoke/test_kit_installed.py (default: omit)",
+    )
     parser.add_argument("--with-venv", action="store_true", help="Create .venv and install deps")
     parser.add_argument("--with-mcp-json", action="store_true", help="Use with_mcp profile + mcp.json")
     parser.add_argument("--verify", action="store_true", help="Run gates after install")
@@ -772,6 +818,7 @@ def main() -> int:
             with_venv=args.with_venv,
             with_mcp_json=args.with_mcp_json,
             verify=args.verify,
+            keep_smoke_test=args.keep_smoke_test,
         )
     except (FileNotFoundError, ValueError, RuntimeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

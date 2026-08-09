@@ -102,10 +102,11 @@ python3 -m venv .venv
 .venv/bin/pip install -r requirements-mcp.txt
 ```
 
-Copy kit tests only for kit-dev installs (`--with-tests`). Consumer default scaffolds `tests/modules/smoke/test_kit_installed.py`:
+Copy kit tests only for kit-dev installs (`--with-tests`). Consumer default does **not** write a smoke pytest file — layout is checked in-process at CHECK/VERIFY (`--keep-smoke-test` to opt in):
 
 ```bash
-# Default consumer install — no copy needed (scaffold writes smoke test)
+# Default consumer install — no tests/modules/smoke/ left in the app
+# Optional: --keep-smoke-test
 # Kit dev:
 cp -r "$SOURCE/tests" "$TARGET/"
 ```
