@@ -238,7 +238,7 @@ def test_cmd_health_pass_without_mcp_user_fragment(
     )
     (tmp_path / ".ai_infra" / "scripts" / "pr").mkdir(parents=True)
     (tmp_path / ".ai_infra" / "scripts" / "pr" / "prepare.py").write_text("# stub\n", encoding="utf-8")
-    (tmp_path / ".ai_infra" / ".kit-version").write_text("0.6.2\n", encoding="utf-8")
+    (tmp_path / ".ai_infra" / ".kit-version").write_text("0.6.3\n", encoding="utf-8")
     (tmp_path / ".cursor" / "agents").mkdir(parents=True)
     (tmp_path / ".cursor" / "agents" / "implementer.md").write_text("# implementer\n", encoding="utf-8")
     (tmp_path / ".local" / "index-and-planning" / "current").mkdir(parents=True)
@@ -271,7 +271,7 @@ def test_cmd_health_fails_when_registry_lists_deepwiki_without_user(
     )
     (tmp_path / ".ai_infra" / "scripts" / "pr").mkdir(parents=True)
     (tmp_path / ".ai_infra" / "scripts" / "pr" / "prepare.py").write_text("# stub\n", encoding="utf-8")
-    (tmp_path / ".ai_infra" / ".kit-version").write_text("0.6.2\n", encoding="utf-8")
+    (tmp_path / ".ai_infra" / ".kit-version").write_text("0.6.3\n", encoding="utf-8")
     (tmp_path / ".cursor" / "agents").mkdir(parents=True)
     (tmp_path / ".cursor" / "agents" / "implementer.md").write_text("# implementer\n", encoding="utf-8")
     (tmp_path / ".local" / "index-and-planning" / "current").mkdir(parents=True)
@@ -457,7 +457,7 @@ def test_build_parser_version_exits(capsys: pytest.CaptureFixture[str]) -> None:
     with pytest.raises(SystemExit) as exc:
         parser.parse_args(["--version"])
     assert exc.value.code == 0
-    assert "agent-colony 0.6.2" in capsys.readouterr().out
+    assert "agent-colony 0.6.3" in capsys.readouterr().out
 
 
 def test_main_install_dispatch(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

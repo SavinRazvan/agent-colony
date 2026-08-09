@@ -32,7 +32,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 ### Board shell starter (first-run)
 
 - **Desired state:** `.ai_infra/templates/project-board/board-shell.schema.yaml` — **full Playground default** (six views + Tier-1 columns). **Or** copy `board-shell.schema.minimal.yaml` for **two views** ([Playground #3](https://github.com/users/SavinRazvan/projects/3)).
-- **Customize:** copy/edit `.local/user_settings/board-shell.schema.yaml` — `board-bootstrap --check` prefers the overlay when present. Do **not** remove Status / Priority / Size / Estimate / Start date, or hide **Priority** on Prioritized backlog.
+- **Customize:** copy/edit `.local/user_settings/board-shell.schema.yaml` — `board-bootstrap --check` prefers the overlay when present. Do **not** remove Status / Priority / Size / Estimate / Start date / End date, or hide **Priority** on Prioritized backlog.
 - **Coach:** `/board` + `.cursor/skills/board-shell/SKILL.md`.
 - **Verify:** `python3 -m agent_colony project board-bootstrap --check` (FAIL if a default Playground view is missing; **FAIL (exit 5)** on missing Tier-1 columns; WARN on leftover `View N` / layout mismatch).
 - **Optional API:** `--ensure-fields` (create missing field definitions + print suggested YAML ids); `--apply-readme` (push README). Views stay human UI (ADR-008).
@@ -44,6 +44,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Card Status | Yes | Yes — every agent Exit | — |
 | Priority / Size | Yes | Triage + own card | — |
 | Start date | Yes (UI) | Set UTC today when Status → `in_progress` if empty (`claim`, `set-status`, `handoff --to in_progress`) when `set_start_date_on_claim` + `fields.start_date.field_id` | — |
+| End date | Yes (UI) | Set UTC today when Status → `done` if empty (`set-status`, `handoff`, merge sync, `heal-cards`) when `set_end_date_on_done` + `fields.end_date.field_id` | — |
 | Estimate | Yes (UI) | Triage + own card — `set-field --field estimate --to N` (points; Size↔Estimate table in skill) | — |
 | Promote Draft→Issue | Yes (UI) | `promote-to-issue --last --agent <name> [--repo owner/repo]` | GraphQL `convertProjectV2DraftIssueItemToIssue`; same `PVTI_`; Assignees + Linked PRs after promote; Notes `promoted to Issue #N`; fine-grained PAT caveat (`doctor` / `guide`); claim does **not** auto-promote |
 | Linked PRs | Yes (UI link) | `mention-pr --pr N` → Notes with PR URL; auto-promotes Draft when `promote_to_issue_on_pr` (default true) — FAIL if promote fails; WARN-only if false | GitHub **Linked pull requests** column derived from Issue↔PR (works after Issue) |

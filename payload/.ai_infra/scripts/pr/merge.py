@@ -211,6 +211,33 @@ def sync_board_after_merge(
             )
         return f"board sync: warn — set-status failed ({detail})"
 
+    e_ok, e_detail, e_applied = project_cli.ensure_end_date_if_done(
+        ssot, resolved, item=item
+    )
+    if not e_ok:
+        print(f"[WARN] board sync end_date skipped: {e_detail}", file=sys.stderr)
+        queued_e = project_cli._try_queue_rate_limit(
+            root,
+            ssot,
+            cmd="merge.py",
+            err_detail=e_detail,
+            op="set-status",
+            item_id=resolved,
+            agent="merge.py",
+            payload={
+                "to": done_logical,
+                "end_date": project_cli.utc_today_iso(),
+            },
+        )
+        if queued_e is not None:
+            print(
+                f"[WARN] board sync QUEUED end_date on {resolved}; "
+                "run: python3 -m agent_colony project outbox flush",
+                file=sys.stderr,
+            )
+    elif e_applied:
+        print(f"[PASS] board sync: end_date={e_detail} on {resolved}")
+
     pr_url = _pr_url(root, pr, str(ssot.get("default_repo") or ""))
     note = f"Merged: {pr_url} @ {merge_sha}"
     try:

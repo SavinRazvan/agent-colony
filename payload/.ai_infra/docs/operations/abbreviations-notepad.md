@@ -67,7 +67,7 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs — for **con
 |---|---|
 | `project_ssot` | YAML block in `github.collaboration.yaml` wiring the GitHub Project |
 | `board_only` | `sync_policy` — board is the **only writable** backlog/Status/continuation SSOT |
-| Tier-1 | Mandatory board fields: Status, Priority, Size, Estimate, Start date (on first In progress), Assignee, Linked PR when a PR exists |
+| Tier-1 | Mandatory board fields: Status, Priority, Size, Estimate, Start date (on first In progress), End date (on Done), Assignee, Linked PR when a PR exists |
 | `PVT_` | GitHub Project v2 **project** node id (in YAML `project_id`) |
 | `PVTI_` | GitHub Project v2 **item** id (card); Draft→Issue keeps the same `PVTI_` |
 | outbox | Local rate-limit buffer (`.local/generated-data/board-outbox.jsonl`); not a second SSOT |

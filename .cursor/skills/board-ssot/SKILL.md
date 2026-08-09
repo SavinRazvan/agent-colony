@@ -45,7 +45,7 @@ Agents: `plan list` → read snapshot → execute. Exit: `plan snapshot --slug �
 
 ## First-run (board shell) — before day-to-day cards
 
-Day-0 requires the kit **default** shell: `.ai_infra/templates/project-board/board-shell.schema.yaml` (six Playground views; Priority/Size/Estimate/Start date on Status board + Prioritized backlog). Overlay: `.local/user_settings/board-shell.schema.yaml` when present.
+Day-0 requires the kit **default** shell: `.ai_infra/templates/project-board/board-shell.schema.yaml` (six Playground views; Priority/Size/Estimate/Start date/End date on Status board + Prioritized backlog). Overlay: `.local/user_settings/board-shell.schema.yaml` when present.
 
 0. **Wire YAML from URLs (if ids missing):** after `gh` auth, human pastes Project URL + repo URL → use `gh project view` / `field-list` → propose `project_ssot` + `default_repo` → human confirms before save. Discovery only — **no** `--ensure-fields` until CONSENT.
 1. Load `.cursor/skills/board-shell/SKILL.md` (coach) and the schema above.
@@ -114,14 +114,17 @@ Priority is **independent** of Size (a P0 can be XS).
 
 ### Timing matrix
 
-| Moment | Status | Priority | Size | Estimate | Start date | Assignee | Linked PR |
-|--------|--------|----------|------|----------|------------|----------|-----------|
-| Create (Ready/Backlog) | ✓ | ✓ required | ✓ | ✓ | — | ✓ Issue (owner; `--no-assignee` to skip) | — |
-| First In progress | ✓ | confirm | confirm | confirm | **✓ required** | ✓ (Issue) | — |
-| Open PR | — | — | — | — | — | — | ✓ `mention-pr` |
-| Exit In review / Done | ✓ | Notes | Notes | Notes | already set | — | if PR |
+| Moment | Status | Priority | Size | Estimate | Start date | End date | Assignee | Linked PR |
+|--------|--------|----------|------|----------|------------|----------|----------|-----------|
+| Create (Ready/Backlog) | ✓ | ✓ required | ✓ | ✓ | — | — | ✓ Issue (owner; `--no-assignee` to skip) | — |
+| First In progress | ✓ | confirm | confirm | confirm | **✓ required** | — | ✓ (Issue) | — |
+| Open PR | — | — | — | — | — | — | — | ✓ `mention-pr` |
+| Exit In review | ✓ | Notes | Notes | Notes | already set | — | — | if PR |
+| Exit Done | ✓ | Notes | Notes | Notes | already set | **✓ required** | — | if PR |
 
-**Start date** = UTC calendar day work began. Set when Status becomes `in_progress` if empty — via `claim`, `set-status --to in_progress`, or `handoff --to in_progress` (master switch: `conventions.set_start_date_on_claim`). Never set on create while Ready/Backlog. End date is human-only.
+**Start date** = UTC calendar day work began. Set when Status becomes `in_progress` if empty — via `claim`, `set-status --to in_progress`, or `handoff --to in_progress` (master switch: `conventions.set_start_date_on_claim`). Never set on create while Ready/Backlog.
+
+**End date** = UTC calendar day work finished. Set when Status becomes `done` if empty — via `set-status --to done`, `handoff --to done`, merge board sync, or `heal-cards --apply` (master switch: `conventions.set_end_date_on_done`). Never set on create or In progress / In review.
 
 ### Mandatory field checklist
 
@@ -132,6 +135,7 @@ Priority is **independent** of Size (a P0 can be XS).
 | **Size** | Create / claim / own | `--size` / `set-field --field size --to xs\|s\|m\|l\|xl` | Per Size↔Estimate table; default `s` + Notes if guessed |
 | **Estimate** | Create / claim / own | `--estimate` / `set-field --field estimate --to N` | Points per table; default `1` + Notes if guessed |
 | **Start date** | First In progress | `claim` / `set-status --to in_progress` / `handoff --to in_progress` | Auto when `set_start_date_on_claim` + `fields.start_date.field_id`; if WARN, retry — do not ignore |
+| **End date** | Done | `set-status --to done` / `handoff --to done` / merge / `heal-cards` | Auto when `set_end_date_on_done` + `fields.end_date.field_id`; if WARN, retry — do not ignore |
 | **Assignee** | Create (Issue) / claim re-assert | `create-from-template` auto-assigns `owner.github_user`; `claim` / `set-assignee --login …` | **Create as Issue** (`item_kind_default: issue`). Draft is scratch-only; `--no-assignee` escape hatch |
 | **Linked PR** | When a PR exists | `mention-pr --pr N --last --agent <agent>` | Auto-promotes Draft when `promote_to_issue_on_pr` |
 
@@ -152,7 +156,7 @@ Rules:
 1. After create: **Priority + Size + Estimate** before coding; on first In progress confirm **Start date** from CLI output.
 2. Exit Notes and chat: `[P0]…; [P1]…; [P2]…; [P3]…` and `Priority=p? · Size=? · Estimate=?`.
 3. `auditor` / `drift-guard`: recommend Priority/Size/Estimate (per table) when seeding Ready cards.
-4. `verifier`: spot-check Status, Priority, Size, Estimate, **Start date on In progress / In review / Done**; Assignee when Issue-backed; Linked PR when a PR opened. Missing Start date on those statuses = **incomplete Exit**.
+4. `verifier`: spot-check Status, Priority, Size, Estimate, **Start date on In progress / In review / Done**, **End date on Done**; Assignee when Issue-backed; Linked PR when a PR opened. Missing Start date on active statuses or missing End date on Done = **incomplete Exit**.
 5. Missing Tier-1 fields = incomplete Exit — fill or document blocker in Notes before handoff.
 
 ## When to use
@@ -183,13 +187,14 @@ Rules:
 | Field / action | When | CLI | Notes |
 |----------------|------|-----|-------|
 | **Start date** | First In progress | `claim` / `set-status --to in_progress` / `handoff --to in_progress` | **Mandatory** when empty — UTC today if `conventions.set_start_date_on_claim: true`; see § Tier-1 card fields contract |
+| **End date** | Done | `set-status` / `handoff` / merge / `heal-cards` → `done` | **Mandatory** when empty — UTC today if `conventions.set_end_date_on_done: true` |
 | **Estimate** | Create / claim / own | `project set-field --field estimate --to N` | **Mandatory** — default `1` if unknown |
 | **Size** | Create / claim / own | `project set-field --field size --to xs\|s\|m\|l\|xl` | **Mandatory** — default `s` if unknown |
 | **Priority** | Create / claim / own | `project set-field --field priority --to p0\|p1\|p2` | **Mandatory** — chat P3 → `p2` + Notes `deferred` |
 | **Assignee** | Create Issue (owner) | `create-from-template` (default) / `claim` / `set-assignee` | **Mandatory on Issue create** — `owner.github_user`; Draft cannot hold Assignees |
 | **Linked PR** | PR open | `project mention-pr --pr N --last` | **Mandatory when a PR exists** for the card |
 | **Promote Draft→Issue** | Only if card is still Draft | `project promote-to-issue --last --agent <name>` | Prefer never needing this — create as Issue |
-| **Out of scope (agents default)** | — | — | Iteration, Labels, Reviewers, End date — human / UI only |
+| **Out of scope (agents default)** | — | — | Iteration, Labels, Reviewers — human / UI only |
 
 ### Issue lifecycle (Draft vs Issue)
 

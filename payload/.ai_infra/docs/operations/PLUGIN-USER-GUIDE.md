@@ -134,7 +134,7 @@ After API wiring + shell green, agents use claim/handoff/Tier-1 the same way as 
 
 **Activate installs (same for every consumer):** agents, skills, rules, CLI, docs, templates, `.local/` scaffold — not your board ids.
 
-**Board shape constraint:** Your Project must be **kit-shaped**. Arbitrary custom layouts are not auto-supported; activate does **not** invent field ids from a Project URL. **Estimate** is relative **points** (not hours) — see skill § Size↔Estimate. **Start date** is set on first In progress.
+**Board shape constraint:** Your Project must be **kit-shaped**. Arbitrary custom layouts are not auto-supported; activate does **not** invent field ids from a Project URL. **Estimate** is relative **points** (not hours) — see skill § Size↔Estimate. **Start date** is set on first In progress; **End date** is set on Done.
 
 | Field | Required option keys |
 |-------|---------------------|
@@ -143,6 +143,7 @@ After API wiring + shell green, agents use claim/handoff/Tier-1 the same way as 
 | **Size** (single-select) | `xs`, `s`, `m`, `l`, `xl` |
 | **Estimate** (number) | numeric field id (points) |
 | **Start date** (date) | date field id |
+| **End date** (date) | date field id |
 
 Discover ids: manually via `gh project view <N> --owner <login>` / `gh project field-list <N> --owner <login>`, **or** after GitHub auth paste your **Project URL + app repo URL** in Agent chat and ask **`/board`** to propose YAML (you confirm before save). Optional field create: `python3 -m agent_colony project board-bootstrap --check --ensure-fields` (prints suggested YAML ids — human confirms before paste). After setup, run `python3 -m agent_colony project doctor` → `python3 -m agent_colony project board-bootstrap --check` → `python3 -m agent_colony project status` (views/README stay human-owned unless `--apply-readme`).
 

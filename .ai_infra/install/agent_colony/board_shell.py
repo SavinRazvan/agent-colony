@@ -91,14 +91,14 @@ def visible_columns(schema: dict[str, Any]) -> set[str]:
     views = schema.get("views") if isinstance(schema.get("views"), dict) else {}
     cols = views.get("visible_columns") if isinstance(views, dict) else None
     if not isinstance(cols, list):
-        return {"Priority", "Size", "Estimate", "Start date"}
+        return {"Priority", "Size", "Estimate", "Start date", "End date"}
     return {str(c).strip() for c in cols if str(c).strip()}
 
 
 def tier1_column_names(schema: dict[str, Any]) -> set[str]:
     """Columns that must appear on minimum board/table views (subset of visible)."""
-    # Agents care about these four; Title/Assignees/Status/Linked PRs usually present.
-    wanted = {"Priority", "Size", "Estimate", "Start date"}
+    # Agents care about these; Title/Assignees/Status/Linked PRs usually present.
+    wanted = {"Priority", "Size", "Estimate", "Start date", "End date"}
     cols = visible_columns(schema)
     return wanted & cols if cols else wanted
 

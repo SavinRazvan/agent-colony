@@ -57,7 +57,7 @@ _SCOPE_MISS_RE = re.compile(
 )
 _DEDUPE_PAYLOAD_KEYS: dict[str, tuple[str, ...]] = {
     "append-notes": ("text",),
-    "set-status": ("to",),
+    "set-status": ("to", "start_date", "end_date"),
     "set-section": ("section", "text"),
     "claim": ("to", "text", "start_date"),
     "handoff": ("next", "to", "note", "text"),
@@ -567,6 +567,8 @@ def apply_outbox_entry(
         _normalize_status,
         assert_body_ready_for_status,
         ensure_start_date_if_starting,
+        ensure_end_date_if_done,
+        done_status_logical,
         is_placeholder_section_content,
         normalize_set_section_name,
         replace_section_content,
@@ -665,6 +667,16 @@ def apply_outbox_entry(
                 d_ok, d_detail, _applied = ensure_start_date_if_starting(ssot, item_id)
                 if not d_ok:
                     return False, f"status set but start_date failed: {d_detail}"
+        if _normalize_status(to) == done_status_logical(ssot):
+            end = str(payload.get("end_date") or "").strip()
+            if end:
+                e_ok, e_detail = set_item_date(ssot, item_id, "end_date", end)
+                if not e_ok:
+                    return False, f"status set but end_date failed: {e_detail}"
+            else:
+                e_ok, e_detail, _applied = ensure_end_date_if_done(ssot, item_id)
+                if not e_ok:
+                    return False, f"status set but end_date failed: {e_detail}"
         return True, detail
 
     if op == "set-assignee":
@@ -769,6 +781,10 @@ def apply_outbox_entry(
                 d_ok, d_detail, _applied = ensure_start_date_if_starting(ssot, item_id)
                 if not d_ok:
                     return False, f"status set but start_date failed: {d_detail}"
+            if _normalize_status(status_to) == done_status_logical(ssot):
+                e_ok, e_detail, _applied = ensure_end_date_if_done(ssot, item_id)
+                if not e_ok:
+                    return False, f"status set but end_date failed: {e_detail}"
         try:
             next_attr = format_agent_attribution(root, next_agent)
         except ValueError as exc:

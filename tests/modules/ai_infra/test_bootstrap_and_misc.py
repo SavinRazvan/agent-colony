@@ -32,7 +32,7 @@ def test_ai_infra_package_exposes_version() -> None:
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    assert mod.__version__ == "0.6.2"
+    assert mod.__version__ == "0.6.3"
 
 
 def test_bootstrap_ensure_paths_import_inserts_ai_infra_dir() -> None:
