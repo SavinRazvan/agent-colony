@@ -94,7 +94,7 @@ export TARGET=~/Projects/my-app
 mkdir -p "$TARGET"
 ```
 
-1. **Agent chat** (not terminal): `/add-plugin https://github.com/SavinRazvan/agent-colony` — click the **Agent Colony** card in the preview ([screenshot](../../../assets/agent-colony-install.png) · [README](https://github.com/SavinRazvan/agent-colony#1-install-the-plugin-cursor-chat--not-the-terminal))
+1. **Agent chat** (not terminal): `/add-plugin https://github.com/SavinRazvan/agent-colony` — click the **Agent Colony** card in the preview ([screenshot](../../../assets/img/tutorials_img/01_tutorial_agent-colony.png) · [README](https://github.com/SavinRazvan/agent-colony#install-consumers))
 2. **File → Open Folder** → `"$TARGET"` (your app — not the kit repo)
 3. **Agent chat:** `/workflow-activate` → wait for **VERIFY PASS**
 4. Edit `.local/user_settings/github.collaboration.yaml` → `python3 -m agent_colony contributors validate`

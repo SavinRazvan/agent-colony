@@ -8,7 +8,7 @@
 /add-plugin https://github.com/SavinRazvan/agent-colony
 ```
 
-[screenshot](.ai_infra/docs/operations/assets/agent-colony-install.png) · [step-by-step](.ai_infra/docs/operations/consumer-quickstart.md#step-1-detail--install-plugin-from-github)
+[screenshot](https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png) · [step-by-step](.ai_infra/docs/operations/consumer-quickstart.md#step-1-detail--install-plugin-from-github)
 
 2. Open **your app folder** → Agent chat:
 

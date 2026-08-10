@@ -130,6 +130,20 @@ Optional: reload Cursor MCP so `CallMcpTool` also works when the IDE host loads 
    `.local/user_settings/mcp.agents.yaml` for DeepWiki. Use **`/mcp-connect`** intents:
    enable DeepWiki | link custom | doctor/smoke.
 
+<p align="center">
+  <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/16_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/16_tutorial_agent-colony.png" alt="Agent chat: ask DeepWiki MCP about karpathy/nanochat repository" width="800" />
+  </a>
+</p>
+<p align="center"><sub><strong>16</strong> — DeepWiki in chat · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/16_tutorial_agent-colony.png">Full size</a></sub></p>
+
+<p align="center">
+  <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/17_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/17_tutorial_agent-colony.png" alt="Terminal: python3 -m agent_colony mcp call deepwiki ask_question success output" width="800" />
+  </a>
+</p>
+<p align="center"><sub><strong>17</strong> — CLI <code>mcp call</code> PASS · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/17_tutorial_agent-colony.png">Full size</a></sub></p>
+
 Both example files (`.cursor/mcp.registry.yaml.example`, `.cursor/mcp.user.example.json`) already
 ship this entry alongside the command-based `my-custom-server` example, so you can see the
 URL-based and command-based transport shapes side by side.
