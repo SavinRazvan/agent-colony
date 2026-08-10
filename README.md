@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/agent-colony-logo.png" alt="Agent Colony" width="180" />
+  <img src="assets/agent-colony-logo.png" alt="Agent Colony" width="380" />
 </p>
 
 # Agent Colony
