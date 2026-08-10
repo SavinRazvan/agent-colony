@@ -77,7 +77,9 @@ Slash skills cover activate, update, board protocols, PR lifecycle (`/review-pr`
 
 ## Install (consumers)
 
-### Try in ~2 minutes
+Screenshots are ~**1920×1080**. Each image displays at **800px** width — **click** to open full resolution, then use browser zoom (<kbd>Ctrl</kbd>+<kbd>+</kbd> / <kbd>−</kbd> or pinch). Full gallery: [consumer-quickstart § Visual walkthrough](.ai_infra/docs/operations/consumer-quickstart.md#visual-walkthrough).
+
+### 1. Install the plugin (Agent chat)
 
 In **Agent chat** (not the terminal):
 
@@ -85,40 +87,97 @@ In **Agent chat** (not the terminal):
 /add-plugin https://github.com/SavinRazvan/agent-colony
 ```
 
-Click the **Agent Colony** card:
+<p align="center">
+  <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
+    <img src="assets/img/tutorials_img/01_tutorial_agent-colony.png" alt="Cursor Agent chat: type /add-plugin with the GitHub URL and review the Agent Colony preview card" width="800" />
+  </a>
+</p>
+<p align="center"><sub><strong>Step 1a</strong> — Preview card · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png">Full size</a></sub></p>
 
-![Install Agent Colony from Agent chat](assets/agent-colony-install.png)
+<p align="center">
+  <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/02_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
+    <img src="assets/img/tutorials_img/02_tutorial_agent-colony.png" alt="Select your app project in Cursor and click Add Plugin" width="800" />
+  </a>
+</p>
+<p align="center"><sub><strong>Step 1b</strong> — Select project → <strong>Add Plugin</strong> · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/02_tutorial_agent-colony.png">Full size</a></sub></p>
 
-Then in **your app** folder:
+<p align="center">
+  <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/03_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
+    <img src="assets/img/tutorials_img/03_tutorial_agent-colony.png" alt="Agent Colony plugin installing in Cursor" width="800" />
+  </a>
+</p>
+<p align="center"><sub><strong>Step 1c</strong> — Installing · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/03_tutorial_agent-colony.png">Full size</a></sub></p>
+
+### 2. Activate + identity
+
+Open **your app folder** in Cursor. In **Agent chat**:
 
 ```text
 /workflow-activate
 ```
 
-Wait for **`VERIFY PASS`**. Sanity check:
+Wait for **`VERIFY PASS`**, then set identity in `.local/user_settings/github.collaboration.yaml`:
+
+<p align="center">
+  <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/04_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
+    <img src="assets/img/tutorials_img/04_tutorial_agent-colony.png" alt="Agent chat: type /workflow-activate and pick workflow-activate from the Agent Colony menu" width="800" />
+  </a>
+</p>
+<p align="center"><sub><strong>Step 2</strong> — Activate · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/04_tutorial_agent-colony.png">Full size</a></sub></p>
+
+<p align="center">
+  <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/05_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
+    <img src="assets/img/tutorials_img/05_tutorial_agent-colony.png" alt="After VERIFY PASS: edit github.collaboration.yaml display_name and github_user" width="800" />
+  </a>
+</p>
+<p align="center"><sub><strong>Step 3</strong> — Identity YAML · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/05_tutorial_agent-colony.png">Full size</a></sub></p>
 
 ```bash
 source .venv/bin/activate
+python3 -m agent_colony contributors validate
 python3 -m agent_colony health
 ```
 
-### Full board experience (when Project SSOT is on)
+<p align="center">
+  <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/06_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
+    <img src="assets/img/tutorials_img/06_tutorial_agent-colony.png" alt="Terminal: python3 -m agent_colony contributors validate showing PASS" width="800" />
+  </a>
+</p>
+<p align="center"><sub><strong>Step 3</strong> — <code>contributors validate</code> PASS · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/06_tutorial_agent-colony.png">Full size</a></sub></p>
 
-Same Try steps, then finish this ladder (detail: [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md) · [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md)):
+### 3. Board SSOT (optional)
 
-1. **Identity** — edit `.local/user_settings/github.collaboration.yaml` (`display_name`, `github_user`; enable `project_ssot`) → `python3 -m agent_colony contributors validate`
-2. **Wire board** — Agent chat `/board` with your **Project URL** and **repo URL** → confirm proposed ids → `python3 -m agent_colony project doctor` and `project status`
-3. **Board shell** — create the required views/columns in the GitHub UI (coach: `/board`) until:
+When `project_ssot.enabled`, finish this ladder ([consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md) · [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md)):
 
-```bash
-python3 -m agent_colony project board-bootstrap --check
-```
+1. Create a GitHub Project (default repo = your app) · **`gh auth status`**
+2. **Wire board** — Agent chat **`/board`** + **Project URL** + **repo URL** → confirm YAML → `project doctor` + `project status`
+3. **Board shell** — coach with **`/board`** until `project board-bootstrap --check` exits **0**
+4. **Build** — **`/implementer`** (not day-0 **`/auditor`**)
 
-exits **0**. Wire-only is not enough.
+<p align="center">
+  <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/08_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
+    <img src="assets/img/tutorials_img/08_tutorial_agent-colony.png" alt="Agent chat /board with Project and repo URLs; github.collaboration.yaml Board Identity section updated" width="800" />
+  </a>
+</p>
+<p align="center"><sub><strong>Wire board</strong> — <code>/board</code> + YAML ids · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/08_tutorial_agent-colony.png">Full size</a></sub></p>
 
-4. **Build** — `/implementer` (not day-0 `/auditor`)
+<p align="center">
+  <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/10_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
+    <img src="assets/img/tutorials_img/10_tutorial_agent-colony.png" alt="Board agent configuring Prioritized backlog and Status board views and Tier-1 columns" width="800" />
+  </a>
+</p>
+<p align="center"><sub><strong>Board shell</strong> — views + columns (agent-assisted) · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/10_tutorial_agent-colony.png">Full size</a></sub></p>
 
-**Ready when:** `health` passes after activate; **and** (if board SSOT is on) `board-bootstrap --check` exits 0 before day-to-day agents.
+<p align="center">
+  <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/14_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
+    <img src="assets/img/tutorials_img/14_tutorial_agent-colony.png" alt="Reference Status board: Ready through Done columns with sample cards (kit repo example project)" width="800" />
+  </a>
+</p>
+<p align="center"><sub><strong>Reference</strong> — Status board when shell is ready (kit example) · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/14_tutorial_agent-colony.png">Full size</a></sub></p>
+
+**MCP (optional):** DeepWiki is seeded on activate — see [connect-external-mcp](.ai_infra/docs/operations/connect-external-mcp.md#worked-example-deepwiki-zero-auth).
+
+**Ready when:** `health` passes after activate; **and** (if board SSOT is on) `board-bootstrap --check` exits **0** before day-to-day agents.
 
 ---
 
@@ -152,7 +211,7 @@ Developing **this** repository? See **[CONTRIBUTING.md](CONTRIBUTING.md)** (clon
 | [AGENTS.md](AGENTS.md) | Kit-dev agent doctrine |
 | [Docs index](.ai_infra/docs/README.md) | Full `.ai_infra/docs/` navigation |
 | [repository-map](.ai_infra/docs/handoff/repository-map.md) | Kit vs payload vs consumer install |
-| [assets/](assets/README.md) | Logo, video, install screenshot |
+| [assets/](assets/README.md) | Logo, video, tutorial screenshots |
 
 ---
 

@@ -67,7 +67,12 @@ In **Agent chat** (not the terminal):
 
 Cursor shows an **Add Plugin** preview — click the **Agent Colony** card to install:
 
-![Install Agent Colony from Agent chat](assets/agent-colony-install.png)
+<p align="center">
+  <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png" alt="Cursor Agent chat: type /add-plugin with the GitHub URL and review the Agent Colony preview card" width="800" />
+  </a>
+</p>
+<p align="center"><sub><strong>Step 1</strong> — Preview card · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png">Full size</a> · more steps in <a href="consumer-quickstart.md#visual-walkthrough">consumer-quickstart</a></sub></p>
 
 Optional — explicit branch:
 
