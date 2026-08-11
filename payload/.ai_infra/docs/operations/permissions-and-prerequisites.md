@@ -32,7 +32,7 @@ Notes:
 |-------|----------------|-------------------------|
 | **Cursor IDE** | Plugin + agents | Open your app folder; allow terminal, workspace read/write, network |
 | **Python 3.11+** | Activate + CLI | Local venv (`.venv`) created by `/workflow-activate` |
-| **GitHub CLI (`gh`)** | Board SSOT + PR workflow | OAuth scopes: `repo`, `read:project`, `project` |
+| **GitHub CLI (`gh`)** | PR workflow; board SSOT when enabled | **`repo`** (PRs/issues); **`read:project`** + **`project`** (board SSOT only) |
 | **Git credentials** | Push branches, open PRs | SSH key or HTTPS — standard git setup (not stored by the kit) |
 | **GitHub account access** | Board + repo operations | Write access to your **code repo** and **GitHub Project** |
 | **MCP** (optional) | Extra tools (DeepWiki, custom APIs) | Per-server tokens only when you opt in |
