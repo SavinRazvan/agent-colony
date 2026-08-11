@@ -21,20 +21,20 @@ Install **Agent Colony** (`agent-colony`) into your project in a few minutes. No
 
 **Product promise:** Install the plugin → open **your app repo** → **`/workflow-activate`** installs the **full kit**. Customize identity in `github.collaboration.yaml`, then **`/board`** wires board ids from Project + repo URLs. **Ready for agents** requires `board-bootstrap --check` **exit 0** — either **two views** (minimal overlay, matches [Playground #3](https://github.com/users/SavinRazvan/projects/3)) or **six Playground views** (kit default). Wire-only is not enough. Details: [PLUGIN-USER-GUIDE § Product promise](PLUGIN-USER-GUIDE.md#product-promise).
 
-> **Also:** [MCP](connect-external-mcp.md) · [upgrade](upgrade-kit.md) · [abbreviations](abbreviations-notepad.md) · skill `research-corpus` · skill `board-shell`
+> **Also:** [What you need — permissions & prerequisites](permissions-and-prerequisites.md) · [MCP](connect-external-mcp.md) · [upgrade](upgrade-kit.md) · [abbreviations](abbreviations-notepad.md) · skill `research-corpus` · skill `board-shell`
 
 ---
 
 ## First run (5 steps)
 
-**Need:** Cursor · Python 3.11+ · **your project folder open in Cursor** (not the kit product repo `agent-colony`).
+**Need:** Cursor · Python 3.11+ · **your project folder open in Cursor** (not the kit product repo `agent-colony`). Full checklist: [permissions-and-prerequisites.md](permissions-and-prerequisites.md).
 
 | Step | Action |
 |------|--------|
 | **1. Plugin** | In **Agent chat** (not terminal): `/add-plugin https://github.com/SavinRazvan/agent-colony` — or **Cursor → Marketplace** when listed |
 | **2. Activate** | Open **your app folder** → Agent chat: **`/workflow-activate`** → wait for **`VERIFY PASS`** |
 | **3. Identity** | Edit `github.collaboration.yaml` → `display_name` + `github_user` → `source .venv/bin/activate && python3 -m agent_colony contributors validate` |
-| **3b. GitHub auth** *(board SSOT)* | `gh auth status` — if Project scopes missing: `gh auth refresh -h github.com -s read:project,project`. Device flow: [github.com/login/device](https://github.com/login/device). [PLUGIN-USER-GUIDE § GitHub CLI auth](PLUGIN-USER-GUIDE.md#github-cli-auth-projects). |
+| **3b. GitHub auth** *(board SSOT)* | `gh auth status` — if Project scopes missing: `gh auth refresh -h github.com -s read:project,project`. Device flow: [github.com/login/device](https://github.com/login/device). Canon: [permissions-and-prerequisites.md § GitHub CLI](permissions-and-prerequisites.md#2-github-cli-gh--main-github-authorization). |
 | **3c. Wire board** *(board SSOT)* | Agent chat **`/board`** + paste **Project URL + repo URL** → agent proposes `project_ssot` + `default_repo` (confirm) → `project doctor` + `project status` |
 | **4. Board shell** *(when SSOT on)* | **Minimal 2-view** (recommended): copy overlay → Prioritized backlog + Status board in UI ([Playground #3](https://github.com/users/SavinRazvan/projects/3)). **Or** six-view Playground default. **`/board`**: CONSENT GATE + TURN PROTOCOL → `--check` exit **0**. |
 | **5. Build** | **`/implementer`** · Entry = `python3 -m agent_colony project status` when board SSOT on |

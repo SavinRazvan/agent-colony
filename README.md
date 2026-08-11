@@ -73,6 +73,8 @@ Slash skills cover activate, update, board protocols, PR lifecycle (`/review-pr`
 
 [Cursor](https://cursor.com) · Python 3.11+ · open **your app folder** (not this kit repo) · for board SSOT: [GitHub CLI](https://cli.github.com/) with Project access
 
+**Full checklist:** [What you need — permissions & prerequisites](.ai_infra/docs/operations/permissions-and-prerequisites.md) (Cursor, `gh` scopes, git, MCP)
+
 ---
 
 ## Install (consumers)

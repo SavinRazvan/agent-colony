@@ -30,7 +30,7 @@ Details: [consumer-quickstart § First activate troubleshooting](.ai_infra/docs/
 1. Edit `.local/user_settings/github.collaboration.yaml` → your name + `@handle`
 2. `source .venv/bin/activate && python3 -m agent_colony contributors validate` (**must PASS**)
 3. If `project_ssot.enabled: true`:
-   - `gh auth status` — if Project scopes missing: `gh auth refresh -h github.com -s read:project,project` ([PLUGIN-USER-GUIDE § GitHub CLI auth](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#github-cli-auth-projects))
+   - `gh auth status` — if Project scopes missing: `gh auth refresh -h github.com -s read:project,project` ([permissions-and-prerequisites](.ai_infra/docs/operations/permissions-and-prerequisites.md))
    - Agent chat **`/board`** + paste **Project URL** + **repo URL** → agent wires `project_ssot` ids + `default_repo` (confirm before save)
    - `source .venv/bin/activate && python3 -m agent_colony project doctor` (expect **ok**)
    - **Minimal 2-view shell** (recommended — matches [Playground #3](https://github.com/users/SavinRazvan/projects/3)):
