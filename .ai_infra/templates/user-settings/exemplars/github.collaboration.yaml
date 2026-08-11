@@ -10,7 +10,7 @@
 # Kit default: AI uses Assisted-by (not Co-authored-by: cursoragent@...).
 # Opt-in legacy mode below if your org requires Git co-author trailers for tools.
 # Project SSOT: set enabled: true and fill board ids; requires gh scopes read:project + project (+ repo).
-# Onboarding: gh auth login|refresh -s read:project,project — if no browser, https://github.com/login/device (see PLUGIN-USER-GUIDE § GitHub CLI auth).
+# Onboarding: gh auth login|refresh -s read:project,project — if no browser, https://github.com/login/device (see permissions-and-prerequisites.md § GitHub CLI).
 
 version: 1
 

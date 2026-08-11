@@ -22,6 +22,7 @@ Depends On:
 
 ## Universal runbooks
 
+- [`permissions-and-prerequisites.md`](permissions-and-prerequisites.md) — **what you need** — Cursor, `gh` scopes, git, board SSOT, MCP (read before `/implementer`)
 - [`PLUGIN-USER-GUIDE.md`](PLUGIN-USER-GUIDE.md) — **start here** — plugin vs activate, file tree, use-case matrix
 - [`consumer-quickstart.md`](consumer-quickstart.md) — adopt the kit in under five minutes (includes [tutorial screenshots](../../../assets/img/tutorials_img/) for `/add-plugin` → board)
 - [`install-dry-run.md`](install-dry-run.md) — detailed install verification checklist

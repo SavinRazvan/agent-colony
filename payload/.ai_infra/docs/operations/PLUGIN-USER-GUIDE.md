@@ -20,6 +20,8 @@ Notes:
 
 Single entry point for **installing**, **activating**, and **using** the kit in your project. Deeper runbooks are linked as chapters — you do not need the kit maintainer repo open.
 
+> **Before `/implementer`:** read [What you need — permissions & prerequisites](permissions-and-prerequisites.md) (Cursor, `gh` scopes, git, board SSOT, MCP).
+
 ---
 
 ## 1. Plugin vs activate vs three planes
@@ -88,7 +90,7 @@ This loads agents, skills, and rules into Cursor. Your project may only get `.cu
 
 ## 2. Quick start (5 steps)
 
-**Need:** Cursor · Python 3.11+ · **your project** open (not the kit product repo `agent-colony`).
+**Need:** Cursor · Python 3.11+ · **your project** open (not the kit product repo `agent-colony`). Full checklist: [permissions-and-prerequisites.md](permissions-and-prerequisites.md).
 
 | Step | Action |
 |------|--------|
@@ -156,7 +158,7 @@ Discover ids: manually via `gh project view <N> --owner <login>` / `gh project f
 |------|--------|
 | 1. Install / activate | Agent chat: `/add-plugin …` then **`/workflow-activate`** in **your app repo** — wait for **`VERIFY PASS`**. |
 | 2. Collaboration YAML (identity) | Edit `.local/user_settings/github.collaboration.yaml`: set `owner.display_name`, `owner.github_user`, and (if using board SSOT) `project_ssot.enabled: true` + `sync_policy: board_only`. Board ids may stay empty until step 3b. |
-| 3. GitHub auth | `gh auth status` first — refresh only if Project scopes missing. See **§ GitHub CLI auth (Projects)** below. |
+| 3. GitHub auth | `gh auth status` first — refresh only if Project scopes missing. Canon: [permissions-and-prerequisites.md § GitHub CLI](permissions-and-prerequisites.md#2-github-cli-gh--main-github-authorization). |
 | 3b. Wire board ids (agent-assisted) | Paste **Project URL** (`https://github.com/users/YOU/projects/N` or `…/orgs/ORG/projects/N`) **and** this **repo URL** in Agent chat → **`/board`** fills `name` / `number` / `owner` / `project_id` / `fields.*` / `default_repo` via `gh` (or you copy from `gh project view` / `field-list` yourself). Human confirms YAML before save. |
 | 4. Doctor + board shell | `project doctor` → optional **minimal overlay** (`board-shell.schema.minimal.yaml` → `.local/user_settings/board-shell.schema.yaml`) for **2 views** matching [Playground #3](https://github.com/users/SavinRazvan/projects/3), **or** six-view default without overlay. → **`/board`** CONSENT GATE + TURN PROTOCOL → `board-bootstrap --check` until **exit 0** → `project status`. |
 | 5. First card | `python3 -m agent_colony project create-from-template --template slice --title "…" --priority p1 --size s --estimate 1 --agent implementer` (assigns `owner.github_user` on Issues) → `claim --last --agent implementer` (sets Start date). Prefer `project guide`. |
@@ -164,6 +166,8 @@ Discover ids: manually via `gh project view <N> --owner <login>` / `gh project f
 | 7. Incomplete cards | `project doctor` WARNs empty Status / CLOSED-not-Done counts. Repair: `project heal-cards --check` then `heal-cards --apply` (optional `--fill-tier1`). |
 
 #### GitHub CLI auth (Projects)
+
+> **Canonical checklist:** [permissions-and-prerequisites.md](permissions-and-prerequisites.md) — Profile A (no board) vs Profile B (board SSOT), token types, verify commands.
 
 Board SSOT needs the **GitHub CLI** (`gh`) with **repository** access **and** **Projects** read/write. Without Project scopes, `project status` / `claim` / `outbox flush` fail with “missing required scopes”.
 
