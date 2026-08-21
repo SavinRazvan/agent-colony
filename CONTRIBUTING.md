@@ -14,6 +14,9 @@ Notes:
 
 # Contributing (kit-dev)
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
+
 This page is for people developing the **agent-colony** product repository itself.
 
 **Consumers** installing into an app repo: start at [README.md](README.md) → [consumer-quickstart.md](.ai_infra/docs/operations/consumer-quickstart.md).

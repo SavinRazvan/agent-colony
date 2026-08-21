@@ -13,6 +13,8 @@ Notes:
 
 # Local workspace layout (`.local/`)
 
+**Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md) · [token-efficiency.md](token-efficiency.md)
+
 The `.local/` directory is **gitignored**. This document is the **versioned contract** for how it should be organized.
 
 ## Version control (must stay out of git)
@@ -23,9 +25,16 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 
 ## Agent efficiency (read order)
 
-**Usually read:** `index-and-planning/current/session-pointer.md`, `plan.md`, `work-tracker.md`; PR artifacts under `workflow-artifacts/pr/` when merging.
+**When `project_ssot.enabled` + `board_only`:**
 
-**Usually skip:** `generated-data/**`, long `history/` unless investigating regressions.
+1. `python -m agent_colony project entry` (prefer `--digest`) — then the claimed card body.
+2. `.cursor/skills/board-ssot/SKILL.md` § Continuation when mutating Status.
+3. `change-index.md` for mid-slice resume; PR artifacts only in review/prepare/merge.
+4. Do **not** dual-write Status to `session-pointer.md` / `work-tracker.md`.
+
+**Offline / SSOT disabled:** `session-pointer.md`, then `plan.md` / `work-tracker.md`; PR artifacts when merging.
+
+**Usually skip:** `generated-data/**`, long `history/` unless investigating regressions. Full contract: [token-efficiency.md](token-efficiency.md).
 
 ## Artifact tiers
 

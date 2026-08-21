@@ -15,6 +15,9 @@ Notes:
 
 # Project board collaboration (agents + humans)
 
+**Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
+
+
 When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project is the only writable SSOT** for backlog, Status, and continuation. Local trackers are offline fallback only; read-only exports never compete with Status. Canonical skill: `.cursor/skills/board-ssot/SKILL.md`.
 
 **First-time consumer setup:** step-by-step checklist in [PLUGIN-USER-GUIDE.md § Consumer project_ssot onboarding](PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) (install → identity → `gh auth status` → **`/board`** wire → optional minimal 2-view overlay → CONSENT + TURN → `board-bootstrap --check` exit **0** → `project status` → first card → outbox flush).

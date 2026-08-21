@@ -17,6 +17,9 @@ Notes:
 
 # Complete workflows (maintainer checklist)
 
+**Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
+
+
 **Consumer / first-run (when `project_ssot.enabled`):** board shell before day-to-day PRs — [PLUGIN-USER-GUIDE § Consumer onboarding](PLUGIN-USER-GUIDE.md#consumer-project_ssot-onboarding-checklist) · `/board` + `board-shell` · `project board-bootstrap --check`. Architecture audit is **not** day-0.
 
 ## A) Standard PR slice (happy path)

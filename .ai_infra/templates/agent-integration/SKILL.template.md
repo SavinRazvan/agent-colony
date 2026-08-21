@@ -5,6 +5,8 @@ description: {{ONE_LINE_DESCRIPTION}}
 
 # {{SKILL_TITLE}}
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 ## Goal
 
 {{FACTUAL_GOAL}}
