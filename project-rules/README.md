@@ -12,6 +12,8 @@ Notes:
 
 # project-rules (deprecated alias)
 
-**Use [`overlays/rules/`](../overlays/README.md)** as the canonical overlay source in Agent Colony.
+**Use ASD-STE100:** [`.ai_infra/docs/operations/asd-ste100-prose.md`](../.ai_infra/docs/operations/asd-ste100-prose.md)
 
-This folder exists only for installs that historically used `project-rules/` naming. Copy overlay `.mdc` files from `overlays/rules/` at install time.
+**Use [`overlays/rules/`](../overlays/README.md)** as the canonical overlay source.
+
+This folder exists only for installs that used `project-rules/` naming. Copy overlay `.mdc` files from `overlays/rules/` at install time. Do not add new rules here.

@@ -5,6 +5,8 @@ alwaysApply: true
 
 # Local artifact protection
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 - Protected: `.coverage`, `.env`, and paths in `overlays/` or project README.
 - Do not delete, reset, or clean protected paths without explicit user confirmation.
 - Before cleanup, list targets; ask if protected paths are included.

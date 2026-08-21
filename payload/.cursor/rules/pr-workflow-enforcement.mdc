@@ -5,6 +5,8 @@ alwaysApply: true
 
 # PR workflow enforcement
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 - **PR-first:** branch (`feature/`, `fix/`, `chore/`) → implement/test → push → PR → `verify_publish.py` + `gh pr view` → `/review-pr` → `/prepare-pr` → `/merge-pr`. Optional cleanup: `/full-pr-workflow` or `finalize.py`.
 - Never merge local to `main`. No destructive git unless user asks.
 - **Artifacts:** `.local/workflow-artifacts/pr/review.md`, `prep.md`, `merge.md` with `Action-By`, `GitHub-User`, `Agent/s` from `github.collaboration.yaml` (`--pipeline`) or `--actor` / `--agents`. Full workflow adds `finalize.md`.

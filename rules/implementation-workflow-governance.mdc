@@ -5,6 +5,8 @@ alwaysApply: true
 
 # Implementation and testing governance
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 ## Lifecycle
 
 - Sequence: `plan -> interfaces -> implementation -> tests -> evidence -> docs update`.

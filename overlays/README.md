@@ -1,35 +1,37 @@
 # Project overlays
 
+**Use ASD-STE100:** [`.ai_infra/docs/operations/asd-ste100-prose.md`](../.ai_infra/docs/operations/asd-ste100-prose.md)
+
 Per-project rules and optional docs that **extend** the universal **Agent Colony** — not part of core.
 
 ## Convention
 
 | Path | Purpose |
 |------|---------|
-| `overlays/rules/*.mdc` | Product- or domain-specific Cursor rules (install → target `.cursor/rules/`) |
+| `overlays/rules/*.mdc` | Product- or domain-specific Cursor rules (install → `.cursor/rules/`) |
 | `overlays/docs/` | Optional ops docs merged into project `docs/` at install |
 
-**Kit-dev (this product repo) ships 7 rules** in `.cursor/rules/` — 6 universal kit rules plus `project-ssot-precedence.mdc`. **Consumer activate** from this product’s `payload/.cursor/rules/` also copies **7** rules (same set). Additional **Overlays** add app-domain `.mdc` files at install when needed.
+**Kit-dev** ships **7** rules in `.cursor/rules/` (6 universal + `project-ssot-precedence.mdc`). Consumer activate copies the same **7** from `payload/.cursor/rules/`. Add app-domain `.mdc` files here when needed.
 
 ## Install
 
-At scaffold time, copy overlay files into the target project:
+Copy overlay files into the target project:
 
 ```bash
 cp overlays/rules/*.mdc /path/to/project/.cursor/rules/
 ```
 
-Also customize `.ai_infra/scripts/pr/prepare.py` `resolve_gates()` once — document extra gates in your overlay README.
+Customize `.ai_infra/scripts/pr/prepare.py` `resolve_gates()` once. Document extra gates in this README. Say *prepare gates green* — do not paste full gate lists.
 
 ## This directory in the kit repo
 
-- `overlays/rules/` — ships **`project-ssot-precedence.mdc`** in **agent-colony** (product-only; copy at consumer install). Add more `*.mdc` for your app domain.
-- [`project-rules/`](../project-rules/) — same overlay concept (alias README for installs that prefer that name)
+- `overlays/rules/` — ships **`project-ssot-precedence.mdc`** (keep aligned with `.cursor/rules/`).
+- [`project-rules/`](../project-rules/) — deprecated alias; use `overlays/rules/`.
 
 ## Anti-patterns
 
-- Do not put product rules in universal `.cursor/rules/` in the **agent-colony** product repo
-- Do not duplicate gate lists in overlay markdown — point to `prepare.py` `resolve_gates()` (`GATES` = alias)
-- Do not treat overlays as agent runtime config (Pattern A: hardcoded scripts)
+- Do not put product rules in universal `.cursor/rules/` in this product repo.
+- Do not duplicate gate lists — point to `prepare.py` `resolve_gates()`.
+- Do not treat overlays as agent runtime config (Pattern A: scripts).
 
-See [`.ai_infra/docs/operations/consumer-quickstart.md`](../.ai_infra/docs/operations/consumer-quickstart.md) and [`.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md`](../.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md).
+See [consumer-quickstart.md](../.ai_infra/docs/operations/consumer-quickstart.md) and [IMPLEMENTATION-STATUS.md](../.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md).

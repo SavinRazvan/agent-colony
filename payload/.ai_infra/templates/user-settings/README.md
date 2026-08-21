@@ -14,6 +14,8 @@ Notes:
 
 # User settings templates
 
+**Use ASD-STE100:** [asd-ste100-prose.md](../../docs/operations/asd-ste100-prose.md)
+
 **Purpose:** One-time (or occasional) YAML worksheets under **`.local/user_settings/`** so humans configure GitHub collaboration and MCP agent wiring without editing kit scripts.
 
 | Exemplar | Copied to | Feeds |

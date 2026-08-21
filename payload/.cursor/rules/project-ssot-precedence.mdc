@@ -5,6 +5,8 @@ alwaysApply: true
 
 # Project SSOT precedence
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 - When `project_ssot.enabled: true` and `sync_policy: board_only`, the **GitHub Project** is the only writable backlog, status, and continuation SSOT.
 - **Entry:** read board (`project status` / claim). **Exit:** update Status + Notes. See `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 - **First-run:** `project board-bootstrap --check` FAIL → `/board` + `board-shell` (CONSENT + TURN) before claim/`/implementer`.
