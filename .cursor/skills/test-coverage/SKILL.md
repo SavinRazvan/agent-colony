@@ -5,6 +5,8 @@ description: Module-focused tests and coverage evidence for workflow scripts and
 
 # Test coverage
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 ## When
 
 `src/**` or `scripts/**` behavior change; coverage or regression requests; medium/high risk before merge.
@@ -13,16 +15,16 @@ description: Module-focused tests and coverage evidence for workflow scripts and
 
 1. Target modules/symbols; matrix: valid / boundary / invalid, lifecycle, failure/recovery.
 2. Tests under `tests/modules/<module>/`.
-3. Update `.local/index-and-planning/current/test-index.md` and `test-plan.md`; drop obsolete tests when contracts change.
-4. Run: `pytest` scoped to module → broader as needed. Before merge path: **`python .ai_infra/scripts/pr/check_testing_artifacts.py`** (see `.ai_infra/scripts/pr/prepare.py` `resolve_gates()`).
-5. For coverage evidence, install `dev` extras (`pip install -e ".[dev]"`) then run `pytest --cov=.ai_infra --cov=agent_colony --cov-report=term-missing --cov-report=json -q` (writes **`coverage.json` only** — do not invent alternate names). Prefer `grep`/`python` over `rg` when filtering shell output — `rg` is often absent from the user PATH. Record gaps in board card Notes when `project_ssot.enabled` + `board_only`, else `work-tracker.md`; always one line in `updates-log.md` per `implementation-workflow-governance.mdc`. **Scope:** this metric tracks the installable kit import surface (`.ai_infra/**` modules imported during tests + `agent_colony/**`); subprocess-only scanners (`check_governance_consistency.py`, `check_debrand.py`, etc.) are validated via their own module tests but excluded from `--cov` by design — see `IMPLEMENTATION-STATUS.md` § Coverage scope.
-6. **After scoped coverage reaches 100%** (or any coverage-closure slice): mandatory doc reality sync — update `IMPLEMENTATION-STATUS.md` **Tests:** + coverage scope numbers, regenerate `.local/index-and-planning/current/coverage-index.md` via `make coverage-index`, run `make doc-validate`, sync related README/AGENTS/repository-map claims, then `make sync-plugin` when skills/docs payload copies change.
-7. Report: modules • edges added • gaps • tracker edits.
+3. Update `test-index.md` and `test-plan.md`; drop obsolete tests when contracts change.
+4. Run scoped `pytest` → broader as needed. Before merge: **`check_testing_artifacts.py`** (via `prepare.py` `resolve_gates()`).
+5. Coverage evidence: `pip install -e ".[dev]"` then `pytest --cov=.ai_infra --cov=agent_colony --cov-report=term-missing --cov-report=json -q` (writes **`coverage.json`** only). Record gaps in board Notes when `board_only`, else `work-tracker.md`; one line in `updates-log.md`. Scope: kit import surface; subprocess scanners excluded by design — see `IMPLEMENTATION-STATUS.md` § Coverage scope.
+6. **After 100% scoped coverage:** sync `IMPLEMENTATION-STATUS.md`, regenerate `coverage-index.md` via `make coverage-index`, `make doc-validate`, sync README/AGENTS claims, `make sync-plugin` when payload copies change.
+7. Report: modules · edges added · gaps · tracker edits.
 
 ## Themes (when relevant)
 
-Validation boundaries • error/reason codes • retry/replay on risky flows • async cleanup • policy negative paths.
+Validation boundaries · error/reason codes · retry/replay · async cleanup · policy negative paths.
 
 ## Output
 
-`Coverage summary` → `Tests added/updated` → `Edge cases` → `Gaps` → `Index/plan updates` (paths in backticks).
+`Coverage summary` → `Tests added/updated` → `Edge cases` → `Gaps` → `Index/plan updates`.

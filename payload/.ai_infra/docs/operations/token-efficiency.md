@@ -25,9 +25,18 @@ Load the section you need. Do not load whole skills by default.
 | Skill | Read when | Prefer |
 |-------|-----------|--------|
 | `board-ssot` | Mutating Status / Tier-1 | § Continuation · § Tier-1 |
+| `board-shell` | First-run shell / bootstrap FAIL | § CONSENT GATE · § TURN PROTOCOL |
 | `implementer-loop` | Implement slice | Full skill (short) |
+| `integrator-protocol` | New agent/skill/MCP | Evidence contract + current phase |
 | `drift-audit` | drift-guard pass | Steps 1–3 |
 | `auditor-protocol` | Audit task | Evidence contract + current phase |
+| `audit-orchestration` | Full audit closure | Phase 0 preflight + delegation rules |
+| `audit-module-map` | Deep module topology | Constraints + output contract |
+| `mcp-connect` | External MCP setup | Intents table + Pattern A CLI |
+| `research-corpus` | Research pack work | Intake + anti-loop |
+| `canvas-artifacts` | Canvas/plan snapshots | Tiers table + CLI |
+| `test-coverage` | Tests / coverage slice | Procedure steps 1–7 |
+| `update-agent-colony` | Consumer kit upgrade | Commands + version gate |
 | `workflow-activate` | Consumer install | “When user just installed” |
 
 ## Read set (default)

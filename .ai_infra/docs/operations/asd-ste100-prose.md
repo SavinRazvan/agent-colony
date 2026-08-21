@@ -55,7 +55,8 @@ Research goal: clearer prose → fewer tokens → measure before/after byte and 
 | Surface | Rule |
 |---------|------|
 | Agent cards | Keep Anchors short. Point here + `token-efficiency.md`. |
-| Skills | Procedure lives in the skill. Cards link to sections. |
+| Skills (`.cursor/skills/`) | Procedure lives in the skill. Cards link to sections. |
+| Maintainer slash skills (`.agents/skills/`) | One command per step; link `pr-workflow` for detail. |
 | Board Notes | Attributed one-liners. No gate dumps. |
 | Chat handoff | One line: Status · next · Tasks `[P…]` |
 

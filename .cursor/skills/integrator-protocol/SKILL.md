@@ -5,177 +5,105 @@ description: Procedural integration of new agents, skills, MCP servers, and kit 
 
 # Integrator protocol
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 ## Goal
 
-Integrate **new agents, skills, MCP servers, scripts, or docs** into the kit so the user gets the same **unpack + personal settings** experience: full consumer infrastructure from the plugin, human completes `.local/user_settings/`, everything else stays **procedural, deterministic, and enterprise-grade**.
+Integrate **new agents, skills, MCP servers, scripts, or docs** for unpack + personal settings. Keep work procedural and deterministic.
 
-**Canonical ops mirror:** `.ai_infra/docs/operations/mas-infrastructure-integration.md`
-
-## When to use
-
-- User adds a **new Cursor agent** or **skill**
-- User connects an **external MCP server** for multiple agents
-- User expands **manifest / install contract / plugin payload**
-- User asks to merge a **standalone agent** into the MAS pipeline (or keep independent but governed)
-
-**Agent card:** `.cursor/agents/integrator.md`
+**Canonical ops:** [mas-infrastructure-integration.md](../../.ai_infra/docs/operations/mas-infrastructure-integration.md) · **Agent:** `.cursor/agents/integrator.md`
 
 ## Evidence contract
 
-- Every integration claim cites a **repo path** or **command output**.
-- If not inspected: label **Unknown** — do not invent file layout or gate behavior.
-- No narrative without a checklist row or script result backing it.
+- Every claim cites **repo path** or **command output**.
+- Not inspected → **Unknown**. No invented layout or gate behavior.
 
----
+## Phase 0 — Intake
 
-## Phase 0 — Intake (classify)
+| Type | Examples | Outputs |
+|------|----------|---------|
+| **Agent** | `my-domain-agent.md` | `.cursor/agents/`, registry |
+| **Skill** | `.cursor/skills/` or `.agents/skills/` | SKILL.md, plugin sync |
+| **MCP** | GitHub, browser, DB | `mcp.user.json`, registry |
+| **Infrastructure** | script, gate | `.ai_infra/`, manifest, tests |
+| **Doc-only** | runbook | `.ai_infra/docs/` |
 
-| Type | Examples | Primary outputs |
-|------|----------|-----------------|
-| **Agent** | `my-domain-agent.md` | `.cursor/agents/`, registry, optional pipeline |
-| **Skill** | `.cursor/skills/foo/` or `.agents/skills/` | SKILL.md, cross-links, plugin sync |
-| **MCP external** | GitHub, browser, DB | `mcp.user.json`, registry, `mcp.agents.yaml` worksheet |
-| **Infrastructure** | new script, gate, template dir | `.ai_infra/`, manifest, tests |
-| **Doc-only** | runbook, charter | `.ai_infra/docs/` |
+Ask: MAS-integrated vs independent (ADR-006)? Architecture/manifest touch → plan `auditor`. Consumer-visible → `manifest.yaml` + `install-contract.json`. Research pack → read `AGENT_BRIEF.md`.
 
-Ask (or infer from request):
+## Phase 1 — Read base workflow
 
-1. **MAS-integrated** or **independent contract**? (see ADR-006: `.ai_infra/docs/decisions/ADR-006-agent-integration-model.md`)
-2. Touches **architecture / manifest / workflows**? → plan `auditor` before merge prep.
-3. **Consumer-visible** (copied on install)? → update `manifest.yaml` + `install-contract.json`.
-4. Research pack cited? → read `_research_results/sources/<slug>/AGENT_BRIEF.md` before classifying.
+`workflow-architecture.md` · `agent-workflow-procedures.md` · `local-workspace-layout.md` · `github.collaboration.yaml` · similar agent/skill as template.
 
----
+## Phase 2 — Templates
 
-## Phase 1 — Read base workflow (do not skip)
-
-Minimum read set:
-
-1. `.ai_infra/docs/architecture/workflow-architecture.md` — three planes
-2. `.ai_infra/docs/operations/agent-workflow-procedures.md` — Pattern A
-3. `.ai_infra/docs/operations/local-workspace-layout.md` — `.local/` contract
-4. `.local/user_settings/github.collaboration.yaml` — pipelines + attribution
-5. Target area already in repo (similar agent/skill as template)
-
----
-
-## Phase 2 — Apply templates
-
-Copy and edit from **`.ai_infra/templates/agent-integration/`**:
+From `.ai_infra/templates/agent-integration/`:
 
 | Template | Use |
 |----------|-----|
-| `AGENT.template.md` | New `.cursor/agents/<id>.md` |
-| `SKILL.template.md` | New skill under `.cursor/skills/<name>/` |
-| `INTEGRATION-CHECKLIST.md` | Track slice; when `project_ssot.enabled` + `board_only`, attach to the **board card** body/Notes; else attach to `work-tracker.md` |
+| `AGENT.template.md` | `.cursor/agents/<id>.md` |
+| `SKILL.template.md` | `.cursor/skills/<name>/` |
+| `INTEGRATION-CHECKLIST.md` | Board card or `work-tracker.md` |
 
-**Agent file rules:**
+**Agent:** frontmatter; **Anchor**; **Read first**; **MCP integration**. Board SSOT when enabled; else `session-pointer.md`. Independent agents: omit pipelines unless PR phase owner.
 
-- YAML frontmatter: `name`, `model`, `description`
-- **Anchor** block (Entry/Exit) — same discipline as `implementer.md`
-- **Read first** — bounded file set; no whole-repo loads
-- **MCP integration** section — required (governance scanner)
-- Procedural exits: when `project_ssot.enabled` + `board_only`, **Entry/Exit** on Project (`project status` → `set-status` / Notes); update `change-index.md`. `session-pointer.md` is offline fallback / session pointer only — not Status SSOT. When SSOT disabled/offline: update `session-pointer.md`, `change-index.md`
+## Phase 3 — Wire surfaces
 
-**Independent agent:** still includes Anchor + universal rules; omit from `github.collaboration.yaml` pipelines unless it participates in PR phases.
-
----
-
-## Phase 3 — Wire integration surfaces
-
-### A. MAS-integrated agent (multi-agent system)
+### MAS-integrated
 
 | Step | Action |
 |------|--------|
-| 1 | Add `.cursor/agents/<id>.md` from template |
-| 2 | Add skill if procedural steps are non-trivial |
-| 3 | Update `.cursor/mcp.registry.yaml` (+ example): list agent under `agent-colony-mcp` or external server |
-| 4 | Update `.local/user_settings/mcp.agents.yaml` worksheet + exemplar under `templates/user-settings/` |
-| 5 | Add to `github.collaboration.yaml` pipeline if it runs in PR/slice flow (or rely on `--agents-from-session` via `change-index`) |
-| 6 | If consumer-installed: add paths to `manifest.yaml` / `install-contract.json` when new dirs ship |
-| 7 | If marketplace: `make sync-plugin` + `make check-plugin` |
-| 8 | Add tests under `tests/modules/` if new scripts |
+| 1–2 | Agent + skill if non-trivial |
+| 3–4 | `mcp.registry.yaml` + `mcp.agents.yaml` worksheet |
+| 5 | `github.collaboration.yaml` pipeline if PR/slice |
+| 6–7 | `manifest.yaml` / `install-contract.json`; `make sync-plugin` + `check-plugin` |
+| 8 | `tests/modules/` if new scripts |
 
-### B. Independent agent (governed, not in MAS pipeline)
+### Independent
 
-| Step | Action |
-|------|--------|
-| 1 | Agent + skill with explicit **boundaries** (what it must not do) |
-| 2 | Registry: optional MCP servers scoped to that agent id only |
-| 3 | **Do not** add to core PR pipelines unless it owns a maintainer phase |
-| 4 | Document handoff to `implementer` / `integrator` when work crosses into kit infrastructure |
+Agent + skill with **boundaries**; optional scoped MCP; no core PR pipeline unless maintainer phase; document handoff when crossing kit infra.
 
-### C. External MCP server
+### External MCP
 
-Follow `.ai_infra/docs/operations/connect-external-mcp.md` plus:
+[connect-external-mcp.md](../../.ai_infra/docs/operations/connect-external-mcp.md): `mcp.agents.yaml` row → `mcp.user.json` fragment → `mcp.registry.yaml` → `mcp validate`.
 
-1. Row in `.local/user_settings/mcp.agents.yaml`
-2. Fragment in `.cursor/mcp.user.json` (gitignored)
-3. Keys in `.cursor/mcp.registry.yaml` — `agents: [...]` per server
-4. `python -m agent_colony mcp validate`
+### Canvases / plans (ADR-010)
 
-### D. Canvases / plans (ADR-010)
+`.cursor/skills/canvas-artifacts/SKILL.md`. `.local/plans/` = snapshots only.
 
-When touching `canvases/`, `.local/canvases/`, or `.local/plans/`:
+### Maintainer script
 
-1. Read `.cursor/skills/canvas-artifacts/SKILL.md` and [ADR-010](../../.ai_infra/docs/decisions/ADR-010-canvas-plan-local-artifacts.md).
-2. Repo `canvases/` = git SSOT → `canvas sync` → optional `canvas save` to `.local/canvases/`.
-3. `.local/plans/` = snapshot history only; live plan stays on board card / `plan.md` — wire `plan snapshot|list|open` in docs/agent cards as needed.
-4. After canvas edits: `python3 -m agent_colony canvas sync --name <stem>` (+ `canvas doctor` smoke).
+`.ai_infra/scripts/` only; never duplicate `GATES` outside `prepare.py`; file header on new Python; thin MCP wrapper in `agent_colony_mcp/server.py`.
 
-### E. New maintainer script
-
-- Lives under `.ai_infra/scripts/` — never duplicate `GATES` outside `prepare.py`
-- File header per `file-docstring-header-relations.mdc`
-- Wire MCP tool in `agent_colony_mcp/server.py` only as thin wrapper (Pattern A)
-
----
-
-## Phase 4 — Verify (commands, not prose)
-
-Run applicable subset:
+## Phase 4 — Verify
 
 ```bash
 python -m agent_colony contributors validate
 python -m agent_colony integrate validate
-python .ai_infra/scripts/architecture/check_governance_consistency.py   # if .cursor/ or workflows changed
+python .ai_infra/scripts/architecture/check_governance_consistency.py   # if .cursor/ changed
 pytest -q tests/modules/<relevant>/
-make gates                    # kit dev
-make check-plugin             # if agents/rules/skills/payload touched
-make install-dry-run          # if manifest / scaffold changed
-python -m agent_colony health --directory .
+make gates && make check-plugin    # if payload touched
+make install-dry-run               # if manifest changed
 ```
 
-Record PASS/FAIL in `change-index.md` and `updates-log.md`.
-
----
+Say *prepare gates green* or paste failing stderr. Record in `change-index.md` + `updates-log.md`.
 
 ## Phase 5 — Handoff
 
-| Outcome | Next agent |
-|---------|------------|
-| Needs product code / tests | `implementer` + `test-runner` |
-| Architecture-impacting | `auditor` → alignment artifacts |
-| Ready for PR | maintainer `review-pr` with `--pipeline` + `--agents-from-session` |
+| Outcome | Next |
+|---------|------|
+| Product code / tests | `implementer` + `test-runner` |
+| Architecture-impacting | `auditor` |
+| Ready for PR | `review-pr` with `--pipeline` + `--agents-from-session` |
 
----
+## Anti-patterns
 
-## Anti-patterns (reject)
-
-- Duplicating `prepare.py` GATES in skills or agent prose
-- New agents without Anchor / MCP integration section
-- Skipping `change-index.md` Agent column (breaks PR `--agents-from-session`)
-- `Made-with:` or fake human sign-off in commits
-- Loading entire `.local/` or megadocs when a checklist suffices
-- Independent agents that bypass governance scripts
-
----
+Duplicate GATES in prose · agents without Anchor/MCP · skip `change-index.md` Agent column · `Made-with:` · load entire `.local/` · independent agents bypass governance.
 
 ## Exit criteria
 
-- [ ] Integration type documented (MAS vs independent)
-- [ ] Templates filled; file headers present on new Python
-- [ ] Registry / user_settings exemplars updated if MCP or pipelines affected
-- [ ] Manifest + install-contract if consumer tree changed
-- [ ] Verification commands run; failures fixed or logged as blockers
-- [ ] Board Status/Notes updated when `project_ssot.enabled` + `board_only`; else `session-pointer.md` updated. `change-index.md` always updated
+- [ ] Type documented (MAS vs independent)
+- [ ] Templates + file headers on new Python
+- [ ] Registry/exemplars if MCP/pipelines touched
+- [ ] Manifest if consumer tree changed
+- [ ] Verify commands run; blockers logged
+- [ ] Board Notes when `board_only`; `change-index.md` always

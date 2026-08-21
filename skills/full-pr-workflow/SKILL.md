@@ -6,7 +6,9 @@ disable-model-invocation: true
 
 # Full PR workflow (maintainer)
 
-**Goal:** Merge a PR and then clean up the repo (sync `main`, delete local + remote feature branches) with a dedicated **finalize** phase.
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
+**Goal:** Merge a PR and clean up the repo (sync `main`, delete branches) via **finalize**.
 
 ## Order
 
