@@ -1,5 +1,7 @@
 # AGENTS.md
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 ## Installing?
 
 1. Agent chat:
