@@ -50,10 +50,12 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs — for **con
 | UI | GitHub Project / settings UI (humans); agents prefer CLI |
 | PAT | Personal Access Token — GitHub auth; fine-grained PATs need Projects + repo scopes — see [permissions-and-prerequisites](permissions-and-prerequisites.md) |
 | ASD-STE100 | Simplified Technical English (ASD). Kit: **Use ASD-STE100** → [asd-ste100-prose.md](asd-ste100-prose.md) (free principles; no dictionary; not compliance) |
+| STEMG | Simplified Technical English Maintenance Group — maintains ASD-STE100. This kit does **not** endorse STEMG or claim STE compliance |
 | GraphQL | GitHub Projects API used by `gh project` / board CLI (rate-limited) |
 | KISS | Keep It Simple — incremental, reversible slices |
 | DCO | Developer Certificate of Origin — do **not** auto-insert DCO-style assertions |
-| AI | Artificial intelligence — optional `Assisted-by:` trailer when AI materially shaped a change |
+| AI | Artificial intelligence — assists authors; does not replace human review. Optional `Assisted-by:` when AI materially shaped a change. See [asd-ste100-prose.md](asd-ste100-prose.md) § AI and STE |
+| Assisted-by | Git commit trailer for AI disclosure (`Assisted-by: <tool>[:<model>]`); not a STEMG or ASD endorsement |
 | TBD | To Be Determined — placeholder in file headers / relations |
 | DAG | Directed Acyclic Graph — agent **handoff** edges (canvases); no cycles |
 | ACC | Agents Control Center — `.local/agents-control-center/` (folder name) |

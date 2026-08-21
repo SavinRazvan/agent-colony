@@ -88,7 +88,7 @@ Full walkthrough: [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-G
 
 ## Commits
 
-Required trailers: `.cursor/rules/commit-trailer-format.mdc` — set identity in `github.collaboration.yaml`, then `python3 -m agent_colony contributors validate`.
+Required trailers: `.cursor/rules/commit-trailer-format.mdc` — set identity in `github.collaboration.yaml`, then `python3 -m agent_colony contributors validate`. Human author reviews and validates. Optional `Assisted-by:` when AI shaped the change. See [asd-ste100-prose.md § AI and STE](.ai_infra/docs/operations/asd-ste100-prose.md#ai-and-ste).
 
 ## Quality gates
 

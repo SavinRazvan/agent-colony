@@ -11,6 +11,7 @@ Depends On:
  - token-efficiency.md
 Notes:
  - Inspired by ASD-STE100 writing principles. No ASD dictionary. No purchase. Not a compliance claim.
+ - AI assists; human reviews. No STEMG / ASD / AI-vendor endorsement.
 -->
 
 # Use ASD-STE100
@@ -49,6 +50,18 @@ Research goal: clearer prose → fewer tokens → measure before/after byte and 
 | Board SSOT | GitHub Project writable Status when enabled | Local tracker Status under `board_only` |
 | Tier-1 | Status, Priority, Size, Estimate, dates, Assignee, PR link | “All the fields” without the skill |
 | EXIT_QUEUED | Exit code 6 — outbox; flush later | Retry loops on GraphQL throttle |
+
+## AI and STE
+
+AI can write clear text that looks like STE. That is not verified STE compliance.
+
+| Do | Do not |
+|----|--------|
+| Use AI to draft; human reviews | Ship AI text as STE-compliant |
+| Keep this guide as the kit reference | Claim ASD or STEMG endorsement |
+| Add `Assisted-by:` when AI shaped the change | Hide AI use on material commits |
+
+STEMG maintains ASD-STE100. This kit is not STEMG software.
 
 ## When agents write
 
