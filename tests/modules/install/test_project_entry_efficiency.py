@@ -285,7 +285,62 @@ def test_cmd_entry_offline_artifacts(
     assert "queue" in out
 
 
-def test_cmd_entry_quota_error_offline(
+def test_resolve_last_rejects_corrupt_sect_suffix(tmp_path: Path) -> None:
+    path = tmp_path / ".local" / "generated-data" / "project-last-item.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        json.dumps({"item_id": "PVTI_lAHOBl46-84A9KZxsect01", "title": "bad"}),
+        encoding="utf-8",
+    )
+    ns = argparse.Namespace(last=True, id="")
+    iid, code = project_cli.resolve_item_id_arg(tmp_path, ns, "claim")
+    assert iid is None
+    assert code == project_cli.EXIT_USAGE
+    assert project_cli.is_placeholder_item_id("PVTI_lAHOBl46-84A9KZxsect01")
+    assert not project_cli.is_placeholder_item_id("PVTI_lAHOBl46-84A9KZxzgzRDnc")
+
+
+def test_cmd_entry_quota_error_prefers_conserve_with_snapshot(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Probe error + snapshot → conserve (not false offline)."""
+    ssot = _ssot_with_efficiency(
+        conserve_below_remaining=1500, export_reuse_ttl_seconds=900
+    )
+    snap = tmp_path / ".local" / "generated-data" / "project-board-snapshot.json"
+    snap.parent.mkdir(parents=True)
+    snap.write_text(
+        json.dumps(
+            {
+                "items": [
+                    {
+                        "id": "PVTI_probe1",
+                        "title": "From snap",
+                        "status": "In Progress",
+                        "status_normalized": "in_progress",
+                    }
+                ],
+                "totalCount": 1,
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(
+        project_cli._outbox,
+        "graphql_rate_limit",
+        lambda: {"error": "Forbidden", "remaining": None},
+    )
+    args = argparse.Namespace(
+        directory=tmp_path, also_ready=False, force_live=False, limit=None
+    )
+    assert project_cli.cmd_entry(args) == project_cli.EXIT_OK
+    out = capsys.readouterr().out
+    assert "mode=conserve" in out
+    assert "PVTI_probe1" in out
+
+
+def test_cmd_entry_quota_error_offline_without_snapshot(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     ssot = _ssot_with_efficiency()
@@ -301,6 +356,52 @@ def test_cmd_entry_quota_error_offline(
     assert project_cli.cmd_entry(args) == project_cli.EXIT_OK
     assert "mode=offline_artifacts" in capsys.readouterr().out
 
+
+def test_cmd_entry_success_with_error_null_key_is_live(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Regression: error:null in rate_limit payload must not force offline."""
+    ssot = _ssot_with_efficiency()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(
+        project_cli._outbox,
+        "graphql_rate_limit",
+        lambda: {"remaining": 4000, "limit": 5000, "error": None},
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot_arg, *, limit=50: (
+            [
+                {
+                    "id": "PVTI_ok1",
+                    "title": "Work",
+                    "status": "In Progress",
+                }
+            ],
+            None,
+        ),
+    )
+    args = argparse.Namespace(
+        directory=tmp_path,
+        also_ready=False,
+        force_live=False,
+        limit=None,
+        digest=True,
+        json=False,
+    )
+    assert project_cli.cmd_entry(args) == project_cli.EXIT_OK
+    out = capsys.readouterr().out
+    assert "mode=live" in out
+    assert "offline_artifacts" not in out
+    assert "PVTI_ok1" in out
+
+
+def test_cmd_entry_quota_error_offline(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Back-compat name: probe error + force_live + no snap → offline."""
+    test_cmd_entry_quota_error_offline_without_snapshot(monkeypatch, tmp_path, capsys)
 
 def test_cmd_export_reuse_bad_json_and_json_flag(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]

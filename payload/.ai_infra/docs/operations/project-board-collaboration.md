@@ -40,6 +40,20 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 - **Verify:** `python3 -m agent_colony project board-bootstrap --check` (FAIL if a default Playground view is missing; **FAIL (exit 5)** on missing Tier-1 columns; WARN on leftover `View N` / layout mismatch).
 - **Optional API:** `--ensure-fields` (create missing field definitions + print suggested YAML ids); `--apply-readme` (push README). Views stay human UI (ADR-008).
 
+## Day-0 / Day-N playbook (no confusion)
+
+| Who | Day-0 | Day-N |
+|-----|-------|-------|
+| **Human** | `/board` wire YAML → CONSENT → TURN → `board-bootstrap --check` exit **0** | Ready order, views, Insights, README |
+| **Agent** | Refuse day-to-day claim until bootstrap exit 0 | `project entry` → one card → Exit Status + Notes |
+| **Both** | Fill Acceptance/Rollback before In review / Done | `heal-cards --check` = inventory WARN only |
+
+**Incomplete cards WARN:** `doctor` / `heal-cards --check` often flag **Done** cards missing **End date** (historical hygiene). That is **not** blocked Ready work. Repair with human consent: `heal-cards --apply` (sets End date on Done). Use `--fill-tier1` only when you want Priority→p2 / Size defaults on gaps. Do **not** invent Acceptance/Rollback on old Done cards. Empty Ready → `create-from-template` + `claim`.
+
+**Entry modes:** Prefer `project entry` (or `--digest`). `live` / `conserve` when GraphQL works; `offline_artifacts` only when remaining is known-low or no usable snapshot. On EXIT_QUEUED (6): `outbox flush` after quota recovers — do not retry-loop.
+
+**`--last`:** Use after create/claim. If guide prints `(invalid …)`, clear `.local/generated-data/project-last-item.json` and recreate — never paste docs placeholders as `--id`.
+
 ## Surfaces — who may write
 
 | Surface | Human | Agents | GitHub |

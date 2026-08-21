@@ -256,7 +256,7 @@ def load_last_item_id(root: Path) -> str | None:
     iid = str(data.get("item_id") or "").strip()
     return iid or None
 def is_placeholder_item_id(raw: str) -> bool:
-    """True for docs ellipsis / truncated ids agents must never paste."""
+    """True for docs ellipsis / truncated / corrupted ids agents must never paste."""
     s = (raw or "").strip()
     if not s:
         return True
@@ -272,7 +272,17 @@ def is_placeholder_item_id(raw: str) -> bool:
         return True
     if re.match(r"^DI_", s) and len(s) < 12:
         return True
+    # Corrupted session files (e.g. …sect01 from set-section path bugs)
+    if re.search(r"sect\d+$", s, re.IGNORECASE):
+        return True
+    # Must look like a real node id (alphanumeric + _/- only after prefix)
+    if re.match(r"^PVTI_", s) and not re.match(r"^PVTI_[A-Za-z0-9_-]{16,}$", s):
+        return True
+    if re.match(r"^DI_", s) and not re.match(r"^DI_[A-Za-z0-9_-]{8,}$", s):
+        return True
     return False
+
+
 def resolve_item_id_arg(
     root: Path, args: argparse.Namespace, cmd: str
 ) -> tuple[str | None, int]:
@@ -288,6 +298,13 @@ def resolve_item_id_arg(
                 cmd,
                 EXIT_USAGE,
                 "no last item — run create-from-template (or claim) first, then --last",
+            )
+        if is_placeholder_item_id(lid):
+            return None, fail(
+                cmd,
+                EXIT_USAGE,
+                f"invalid last item_id {lid!r} — recreate with create-from-template "
+                f"or pass a real --id (clear .local/generated-data/project-last-item.json)",
             )
         return lid, EXIT_OK
     if not raw:
