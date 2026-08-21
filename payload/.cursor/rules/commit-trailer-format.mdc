@@ -5,6 +5,8 @@ alwaysApply: true
 
 # Commit trailer format
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 ## Required
 
 - Every commit body **must** include, in order, with no lines between:

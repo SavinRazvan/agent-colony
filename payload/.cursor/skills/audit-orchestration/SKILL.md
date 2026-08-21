@@ -20,16 +20,18 @@ Notes:
 
 # Audit orchestration
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 ## Goal
 
-Run a **full audit closure** efficiently: scripts establish facts first; specialized agents write artifacts and apply approved fixes — without one agent re-running every shell command.
+Run **full audit closure** efficiently: scripts establish facts first; specialized agents write artifacts — without one agent re-running every shell command.
 
 ## Cadence
 
 | Trigger | Auditor depth | Drift |
 |---------|---------------|-------|
-| **Architecture-impacting PR** | Focused alignment + scoped CHK-* tick table | `drift validate` via prepare; optional drift-guard artifacts |
-| **Quarterly / kit release readiness** | Full EA report + **all CHK-*** | drift-guard goal pulse after implementer |
+| **Architecture-impacting PR** | Focused alignment + scoped CHK-* | `drift validate` via prepare; optional drift-guard |
+| **Quarterly / kit release** | Full EA report + **all CHK-*** | drift-guard goal pulse after implementer |
 | **Ad-hoc full audit** | Same as quarterly | Same |
 
 Do **not** run full CHK-* scorecard on every PR.
@@ -46,36 +48,34 @@ Run **once**; capture JSON for downstream agents:
 
 ```bash
 make verify-all
-# or with artifacts for agents:
+# or with artifacts:
 python -m agent_colony verify all --write-preflight
 python -m agent_colony doc validate --write-preflight
 python -m agent_colony drift validate --directory .
 ```
 
-**MCP (preferred in Cursor):** `workflow_verify_all`, `workflow_doc_facts_validate`, `workflow_drift_validate`, `workflow_integrate_validate`, `workflow_activate`.
+**MCP (Cursor):** `workflow_verify_all`, `workflow_doc_facts_validate`, `workflow_drift_validate`, `workflow_integrate_validate`, `workflow_activate`.
 
-**Read:** `.local/workflow-artifacts/audit/preflight.json` and `doc-facts-preflight.json` if present.
+**Read:** `.local/workflow-artifacts/audit/preflight.json`, `doc-facts-preflight.json` if present.
 
-**Stop on P0** from doc validate or drift; hand to **implementer** only for mechanical fixes the user approved.
+**Stop on P0** from doc validate or drift; hand to **implementer** only for approved mechanical fixes.
 
 ## Phase 1 — Parallel discovery (Task delegation)
 
-Launch concurrently:
-
 | Subagent | Mode | Deliverable |
 |----------|------|-------------|
-| `auditor` | artifact-write (`.local/` only) | Full: `enterprise-architecture-audit.md` + actions + **CHK-* tick table**. PR-scoped: alignment artifacts only |
-| `audit-module-map` skill (optional) | artifact-write (`.local/` only) | `.local/module-map.md` summary for audit §3 |
+| `auditor` | artifact-write (`.local/` only) | Full: `enterprise-architecture-audit.md` + actions + CHK-* table. PR-scoped: alignment only |
+| `audit-module-map` (optional) | artifact-write | `.local/module-map.md` summary for audit §3 |
 
-Parent **does not** duplicate inventory searches — consumes subagent outputs + preflight JSON.
+Parent consumes subagent outputs + preflight JSON — no duplicate inventory searches.
 
 ## Phase 2 — Mechanical remediation (user-approved only)
 
-When `enterprise-audit-actions.md` or doc validate lists **DOC-*** / doc-sync items:
+When `enterprise-audit-actions.md` or doc validate lists **DOC-*** items:
 
 | Subagent | Scope |
 |----------|-------|
-| `implementer` | Tracked doc/template fixes only; no scope creep |
+| `implementer` | Tracked doc/template fixes only |
 
 After edits:
 
@@ -89,22 +89,22 @@ make doc-validate
 
 | Subagent | When |
 |----------|------|
-| `drift-guard` | After tracker/doc edits; goal pulse + DRIFT-011; P0/P1 drift findings |
+| `drift-guard` | After tracker/doc edits; goal pulse + DRIFT-011; P0/P1 drift |
 | `verifier` | Spot-check top audit claims vs preflight + repo paths |
 
 ## Phase 4 — Maintainer PR
 
-Human or maintainer agent: `review-pr` → `prepare-pr` → `merge-pr` on a `feature/` or `chore/` branch.
+Human or maintainer: `review-pr` → `prepare-pr` → `merge-pr` on `feature/` or `chore/` branch.
 
 ## Delegation rules
 
-1. **Scripts before agents** — never let an agent re-run five gates if preflight JSON is fresh (<1 session).
-2. **One primary `in_progress`** during implementer slice: when `project_ssot.enabled` + `sync_policy: board_only`, Status lives on the **Project board** (`project status` → claim with `set-status --to in_progress`); do **not** dual-write tracker `in_progress`. When SSOT is disabled or offline fallback is active, one primary `in_progress` in `work-tracker.md`.
-3. **Do not auto-edit** slice scope from audit agents — propose in `enterprise-audit-actions.md`. Under `board_only`, do not auto-edit board card body or local `plan.md` / `work-tracker.md`; offline fallback: do not auto-edit `plan.md` / `work-tracker.md`.
+1. **Scripts before agents** — do not re-run five gates if preflight JSON is fresh (<1 session).
+2. **One primary `in_progress`:** board SSOT when enabled; else `work-tracker.md`. No dual-write under `board_only`.
+3. **Do not auto-edit** slice scope from audit agents — propose in `enterprise-audit-actions.md`.
 4. **Canvases** — optional IDE artifacts; not merge gates.
-5. **Token efficiency** — cite preflight pass/fail in chat; paste failing command output only.
-6. **Ownership** — continuous plan/agent-doctrine coherence = `drift-guard`; deep CHK-* = `auditor`. No new trash agents.
+5. **Token efficiency** — cite preflight pass/fail; paste failing stderr only.
+6. **Ownership** — plan/agent-doctrine = `drift-guard`; deep CHK-* = `auditor`.
 
 ## Handoff format
 
-Preflight exit • audit artifact paths • CHK-* gaps • P0/P1 counts • branch name • suggested next: implementer | drift-guard | verifier | maintainer PR
+Preflight exit · audit artifact paths · CHK-* gaps · P0/P1 counts · branch name · next: implementer | drift-guard | verifier | maintainer PR

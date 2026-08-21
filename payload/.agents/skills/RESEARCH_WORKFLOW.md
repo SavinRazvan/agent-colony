@@ -1,5 +1,7 @@
 # Research corpus workflow
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 **Brief-driven multi-round research** for `_research_results/` — not implementation slices (`implementer` + board / `.local/.../current/*`).
 
 **Status (2026-07-19):** Agent is **shipped and proven** (live external pack + verifier PASS). Corpus packs remain **opt-in** — they appear only after `research init` (not an incomplete agent).

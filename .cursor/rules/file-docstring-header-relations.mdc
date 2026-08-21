@@ -5,6 +5,8 @@ alwaysApply: true
 
 # File header (docstring / comment block)
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 - New sources need a module header. Update when responsibilities change.
 - Required: `File:`, `Path:` (repo-relative), `Role:`, `Used By:`, `Depends On:`, `Notes:` (optional). Unknown → `TBD`.
 

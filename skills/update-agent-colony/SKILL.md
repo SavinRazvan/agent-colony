@@ -19,53 +19,45 @@ Notes:
 
 # Update Agent Colony
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 ## When
 
-User already ran **`/workflow-activate`** in **their app**, then updated the **Agent Colony** plugin (or kit tag) and needs kit-managed files refreshed.
+User ran **`/workflow-activate`** in **their app**, then updated the Agent Colony plugin and needs kit-managed files refreshed.
 
 **Not for first install** — use [workflow-activate](workflow-activate/SKILL.md) when `.ai_infra/` is missing.
 
 ## Guide the user
 
-1. Confirm the open folder is **their activated app**, not the kit product repo.
-2. Prefer Agent chat **`/update-agent-colony`**, or the Pattern A command below.
-3. Explain version gate briefly:
+1. Confirm folder is **their activated app**, not kit-dev repo.
+2. Prefer **`/update-agent-colony`** or Pattern A command below.
+3. Version gate:
    - **same / newer installed** → light heal (dashboards, `.gitignore`, `STARTER-001`, missing `.venv`)
    - **source newer** or **`--force`** → full overwrite of kit-managed agents/rules/skills/scripts
 4. After upgrade: `health` + `mcp validate`.
 
-## One command
+## Commands
 
 ```bash
 source .venv/bin/activate
 python3 -m agent_colony update --directory .
+python3 -m agent_colony update --directory . --check      # no writes
+python3 -m agent_colony update --directory . --force      # full refresh
 ```
 
-**Check only (no writes):**
-
-```bash
-python3 -m agent_colony update --directory . --check
-```
-
-**Force full refresh** (even when versions match):
-
-```bash
-python3 -m agent_colony update --directory . --force
-```
-
-**Source resolution** matches activate: `WORKFLOW_KIT_PAYLOAD` → `./payload/` → kit/plugin `payload/` → `--source`.
+**Source resolution:** `WORKFLOW_KIT_PAYLOAD` → `./payload/` → kit/plugin `payload/` → `--source`.
 
 ## What update does
 
 | Condition | Action |
 |-----------|--------|
-| No `.ai_infra/` or missing `.kit-version` | Fail — tell user to run `/workflow-activate` |
-| `installed == available` (and not `--force`) | Light heal only |
-| `available > installed` or `--force` | Full scaffold refresh (same as `activate --force`) |
+| No `.ai_infra/` or missing `.kit-version` | Fail — run `/workflow-activate` |
+| `installed == available` (not `--force`) | Light heal only |
+| `available > installed` or `--force` | Full scaffold refresh |
 
-**Preserved:** `AGENTS.md` (if present), `mcp.user.json`, `.local/user_settings/`, existing trackers.
+**Preserved:** `AGENTS.md` (if present), `mcp.user.json`, `.local/user_settings/`, trackers.
 
-**Overwritten on upgrade:** `.cursor/agents|rules|skills`, `.ai_infra/scripts`, `agent_colony/` CLI copy, `.kit-version`, kit-managed dashboards.
+**Overwritten on upgrade:** `.cursor/agents|rules|skills`, `.ai_infra/scripts`, `agent_colony/` CLI, `.kit-version`, dashboards.
 
 ## Post-update
 
@@ -78,6 +70,6 @@ Optional: `integrate validate`, `canvas doctor`. Breaking renames: [upgrade-kit.
 
 ## Anti-patterns
 
-- Do not tell users to re-run plain `/workflow-activate` expecting agents/skills to refresh — that path only heals when planes are ready.
-- Do not overwrite consumer `user_settings` or invent a second Status writer under `board_only`.
-- Do **not** run `update --force` inside the **kit-dev product repo** (`agent-colony`) — scaffold treats it as a consumer install and fails (`forbidden in slim install: full kit tests tree`). Kit-dev workflow: edit sources → `make sync-plugin` → commit. Use `update` only in **activated consumer apps**.
+- Re-run plain `/workflow-activate` expecting agents/skills refresh — heals only when planes ready.
+- Overwrite consumer `user_settings` or invent second Status writer under `board_only`.
+- Run `update --force` in **kit-dev repo** — fails (`forbidden in slim install`). Kit-dev: edit sources → `make sync-plugin` → commit.

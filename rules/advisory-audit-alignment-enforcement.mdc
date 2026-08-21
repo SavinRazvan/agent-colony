@@ -5,6 +5,8 @@ alwaysApply: true
 
 # Alignment audit (architecture-impacting)
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 - **Agent:** `.cursor/agents/auditor.md` + `.cursor/skills/auditor-protocol/SKILL.md`.
 - Merge workflow may use **focused alignment pass** (skill § Focused alignment pass).
 - Audits are advisory. Do not auto-apply fixes in the audit step.

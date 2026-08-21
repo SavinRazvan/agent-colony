@@ -13,6 +13,9 @@ Notes:
 
 # Agent workflow procedures (canonical)
 
+**Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
+
+
 ## 1) Architecture-impacting advisory audit (alignment artifacts)
 
 **When:** Module boundaries, workflow policy, test layout, or maintainer calls for alignment before prepare/merge. **Not** consumer day-0 onboarding — complete board shell (`/board` + `board-bootstrap --check`) first; use this for architecture-impacting / pre-merge work.

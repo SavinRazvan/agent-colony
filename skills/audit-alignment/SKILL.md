@@ -6,6 +6,8 @@ disable-model-invocation: true
 
 # Audit alignment (deprecated stub — retire pending)
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 **Do not use this file as the primary workflow.** The canonical audit agent is **`auditor`**.
 
 - **Agent:** `.cursor/agents/auditor.md`

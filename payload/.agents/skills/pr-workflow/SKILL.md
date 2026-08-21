@@ -6,9 +6,11 @@ disable-model-invocation: true
 
 # PR workflow (maintainer)
 
-**Implementer work:** when `project_ssot.enabled` + `board_only`, slice status lives on the **GitHub Project** (Entry/Exit continuation). Local `.local/index-and-planning/current/*` is offline fallback only — see ADR-008 and `project-ssot-precedence.mdc`. Slice closure: `.ai_infra/docs/operations/workflow-complete.md` §F.
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
 
-This skill is the **merge path** only: **review → prepare → merge** (slash skills: `review-pr`, `prepare-pr`, `merge-pr`).
+**Implementer work:** board SSOT when `project_ssot.enabled` + `board_only`; local trackers are offline fallback (ADR-008). Slice closure: `workflow-complete.md` §F.
+
+**Merge path only:** review → prepare → merge (`review-pr`, `prepare-pr`, `merge-pr`).
 
 ## Order
 

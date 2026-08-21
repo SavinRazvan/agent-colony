@@ -5,6 +5,8 @@ description: Three-tier canvas and plan snapshot workflow via agent_colony canva
 
 # Canvas and plan artifacts (Pattern A)
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 ## When
 
 - Editing kit canvases in `canvases/` and needing IDE preview
@@ -32,15 +34,15 @@ python3 -m agent_colony canvas save --slug billing-review --agent implementer
 ```
 
 - Use `export default function NameCanvas()` in `.canvas.tsx` files.
-- `sync --all` requires `--force` (avoid silent overwrite).
+- `sync --all` requires `--force`.
 
 ## Plan CLI
 
 ```bash
 python3 -m agent_colony plan snapshot --slug slice-170 --agent implementer --board-item PVTI_xxx
 python3 -m agent_colony plan list
-python3 -m agent_colony plan open --slug slice-170          # human Build bridge
-python3 -m agent_colony plan open --slug slice-170 --force  # overwrite Cursor twin
+python3 -m agent_colony plan open --slug slice-170
+python3 -m agent_colony plan open --slug slice-170 --force
 python3 -m agent_colony plan snapshot --slug my-plan --from cursor-plan:my-plan.plan.md
 ```
 
@@ -49,21 +51,21 @@ Never treat `.local/plans/` as active backlog under `board_only`.
 ## Agent rituals
 
 1. **Product canvas:** edit repo → `canvas sync --name …` → Open Canvas in IDE.
-2. **Ephemeral canvas:** write via Cursor canvas skill to managed path → `canvas save --slug …`.
+2. **Ephemeral canvas:** write via Cursor canvas skill → `canvas save --slug …`.
 3. **Plan mode exit:** `plan snapshot --slug …` with board item id when known.
 
-### Consumer plans (agent build — Path A)
+### Consumer plans (Path A)
 
-Agents **never depend on** the IDE Build button. Execute from `.local/plans/`:
+Agents **never depend on** the IDE Build button:
 
-1. `plan list` — discover slugs under `.local/plans/`
-2. Read `.local/plans/<latest>-<slug>.plan.md` (+ sibling `.meta.yaml`)
-3. Execute todos / acceptance as implementer (no Build required)
-4. **Human-only:** `plan open --slug …` → Plans UI → Build (copies latest snapshot to `~/.cursor/plans/<slug>.plan.md`)
-5. After plan-mode work in Cursor: `plan snapshot --from cursor-plan:…` to re-anchor history in `.local/plans/`
+1. `plan list` — discover slugs
+2. Read `.local/plans/<latest>-<slug>.plan.md` (+ `.meta.yaml`)
+3. Execute todos as implementer
+4. **Human-only:** `plan open --slug …` → Plans UI → Build
+5. After plan-mode work: `plan snapshot --from cursor-plan:…`
 
-`plan snapshot` from a Cursor plan preserves YAML frontmatter (`name` / `overview` / `todos`) needed for Build.
+`plan snapshot` preserves YAML frontmatter (`name` / `overview` / `todos`) for Build.
 
-**Indexing:** only `*.plan.md` (+ sibling `*.meta.yaml`) appear in `plan list` / `index.md`. Plain `.md` files dropped under `.local/plans/` are orphans — remove or re-snapshot via `plan snapshot --from <path>`.
+**Indexing:** only `*.plan.md` (+ `*.meta.yaml`) in `plan list`. Orphans → re-snapshot or remove.
 
 Canon: [ADR-010](../../.ai_infra/docs/decisions/ADR-010-canvas-plan-local-artifacts.md)

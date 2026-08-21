@@ -1,5 +1,7 @@
 # `.agents/skills`
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 Maintainer slash-command skills and workflow docs. **Canonical protocols** live under [`.cursor/skills/`](../.cursor/skills/) — Cursor discovers both roots; do not duplicate folder names here.
 
 ## Layout

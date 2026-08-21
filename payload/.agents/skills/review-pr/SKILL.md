@@ -6,6 +6,8 @@ disable-model-invocation: true
 
 # Review PR
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 **Goal:** Decide if the PR is ready for `/prepare-pr`.
 
 ## Steps

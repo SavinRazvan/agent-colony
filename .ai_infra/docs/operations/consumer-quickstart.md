@@ -15,6 +15,9 @@ Notes:
 
 # Consumer quickstart
 
+**Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
+
+
 > **From the [kit README](https://github.com/SavinRazvan/agent-colony#install-consumers):** this is the 5-step install path after `/add-plugin` + `/workflow-activate`. Full manual: [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md).
 
 Install **Agent Colony** (`agent-colony`) into your project in a few minutes. No special git setup required.

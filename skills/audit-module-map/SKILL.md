@@ -3,73 +3,52 @@ name: audit-module-map
 description: Builds a deep per-module workflow map with importance, goals, and visual architecture output.
 ---
 
-# Audit Module Map (Advisory-Only)
+# Audit module map (advisory-only)
+
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
 
 ## Relationship to audits
 
-This is a **depth tool** for **`auditor`**, not a separate audit authority. Run it when the enterprise architecture audit (or a focused alignment pass) needs HTML/topology evidence; fold outputs into the parent audit’s citations.
+Depth tool for **`auditor`**, not a separate audit authority. Run when enterprise audit (or focused alignment pass) needs HTML/topology evidence. Fold outputs into parent audit citations.
 
-## Goal
+## When
 
-Produce a module-by-module audit that explains workflow, behavior, importance, and intended goal, with a visual architecture map and detailed results.
+- **`auditor`** requests deep module topology or `module-audit.html` export
+- Team needs current module map before architecture reconciliation
+- Documentation drift suspected across module boundaries
 
-## When to Use
+## Required sources
 
-- **`auditor`** requests deep module topology or `module-audit.html` export.
-- Team needs a current module map before architecture reconciliation.
-- Documentation drift is suspected across module boundaries and ownership.
+- `README.md`, `AGENTS.md`
+- Project strategy/plan docs (when consumer defines them)
+- `tests/modules/*`
+- `.cursor/rules/*`, `.cursor/skills/*`
+- `.agents/skills/*` (maintainer context)
 
-## Required Sources
+## Constraints
 
-- `README.md` and `AGENTS.md`
-- Project strategy/plan docs (when the consumer repo defines them)
-- `tests/modules/*` (or project test tree)
-- `.cursor/rules/*` and `.cursor/skills/*`
-- `.agents/skills/*` (maintainer workflow context)
+1. Advisory-only: do not auto-remediate during this audit.
+2. Evidence-backed statements only; concrete file paths per claim.
+3. Distinguish canonical docs from archival/historical docs.
+4. Uncertain ownership → `TBD` + follow-up callout.
 
-## Mandatory Constraints
+## Steps
 
-1. Advisory-only: do not auto-remediate findings during this audit.
-2. Use evidence-backed statements only; include concrete file paths for each claim.
-3. Distinguish canonical current-state docs from archival/historical docs.
-4. Mark uncertain ownership as `TBD` and call out required follow-up.
-
-## Execution Steps
-
-1. Inventory module roots under `src/` and map corresponding test ownership under `tests/modules/`.
-2. For each module, document:
-   - goal
-   - workflow/how it works (entrypoints, key contracts, control flow)
-   - importance (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`) with rationale
-   - key dependencies and key dependents
-3. Build an architecture-layer graphic showing module placement and directional data/control flow.
-4. Identify drift/gaps in:
-   - module-to-test mapping
-   - module documentation coverage
-   - rules/skill guidance needed for repeatable audits
+1. Inventory module roots under `src/`; map test ownership under `tests/modules/`.
+2. Per module document: goal, workflow (entrypoints, contracts, control flow), importance (`CRITICAL`|`HIGH`|`MEDIUM`|`LOW`) + rationale, dependencies, dependents.
+3. Build architecture-layer graphic (placement + data/control flow).
+4. Identify drift/gaps: module-to-test mapping, doc coverage, rules/skill guidance.
 5. Emit:
-   - `.local/module-map.md` (detailed module catalog)
-   - `.local/agents-control-center/audits/module-audit.html` (visual report with architecture graphic and per-module cards)
-   - Optional reconciliation findings appended into `.local/workflow-artifacts/alignment/alignment-audit.md` and `.local/workflow-artifacts/alignment/alignment-todos.md`
+   - `.local/module-map.md`
+   - `.local/agents-control-center/audits/module-audit.html`
+   - Optional: append to `alignment-audit.md` + `alignment-todos.md`
 
-## Output Contract
+## Output contract (per module)
 
-For each module entry, include:
+`module_name` · `source_paths` · `test_paths` · `importance` · `goal` · `workflow` · `key_contracts` · `dependencies` · `dependents` · `evidence` · `gaps_or_risks`
 
-- `module_name`
-- `source_paths`
-- `test_paths`
-- `importance`
-- `goal`
-- `workflow`
-- `key_contracts`
-- `dependencies`
-- `dependents`
-- `evidence`
-- `gaps_or_risks`
+## Exit criteria
 
-## Exit Criteria
-
-- Every production module has an explicit ownership/mapping entry (or `TBD` with rationale).
-- The architecture graphic and module deep-dive results are generated and readable.
-- Any accuracy-improving updates needed for rules/skills/agents are explicitly listed with evidence.
+- Every production module has ownership entry (or `TBD` + rationale).
+- Architecture graphic and module deep-dive are readable.
+- Rules/skills/agent updates listed with evidence when needed.

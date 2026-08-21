@@ -6,6 +6,8 @@ disable-model-invocation: true
 
 # Prepare PR
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 **Goal:** Green gates + documented evidence in `prep.md`.
 
 ## Steps

@@ -6,6 +6,8 @@ disable-model-invocation: true
 
 # Merge PR
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 **Goal:** Merge only when artifacts + gates are satisfied.
 
 ## Steps
