@@ -36,6 +36,7 @@ Run when a PR changes kit architecture, install manifest, governance, workflow p
 - [ ] If ADRs change: update `.ai_infra/docs/decisions/README.md` index.
 - [ ] Verify no contradictions against `.cursor/rules/*.mdc` and `.agents/skills/pr-workflow/SKILL.md`.
 - [ ] Run `python .ai_infra/scripts/architecture/check_governance_consistency.py`.
+- [ ] If `asd-ste100-prose.md` or STE banners change: keep anti-compliance wording, § AI and STE (human oversight; no STEMG/ASD/AI-vendor endorsement), and sync payload via `make sync-plugin`.
 
 ## Ownership and Cadence
 

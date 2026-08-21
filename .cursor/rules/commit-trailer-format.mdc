@@ -23,8 +23,11 @@ alwaysApply: true
 
 ## Responsibility
 
+- AI assists authors. It does not replace human review.
 - Human author reviews and validates the change.
+- Do not claim ASD-STE100 compliance or STEMG / ASD / AI-vendor endorsement.
 - Do not insert certification or DCO assertions the person did not intend.
+- See `.ai_infra/docs/operations/asd-ste100-prose.md` § AI and STE.
 
 ## Example tail
 

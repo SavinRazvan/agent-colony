@@ -20,7 +20,7 @@ Notes:
 Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
-**Last updated:** 2026-08-21 (ASD-STE100 + board Entry reliability; kit 0.6.4)
+**Last updated:** 2026-08-21 (STEMG-aligned AI and STE prose; kit 0.6.4)
 **Product:** `agent-colony` · CLI: `agent-colony` 0.6.4 · **Tests:** 1514
 
 ## Shipped (confirmed in repo)
@@ -44,7 +44,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Board CLI subcommands | **27** leaf commands (incl. `entry`, `heal-cards`; full table in ops doc) | [project-board-collaboration.md](../operations/project-board-collaboration.md) § Project CLI subcommands |
 | Board Status + Tier-1 heal | `create-from-template` Status default `ready`; `heal-cards`; validate empty Status; close-issue Done gate; merge outbox queue | `project_handlers.run_heal_cards` · `project_atomics.collect_validate_item_problems` · PR #217 |
 | Board End date on Done | UTC End date when Status→done if empty (`set_end_date_on_done`); validate/heal; Tier-1 column | `ensure_end_date_if_done` · board-shell · kit 0.6.3 |
-| ASD-STE100 agent prose | Use ASD-STE100 banners on agents/skills/rules; governance enforces; token-efficiency contract | `asd-ste100-prose.md` · `token-efficiency.md` · `check_governance_consistency.py` · PRs #223–#226 |
+| ASD-STE100 agent prose | Use ASD-STE100 banners; § AI and STE (assist, human review, no STEMG endorsement); governance enforces; token-efficiency contract | `asd-ste100-prose.md` · `token-efficiency.md` · `check_governance_consistency.py` · PRs #223–#226 |
 | Board Entry + `--last` safety | Entry retry/conserve on rate-limit probe error (no false offline); reject corrupt `--last` PVTI_; Day-0/Day-N heal playbook | `project_cli.py` · `project_atomics.py` · board-ssot · PR #227 |
 | GraphQL-efficient Entry | `project entry` live \| conserve \| offline_artifacts; `export --reuse-if-fresh` | `project_cli.py` · `project_ssot.efficiency` |
 | EA-001 residual thin CLI | `project_cli.py` facade (~660 LOC) + parser/handlers split; board CLI modules under `.ai_infra/install/agent_colony/`: `project_cli.py`, `project_parser.py`, `project_handlers.py`, `project_atomics.py`, `gh_project_adapter.py`, `project_recipes.py`, `project_outbox.py` | PR #36 |

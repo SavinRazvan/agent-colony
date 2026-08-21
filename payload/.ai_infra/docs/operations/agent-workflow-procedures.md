@@ -56,7 +56,7 @@ Notes:
 
 ## 3b) Commit message provenance (git, not PR artifacts)
 
-**Git commits** use **`.cursor/rules/commit-trailer-format.mdc`**: required `Author:` + `GitHub-User:`; optional `Assisted-by:` when disclosure applies. No **`Made-with:`**.
+**Git commits** use **`.cursor/rules/commit-trailer-format.mdc`**: required `Author:` + `GitHub-User:`; optional `Assisted-by:` when AI materially shaped the change. No **`Made-with:`**. The human author reviews and validates. AI assists; it does not replace review. See [asd-ste100-prose.md](asd-ste100-prose.md) § AI and STE.
 
 **PR phase markdown** uses `Action-By` / `GitHub-User` / `Agent/s` per **`.agents/skills/pr-workflow/SKILL.md`**.
 

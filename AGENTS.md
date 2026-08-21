@@ -73,7 +73,7 @@ Slice closure: `python3 -m agent_colony drift validate`; hand off `drift-guard` 
 
 ## Commits
 
-Required: `Author:` + `GitHub-User:` (see `commit-trailer-format.mdc`). Render: `python3 -m agent_colony contributors commit-trailers`. Optional `Assisted-by:` when AI materially shaped work; no `Made-with:`.
+Required: `Author:` + `GitHub-User:` (see `commit-trailer-format.mdc`). Render: `python3 -m agent_colony contributors commit-trailers`. Optional `Assisted-by:` when AI materially shaped work; no `Made-with:`. Human author reviews and validates. AI assists; it does not replace review. See [asd-ste100-prose.md § AI and STE](.ai_infra/docs/operations/asd-ste100-prose.md#ai-and-ste).
 
 PR artifacts: `Action-By` / `GitHub-User` / `Agent/s` via `--pipeline` (`.agents/skills/pr-workflow/SKILL.md`).
 

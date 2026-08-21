@@ -12,11 +12,12 @@ Notes:
  - When project_ssot.enabled: pair with board Status + card Notes for resume-without-chat.
  - Else: session-pointer.md + change-index.md.
  - Use ASD-STE100: see asd-ste100-prose.md (free principles; no ASD dictionary).
+ - AI and STE: asd-ste100-prose.md § AI and STE (assist; human reviews; no endorsement).
 -->
 
 # Token efficiency (agent contract)
 
-**Use ASD-STE100** for agent-facing prose: [asd-ste100-prose.md](asd-ste100-prose.md).
+**Use ASD-STE100** for agent-facing prose: [asd-ste100-prose.md](asd-ste100-prose.md). For AI-assisted writing limits, read [asd-ste100-prose.md § AI and STE](asd-ste100-prose.md#ai-and-ste).
 
 ## Skill thin-index (intent)
 
