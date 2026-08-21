@@ -107,6 +107,11 @@ def main() -> int:
             "verified all gates; the artifact will record gates as externally verified."
         ),
     )
+    parser.add_argument(
+        "--summary",
+        action="store_true",
+        help="Print one-line PASS/FAIL per gate (token-efficient); still writes prep.md",
+    )
     args = parser.parse_args()
 
     try:
@@ -142,13 +147,17 @@ def main() -> int:
     ]
 
     failed = False
+    summary_rows: list[str] = []
     if args.skip_gates:
         lines.append("- gates: externally verified by agent before this script call")
+        summary_rows.append("gates: externally verified")
     else:
         for gate in resolve_gates(Path.cwd()):
             code, output = _run(gate)
             label = "PASS" if code == 0 else "FAIL"
-            lines.append(f"- `{ ' '.join(_resolve_gate_cmd(gate)) }` -> {label}")
+            cmd_disp = " ".join(_resolve_gate_cmd(gate))
+            lines.append(f"- `{cmd_disp}` -> {label}")
+            summary_rows.append(f"{label}\t{cmd_disp}")
             if code != 0:
                 failed = True
                 lines.append("")
@@ -167,7 +176,13 @@ def main() -> int:
         ]
     )
     prep_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"Created {prep_file}")
+    if args.summary:
+        verdict = "FAIL" if failed else "PASS"
+        print(f"prepare: {verdict} · pr={args.pr} · artifact={prep_file}")
+        for row in summary_rows:
+            print(row)
+    else:
+        print(f"Created {prep_file}")
     return 1 if failed else 0
 
 

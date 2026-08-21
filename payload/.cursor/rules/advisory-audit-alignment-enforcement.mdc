@@ -3,13 +3,13 @@ description: Architecture-impacting advisory audits before prepare/merge (author
 alwaysApply: true
 ---
 
-# Architecture-impacting advisory audit (alignment artifacts)
+# Alignment audit (architecture-impacting)
 
-- **Canonical audit agent:** `.cursor/agents/auditor.md` with `.cursor/skills/auditor-protocol/SKILL.md` (Evidence contract applies to all audit outputs).
-- For **merge workflow only**, architecture-impacting work may use a **focused alignment pass** (same agent/skill; outputs limited to alignment files — see skill § “Focused alignment pass”).
-- Audits are **advisory**: findings and recommendations only; do not auto-apply fixes during the audit step.
-- Run before `/prepare-pr` when scope touches: module boundaries, workflow/rule/skill policy, test/CI layout, roadmap/research source of truth.
+- **Agent:** `.cursor/agents/auditor.md` + `.cursor/skills/auditor-protocol/SKILL.md`.
+- Merge workflow may use **focused alignment pass** (skill § Focused alignment pass).
+- Audits are advisory. Do not auto-apply fixes in the audit step.
+- Run before `/prepare-pr` when scope touches: boundaries, workflow/rule/skill policy, test/CI, roadmap/research SSOT.
 - **Outputs:** `.local/workflow-artifacts/alignment/alignment-audit.md`, `.local/workflow-artifacts/alignment/alignment-todos.md`.
 - **Schema:** `.ai_infra/docs/roadmap/alignment-audit-schema.md`.
 - Each finding: evidence path, mismatch category, recommended fix, status (`open` | `accepted_divergence` | `fixed` | `deferred`).
-- **P0:** block merge prep until fixed or accepted with rationale. **P1:** fix in-slice or defer with owner and slice. **P2:** batch but track in reconciliation TODOs.
+- **P0:** block merge prep until fixed or accepted with rationale. **P1:** fix in-slice or defer with owner. **P2:** batch; track in reconciliation TODOs.

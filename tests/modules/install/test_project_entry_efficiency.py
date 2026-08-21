@@ -492,3 +492,74 @@ def test_cmd_entry_conserve_items_not_list(
     out = capsys.readouterr().out
     assert "mode=conserve" in out
     assert "(no items)" in out
+
+
+def test_cmd_entry_digest(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    ssot = _ssot_with_efficiency()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(
+        project_cli._outbox,
+        "graphql_rate_limit",
+        lambda: {"remaining": 4000, "limit": 5000},
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot_arg, *, limit=50: (
+            [
+                {
+                    "id": "PVTI_d1",
+                    "title": "Digest work",
+                    "status": "In Progress",
+                    "priority": "P1",
+                }
+            ],
+            None,
+        ),
+    )
+    args = argparse.Namespace(
+        directory=tmp_path,
+        also_ready=False,
+        force_live=False,
+        limit=None,
+        digest=True,
+        json=False,
+    )
+    assert project_cli.cmd_entry(args) == project_cli.EXIT_OK
+    out = capsys.readouterr().out
+    assert "enabled:" not in out
+    assert "mode=live" in out
+    assert "items=1" in out
+    assert "PVTI_d1" in out
+
+
+def test_cmd_entry_json(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    ssot = _ssot_with_efficiency()
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(
+        project_cli._outbox,
+        "graphql_rate_limit",
+        lambda: {"remaining": 4000, "limit": 5000},
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "fetch_project_items",
+        lambda ssot_arg, *, limit=50: ([], None),
+    )
+    args = argparse.Namespace(
+        directory=tmp_path,
+        also_ready=False,
+        force_live=False,
+        limit=None,
+        digest=False,
+        json=True,
+    )
+    assert project_cli.cmd_entry(args) == project_cli.EXIT_OK
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["mode"] == "live"
+    assert payload["item_count"] == 0
+    assert payload["next"] == "claim|get"

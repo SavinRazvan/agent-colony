@@ -8,33 +8,33 @@ alwaysApply: true
 ## Lifecycle
 
 - Sequence: `plan -> interfaces -> implementation -> tests -> evidence -> docs update`.
-- Before coding: confirm module boundary, acceptance criteria, rollback in `.local/index-and-planning/current/plan.md`; read **`session-pointer.md`** first, then `plan.md`, `work-tracker.md`, project `docs/architecture/` (local stub: `.local/.../current/architecture.md`), `test-plan.md`, `test-index.md`.
-- When `project_ssot.enabled` and `sync_policy: board_only`, **board Entry wins** (`python3 -m agent_colony project status` / claim card); local trackers are offline fallback only.
-- Treat `.local/index-and-planning/current/*`, `history/*`, and `audits/*` as live local execution state; durable workflow doctrine lives in `.ai_infra/docs/operations/*`.
-- Exactly one primary `in_progress` **Status on the Project** when `board_only`; `work-tracker.md` `in_progress` only when SSOT disabled or offline fallback. Do not implement without scope on the board card body (or `plan.md` when fallback).
-- Incremental, reversible slices; KISS. Block release on P0 failures; RCs need CI/CD evidence bundles.
+- Before coding: read `session-pointer.md`, then `plan.md`, `work-tracker.md`, architecture stub, `test-plan.md`, `test-index.md`. Confirm boundary, acceptance, rollback in `plan.md`.
+- When `board_only`: board Entry wins (`project status` / claim); local trackers are offline fallback only.
+- `.local/index-and-planning/current/*`, `history/*`, `audits/*` = live state. Doctrine: `.ai_infra/docs/operations/*`.
+- One `in_progress` on Project when `board_only`. Do not implement without board card scope (or `plan.md` when fallback).
+- Incremental slices; KISS. Block release on P0. RCs need CI/CD evidence.
 
 ## Tests
 
-- Place tests under `tests/modules/<module>/` matching source boundaries.
-- Cover happy, failure, and edge cases; add retry/timeout/replay where high-risk or state-changing.
-- Run targeted module tests first, then full suite before merge.
-- For medium/high-risk slices, run `pytest --cov=.ai_infra --cov=agent_colony --cov-report=term-missing -q`; record gaps in `work-tracker.md` and `updates-log.md`.
-- If modules/tests move or drop, update/remove tests in the same slice; note rationale in `updates-log.md`.
+- Tests under `tests/modules/<module>/` match source boundaries.
+- Cover happy, failure, edge; add retry/timeout/replay for high-risk paths.
+- Run module tests first, then full suite before merge.
+- Medium/high-risk: `pytest --cov=.ai_infra --cov=agent_colony --cov-report=term-missing -q`; record gaps in trackers.
+- Module/test moves in the same slice; note in `updates-log.md`.
 
-## Planning index updates
+## Planning index
 
-- After substantive code change: `session-pointer.md`, `change-index.md`, `work-tracker.md`; `test-index.md` / `test-plan.md` when tests or risk change; `updates-log.md` (one line — see `.ai_infra/docs/operations/token-efficiency.md`).
-- Planning-only scope changes: update `plan.md` / `work-tracker.md` + at least one `updates-log.md` entry.
-- Blocked: mark blocker and unblock action in `work-tracker.md`.
-- **ADR-010:** `.local/plans/` is snapshot history only — live plan SSOT stays on the board card (`board_only`) or `plan.md` offline; see `canvas-artifacts` skill.
-- **Slice closure** (before handoff): regenerate `current/coverage-index.md` when coverage mattered; if a new tracker path is added, update `.local/agents-control-center/config/pages.json` and dashboard header **Depends On**; do not edit `.local/agents-control-center/audits/module-audit.html` unless refreshing that export.
+- After code change: update `session-pointer.md`, `change-index.md`, `work-tracker.md`; `test-index.md` / `test-plan.md` when risk changes; one line in `updates-log.md` (see `token-efficiency.md`).
+- Scope-only: `plan.md` / `work-tracker.md` + `updates-log.md`.
+- Blocked: mark blocker in `work-tracker.md`.
+- **ADR-010:** `.local/plans/` = snapshots only; live plan on board (`board_only`) or `plan.md`.
+- Slice closure: regenerate `coverage-index.md` when needed; new tracker path → update `pages.json` + dashboard **Depends On**.
 
 ## Merge gates
 
-- Full gate order: [`.cursor/rules/pr-workflow-enforcement.mdc`](pr-workflow-enforcement.mdc) and `.ai_infra/scripts/pr/prepare.py` (`resolve_gates()`; `GATES` = 2-gate back-compat alias).
+- Gate order: [pr-workflow-enforcement.mdc](pr-workflow-enforcement.mdc) and `prepare.py` (`resolve_gates()`; `GATES` = 2-gate alias).
 
-## Efficiency (less noise)
+## Efficiency
 
-- Default read set under `.local/`: **`session-pointer.md`**, then **`index-and-planning/current/plan.md`**, **`work-tracker.md`**, **`change-index.md`**; PR artifacts under **`workflow-artifacts/`** when merging. Skip **`generated-data/**`** and **`history/archive/**`** unless explicitly tasked.
-- In `updates-log.md` and chat handoffs, do **not** paste the full `GATES` block; state outcomes (*e.g.* “prepare.py gates green”) and only the failing command + stderr when something breaks.
+- Default `.local/` reads: `session-pointer.md`, `plan.md`, `work-tracker.md`, `change-index.md`; PR artifacts when merging. Skip `generated-data/**`, `history/archive/**` unless tasked.
+- Do not paste full `GATES` in chat or `updates-log.md`; say *prepare.py gates green* or paste failing command only.

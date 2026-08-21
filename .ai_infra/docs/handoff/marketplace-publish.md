@@ -237,7 +237,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-08-09 board Status + Tier-1 / heal-cards):** `project heal-cards`, create Status default `ready`, validate empty Status + Tier-1, close-linked-issue Done gate, merge outbox queue, ephemeral consumer smoke; **1496** tests; **8** / **14** / **7**; kit version **0.6.2**.
 
-**Listing copy refresh (2026-08-09 board End date on Done):** Agents set End date (UTC) on Status→Done; validate/heal/board-shell Tier-1; `set_end_date_on_done`; **1504** tests; **8** / **14** / **7**; kit version **0.6.3**.
+**Listing copy refresh (2026-08-09 board End date on Done):** Agents set End date (UTC) on Status→Done; validate/heal/board-shell Tier-1; `set_end_date_on_done`; **1510** tests; **8** / **14** / **7**; kit version **0.6.3**.
 
 **Listing copy refresh (2026-07-20 DOC-CANVAS-ALIGN):** Canvases re-aligned to live CLI (**22** leaves incl. `board-bootstrap`), board-shell day-0 story, test-runner `coverage.json` + post-100% doc sync, VERIFIED **2026-07-20**; metrics unchanged (**1178** / **7089** / **100%**; **8** / **12** / **7**).
 

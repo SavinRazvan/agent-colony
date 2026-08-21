@@ -31,6 +31,7 @@ Depends On:
 - [`upgrade-kit.md`](upgrade-kit.md) — reinstall / semver upgrade
 - [`project-config.md`](project-config.md) — optional `project.config.yaml` metadata
 - [`token-efficiency.md`](token-efficiency.md) — agent read/write contract
+- [`asd-ste100-prose.md`](asd-ste100-prose.md) — **Use ASD-STE100** (free prose guide; token-efficiency research)
 - [`logging-and-errors.md`](logging-and-errors.md) — logging baseline
 - [`abbreviations-notepad.md`](abbreviations-notepad.md) — shared abbreviations
 

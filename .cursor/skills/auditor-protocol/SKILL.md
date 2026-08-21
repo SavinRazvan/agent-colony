@@ -17,234 +17,147 @@ Notes:
 
 # Auditor protocol
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 ## Goal
 
-Produce a **step-by-step, facts-first** enterprise architecture and engineering assessment of **this** repository, suitable for senior technical and executive decisions. **No invented architecture.** Every significant claim is tied to repository evidence or labeled **Unknown**.
+Produce a **step-by-step, facts-first** enterprise architecture assessment of **this** repository. **No invented architecture.** Every significant claim is tied to repository evidence or labeled **Unknown**.
 
 ## Evidence contract (mandatory)
 
-Audits are **evidence-backed** or they fail the contract. Chat-only opinions without traceable repo pointers are not acceptable in the written deliverables.
+Audits are **evidence-backed** or they fail the contract. Chat-only opinions without traceable repo pointers are not acceptable in written deliverables.
 
-**What counts as evidence (in priority order)**
+**What counts as evidence (priority order)**
 
-1. **Repository paths** — repo-relative file or directory paths you actually opened or searched (e.g. `src/core/foo.py`, `pyproject.toml`, `.github/workflows/`).
-2. **Quoted fragments** — short, faithful quotes from files (configs, docstrings, key symbols) when the claim is non-obvious; add line reference when practical (e.g. `path:42-48` or “see `symbol` in `path`”).
-3. **Command output** — only when run during the audit (e.g. `pytest`, `rg`, `python scripts/...`); record the **exact command** and **outcome** in §2 Audit Method, not vague “tests pass.”
-4. **User context** — label as **`Context:`** (field name); use for business/deployment intent **only**; never treat as **Confirmed** for claims about what the **code** does.
+1. **Repository paths** — repo-relative paths actually opened or searched.
+2. **Quoted fragments** — short faithful quotes when non-obvious; line ref when practical (`path:42-48`).
+3. **Command output** — only when run during the audit; record **exact command** and **outcome** in §2 Audit Method.
+4. **User context** — label **`Context:`**; never treat as **Confirmed** for what the **code** does.
 
 **Per classification**
 
 | Label | Requirement |
 |--------|-------------|
-| **Confirmed** | At least one repo path (or command + output) that directly supports the statement. |
-| **Probable risk** | (a) **Observed:** path + fact; (b) **Inference:** explicitly labeled; (c) **Falsify:** what evidence would confirm or refute. |
-| **Unknown** | State **what was not inspected** or **why** the repo cannot answer (e.g. no deployment manifests in tree, secrets not in repo). |
+| **Confirmed** | At least one repo path (or command + output) directly supports the statement. |
+| **Probable risk** | (a) **Observed:** path + fact; (b) **Inference:** labeled; (c) **Falsify:** what would confirm/refute. |
+| **Unknown** | What was not inspected or why the repo cannot answer. |
 
-**Scorecard (§9)** — For **each** category, the **Evidence** subsection must be a **bulleted list of paths** (and optional line/symbol refs) representing what was actually reviewed for that score. If the list is empty or only generic (“reviewed the codebase”), **cap the score at 3** and set scoring confidence to **Low** unless the gap is explicitly **Unknown**.
+**Scorecard (§9)** — Each category **Evidence** = bulleted paths reviewed. Empty/generic list → **cap score at 3**, confidence **Low** unless explicitly **Unknown**.
 
-**Findings (§7) and actions file** — **Evidence** is mandatory. If you cannot cite a path or command output, rephrase as **Unknown** or omit the finding.
+**Findings (§7) and actions file** — **Evidence** mandatory; else rephrase as **Unknown** or omit.
 
-**§2 Audit Method** — Must list: **sources read** (paths), **searches or scans** (e.g. patterns, tools), **commands run** (if any), and **scope limits** (what was out of scope or time-boxed). Readers must be able to **reproduce** how conclusions were reached.
+**§2 Audit Method** — List: sources read, searches/scans, commands run, scope limits. Readers must reproduce how conclusions were reached.
 
-**Contradictions** — When docs and code disagree, cite **both** sides (paths) and state the conflict before recommending.
+**Contradictions** — When docs and code disagree, cite **both** paths and state the conflict.
 
 ## When to use
 
-- Pre- or post-major refactor, platform review, or diligence-style read of the codebase.
-- When documentation and implementation may diverge (challenge documented architecture with code and config evidence).
-- When you need **module-level** findings, a **weighted scorecard**, and a **prioritized action list** for implementers.
+- Pre/post major refactor, platform review, diligence-style read.
+- Docs vs implementation may diverge.
+- Need module-level findings, weighted scorecard, prioritized actions.
 
 ## Project workflow integration
 
-**Read (do not load all of `.local/` blindly):**
+**Read (targeted, not all of `.local/`):** `plan.md`, `work-tracker.md`, `test-plan.md`, `test-index.md`, project `docs/architecture/`, `AGENTS.md`, `README.md`, overlay rules, `prepare.py` (`resolve_gates()`).
 
-- `.local/index-and-planning/current/plan.md`, `work-tracker.md` — current slice context (if missing, say so).
-- `test-plan.md`, `test-index.md` when assessing test architecture.
-- Project `docs/architecture/`, `AGENTS.md`, `README.md` for stated intent vs implementation.
-- Overlay rules (`overlays/rules/*.mdc`) when installed.
-- `.ai_infra/scripts/pr/prepare.py` (`resolve_gates()`; `GATES` = 2-gate alias) for quality-gate reality.
-
-**Write — create directory if needed:**
+**Write:**
 
 | Output | Path |
 |--------|------|
-| Full audit (all sections below) | `.local/workflow-artifacts/enterprise-architecture-audit/enterprise-architecture-audit.md` |
-| Prioritized actions for implementers | `.local/workflow-artifacts/enterprise-architecture-audit/enterprise-audit-actions.md` |
+| Full audit | `.local/workflow-artifacts/enterprise-architecture-audit/enterprise-architecture-audit.md` |
+| Actions | `.local/workflow-artifacts/enterprise-architecture-audit/enterprise-audit-actions.md` |
 
-**Report frontmatter (top of `enterprise-architecture-audit.md`):**
+**Frontmatter:**
 
 ```text
 Audit-Type: enterprise-architecture-python
-Audited-By: <agent name or human>
+Audited-By: <agent or human>
 Action-By: <name>
 GitHub-User: <handle>
-Date: <ISO-8601 date>
+Date: <ISO-8601>
 Evidence-Standard: repository + user context only
 ```
 
-**Downstream agents:**
-
-- **Implementer:** consume `enterprise-audit-actions.md`; move agreed items onto **board Ready cards** when `project_ssot.enabled` (Acceptance/Rollback in body); else `work-tracker.md` (one primary `in_progress`). Follow `.cursor/skills/implementer-loop/SKILL.md` + `board-ssot` Continuation contract.
-- **Alignment / maintainer:** if findings are doc-policy-roadmap drift, also record P0/P1 items per `.ai_infra/docs/roadmap/alignment-audit-schema.md` in `.local/workflow-artifacts/alignment/alignment-audit.md` and `alignment-todos.md` (advisory).
-- **Module map depth:** optionally run `.cursor/skills/audit-module-map/SKILL.md` for `module-map` / HTML export; cite those paths as evidence in the enterprise report.
-
-**After the audit:** add a brief entry to `.local/index-and-planning/history/updates-log.md` (artifacts written, no gate laundry lists).
+**Downstream:** **Implementer** → `enterprise-audit-actions.md`; board Ready cards when SSOT on. **Alignment** → `alignment-audit.md` + `alignment-todos.md` per schema. **Module map** → optional `audit-module-map` skill. Brief `updates-log.md` entry after audit.
 
 ### Focused alignment pass (architecture-impacting PRs)
 
-When the **maintainer workflow** requires alignment files for `--arch-impacting` but a **full** `enterprise-architecture-audit.md` is not requested:
+When maintainer workflow requires alignment files but not full enterprise report:
 
-- Stay on **`auditor`** and keep the **Evidence contract** (paths for every Confirmed finding; §2 Audit Method lists what you read/searched).
-- **Write only** (unless the user also wants the full report):
-  - `.local/workflow-artifacts/alignment/alignment-audit.md`
-  - `.local/workflow-artifacts/alignment/alignment-todos.md`
-- Use **`.ai_infra/docs/roadmap/alignment-audit-schema.md`** for finding shape and P0/P1/P2 handling.
-- Scope: compare **touched** roadmap/plan/strategy docs, rules/skills/agents, `src/` + `tests/modules/` relevant to the PR — not a whole-repo scorecard.
-- Include a short **CHK-*** tick table (below) for dimensions that touch the PR; mark N/A for untouched dimensions.
-- **Optional:** note in `alignment-audit.md` that a full enterprise scorecard was deferred.
-- Continuous plan/agent-doctrine pulse remains **`drift-guard`** — do not duplicate DRIFT-011 prose here.
+- Stay on **`auditor`**; keep **Evidence contract**.
+- **Write only:** `alignment-audit.md`, `alignment-todos.md` (schema: `.ai_infra/docs/roadmap/alignment-audit-schema.md`).
+- Scope: **touched** roadmap/plan/rules/skills/agents + relevant `src/` / `tests/modules/` — not whole-repo scorecard.
+- Short **CHK-*** tick table for PR-touching dimensions; N/A elsewhere.
+- Plan/doctrine pulse remains **`drift-guard`** — do not duplicate DRIFT-011 here.
 
----
-
-## Context block (required from user — paste at start of engagement)
+## Context block (paste at start)
 
 ```text
-Context:
-- Business type:
-- Product type:
-- Current users/customers:
-- Expected growth over next 12–24 months:
-- Team size and structure:
-- Deployment platform:
-- Compliance/security requirements:
-- Uptime/SLA expectations:
-- Main business goals:
-- Main roadmap items:
-- Main engineering goals:
-- Main pain points today:
-- Known constraints:
-- Intended future architecture direction:
-- Known incidents or operational failures:
-- Performance concerns already suspected:
-- Areas we especially want challenged:
+Context: Business type · Product · Users/growth · Team · Deployment · Compliance · SLA ·
+Goals · Roadmap · Engineering goals · Pain points · Constraints · Future direction ·
+Incidents · Performance concerns · Areas to challenge
 ```
 
-If the user leaves fields blank, label gaps **Unknown – not provided in context** and lower scoring confidence.
+Blank fields → **Unknown – not provided**; lower scoring confidence.
 
----
+## Operating mode
 
-## Operating mode (non-negotiable)
+Facts-first: inventory → quality → risks → recommendations (never reverse). **Strict / evidence-only / no speculation / step-by-step / Python-specific: ON.**
 
-```text
-Do not jump to recommendations before completing repository inventory and implemented architecture assessment.
-
-Facts-first rule:
-- First describe what exists
-- Then assess quality
-- Then identify risks
-- Then recommend changes
-- Never reverse that order
-
-Strict mode: ON
-Evidence-only mode: ON
-No speculation mode: ON
-Step-by-step mode: ON
-Python-specific analysis mode: ON
-```
-
-**Rules:**
-
-- Do not invent facts. If not verifiable from the repo (and provided context), say: **Unknown – not verifiable from repository evidence**.
+- No invented facts; label **Unknown – not verifiable from repository evidence** when needed.
 - Separate **Confirmed** / **Probable risk** / **Unknown** for material statements.
-- Do not describe architecture as confirmed unless supported by evidence (paths, configs, imports, entrypoints).
-- Be critical and precise. Prefer **insufficient evidence** over assumptions.
-- If evidence conflicts (e.g. docs vs code), call out the conflict.
+- Challenge docs vs code; **documented architecture ≠ real** without verification.
+- No vague likelihood unless explicit **hypothesis** + **evidence gap**.
 
-**Anti-hallucination:** Do not use vague likelihood language (“likely”, “probably intended”) unless framed as an explicit **hypothesis** with the **evidence gap** stated.
+## Mandatory phases (execute in order; show boundaries in report)
 
-**Challenge assumptions:** Actively look for contradictions between folder structure, import graph, runtime entrypoints, and deployment clues. **Documented architecture is not assumed to be real architecture** without verification.
-
-**Review discipline:**
-
-1. Inventory before judgment  
-2. Evidence before interpretation  
-3. Interpretation before recommendation  
-4. Recommendation before roadmap  
-5. Unknowns explicitly called out  
-
----
-
-## Mandatory phases (execute in order; show phase boundaries in the written report)
-
-### Named checklists (CHK-*) — mandatory coverage
-
-Map each checklist into the matching phase. In the written report (or focused alignment), include a **CHK tick table**: id · status (Pass / Gap / N/A / Unknown) · evidence paths. **Do not** invent new skill folders for these dimensions.
+### CHK-* checklists
 
 | Id | Phase | Must cite |
 |----|-------|-----------|
 | `CHK-ARCH` | 2 | Style, dependency direction, cycles |
-| `CHK-GRANULARITY` | 2 / 4 | God modules, blurred boundaries vs `.ai_infra/docs/governance/module-boundaries.md` (kit planes) or consumer `src/` modules |
-| `CHK-PERF` | 3 | Hot paths, N+1/queue clues; **Unknown** if none observable |
-| `CHK-SEC-CODE` | 3 | Secrets handling, injection/trust boundaries in kit scripts / app code in scope |
-| `CHK-SEC-AGENT` | 1 / 3 | Agent write-scope, hard-stops, MCP `.cursor/mcp.registry.yaml` allowlists, no product auto-fix — **contract compliance**, not LLM jailbreak proof |
-| `CHK-INFRA-KIT` | 1 / 3 | Three planes, install/activate, `integrate validate` clues — **not** consumer cloud infra product |
-| `CHK-DOCS` | 5 | Stated goals vs docs; stale AGENTS / IMPLEMENTATION-STATUS |
+| `CHK-GRANULARITY` | 2 / 4 | God modules vs module-boundaries.md or consumer `src/` |
+| `CHK-PERF` | 3 | Hot paths; **Unknown** if none observable |
+| `CHK-SEC-CODE` | 3 | Secrets, injection/trust boundaries in scope |
+| `CHK-SEC-AGENT` | 1 / 3 | Agent write-scope, MCP allowlists — contract compliance |
+| `CHK-INFRA-KIT` | 1 / 3 | Three planes, activate, `integrate validate` |
+| `CHK-DOCS` | 5 | Goals vs docs; stale AGENTS / IMPLEMENTATION-STATUS |
 
-### PHASE 1 — Repository inventory (descriptive only)
+Report includes **CHK tick table**: id · Pass/Gap/N/A/Unknown · evidence paths.
 
-Establish facts: Python version(s), dependency tooling, frameworks, entry points, main packages, workers/jobs, APIs/CLI/scripts, data stores, messaging, infra/deployment clues, test layout, docs/ADRs/config.  
-**Output:** inventory table, architecture map sketch (text), confirmed technologies, unknowns.
+### PHASE 1 — Repository inventory
+
+Facts only: Python version, deps, frameworks, entry points, packages, jobs, APIs/CLI, data stores, infra clues, tests, docs/ADRs. **Output:** inventory table, architecture sketch, confirmed tech, unknowns.
 
 ### PHASE 2 — Implemented architecture
 
-Infer **actual** style (monolith, layered monolith, modular monolith, services, event-driven, hybrid, etc.), boundaries, dependency direction, layering, shared core, framework leakage, god modules/cycles. Complete **CHK-ARCH** and start **CHK-GRANULARITY**.  
-**Output:** detected profile, boundary analysis, layering assessment, risks visible from structure.
+Actual style, boundaries, dependency direction, layering, leakage, god modules/cycles. **CHK-ARCH**, start **CHK-GRANULARITY**. **Output:** profile, boundary analysis, structural risks.
 
 ### PHASE 3 — Python engineering and runtime
 
-Assess: packaging/layout, import discipline, typing and contracts, data access/ORM patterns, async/concurrency/jobs, config/secrets, performance/scaling clues, reliability/operability, security. Complete **CHK-PERF**, **CHK-SEC-CODE**, **CHK-SEC-AGENT**, **CHK-INFRA-KIT**.  
-**Output:** evidence-backed findings only; label Confirmed / Probable risk / Unknown.
+Packaging, imports, typing, data access, async/jobs, config/secrets, perf/scaling, reliability, security. **CHK-PERF**, **CHK-SEC-CODE**, **CHK-SEC-AGENT**, **CHK-INFRA-KIT**. **Output:** evidence-backed findings only.
 
 ### PHASE 4 — Module-by-module audit
 
-For each **major** module/package under `src/` (and analogous roots): name, purpose, evidence of responsibility, public surfaces, dependencies, boundary quality (Clear / Blurred / Violated), coupling/cohesion, layer placement, framework leakage, data ownership clues, perf/security/ops concerns, test clues, recommendation (Keep / Refactor / Split / Merge / Extract / Defer), why, effort, priority (Now / Next / Later). Finish **CHK-GRANULARITY**.  
-Use **Unknown** where needed. **Do not skip** module-level sections for major roots.
+Each **major** module: purpose, surfaces, dependencies, boundary (Clear/Blurred/Violated), coupling, layer, leakage, data ownership, perf/security/test clues, recommendation (Keep/Refactor/Split/Merge/Extract/Defer), effort, priority. Finish **CHK-GRANULARITY**. Do not skip major roots.
 
 ### PHASE 5 — Goal and plan alignment
 
-For each stated goal/roadmap/architecture intent found in repo docs: alignment (Strong / Partial / Weak), evidence, gaps, risks, recommended action (Preserve / Improve / Simplify / Postpone / Redesign). Tie to evidence, not generic advice. Complete **CHK-DOCS**. Continuous plan pulse when plans change is **`drift-guard`** — reference drift artifacts if present; do not re-run DRIFT scripts as a substitute for this phase.
+Per stated goal in docs: alignment (Strong/Partial/Weak), evidence, gaps, action (Preserve/Improve/Simplify/Postpone/Redesign). **CHK-DOCS**. Plan pulse when plans change = **`drift-guard`** — reference drift artifacts; do not substitute DRIFT scripts here.
 
 ### PHASE 6 — Recommended direction
 
-Acceptable for now; what breaks under growth; fix immediately vs intentional deferral; target direction; evolution vs redesign; migration risks; **top 5 highest-ROI** improvements (30–60 days), each repo-specific.
-
----
+What holds now; what breaks at scale; fix now vs defer; target direction; migration risks; **top 5 highest-ROI** improvements (30–60 days), repo-specific.
 
 ## Recommendation standard
 
-Every meaningful recommendation must include: **Problem**, **Evidence**, **Why it matters**, **Recommendation**, **Tradeoffs**, **Implementation approach**, **Effort estimate**, **Priority**, **Affected modules**.  
-Avoid generic bullets (“improve modularity”, “add observability”) without repo ties.
-
-**Migration difficulty** (for each major recommendation): Low / Moderate / High / Very High.
-
-**Optional:** **Top 10 modules by architectural risk** (ranked, with evidence).
-
-**Optional closing section — “Potential dissent from a second architect”:** what a reviewer might dispute, weak evidence, decisions needing human validation.
-
----
+Each recommendation: **Problem**, **Evidence**, **Why it matters**, **Recommendation**, **Tradeoffs**, **Implementation**, **Effort**, **Priority**, **Affected modules**. Migration difficulty: Low / Moderate / High / Very High. No generic bullets without repo ties.
 
 ## Scoring framework
 
-**Scoring rules:**
+Scores need concrete evidence; limited evidence → lower confidence. High scores need **positive** evidence; lack of evidence ≠ quality.
 
-- Do not assign scores from intuition alone.  
-- Every score references concrete evidence.  
-- If evidence is limited, **lower confidence**.  
-- **High scores require positive evidence**, not absence of problems.  
-- **Lack of evidence is not evidence of quality.**  
-- Do not reward absence of visible issues with high scores.
-
-**Categories (1–5):** 1 = materially inadequate for enterprise; 2 = weak/high-risk; 3 = workable/moderate risk; 4 = strong with manageable gaps; 5 = enterprise-strong/low risk.
+**Categories (1–5):** 1 materially inadequate … 5 enterprise-strong.
 
 | Category | Weight |
 |----------|--------|
@@ -263,23 +176,20 @@ Avoid generic bullets (“improve modularity”, “add observability”) withou
 | Documentation and governance | 5% |
 | Strategic alignment | 10% |
 
-For **each** category: Score, Why, Evidence, What is needed to reach the next level.  
-Then: **weighted overall score**, **enterprise readiness level** (Early-stage / Growing / Scaling / Enterprise-capable), **scoring confidence** (High / Medium / Low).
-
----
+Per category: Score, Why, Evidence (paths), path to next level. Then weighted overall, enterprise readiness (Early-stage / Growing / Scaling / Enterprise-capable), confidence (High / Medium / Low).
 
 ## Required report structure
 
-Write `enterprise-architecture-audit.md` with these sections:
+`enterprise-architecture-audit.md`:
 
 1. Executive Summary  
-2. Audit Method (must satisfy the **Evidence contract**: sources, searches, commands, scope limits)  
-2b. **CHK-* tick table** (all seven ids: Pass / Gap / N/A / Unknown + evidence)  
+2. Audit Method (Evidence contract: sources, searches, commands, scope)  
+2b. CHK-* tick table  
 3. Repository Inventory  
 4. Detected Architecture Profile  
 5. Python-Specific Engineering Assessment  
 6. Module-by-Module Deep Dive  
-7. Findings by Severity (Critical / High / Medium / Low — each with Classification, Confidence, Why it matters, Evidence, Recommendation, Tradeoffs, Effort, Priority, Affected areas)  
+7. Findings by Severity (each: Classification, Confidence, Evidence, Recommendation, Effort, Priority)  
 8. Performance & Scalability Risk Table  
 9. Architecture Scorecard (+ weighted overall + readiness + confidence)  
 10. Goal and Plan Alignment  
@@ -288,70 +198,22 @@ Write `enterprise-architecture-audit.md` with these sections:
 13. Top 5 Highest-ROI Changes  
 14. Risks, Unknowns, and Assumptions  
 15. Human Validation Required  
-16. Final Verdict (Acceptable / Acceptable with Risks / Major Redesign Recommended) — rationale, biggest blocker, executive takeaway  
+16. Final Verdict (Acceptable / Acceptable with Risks / Major Redesign Recommended)
 
-**Closing quality bar:**
+Quality bar: concrete at module level; lower confidence instead of inventing certainty.
 
-```text
-Do not summarize vaguely. Be concrete at module level.
-If evidence is incomplete, lower confidence instead of inventing certainty.
-The review should help a senior engineering leader decide:
-- what is fine now
-- what becomes dangerous at scale
-- what to fix first
-- what architecture direction best supports the business plan
-```
+## `enterprise-audit-actions.md`
 
----
+Backlog: **ID** (e.g. `EA-001`), **Title**, **Severity** (P0/P1 mapping), **Classification**, **Evidence** (paths), **Recommendation**, **Effort**, **Migration difficulty**, **Priority**, optional owner, link to audit section.
 
-## `enterprise-audit-actions.md` format
+## Shorter invocation (skill already loaded)
 
-Structured backlog for implementers:
-
-- **ID** (e.g. `EA-001`)  
-- **Title**  
-- **Severity** (map enterprise Critical/High to P0/P1 where appropriate for internal tracking)  
-- **Classification:** Confirmed / Probable risk / Unknown  
-- **Evidence** (paths)  
-- **Recommendation** (one concrete step)  
-- **Effort** / **Migration difficulty** / **Priority**  
-- **Suggested owner role** (optional)  
-- **Link** to section in `enterprise-architecture-audit.md`  
-
----
-
-## Shorter invocation prompt (when full skill context is already loaded)
-
-```text
-Audit this Python repository as a Principal Enterprise Architect.
-
-Work step by step. Facts only. No guessing.
-
-Process:
-1. Inventory the repo
-2. Identify the actual implemented architecture
-3. Assess Python-specific engineering quality
-4. Audit each major module/package
-5. Assess risks, scalability, security, reliability, and operability
-6. Compare current architecture to goals and target direction (from docs + context)
-7. Recommend a practical transition path
-
-Rules:
-- Every major claim must include repository evidence (paths)
-- If not verifiable, say "Unknown – not verifiable from repository evidence"
-- Distinguish Confirmed / Probable risk / Unknown
-- Do not jump to recommendations before inventory and architecture assessment
-- Do not provide generic advice
-- Use the weighted scorecard; high scores require positive evidence
-
-Deliverables: full report + enterprise-audit-actions.md under .local/workflow-artifacts/enterprise-architecture-audit/
-```
+Audit as Principal Enterprise Architect: inventory → implemented architecture → Python quality → modules → risks → goals comparison → transition path. Facts only; weighted scorecard; deliverables under `.local/workflow-artifacts/enterprise-architecture-audit/`.
 
 ## Exit criteria
 
-- Phases 1–6 completed in order in the written report; no early recommendation dump.  
-- **CHK-*** tick table present (full audit) or scoped tick table (focused alignment).  
-- **Evidence contract** satisfied: §2 lists reproducible sources/commands; Confirmed claims and scorecard categories cite paths; no finding in §7 or actions file without **Evidence** paths (or explicit **Unknown**).  
-- Scorecard populated with evidence and confidence; no score without justification.  
-- `enterprise-audit-actions.md` exists with prioritized, repo-tied items (full audit).  
-- Unknowns and human-validation items explicitly listed.
+- Phases 1–6 in order; no early recommendation dump.  
+- CHK-* tick table present (full or focused).  
+- Evidence contract: §2 reproducible; Confirmed/scorecard cite paths; §7/actions have Evidence or **Unknown**.  
+- Scorecard with justification; `enterprise-audit-actions.md` with repo-tied items (full audit).  
+- Unknowns and human-validation items listed.

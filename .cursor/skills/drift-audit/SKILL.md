@@ -18,6 +18,8 @@ Notes:
 
 # Drift audit
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 ## Goal
 
 Detect **operational workflow drift** and a **falsifiable goal/doctrine pulse**:

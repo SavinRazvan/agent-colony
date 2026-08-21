@@ -7,12 +7,28 @@ Used By:
 Depends On:
  - .ai_infra/scripts/pr/prepare.py
  - docs/governance/workflow-source-owners.md
+ - asd-ste100-prose.md
 Notes:
  - When project_ssot.enabled: pair with board Status + card Notes for resume-without-chat.
  - Else: session-pointer.md + change-index.md.
+ - Use ASD-STE100: see asd-ste100-prose.md (free principles; no ASD dictionary).
 -->
 
 # Token efficiency (agent contract)
+
+**Use ASD-STE100** for agent-facing prose: [asd-ste100-prose.md](asd-ste100-prose.md).
+
+## Skill thin-index (intent)
+
+Load the section you need. Do not load whole skills by default.
+
+| Skill | Read when | Prefer |
+|-------|-----------|--------|
+| `board-ssot` | Mutating Status / Tier-1 | § Continuation · § Tier-1 |
+| `implementer-loop` | Implement slice | Full skill (short) |
+| `drift-audit` | drift-guard pass | Steps 1–3 |
+| `auditor-protocol` | Audit task | Evidence contract + current phase |
+| `workflow-activate` | Consumer install | “When user just installed” |
 
 ## Read set (default)
 
@@ -40,6 +56,15 @@ Notes:
 | 5 | `workflow-artifacts/pr/*.md` | Only when phase = review \| prepare \| merge |
 
 **Skip:** `.local/generated-data/**`, `history/archive/**`, full `updates-log.md` body, full `AGENTS.md` unless explicitly tasked.
+
+**Prefer CLI digests (token-efficient):**
+
+| Need | Command |
+|------|---------|
+| Entry summary | `python -m agent_colony project entry --digest` (or `--json`) |
+| Agent roster | `python -m agent_colony doc roster-digest` |
+| Doc head | `python -m agent_colony doc summarize --path …` |
+| Prepare gates | `python .ai_infra/scripts/pr/prepare.py … --summary` |
 
 ## Write set (slice close)
 

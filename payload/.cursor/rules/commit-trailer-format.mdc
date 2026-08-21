@@ -5,28 +5,26 @@ alwaysApply: true
 
 # Commit trailer format
 
-## Required (git commits)
+## Required
 
-- Every commit message body **must** include these two lines **in this order**, with **no other lines between them**:
+- Every commit body **must** include, in order, with no lines between:
   - `Author: <Your Full Name>`
   - `GitHub-User: @<yourhandle>`
-- Values **must** match `.local/user_settings/github.collaboration.yaml` (`owner.display_name`, `owner.github_user`).
+- Values match `.local/user_settings/github.collaboration.yaml` (`owner.display_name`, `owner.github_user`).
 
-## Optional provenance (after the required pair)
+## Optional (after required pair)
 
-- `Assisted-by: <tool>[:<model>]` — repeat on separate lines when AI **materially** shaped code, tests, docs, or migration logic. Skip for trivial autocomplete, formatting-only, or mechanical boilerplate.
-- **Render from config:** `python -m agent_colony contributors commit-trailers` reads **`.local/user_settings/github.collaboration.yaml`** (copied at install).
-- **Do not use `Made-with:`** — human accountability is already expressed by **`Author:`** / **`GitHub-User:`**; an extra editor/tool line is redundant with that contract.
-- `Co-authored-by:` — optional; only for real human co-authors (Git convention).
+- `Assisted-by: <tool>[:<model>]` when AI materially shaped code, tests, docs, or migrations. Skip trivial autocomplete or formatting.
+- Render: `python -m agent_colony contributors commit-trailers`.
+- No `Made-with:` — use `Author:` / `GitHub-User:` only.
+- `Co-authored-by:` — real human co-authors only.
 
 ## Responsibility
 
-- The human author remains responsible for reviewing and validating the change.
-- **Do not** use AI or scripts to insert human certification, approval, or DCO-style assertions the person did not explicitly intend.
+- Human author reviews and validates the change.
+- Do not insert certification or DCO assertions the person did not intend.
 
-## Order
-
-Typical tail (required lines first, then optional):
+## Example tail
 
 ```text
 Author: Your Full Name
