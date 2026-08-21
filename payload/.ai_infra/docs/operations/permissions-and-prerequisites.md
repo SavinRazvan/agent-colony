@@ -20,6 +20,9 @@ Notes:
 
 # What you need — permissions & prerequisites
 
+**Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
+
+
 > **Read this before `/implementer`.** It lists everything you must have on your machine and what you must approve on GitHub so the **Cursor plugin**, **agents**, and **board SSOT** behave as documented.
 >
 > Install path: [consumer-quickstart](consumer-quickstart.md) · Full manual: [PLUGIN-USER-GUIDE](PLUGIN-USER-GUIDE.md)

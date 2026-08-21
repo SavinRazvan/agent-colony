@@ -16,6 +16,9 @@ Notes:
 
 # Agent Colony · Plugin User Guide
 
+**Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
+
+
 > **From the [kit README](https://github.com/SavinRazvan/agent-colony):** public landing lives on GitHub. Prefer the short path? [consumer-quickstart.md](consumer-quickstart.md). This guide is the full consumer manual.
 
 Single entry point for **installing**, **activating**, and **using** the kit in your project. Deeper runbooks are linked as chapters — you do not need the kit maintainer repo open.

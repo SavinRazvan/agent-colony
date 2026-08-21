@@ -347,6 +347,25 @@ def _collect_integration_validate_violations() -> list[str]:
     return violations
 
 
+def _collect_asd_ste100_banner_violations() -> list[str]:
+    """Every agent card and cursor skill must declare Use ASD-STE100."""
+    needle = "Use ASD-STE100"
+    violations: list[str] = []
+    agents = ROOT / ".cursor" / "agents"
+    if agents.is_dir():
+        for path in sorted(agents.glob("*.md")):
+            text = _read_text(path)
+            if needle not in text:
+                violations.append(f"ASD-STE100 missing: {path.relative_to(ROOT)}")
+    skills = ROOT / ".cursor" / "skills"
+    if skills.is_dir():
+        for path in sorted(skills.glob("*/SKILL.md")):
+            text = _read_text(path)
+            if needle not in text:
+                violations.append(f"ASD-STE100 missing: {path.relative_to(ROOT)}")
+    return violations
+
+
 def main() -> int:
     violations = _collect_banned_reference_violations()
     violations.extend(_collect_contract_parity_violations())
@@ -357,6 +376,7 @@ def main() -> int:
     violations.extend(_collect_agent_mcp_block_violations())
     violations.extend(_collect_owner_path_violations())
     violations.extend(_collect_file_header_violations())
+    violations.extend(_collect_asd_ste100_banner_violations())
     violations.extend(_collect_integration_validate_violations())
     if violations:
         print("Governance consistency check failed:")

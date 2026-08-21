@@ -13,6 +13,9 @@ Notes:
 
 # Schemas
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
+
 | File | Purpose |
 |------|---------|
 | [`gate.json`](gate.json) | Shape of one `GATES` entry (string argv array) |

@@ -13,6 +13,9 @@ Notes:
 
 # Documentation Maintenance Checklist
 
+**Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
+
+
 > **Kit maintainers only — not copied to consumer projects.** Filtered by `consumer_bundle_paths.py` (`OPERATIONS_MAINTAINER_ONLY`). Consumers use [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) and [consumer-quickstart.md](consumer-quickstart.md).
 
 ## Trigger

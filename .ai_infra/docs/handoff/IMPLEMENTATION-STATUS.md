@@ -15,6 +15,11 @@ Notes:
 
 # Implementation status (Agent Colony)
 
+**Use ASD-STE100:** [../operations/asd-ste100-prose.md](../operations/asd-ste100-prose.md)
+
+Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
+
+
 **Last updated:** 2026-08-09 (board End date on Done; kit 0.6.3)
 **Product:** `agent-colony` · CLI: `agent-colony` 0.6.3 · **Tests:** 1510
 
