@@ -1327,6 +1327,12 @@ def cmd_last(args: argparse.Namespace) -> int:
     lid = load_last_item_id(root)
     if not lid:
         return fail("last", EXIT_USAGE, "no last item — create-from-template first")
+    if is_placeholder_item_id(lid):
+        return fail(
+            "last",
+            EXIT_USAGE,
+            f"invalid last item_id {lid!r} — recreate (clear project-last-item.json)",
+        )
     print(lid)
     return EXIT_OK
 def cmd_mention_pr(args: argparse.Namespace) -> int:
@@ -1340,9 +1346,15 @@ def cmd_guide(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     agent = (getattr(args, "agent", None) or "implementer").strip()
     nxt = (getattr(args, "next", None) or "verifier").strip()
-    lid = load_last_item_id(root) or "(none — create first)"
+    lid = load_last_item_id(root)
+    if not lid:
+        lid_disp = "(none — create first)"
+    elif is_placeholder_item_id(lid):
+        lid_disp = f"(invalid {lid!r} — recreate; do not use --last)"
+    else:
+        lid_disp = lid
     print("# Safe board recipes — use --last; never paste docs placeholders as --id")
-    print(f"# last item_id: {lid}")
+    print(f"# last item_id: {lid_disp}")
     print("python3 -m agent_colony project doctor")
     print("python3 -m agent_colony project outbox status")
     print(
@@ -1614,15 +1626,30 @@ def cmd_entry(args: argparse.Namespace) -> int:
 
     rl = _outbox.graphql_rate_limit()
     rem_raw = rl.get("remaining")
+    probe_err = rl.get("error")
     rem: int | None
     try:
-        rem = int(rem_raw) if rem_raw is not None and "error" not in rl else None
+        # Only treat as error when error is a non-empty truthy value (key may be None).
+        rem = int(rem_raw) if rem_raw is not None and not probe_err else None
     except (TypeError, ValueError):
         rem = None
-    if "error" in rl and rem is None:
-        # Forbidden / probe failure → treat as offline_artifacts (safe degrade)
-        mode = "offline_artifacts"
-        rem_disp = "error"
+    if probe_err and rem is None:
+        # One retry — intermittent gh rate_limit probe failures should not false-offline.
+        rl = _outbox.graphql_rate_limit()
+        rem_raw = rl.get("remaining")
+        probe_err = rl.get("error")
+        try:
+            rem = int(rem_raw) if rem_raw is not None and not probe_err else None
+        except (TypeError, ValueError):
+            rem = None
+    if probe_err and rem is None:
+        # Prefer conserve (fresh snapshot) over offline when we have local artifacts.
+        if snap.is_file() and not force_live:
+            mode = "conserve"
+            rem_disp = "probe_error"
+        else:
+            mode = "offline_artifacts"
+            rem_disp = "error"
     elif rem is None:
         mode = "live"
         rem_disp = "?"

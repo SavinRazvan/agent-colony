@@ -143,7 +143,15 @@ Plain `project create` needs follow-up `set-field` for Priority/Size/Estimate. E
 
 **Issue vs board Status:** independent by default. Opt-in bridge: `conventions.close_linked_issue_on_cleanup` → `finalize.py` closes linked Issue after merge cleanup. CLI: `project close-linked-issue --pr N` (requires Status=Done first).
 
-**Repair:** `project doctor` · `heal-cards --check|--apply [--fill-tier1]` · `validate-item` flags missing Status/Tier-1 · `outbox flush` if QUEUED.
+**Repair:** `project doctor` · `heal-cards --check|--apply [--fill-tier1]` · `validate-item` · `outbox flush` if QUEUED.
+
+| WARN | Meaning | Action |
+|------|---------|--------|
+| Done + missing End date | Historical hygiene | `heal-cards --apply` (consent) |
+| Ready / In progress missing Tier-1 | Active card incomplete | Fill on own card; `--fill-tier1` only if defaults OK |
+| Empty Ready | No work queued | `create-from-template` → `set-section` → `claim` |
+
+**Day-0 / Day-N:** Human owns views + Ready order. Agent: `entry` → one card → Exit Status+Notes. Fill Acceptance/Rollback before In review/Done. Canon: `project-board-collaboration.md` § Day-0 / Day-N.
 
 **Rules:** one In progress per human assignee; Acceptance/Rollback/Notes on card body; no dual-mirror under `board_only` (DRIFT-009); read-only `export` never writes Status; post-merge Done via `merge.py`.
 

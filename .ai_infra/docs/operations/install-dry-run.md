@@ -14,6 +14,9 @@ Notes:
 
 # Install dry-run (manual or automated)
 
+**Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
+
+
 Verify the kit installs into an empty or greenfield project **without** product-specific rule contamination in core `.cursor/rules/`.
 
 **Consumer path:** [`consumer-quickstart.md`](consumer-quickstart.md) — recommended first read.

@@ -1,5 +1,8 @@
 # Agent integration templates
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
+
 Copy from here when **`integrator`** adds agents or skills.
 
 | File | Purpose |

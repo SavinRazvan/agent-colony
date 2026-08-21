@@ -14,6 +14,9 @@ Notes:
 
 # MAS infrastructure integration
 
+**Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
+
+
 ## Product model
 
 1. **Plugin + activate** unpacks consumer infrastructure (agents, scripts, `.local/` skeleton, optional MCP).

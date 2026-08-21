@@ -12,6 +12,9 @@ Depends On:
 
 # Gate matrix
 
+**Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
+
+
 > **Consumer installs:** use `agent-colony install --verify` or `python .ai_infra/scripts/install/scaffold.py --target … --verify` (4 steps). Do **not** use a `agent_colony scaffold` subcommand — it does not exist. `agent-colony gates` is a separate **5**-step maintainer hygiene command (adds doc facts). Sections mentioning `make gates`, `make verify-all`, `kit-quality.yml`, or `IMPLEMENTATION-STATUS.md` apply to **kit repository maintainers** only.
 
 Three gate surfaces exist by design (Pattern A).

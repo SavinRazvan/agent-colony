@@ -1,5 +1,8 @@
 # Connect external MCP (<5 min)
 
+**Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
+
+
 Link **any** MCP server to kit agents without forking agent prompts.
 
 ## Prerequisites

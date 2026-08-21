@@ -13,6 +13,9 @@ Notes:
 
 # Workflow architecture (Agent Colony)
 
+**Use ASD-STE100:** [../operations/asd-ste100-prose.md](../operations/asd-ste100-prose.md) · [token-efficiency.md](../operations/token-efficiency.md)
+
+
 ## Three planes
 
 | Plane | Path | Purpose |

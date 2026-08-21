@@ -29,7 +29,7 @@ import project_cli  # noqa: E402
 import project_handlers  # noqa: E402
 from test_project_cli import SAMPLE_SSOT  # noqa: E402
 
-VALID = "PVTI_lAHOBl46-84A9KZxsect01"
+VALID = "PVTI_lAHOBl46-84A9KZxzg3edeQ"
 
 
 def _ssot(**overrides):

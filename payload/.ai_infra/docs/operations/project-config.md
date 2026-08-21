@@ -13,6 +13,9 @@ Notes:
 
 # Optional `project.config.yaml`
 
+**Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
+
+
 The **Agent Colony** ships **`.ai_infra/project.config.yaml.example`**. After install, copy it to `project.config.yaml` in the project root and fill in metadata.
 
 ## What it is for

@@ -12,6 +12,9 @@ Notes:
 
 # Logging and error handling (Agent Colony)
 
+**Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
+
+
 ## Kit scripts
 
 - PR workflow scripts (`prepare.py`, `merge.py`, etc.) return non-zero exit codes on failure.

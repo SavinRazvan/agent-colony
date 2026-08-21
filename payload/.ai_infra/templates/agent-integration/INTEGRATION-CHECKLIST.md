@@ -12,6 +12,9 @@ Notes:
 
 # Integration checklist — {{SLICE_ID}}
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
+
 | Field | Value |
 |-------|--------|
 | **Type** | agent \| skill \| mcp \| script \| doc |
