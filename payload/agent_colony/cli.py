@@ -21,7 +21,7 @@ assert _spec is not None and _spec.loader is not None
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
 
-__version__ = "0.6.3"
+__version__ = "0.6.4"
 
 main = _mod.main
 cmd_gates = _mod.cmd_gates

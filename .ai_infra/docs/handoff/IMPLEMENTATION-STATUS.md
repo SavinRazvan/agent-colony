@@ -20,8 +20,8 @@ Notes:
 Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
-**Last updated:** 2026-08-09 (board End date on Done; kit 0.6.3)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.6.3 · **Tests:** 1514
+**Last updated:** 2026-08-21 (ASD-STE100 + board Entry reliability; kit 0.6.4)
+**Product:** `agent-colony` · CLI: `agent-colony` 0.6.4 · **Tests:** 1514
 
 ## Shipped (confirmed in repo)
 
@@ -44,6 +44,8 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Board CLI subcommands | **27** leaf commands (incl. `entry`, `heal-cards`; full table in ops doc) | [project-board-collaboration.md](../operations/project-board-collaboration.md) § Project CLI subcommands |
 | Board Status + Tier-1 heal | `create-from-template` Status default `ready`; `heal-cards`; validate empty Status; close-issue Done gate; merge outbox queue | `project_handlers.run_heal_cards` · `project_atomics.collect_validate_item_problems` · PR #217 |
 | Board End date on Done | UTC End date when Status→done if empty (`set_end_date_on_done`); validate/heal; Tier-1 column | `ensure_end_date_if_done` · board-shell · kit 0.6.3 |
+| ASD-STE100 agent prose | Use ASD-STE100 banners on agents/skills/rules; governance enforces; token-efficiency contract | `asd-ste100-prose.md` · `token-efficiency.md` · `check_governance_consistency.py` · PRs #223–#226 |
+| Board Entry + `--last` safety | Entry retry/conserve on rate-limit probe error (no false offline); reject corrupt `--last` PVTI_; Day-0/Day-N heal playbook | `project_cli.py` · `project_atomics.py` · board-ssot · PR #227 |
 | GraphQL-efficient Entry | `project entry` live \| conserve \| offline_artifacts; `export --reuse-if-fresh` | `project_cli.py` · `project_ssot.efficiency` |
 | EA-001 residual thin CLI | `project_cli.py` facade (~660 LOC) + parser/handlers split; board CLI modules under `.ai_infra/install/agent_colony/`: `project_cli.py`, `project_parser.py`, `project_handlers.py`, `project_atomics.py`, `gh_project_adapter.py`, `project_recipes.py`, `project_outbox.py` | PR #36 |
 | Doc facts validate | DOC-001…008 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
@@ -61,7 +63,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Researcher agent (corpus) | **Shipped / proven** — adaptive Brief; anti-loop ≤6; CLI `research init\|fetch\|validate`; live E2E flexiai-toolsmith (18 curated, validate PASS) + verifier Claim A+B VERIFIED 2026-07-19; corpus **opt-in** after first `research init` | `.cursor/agents/researcher.md` · `research-corpus` · `canvases/agent-researcher.canvas.tsx` · Issue #74 |
-| Kit version on install | `kit_version` 0.6.3 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
+| Kit version on install | `kit_version` 0.6.4 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
 | Tests | 1514 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)

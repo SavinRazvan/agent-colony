@@ -10,4 +10,4 @@ Notes:
  - Thin wrapper — delegates to `.ai_infra/install/agent_colony/cli.py`.
 """
 
-__version__ = "0.6.3"
+__version__ = "0.6.4"
