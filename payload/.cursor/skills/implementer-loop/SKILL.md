@@ -5,6 +5,8 @@ description: Disciplined implementation slices with board SSOT continuation and 
 
 # Implementer loop
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 ## When
 
 New or continued `feature/` | `fix/` | `chore/` work; recovery from blocked slices.

@@ -55,6 +55,16 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         default=None,
         help="Override efficiency.entry_list_limit for live mode",
     )
+    entry_cmd.add_argument(
+        "--digest",
+        action="store_true",
+        help="One-line mode + item count + next command (token-efficient)",
+    )
+    entry_cmd.add_argument(
+        "--json",
+        action="store_true",
+        help="Emit JSON digest (mode, remaining, items, next)",
+    )
     entry_cmd.set_defaults(func=pc.cmd_entry)
 
     list_cmd = project_sub.add_parser("list", help="List project items (optional status filter)")

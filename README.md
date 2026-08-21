@@ -14,7 +14,7 @@
 
 | | |
 |--|--|
-| **Version** | [`0.6.3`](https://github.com/SavinRazvan/agent-colony/releases) · **Tests** · 1504 · **Agents** · 8 · **Skills** · 14 · **Rules** · **7 universal** · **License** · [Apache-2.0](LICENSE) |
+| **Version** | [`0.6.3`](https://github.com/SavinRazvan/agent-colony/releases) · **Tests** · 1510 · **Agents** · 8 · **Skills** · 14 · **Rules** · **7 universal** · **License** · [Apache-2.0](LICENSE) |
 | **Reference board** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
 
 ---
@@ -27,7 +27,7 @@ Agent chats lose Status. Trackers and docs drift. Teams re-explain the same slic
 
 **Agent Colony** installs a full Cursor kit into *your* app repo (not this kit repo). When Project SSOT is on, the **GitHub Project** is the only writable place for backlog and Status — agents **enter** by reading the board and **exit** by updating Status and Notes. Local `.local/` holds gates, audits, and evidence — not a second Status writer.
 
-**Proof:** 1504 tests · 8 agents · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
+**Proof:** 1510 tests · 8 agents · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
 
 ---
 

@@ -17,6 +17,8 @@ Notes:
 
 # Workflow activate
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 ## When
 
 User enabled the **Agent Colony** plugin (`agent-colony`) and opened **their app** (not this kit product repo). Run on first use or when planes are missing.

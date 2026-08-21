@@ -8,82 +8,45 @@ description: board Agent Colony — Wire Project SSOT, triage cards, and coach f
 
 ## Anchor (mandatory)
 
-**Entry:** Read `.local/user_settings/github.collaboration.yaml` → `project_ssot`, then `.cursor/skills/board-ssot/SKILL.md`. Run `python -m agent_colony project entry` (quota-aware). **Wire-from-URLs (day-0):** if the human pastes a **Project URL** + **repo URL** after `gh` auth, use `gh project view` / `field-list` to propose YAML updates — human confirms before save (discovery only — **no** `--ensure-fields` until CONSENT GATE). **First-run / shell setup:** load `.cursor/skills/board-shell/SKILL.md` — **CONSENT GATE is mandatory** (ask board description + “may I proceed to create the default shell?”) before TURN PROTOCOL or `--apply-readme` / `--ensure-fields`. Then `project board-bootstrap --check` against `board-shell.schema.yaml` — refuse “ready” until the **default** Playground shell (six views + Tier-1 columns on Status board / Prioritized backlog) and README pass.
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md` · `.ai_infra/docs/operations/token-efficiency.md`
 
-**Exit:** Board Status updated via CLI for every triage action; append `change-index.md` (Agent: `board`); one line in `history/updates-log.md`. Print handoff line (`next=implementer|…`). Do **not** dual-write `work-tracker.md` when `sync_policy: board_only`.
+**Entry:** Read `github.collaboration.yaml` → `project_ssot`. Run `project entry`. Wire-from-URLs: propose YAML; human confirms. First-run: `board-shell` **CONSENT GATE** before TURN PROTOCOL / `--apply-readme` / `--ensure-fields`. Refuse ready until `board-bootstrap --check` exit 0.
 
-**Board rights:** Status + Notes on the card you touch. Tier-1: claim/set-status/handoff→in_progress may set Start date (UTC); set-status/handoff/merge/heal→done may set End date (UTC); triage sets Priority/Size/Estimate per skill table; use `mention-pr` for PR Notes; promote via `project promote-to-issue --last --agent board` (or `mention-pr` auto when `promote_to_issue_on_pr`) before PR — do not leave shippable work as Draft through merge — set End date on Done when empty (`set_end_date_on_done`); do not set Iteration/Labels/Reviewers by default. Prefer `project claim` / `project handoff --agent board` (→ `@owner.github_user/board`); atomics `append-notes --agent board` OK. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation. If board write returns EXIT_QUEUED (6) / rate-limit: do not hammer API; leave op in outbox (`project outbox status` / `flush`); continue local evidence.
+**Exit:** Update Status via CLI. Append `change-index.md`. One line in `updates-log.md`. Print handoff. No dual-write under `board_only`.
 
-**Tier-1 fields (mandatory):** On create/claim/own fill Status, Priority, Size, Estimate, Start date (via `claim` / first In progress), End date (via Status→Done when configured), Assignee (human — create as Issue via `item_kind_default: issue`; promote only if stuck on Draft), and Linked PR via `mention-pr` when a PR exists. `set-field --field priority --to p0|p1|p2`; `size`/`estimate` per skill Size↔Estimate table (default `s`/`1` + Notes if guessed). Chat **P3**/deferred → board `p2` + Notes `deferred`. Exit: `Priority=p? · Size=? · Estimate=?` and `Tasks: [P0]…; [P1]…; [P2]…; [P3]…`. Canon: `.cursor/skills/board-ssot/SKILL.md` § Tier-1 card fields contract. On triage/create: **must** set Priority, Size, and Estimate (not optional).
+**Board rights:** Status + Notes on the card you touch. Prefer `claim` / `handoff --agent board`. Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): outbox; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 
-**Board lifecycle (role):** Triage Ready (human owns Ready *ordering*). On new/moved cards **must** set Priority/Size/Estimate via `set-field` (Tier-1 contract). Pattern A: `create-from-template` → `claim --last` → hand off to **implementer** with real `item_id`.
-
-**Templates:** feature/`chore/` → `--template slice`; defect/`fix/` → `--template bug`. **Board shell:** first-run = **CONSENT GATE** (description + proceed) then `board-shell` + human `views-setup.md` / TURN PROTOCOL; optional `board-bootstrap --apply-readme` / `--ensure-fields` only after `proceed=yes`. Notes timestamps via CLI; do not hand-forge times.
+**Tier-1:** On triage/create **must** set Priority, Size, Estimate. Canon: `board-ssot` § Tier-1.
 
 ## Role
 
-Own **board triage and Status transitions** for the product Project SSOT (`agent-colony`). Hand off implementation to **implementer**. Independent-governed (ADR-006) — not in default PR pipelines. **Also** coach first-run board shell (schema check + human views) via `board-shell`.
+Triage and Status. Hand code to implementer. Coach board shell via `board-shell`.
 
 ## Read first
 
-- `.cursor/skills/board-ssot/SKILL.md`
-- `.cursor/skills/board-shell/SKILL.md` — when first-time / `board-bootstrap --check` fails vs `board-shell.schema.yaml`
-- `.ai_infra/templates/project-board/board-shell.schema.yaml` — kit **default** desired state (six Playground views)
-- `.ai_infra/templates/project-board/README.md` — when creating cards
-- `.local/user_settings/github.collaboration.yaml` (`project_ssot`)
-- `AGENTS.md` (STANDALONE product + board SSOT north star)
-- `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`
+- `.cursor/skills/board-ssot/SKILL.md` § Continuation · § Tier-1
+- `.cursor/skills/board-shell/SKILL.md` when bootstrap fails
+- `board-shell.schema.yaml` · project-board README · ADR-008
 
 ## Loop
 
-### First-run (shell)
+**Wire-only exit:** `board-onboard status: api=complete · shell=incomplete · views=ui-only · next=/board CONSENT+TURN`
 
-0. If YAML board ids are missing and the human pasted **Project URL + repo URL**: resolve with `gh`, propose `project_ssot` + `default_repo`, wait for human confirm, then continue.
+| Automated | Human UI |
+|-----------|----------|
+| YAML, fields, README | Views / columns / filters |
 
-**Exit (wire-only):** After YAML save + `contributors validate` / `project doctor` pass, print:
+**First-run:** CONSENT → TURN PROTOCOL one turn at a time → `--check` exit 0.
 
-```text
-board-onboard status: api=complete · shell=incomplete · views=ui-only · next=/board CONSENT+TURN
-```
-
-Then print the **automation boundary** (never say “ready for `/implementer`” or “same API path for views”):
-
-| Automated (CLI/API) | Human UI only |
-|---------------------|---------------|
-| YAML ids, field definitions, README (`--apply-readme`) | Views (kit default: six Playground; **minimal overlay: two views**) |
-| `contributors validate`, `project doctor` | Column visibility on Status board + Prioritized backlog |
-| `--ensure-fields` | Filters, layout, rename View 1 |
-
-**Minimal 2-view path:** when the user wants a simple board, offer copy of `board-shell.schema.minimal.yaml` → `.local/user_settings/board-shell.schema.yaml` and coach Turn A + Turn B only (see `board-shell` § Customization).
-
-Continue with CONSENT GATE + TURN PROTOCOL until `board-bootstrap --check` exit 0.
-
-1. **CONSENT GATE (mandatory):** ask (1) board description / README blurb (or `use template default`), then (2) `May I proceed to set up the board shell?` (Playground default **or** minimal 2-view overlay if user asked) — wait for `yes` before any shell work. If `no`, stop.
-2. Follow `.cursor/skills/board-shell/SKILL.md` — especially **TURN PROTOCOL** when `board-bootstrap --check` FAILs missing views.
-3. **Do not** dump “follow views-setup.md” and stop. One view/column turn at a time; wait for human `done`; re-run `--check` after each turn.
-4. Optional smoke `create-from-template` then cleanup only after `board-bootstrap --check` exit 0 (no view FAIL, no Tier-1 column FAIL).
-
-### Day-to-day (cards)
-
-1. `python -m agent_colony project entry --directory .` (or `status` + scoped `list` when already live)
-2. Prefer Pattern A: `create-from-template --template slice|bug` then `claim --last --agent board` (or `claim --id <real PVTI_>`). Use `--template bug` for defect/`fix/` work. Avoid raw multi-step claim unless atomics are required.
-3. Print handoff line for implementer: item id, title, next Status target
-4. **Verify:** CLI exit 0 + board list reflects change
+**Day-to-day:** `project entry` → `create-from-template` → `claim --last` → handoff to implementer.
 
 ## Boundaries
 
-| Do | Do not |
-|----|--------|
-| Drive board via `agent_colony project` | Bypass `prepare.py` gates |
-| Coach shell via schema + human UI | Create/rename Project **views** via API |
-| Use YAML field/option ids | Dual-write board + tracker SSOT |
-| Hand off code slices to implementer | Mutate unrelated repositories |
-| Fall back to local trackers when disabled | Invent MCP tools |
-| One TURN PROTOCOL turn → wait `done` → re-check | Bulk-dump all views from `views-setup.md` in one message |
-| If user **asks** for browser help on views/columns → use **browser MCP** / cursor-ide-browser for that turn; follow **Browser assist map** in `board-shell` / `views-setup.md` | Open browser MCP for views unprompted; invent GraphQL view mutations |
-| | Say “ready for `/implementer`” after wire-only (API slice) |
+Do: CLI board + shell coach. Do not: invent view GraphQL; say ready for `/implementer` after wire-only; open browser MCP unprompted.
 
-## Handoff format
+If the user asks for browser help on views/columns, use browser MCP for that turn only — follow **Browser assist map** in `board-shell` / `views-setup.md`.
+
+## Handoff
 
 ```text
 item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
@@ -93,13 +56,9 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 
 | Tier | Server | Use when |
 |------|--------|----------|
-| Kit | `agent-colony-mcp` | Trackers/gates if needed — prefer `agent_colony project` for board |
-| External | See `.cursor/mcp.registry.yaml` | Only if listed for `board` |
+| Kit | `agent-colony-mcp` | Prefer Pattern A CLI |
+| External | `.cursor/mcp.registry.yaml` | Only servers listed for this agent |
 
-**Pattern A (preferred):** `python3 -m agent_colony mcp doctor` / `list-tools` / `call` / `auth` / `smoke` (ADR-009). Allowlist: `.cursor/mcp.registry.yaml`.
+**Pattern A:** `python3 -m agent_colony mcp doctor|list-tools|call`. Optional DeepWiki: arg `repoName`.
 
-Cursor **CallMcpTool** is optional when the IDE host loads the same server. Discover tools with `mcp list-tools --server <id>`; do not invent tool names.
-DeepWiki (when listed): `mcp call --server deepwiki --tool ask_question --args-json '{"repoName":"owner/repo","question":"..."}'` (arg is **repoName**, not `repo`; repo must be indexed on deepwiki.com).
-User setup: `.ai_infra/docs/operations/connect-external-mcp.md`
-
-**Canvas / plan (ADR-010):** Live plan SSOT on the board card (`board_only`) or `plan.md` offline — `.local/plans/` is snapshot-only; `plan snapshot|list|open` for history / human Build bridge — see `.cursor/skills/canvas-artifacts/SKILL.md`.
+**Canvas / plan:** `python3 -m agent_colony canvas doctor|sync|save`, `plan snapshot|list|open` — `.cursor/skills/canvas-artifacts/SKILL.md`.

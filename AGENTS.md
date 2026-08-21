@@ -1,168 +1,109 @@
 # AGENTS.md
 
+**Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
+
 ## Project intent
 
-**Agent Colony** (`agent-colony`) — this repository **is** the product: installable multi-agent workflow infrastructure with a **GitHub Project** as the only writable coordination SSOT when `project_ssot.enabled` and `sync_policy: board_only`.
+**Agent Colony** (`agent-colony`) — installable multi-agent workflow with **GitHub Project** as the only writable SSOT when `project_ssot.enabled` and `sync_policy: board_only`.
 
 | Surface | Role |
 |---------|------|
-| **GitHub Project** | Backlog, Status, Priority/Size, multi-agent continuation. **Entry** = read board; **Exit** = update Status + Notes. |
-| **Local `.local/`** | Evidence only (PR Pattern A, audits, gates, secrets, coverage, outbox). Never a second Status writer under `board_only`. |
+| **GitHub Project** | Backlog, Status, Priority/Size, continuation. **Entry** = read board; **Exit** = Status + Notes. |
+| **Local `.local/`** | Evidence only (PR Pattern A, audits, gates, secrets, outbox). Never a second Status writer under `board_only`. |
 
 **Non-negotiables**
 
-- **No dual-write** of Status to `work-tracker.md` / `session-pointer.md` when `board_only`.
-- Create shippable cards as **Issues** (`item_kind_default: issue`). Draft is scratch-only.
-- Fill **Tier-1** fields (Status, Priority, Size/Estimate, Start date on first In progress, End date on Done, Assignee, Linked PR via `mention-pr`).
-- GraphQL throttle / Forbidden / precheck low quota → **EXIT_QUEUED (6)** / `project outbox` (do not retry-loop); outbox is not SSOT.
+- No dual-write of Status to `work-tracker.md` / `session-pointer.md` when `board_only`.
+- Shippable cards as **Issues** (`item_kind_default: issue`). Draft is scratch-only.
+- Fill **Tier-1** fields: Status, Priority, Size/Estimate, Start/End dates, Assignee, Linked PR (`mention-pr`).
+- EXIT_QUEUED (6) → `project outbox`; outbox is not SSOT.
 
-**Consumer install:** plugin + `/workflow-activate` in the app repo installs the full kit; consumers wire only identity + board YAML — see [PLUGIN-USER-GUIDE § Product promise](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
+**Consumer install:** plugin + `/workflow-activate` — see [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
 
-**Continuation:** Entry prefers `python3 -m agent_colony project entry` (quota-aware live \| conserve \| offline_artifacts), then claim/get one card; Exit updates Status and Notes (see [board-ssot skill](.cursor/skills/board-ssot/SKILL.md) § Collaboration, [ADR-008](.ai_infra/docs/decisions/ADR-008-project-board-ssot.md), and [project-board-collaboration ops](.ai_infra/docs/operations/project-board-collaboration.md)). Offline fallback trackers only when board unavailable or Entry mode `offline_artifacts`. Rate-limit / precheck / Forbidden throttle: EXIT_QUEUED (6) → `project outbox` (do not retry-loop; local buffer, not a second SSOT).
+## First reads
 
-## First reads (onboarding)
+1. [`README.md`](README.md) · [`CONTRIBUTING.md`](CONTRIBUTING.md) · [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md)
+2. [docs index](.ai_infra/docs/README.md) · [repository-map](.ai_infra/docs/handoff/repository-map.md) · [PLUGIN-ARCHITECTURE](.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md)
+3. [IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) · [workflow-architecture](.ai_infra/docs/architecture/workflow-architecture.md)
+4. [ADR index](.ai_infra/docs/decisions/README.md) · [local-workspace-layout](.ai_infra/docs/operations/local-workspace-layout.md) · [workflow-source-owners](.ai_infra/docs/governance/workflow-source-owners.md)
 
-1. [`README.md`](README.md) — public landing · [`CONTRIBUTING.md`](CONTRIBUTING.md) — kit-dev setup · consumer install → [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md) · **permissions** → [permissions-and-prerequisites](.ai_infra/docs/operations/permissions-and-prerequisites.md)
-2. [`.ai_infra/docs/README.md`](.ai_infra/docs/README.md) — docs index (linked navigation)
-3. [`.ai_infra/docs/handoff/repository-map.md`](.ai_infra/docs/handoff/repository-map.md) — **kit repo only** — SSOT vs generated vs consumer install (not shipped to consumers)
-4. [`.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md`](.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md) — plugin bundle, install profiles
-5. [`.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md`](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) — shipped vs spec
-6. [`.ai_infra/docs/architecture/workflow-architecture.md`](.ai_infra/docs/architecture/workflow-architecture.md) — three planes
-7. [`.ai_infra/docs/decisions/README.md`](.ai_infra/docs/decisions/README.md) — ADR index
-8. [`.ai_infra/docs/operations/local-workspace-layout.md`](.ai_infra/docs/operations/local-workspace-layout.md) — `.local/` contract (**Artifact tiers**: base scaffold vs runtime artifacts)
-9. [`.ai_infra/docs/governance/workflow-source-owners.md`](.ai_infra/docs/governance/workflow-source-owners.md) — scripts win over prose
+Token contract: [token-efficiency.md](.ai_infra/docs/operations/token-efficiency.md).
 
-**Optional product overlays:** copy rules from [`overlays/rules/`](overlays/README.md) into the target `.cursor/rules/` at install.
-
-Abbreviations: [`.ai_infra/docs/operations/abbreviations-notepad.md`](.ai_infra/docs/operations/abbreviations-notepad.md)
-
-## Rules (always applied in Cursor)
+## Rules (always applied)
 
 | Rule | Topic |
 |------|--------|
-| `.cursor/rules/implementation-workflow-governance.mdc` | Slice lifecycle, `.local/.../current` trackers, tests |
-| `.cursor/rules/pr-workflow-enforcement.mdc` | PR-first, artifacts, branch safety |
-| `.cursor/rules/commit-trailer-format.mdc` | Commit trailers + optional `Assisted-by` (AI) |
-| `.cursor/rules/file-docstring-header-relations.mdc` | File headers |
-| `.cursor/rules/local-artifact-protection.mdc` | Protected local paths (`.coverage`, `.env`) |
-| `.cursor/rules/advisory-audit-alignment-enforcement.mdc` | Architecture-impacting audits → **`auditor`** + alignment artifacts |
-| `.cursor/rules/project-ssot-precedence.mdc` | Board SSOT precedes local trackers when `project_ssot.enabled` (ADR-008) |
+| `implementation-workflow-governance.mdc` | Slice lifecycle, trackers, tests |
+| `pr-workflow-enforcement.mdc` | PR-first, artifacts, branch safety |
+| `commit-trailer-format.mdc` | Commit trailers + `Assisted-by` |
+| `file-docstring-header-relations.mdc` | File headers |
+| `local-artifact-protection.mdc` | Protected `.coverage`, `.env` |
+| `advisory-audit-alignment-enforcement.mdc` | Alignment audits → `auditor` |
+| `project-ssot-precedence.mdc` | Board SSOT (ADR-008) |
 
-**Product rules** belong in **`overlays/rules/`** at install — see [`overlays/README.md`](overlays/README.md). **Do not duplicate gate lists** in chat or `updates-log.md` — say *prepare gates green* or paste failing command output only.
+Product rules: [`overlays/rules/`](overlays/README.md). Say *prepare gates green* — do not duplicate gate lists.
 
-## Execution workflow
+## Execution
 
-**Resume every session:**
+**Resume:** `project_ssot.enabled` → `python3 -m agent_colony project entry`, claim one card (`.cursor/skills/board-ssot/SKILL.md`). First-run: `board-bootstrap --check` fail → `/board` + `board-shell`. Else: `session-pointer.md` → `plan.md` → `work-tracker.md`.
 
-1. If `project_ssot.enabled` → `python -m agent_colony project entry` (then claim/get one card; `.cursor/skills/board-ssot/SKILL.md` § Continuation contract). Read card Notes for prior handoffs. **First-run only:** if `board-bootstrap --check` exits non-zero (views, Tier-1 columns, README) → `/board` + `board-shell` (**CONSENT GATE** + TURN PROTOCOL) before `/implementer` (audit is not day-0).
-2. Else → `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
+**After each agent:** update board Status/Notes. Tier-1 on owned cards — see board-ssot skill § Tier-1.
 
-**After every agent part:** update board Status (`in_review` / `done` / Notes + next agent) so continuation is indexed on the Project — not chat-only. **Tier-1 fields are mandatory** on cards you create/own: Status, Priority (`p0|p1|p2`), Size/Estimate per skill **Size↔Estimate** table (points, not hours), Start date on first **In progress** (`claim` / `set-status` / `handoff --to in_progress`), End date on **Done** (`set-status` / `handoff` / merge / `heal-cards` when configured), Assignee (human — **create as Issue** via `item_kind_default: issue`), and Linked PR via `mention-pr` when a PR exists. Exit task lists use `[P0]`…`[P3]`. Notes attribution: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC). Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime. Ops: `.ai_infra/docs/operations/project-board-collaboration.md`. Canon: `.cursor/skills/board-ssot/SKILL.md` § Tier-1 card fields contract.
-
-### Board SSOT (Pattern A + Tier-1)
-
-When `project_ssot.enabled`, prefer CLI recipes over multi-step atomics (`project guide --agent <name>`):
+### Board Pattern A
 
 | Step | Command | Notes |
 |------|---------|--------|
-| Claim | `project claim --last --agent <name>` | In progress; sets **Start date** (UTC) if empty when configured |
-| Done | `project set-status --to done` / `handoff --to done` | Sets **End date** (UTC) if empty when configured |
-| Entry | `project entry` | Quota-aware scoped read (prefer over unfiltered `list`) |
-| Triage | `project set-field --field priority\|size\|estimate --to … --last` | Agents may set on triage/own cards; humans own Ready *ordering* |
-| Promote | `project promote-to-issue --last --agent <name>` | Draft→Issue (same `PVTI_`); claim does **not** auto-promote |
-| PR link | `project mention-pr --pr N --last --agent <name>` | Notes + auto-promote when `promote_to_issue_on_pr` (default true) |
-| Handoff | `project handoff --last --agent <name> --next <peer> --to in_review` | Status + Notes for next agent |
+| Entry | `project entry` | Quota-aware read |
+| Claim | `project claim --last --agent <name>` | In progress; Start date |
+| Done | `project set-status --to done` / `handoff --to done` | End date |
+| Triage | `project set-field --field priority\|size\|estimate --to … --last` | Own/triage cards |
+| Promote | `project promote-to-issue --last --agent <name>` | Draft→Issue |
+| PR link | `project mention-pr --pr N --last --agent <name>` | Notes + auto-promote |
+| Handoff | `project handoff --last --agent <name> --next <peer> --to in_review` | Status + Notes |
 
-Do **not** leave shippable work as Draft through merge. Canon: `.cursor/skills/board-ssot/SKILL.md`; visual hub: `canvases/agent-board-collaboration.canvas.tsx`.
+Do not leave shippable work as Draft. Handoff: [workflow-complete.md](.ai_infra/docs/operations/workflow-complete.md) §F.
 
-Token contract: [`.ai_infra/docs/operations/token-efficiency.md`](.ai_infra/docs/operations/token-efficiency.md).
+Sequence: `plan → interfaces → implementation → tests → evidence → docs`.
 
-Sequence: `plan → interfaces → implementation → tests → evidence → docs update` (plan lives on the **board card body** when SSOT enabled).
+## Quality gates
 
-Full handoff checklist: [`.ai_infra/docs/operations/workflow-complete.md`](.ai_infra/docs/operations/workflow-complete.md) (esp. §F).
+Merge gate order: `resolve_gates()` in `.ai_infra/scripts/pr/prepare.py` — **two** universal + **three** kit-dev append (**five** total). Also run `check_governance_consistency.py` and `check_debrand.py` when changing governance, `.cursor/`, `.agents/`, or policy docs.
 
-## Quality gates (single source of truth)
-
-**Default merge gate order** is `resolve_gates()` in **`.ai_infra/scripts/pr/prepare.py`** — **two** subprocesses in universal core (`check_testing_artifacts.py`, `pytest -q`). Kit-dev repos auto-append drift validate + doc facts + plugin bundle `--check` (**five** / **5** total). Append gates at consumer install as needed. `prepare.py` does **not** run governance consistency by default.
-
-**Additionally** run **`python3 .ai_infra/scripts/architecture/check_governance_consistency.py`** and **`python3 .ai_infra/scripts/architecture/check_debrand.py`** when changing governance, workflows, `.cursor/`, `.agents/`, or tracked policy docs.
-
-When adding or changing agents, skills, pipelines, or integration templates, also run **`python3 -m agent_colony integrate validate`** (included in governance consistency on kit dev repo).
-
-At slice closure, run **`python3 -m agent_colony drift validate`** (or `make drift-validate`) and hand off to **`drift-guard`** when P0/P1 findings need artifacts.
-
-After doc or agent roster changes, run **`make doc-validate`** (included in **`make gates`**). Before full audits, run **`make verify-all`** — see `.cursor/skills/audit-orchestration/SKILL.md`.
+Slice closure: `python3 -m agent_colony drift validate`; hand off `drift-guard` on P0/P1. Doc/agent changes: `make doc-validate`. Audits: `make verify-all` — see `audit-orchestration` skill.
 
 ## Commits
 
-Required in every commit message (see **`.cursor/rules/commit-trailer-format.mdc`**):
+Required: `Author:` + `GitHub-User:` (see `commit-trailer-format.mdc`). Render: `python3 -m agent_colony contributors commit-trailers`. Optional `Assisted-by:` when AI materially shaped work; no `Made-with:`.
 
-- `Author: <Your Name>`
-- `GitHub-User: @<handle>`
+PR artifacts: `Action-By` / `GitHub-User` / `Agent/s` via `--pipeline` (`.agents/skills/pr-workflow/SKILL.md`).
 
-**Render from config:** `.local/user_settings/github.collaboration.yaml` via  
-`python3 -m agent_colony contributors commit-trailers`.
-
-**AI-assisted work:** optional `Assisted-by:` when AI materially shaped the change. Do **not** add **`Made-with:`** (redundant). You stay accountable for the result.
-
-**Cursor IDE attribution (separate):** the kit policy above is **`Assisted-by:`** only. Cursor may optionally add **`Co-authored-by: Cursor <cursoragent@cursor.com>`** via IDE settings or exemplar YAML — that is IDE/opt-in provenance, not a kit commit requirement. Do not treat IDE trailers as substitutes for **`Author:`** / **`GitHub-User:`**.
-
-**PR workflow artifacts** use `Action-By` / `GitHub-User` / `Agent/s` — resolved from the same YAML when scripts run with `--pipeline` (see **`.agents/skills/pr-workflow/SKILL.md`**).
-
-## Skills and agents (Cursor contract)
+## Skills and agents
 
 | Root | Role |
 |------|------|
-| `.cursor/agents/` | Subagent cards (8) — Task delegation; **`model: auto`**; audit agents write `.local/` artifacts only |
-| `.cursor/skills/` | **Canonical protocols** (14 folders: `auditor-protocol`, `audit-orchestration`, `audit-module-map`, `board-ssot`, `board-shell`, `canvas-artifacts`, `drift-audit`, `implementer-loop`, `integrator-protocol`, `mcp-connect`, `research-corpus`, `test-coverage`, `update-agent-colony`, `workflow-activate`) — see [repository-map](.ai_infra/docs/handoff/repository-map.md) |
-| `.agents/skills/` | **Maintainer slash skills** (6 folders: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `full-pr-workflow`, `audit-alignment` stub → `auditor`) — additive in plugin sync |
-| `.cursor/rules/` | **7** `alwaysApply` rules in this product repo (6 kit + `project-ssot-precedence`) — high context cost by design |
-
-**Plugin sync:** `.cursor/skills/` wins; `.agents/skills/` never overwrites same folder name (`sync_plugin_bundle.py`).
-
-Do not duplicate skill folder names across `.cursor/skills/` and `.agents/skills/`.
-
-### Cursor Task `subagent_type` (human sync)
-
-After agent renames, update the IDE/plugin Task registry so `subagent_type` matches **on-disk** agent ids:
-
-| Use | Retire (legacy) |
-|-----|-----------------|
-| `integrator`, `auditor`, `drift-guard`, `board` | `integrator-mas-agent`, `enterprise-auditor`, `workflow-drift-guard`, `project-board` |
-| Keep: `implementer`, `test-runner`, `researcher`, `verifier` | — |
-
-In-repo cards under `.cursor/agents/<id>.md` are the source of truth; Task enum is Cursor-side and is not updated by git merge.
-
-## Branching
-
-Use `feature/`, `fix/`, or `chore/` branches; keep `main` merge-ready. Staged `/merge-pr` stops at merge (branches may remain for review). Optional cleanup: `/full-pr-workflow` (or `finalize.py`) syncs `main` and removes local + remote feature branch, writing `finalize.md`.
-
-## Skills and agents (where to look)
+| `.cursor/agents/` | 8 agent cards — `auditor`, `board`, `drift-guard`, `implementer`, `integrator`, `researcher`, `test-runner`, `verifier` |
+| `.cursor/skills/` | 14 canonical protocols — see [repository-map](.ai_infra/docs/handoff/repository-map.md) |
+| `.agents/skills/` | 6 maintainer slash skills (PR workflow) |
+| `.cursor/rules/` | 7 `alwaysApply` rules |
 
 | Role | Entry |
 |------|--------|
-| Plugin activation | [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) or `workflow-activate` skill / `python3 -m agent_colony activate --directory .` |
-| Implement | `.cursor/agents/implementer.md` + `.cursor/skills/implementer-loop/SKILL.md` |
-| Project board SSOT | `.cursor/agents/board.md` + `.cursor/skills/board-ssot/SKILL.md` — `python -m agent_colony project …` |
-| Board shell first-run | `/board` + `.cursor/skills/board-shell/SKILL.md` + `board-shell.schema.yaml` |
-| Integrate infrastructure | `.cursor/agents/integrator.md` + `.cursor/skills/integrator-protocol/SKILL.md` — validate with `python3 -m agent_colony integrate validate` |
-| Tests / coverage | `.cursor/agents/test-runner.md` + `.cursor/skills/test-coverage/SKILL.md` |
-| Verify claims (evidence-only; no code fixes) | `.cursor/agents/verifier.md` |
-| Continuous goal/plan/agent-doctrine coherence + DRIFT scripts | **`drift-guard`** — `.cursor/agents/drift-guard.md` + `.cursor/skills/drift-audit/SKILL.md` — `python3 -m agent_colony drift validate` (incl. DRIFT-011, DRIFT-012) |
-| Deep / periodic architecture + CHK-* (security/perf/granularity/docs) | **`auditor`** — `.cursor/agents/auditor.md` + `.cursor/skills/auditor-protocol/SKILL.md` — not continuous plan pulse |
-| Audit orchestration | `.cursor/skills/audit-orchestration/SKILL.md` — parent runs verify-all + Task delegation (no dedicated agent) |
-| Audit module map | `.cursor/skills/audit-module-map/SKILL.md` — optional deep map; invoke via **`auditor`** |
-| Maintainer PR | `.agents/skills/pr-workflow/SKILL.md` → `review-pr` → `prepare-pr` → `merge-pr` (staged) → `full-pr-workflow` → `finalize.py` (cleanup + `finalize.md` evidence) |
-| Research corpus (shipped; opt-in packs) | `.cursor/agents/researcher.md` — adaptive Brief from chat/agents; HTTPS/`github:`/`path:`; `research init\|fetch\|validate`; packs in `_research_results/sources/<slug>/`; live E2E proven 2026-07-19 |
-| MCP | `.ai_infra/mcp_servers/agent_colony_mcp/` — `python -m agent_colony_mcp`; [`.cursor/mcp.json.kit.example`](.cursor/mcp.json.kit.example) + [mcp-connect](.ai_infra/docs/operations/connect-external-mcp.md) |
-| Canvas / plan artifacts | [canvas-artifacts](.cursor/skills/canvas-artifacts/SKILL.md) — `python3 -m agent_colony canvas …` / `plan snapshot|list|open` (ADR-010) |
+| Activate | `workflow-activate` / `python3 -m agent_colony activate --directory .` |
+| Board SSOT | `board` + `board-ssot` skill |
+| Implement | `implementer` + `implementer-loop` |
+| Integrate | `integrator` + `integrator-protocol` |
+| Tests | `test-runner` + `test-coverage` |
+| Verify | `verifier` (evidence only) |
+| Drift | `drift-guard` + `drift-audit` |
+| Audit | `auditor` + `auditor-protocol` |
+| Research | `researcher` + `research-corpus` |
+| MCP | `agent_colony_mcp` + `mcp-connect` |
+| Canvas | `canvas-artifacts` skill |
 
-Scripts:
+**Task `subagent_type`:** use on-disk ids (`integrator`, `auditor`, `drift-guard`, `board`); retire legacy names.
 
-- `python .ai_infra/scripts/pr/verify_publish.py --branch <branch>`
-- `python .ai_infra/scripts/pr/review.py|prepare.py|merge.py --pr <id|url> --actor "<name>" --agents "<pipeline>"`
-- Architecture-impacting PRs: run **`auditor`** before `/prepare-pr` when required
+**Branching:** `feature/`, `fix/`, `chore/` → PR-first workflow. Optional cleanup: `/full-pr-workflow`.
 
 ## Next work
 
-See `.local/index-and-planning/current/plan.md` and [`.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md`](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md).
+`.local/index-and-planning/current/plan.md` · [IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md)

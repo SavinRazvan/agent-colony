@@ -1492,22 +1492,73 @@ def cmd_export(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
-def _print_entry_rows(items: list[dict[str, Any]], *, statuses: set[str]) -> int:
-    """Print TSV rows matching normalized statuses; return count printed."""
-    printed = 0
+def _filter_entry_items(
+    items: list[dict[str, Any]], *, statuses: set[str]
+) -> list[dict[str, Any]]:
+    """Return items matching normalized statuses."""
+    out: list[dict[str, Any]] = []
     for item in items:
         if not isinstance(item, dict):
             continue
         status = _normalize_status(str(item.get("status") or item.get("status_normalized") or ""))
         if status not in statuses:
             continue
-        printed += 1
+        out.append(item)
+    return out
+
+
+def _print_entry_rows(items: list[dict[str, Any]], *, statuses: set[str]) -> int:
+    """Print TSV rows matching normalized statuses; return count printed."""
+    matched = _filter_entry_items(items, statuses=statuses)
+    for item in matched:
         print(
             f"{item.get('id')}\t{item.get('status')}\t{item.get('priority') or ''}\t"
             f"{item.get('size') or ''}\t{item.get('estimate') or item.get('Estimate') or ''}\t"
             f"{item.get('title')}"
         )
-    return printed
+    return len(matched)
+
+
+def _emit_entry_digest(
+    *,
+    mode: str,
+    rem_disp: str,
+    next_cmd: str,
+    matched: list[dict[str, Any]],
+    as_json: bool,
+    digest: bool,
+    extra: dict[str, Any] | None = None,
+) -> None:
+    """Print token-efficient entry summary (--digest / --json)."""
+    payload: dict[str, Any] = {
+        "mode": mode,
+        "graphql_remaining": rem_disp,
+        "item_count": len(matched),
+        "next": next_cmd,
+        "items": [
+            {
+                "id": it.get("id"),
+                "status": it.get("status"),
+                "title": it.get("title"),
+                "priority": it.get("priority") or "",
+            }
+            for it in matched[:20]
+        ],
+    }
+    if extra:
+        payload.update(extra)
+    if as_json:
+        print(json.dumps(payload, indent=2))
+        return
+    if digest:
+        print(
+            f"mode={mode} · graphql_remaining={rem_disp} · "
+            f"items={len(matched)} · next={next_cmd}"
+        )
+        for it in matched[:5]:
+            print(f"  {it.get('id')}\t{it.get('status')}\t{it.get('title')}")
+        if len(matched) > 5:
+            print(f"  … +{len(matched) - 5} more")
 
 
 def cmd_entry(args: argparse.Namespace) -> int:
@@ -1521,20 +1572,36 @@ def cmd_entry(args: argparse.Namespace) -> int:
     if errs or ssot is None:
         return fail("entry", EXIT_USAGE, errs[0] if errs else "project_ssot missing")
     enabled = bool(ssot.get("enabled"))
-    print(f"enabled: {enabled}")
-    print(f"operational: {enabled}")
-    print(f"name: {ssot.get('name')}")
-    print(f"owner: {ssot.get('owner')}")
-    print(f"number: {ssot.get('number')}")
-    print(f"url: {ssot.get('url')}")
-    print(f"project_id: {ssot.get('project_id')}")
-    print(f"sync_policy: {ssot.get('sync_policy')}")
-    print(f"fallback: {ssot.get('fallback')}")
+    compact = bool(getattr(args, "digest", False) or getattr(args, "json", False))
+    as_json = bool(getattr(args, "json", False))
+    digest = bool(getattr(args, "digest", False)) and not as_json
+
+    if not compact:
+        print(f"enabled: {enabled}")
+        print(f"operational: {enabled}")
+        print(f"name: {ssot.get('name')}")
+        print(f"owner: {ssot.get('owner')}")
+        print(f"number: {ssot.get('number')}")
+        print(f"url: {ssot.get('url')}")
+        print(f"project_id: {ssot.get('project_id')}")
+        print(f"sync_policy: {ssot.get('sync_policy')}")
+        print(f"fallback: {ssot.get('fallback')}")
     if not enabled:
-        print(
-            "mode=offline_artifacts · graphql_remaining=? · "
-            "next=local_trackers|enable project_ssot"
-        )
+        if compact:
+            _emit_entry_digest(
+                mode="offline_artifacts",
+                rem_disp="?",
+                next_cmd="local_trackers|enable project_ssot",
+                matched=[],
+                as_json=as_json,
+                digest=digest or True,
+                extra={"enabled": False},
+            )
+        else:
+            print(
+                "mode=offline_artifacts · graphql_remaining=? · "
+                "next=local_trackers|enable project_ssot"
+            )
         return EXIT_OK
 
     eff = load_efficiency_config(ssot)
@@ -1572,23 +1639,37 @@ def cmd_entry(args: argparse.Namespace) -> int:
     if force_live and mode != "offline_artifacts":
         mode = "live"
 
-    printed = 0
+    matched: list[dict[str, Any]] = []
     if mode == "offline_artifacts":
-        print(f"snapshot: {snap} exists={snap.is_file()}")
-        trackers = root / ".local" / "index-and-planning" / "current"
-        print(f"local_trackers: {trackers}")
-        print("advise: queue writes via `project queue`; flush when GraphQL recovers")
+        if not compact:
+            print(f"snapshot: {snap} exists={snap.is_file()}")
+            trackers = root / ".local" / "index-and-planning" / "current"
+            print(f"local_trackers: {trackers}")
+            print("advise: queue writes via `project queue`; flush when GraphQL recovers")
         if snap.is_file():
             try:
                 data = json.loads(snap.read_text(encoding="utf-8"))
                 items = data.get("items") if isinstance(data, dict) else []
                 if isinstance(items, list):
-                    printed = _print_entry_rows(items, statuses=want)
+                    matched = _filter_entry_items(items, statuses=want)
+                    if not compact:
+                        _print_entry_rows(items, statuses=want)
             except (OSError, json.JSONDecodeError, TypeError):
-                print("(snapshot unreadable)")
-        if printed == 0:
-            print("(no items)")
-        print(f"mode={mode} · graphql_remaining={rem_disp} · next=queue|get|claim")
+                if not compact:
+                    print("(snapshot unreadable)")
+        if compact:
+            _emit_entry_digest(
+                mode=mode,
+                rem_disp=rem_disp,
+                next_cmd="queue|get|claim",
+                matched=matched,
+                as_json=as_json,
+                digest=digest or True,
+            )
+        else:
+            if not matched:
+                print("(no items)")
+            print(f"mode={mode} · graphql_remaining={rem_disp} · next=queue|get|claim")
         return EXIT_OK
 
     if mode == "conserve":
@@ -1601,13 +1682,25 @@ def cmd_entry(args: argparse.Namespace) -> int:
                     items = data.get("items") if isinstance(data, dict) else []
                     if not isinstance(items, list):
                         items = []
-                    printed = _print_entry_rows(items, statuses=want)
-                    if printed == 0:
-                        print("(no items)")
-                    print(
-                        f"mode={mode} · graphql_remaining={rem_disp} · "
-                        f"snapshot_age={int(age)}s · next=claim|get"
-                    )
+                    matched = _filter_entry_items(items, statuses=want)
+                    if compact:
+                        _emit_entry_digest(
+                            mode=mode,
+                            rem_disp=rem_disp,
+                            next_cmd="claim|get",
+                            matched=matched,
+                            as_json=as_json,
+                            digest=digest or True,
+                            extra={"snapshot_age_s": int(age)},
+                        )
+                    else:
+                        _print_entry_rows(items, statuses=want)
+                        if not matched:
+                            print("(no items)")
+                        print(
+                            f"mode={mode} · graphql_remaining={rem_disp} · "
+                            f"snapshot_age={int(age)}s · next=claim|get"
+                        )
                     return EXIT_OK
                 except (OSError, json.JSONDecodeError, TypeError):
                     pass
@@ -1622,10 +1715,21 @@ def cmd_entry(args: argparse.Namespace) -> int:
     for it in items:
         if isinstance(it, dict) and "status_normalized" not in it:
             it["status_normalized"] = _normalize_status(str(it.get("status") or ""))
-    printed = _print_entry_rows(items, statuses=want)
-    if printed == 0:
-        print("(no items)")
-    print(f"mode={mode} · graphql_remaining={rem_disp} · next=claim|get")
+    matched = _filter_entry_items(items, statuses=want)
+    if compact:
+        _emit_entry_digest(
+            mode=mode,
+            rem_disp=rem_disp,
+            next_cmd="claim|get",
+            matched=matched,
+            as_json=as_json,
+            digest=digest or True,
+        )
+    else:
+        _print_entry_rows(items, statuses=want)
+        if not matched:
+            print("(no items)")
+        print(f"mode={mode} · graphql_remaining={rem_disp} · next=claim|get")
     return EXIT_OK
 
 

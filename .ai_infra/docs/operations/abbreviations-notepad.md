@@ -49,6 +49,7 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs — for **con
 | RC | Release candidate — needs CI/CD evidence bundles before ship |
 | UI | GitHub Project / settings UI (humans); agents prefer CLI |
 | PAT | Personal Access Token — GitHub auth; fine-grained PATs need Projects + repo scopes — see [permissions-and-prerequisites](permissions-and-prerequisites.md) |
+| ASD-STE100 | Simplified Technical English (ASD). Kit: **Use ASD-STE100** → [asd-ste100-prose.md](asd-ste100-prose.md) (free principles; no dictionary; not compliance) |
 | GraphQL | GitHub Projects API used by `gh project` / board CLI (rate-limited) |
 | KISS | Keep It Simple — incremental, reversible slices |
 | DCO | Developer Certificate of Origin — do **not** auto-insert DCO-style assertions |

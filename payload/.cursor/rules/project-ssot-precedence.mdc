@@ -5,20 +5,18 @@ alwaysApply: true
 
 # Project SSOT precedence
 
-- When `.local/user_settings/github.collaboration.yaml` → `project_ssot.enabled: true` and `sync_policy: board_only`, the **GitHub Project** is the **only writable** backlog/status **and continuation** SSOT.
-- **Every agent:** Entry reads the board (`project status` / list / claim); Exit updates Status (and Notes) so the next agent can continue from the Project — not from chat alone. See `.cursor/skills/board-ssot/SKILL.md` § Continuation contract.
-- **First-run (when enabled):** if `project board-bootstrap --check` FAILs the kit default Playground shell (`board-shell.schema.yaml`: six views + Tier-1 columns on primary views) → `/board` + `board-shell` (**CONSENT GATE** then TURN PROTOCOL) before day-to-day claim/`/implementer` (audit is not day-0).
-- **drift-guard:** must read board Status for DRIFT-009 / DRIFT-010 / DRIFT-012; `.local/plans/` is snapshot-only under `board_only` (ADR-010). updates the drift-pass card on Exit; remediations via Notes/Ready handoff — never silent dual-write to trackers.
-- Do **not** dual-write competing slice status to `work-tracker.md` / `session-pointer.md`. Do **not** dual-mirror “for safety.”
-- Read-only `project export` snapshots (if present) never write Status and never compete with board Status.
-- Overrides tracker `in_progress` expectations in `implementation-workflow-governance.mdc` when board SSOT is on — see ADR-008 (`board_only` wins; DRIFT-009).
-- Offline / disabled: `fallback: local_trackers` only — resume board sync when available.
-- Rate-limit: if board writes return EXIT_QUEUED (6), use `project_ssot.outbox` (`queue` / `outbox flush`) — do not hammer GraphQL and do not dual-write Status into trackers. EXIT_QUEUED also covers cached precheck (low remaining) and queueable Forbidden/429 (not missing-scopes).
-- Prefer Pattern A recipes (`claim --last`, `handoff --last`, `guide`) over raw multi-step claim.
-- PR Pattern A (`prepare.py` `resolve_gates()`), post-merge board close (`merge.py`), PR/audit artifacts, secrets, and user_settings stay local (`project_ssot.local_only`).
-- Humans own Project views, workflows, Insights, README, status updates, Ready prioritization.
-- Canon: `.ai_infra/docs/decisions/ADR-008-project-board-ssot.md`, `.ai_infra/docs/operations/project-board-collaboration.md`, `AGENTS.md`.
-- This product lives only in `agent-colony`. Board = only writable SSOT; local = evidence/fallback.
-- Multi-collaborator Notes: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` (CLI stamps UTC; user → their agents) via `append-notes --agent`. Local `history/continuity-index.md` rolls ≥3 days; board Notes keep full card lifetime.
-- Prefer board Pattern A recipes (`claim` / `handoff` / `create-from-template`) over multi-step atomics; never paste Project settings UI into a shell.
-- Tier-1 board fields: **create as Issue** (`item_kind_default: issue`); claim / `set-status` / `handoff --to in_progress` may set Start date (UTC when configured); `set-status` / `handoff` / merge / `heal-cards` → `done` may set End date (UTC when configured); triage/own card sets Priority/Size/Estimate via `set-field` (Size↔Estimate table in `board-ssot` skill); Draft→Issue via `promote-to-issue` (or `mention-pr` auto when `promote_to_issue_on_pr`); PR URL via `mention-pr` — Iteration, Labels, Reviewers out of scope for agents by default.
+- When `project_ssot.enabled: true` and `sync_policy: board_only`, the **GitHub Project** is the only writable backlog, status, and continuation SSOT.
+- **Entry:** read board (`project status` / claim). **Exit:** update Status + Notes. See `.cursor/skills/board-ssot/SKILL.md` § Continuation.
+- **First-run:** `project board-bootstrap --check` FAIL → `/board` + `board-shell` (CONSENT + TURN) before claim/`/implementer`.
+- **drift-guard:** read board for DRIFT-009/010/012; `.local/plans/` snapshot-only (ADR-010). Update drift card on Exit; remediate via Notes — no dual-write.
+- Do not dual-write status to `work-tracker.md` / `session-pointer.md`.
+- `project export` snapshots are read-only; never compete with board Status.
+- Overrides tracker `in_progress` in implementation-workflow-governance when board SSOT on (ADR-008).
+- Offline/disabled: `fallback: local_trackers`; resume sync when available.
+- EXIT_QUEUED (6) → `project_ssot.outbox` (`queue` / `outbox flush`); do not hammer API or dual-write. Covers precheck low quota, Forbidden/429.
+- Prefer Pattern A (`claim --last`, `handoff --last`, `guide`) over raw multi-step claim.
+- Local only: PR Pattern A (`prepare.py`), post-merge `merge.py`, PR/audit artifacts, secrets, `user_settings` (`project_ssot.local_only`).
+- Humans own views, workflows, Insights, README, Ready ordering.
+- Canon: ADR-008, `project-board-collaboration.md`, `AGENTS.md`.
+- Notes: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` via `append-notes --agent`.
+- Tier-1: create as **Issue**; Start date on first In progress; End date on Done; Priority/Size/Estimate via `set-field` (see board-ssot skill); Draft→Issue via `promote-to-issue` or `mention-pr`; PR via `mention-pr`. Iteration, Labels, Reviewers out of scope by default.
