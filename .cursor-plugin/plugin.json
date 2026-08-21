@@ -1,7 +1,7 @@
 {
   "name": "agent-colony",
   "displayName": "Agent Colony",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "Stop losing Status in chat — install Agent Colony into your Cursor app: 8 agents, optional GitHub Project coordination, PR gates, local evidence.",
   "author": {
     "name": "Savin Ionuț Răzvan",

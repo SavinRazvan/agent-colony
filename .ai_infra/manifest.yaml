@@ -1,5 +1,5 @@
 version: 1
-kit_version: "0.6.3"
+kit_version: "0.6.4"
 profiles:
   default:
     copy_dirs:

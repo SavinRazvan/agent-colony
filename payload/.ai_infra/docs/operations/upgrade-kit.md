@@ -61,6 +61,18 @@ Kit **0.6.3** adds agent-written **End date** (mirror of Start date):
 
 Consumers: `python3 -m agent_colony update` after the plugin marketplace refreshes to **0.6.3**. Show **End date** on Status board and Prioritized backlog if `board-bootstrap --check` fails on columns.
 
+## Changes in 0.6.4
+
+Kit **0.6.4** ships token-efficient agent prose and board Entry reliability (no rename):
+
+- ASD-STE100-inspired banners on agents, skills, and rules; governance fails CI if agent/skill banners missing
+- Token-efficiency read contract (`project entry --digest`, thin skills index)
+- `project entry`: retry GraphQL rate-limit probe once; prefer conserve over false offline when snapshot exists
+- `--last` rejects corrupt/placeholder `PVTI_` ids; `project guide` prints `(invalid — recreate)`
+- Day-0 / Day-N heal-cards playbook: Done missing End date = hygiene; Ready empty = create/claim
+
+Consumers: `python3 -m agent_colony update` after the plugin refreshes to **0.6.4**.
+
 ## Consumer heal (activate hardening on main → next tag)
 
 If an older activate left only MCP secret lines in `.gitignore`, or omitted the consumer `STARTER-001` drift marker:

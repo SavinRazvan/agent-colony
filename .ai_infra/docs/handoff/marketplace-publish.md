@@ -28,7 +28,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 4. `make sync-plugin` — rebuild `agents/`, `rules/`, `skills/`, `payload/` (commit the result)
 5. `make check-plugin` — bundle parity green
 6. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
-7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02); **done** 0.4.0 → 0.5.0 (2026-08-07); **done** 0.5.0 → 0.6.0 (2026-08-07, CLI module rename); **done** 0.6.0 → 0.6.1 (2026-08-07, MCP package rename); **done** 0.6.1 → 0.6.2 (2026-08-09, board Status + Tier-1 / heal-cards); **done** 0.6.2 → 0.6.3 (2026-08-09, board End date on Done)
+7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02); **done** 0.4.0 → 0.5.0 (2026-08-07); **done** 0.5.0 → 0.6.0 (2026-08-07, CLI module rename); **done** 0.6.0 → 0.6.1 (2026-08-07, MCP package rename); **done** 0.6.1 → 0.6.2 (2026-08-09, board Status + Tier-1 / heal-cards); **done** 0.6.2 → 0.6.3 (2026-08-09, board End date on Done); **done** 0.6.3 → 0.6.4 (2026-08-21, ASD-STE100 + board Entry reliability)
 8. [x] `assets/agent-colony-logo.png` (1:1, background plate) — see `assets/README.md` — **present** (~1254×1254 PNG; include `.png` in URLs)
 9. [x] Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — **PASS 2026-07-08**
    on **Smart-Notes** (`~/Projects/Smart-Notes`): chat activate + terminal matrix green.
@@ -40,7 +40,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 
 ## Versioning
 
-**Current release:** `0.6.3` (git tag [`v0.6.3`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.6.3)).
+**Current release:** `0.6.4` (git tag [`v0.6.4`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.6.4)).
 
 **Superseded:** `v0.3.0` (`1f16af1`) predates `PLUGIN-FLATTEN` (#15) — its tagged tree has **zero**
 files under `agents/`, `rules/`, `skills/`, `payload/` (the gitignore bug #15 fixed). Do not
@@ -238,6 +238,8 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 **Listing copy refresh (2026-08-09 board Status + Tier-1 / heal-cards):** `project heal-cards`, create Status default `ready`, validate empty Status + Tier-1, close-linked-issue Done gate, merge outbox queue, ephemeral consumer smoke; **1496** tests; **8** / **14** / **7**; kit version **0.6.2**.
 
 **Listing copy refresh (2026-08-09 board End date on Done):** Agents set End date (UTC) on Status→Done; validate/heal/board-shell Tier-1; `set_end_date_on_done`; **1510** tests; **8** / **14** / **7**; kit version **0.6.3**.
+
+**Listing copy refresh (2026-08-21 ASD-STE100 + board Entry reliability):** ASD-STE100 banners + governance; Entry false-offline fix; `--last` PVTI_ validation; heal Day-N playbook; **1514** tests; **8** / **14** / **7**; kit version **0.6.4**.
 
 **Listing copy refresh (2026-07-20 DOC-CANVAS-ALIGN):** Canvases re-aligned to live CLI (**22** leaves incl. `board-bootstrap`), board-shell day-0 story, test-runner `coverage.json` + post-100% doc sync, VERIFIED **2026-07-20**; metrics unchanged (**1178** / **7089** / **100%**; **8** / **12** / **7**).
 

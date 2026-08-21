@@ -46,29 +46,29 @@ def _write_installed(target: Path, version: str | None) -> Path:
 
 
 def test_compare_versions_semver() -> None:
-    assert update_cli.compare_versions("0.6.0", "0.6.3") == -1
-    assert update_cli.compare_versions("0.6.3", "0.6.3") == 0
-    assert update_cli.compare_versions("0.7.0", "0.6.3") == 1
+    assert update_cli.compare_versions("0.6.0", "0.6.4") == -1
+    assert update_cli.compare_versions("0.6.4", "0.6.4") == 0
+    assert update_cli.compare_versions("0.7.0", "0.6.4") == 1
 
 
 def test_decide_action_matrix() -> None:
-    assert update_cli.decide_action(installed=None, available="0.6.3", force=False) == "missing"
-    assert update_cli.decide_action(installed="0.6.3", available="0.6.3", force=False) == "heal"
-    assert update_cli.decide_action(installed="0.6.0", available="0.6.3", force=False) == "upgrade"
-    assert update_cli.decide_action(installed="0.6.3", available="0.6.3", force=True) == "upgrade"
+    assert update_cli.decide_action(installed=None, available="0.6.4", force=False) == "missing"
+    assert update_cli.decide_action(installed="0.6.4", available="0.6.4", force=False) == "heal"
+    assert update_cli.decide_action(installed="0.6.0", available="0.6.4", force=False) == "upgrade"
+    assert update_cli.decide_action(installed="0.6.4", available="0.6.4", force=True) == "upgrade"
 
 
 def test_read_installed_and_source_version(tmp_path: Path) -> None:
     target = _write_installed(tmp_path / "app", "0.6.0")
-    source = _write_manifest(tmp_path / "kit", "0.6.3")
+    source = _write_manifest(tmp_path / "kit", "0.6.4")
     assert update_cli.read_installed_version(target) == "0.6.0"
-    assert update_cli.read_source_version(source) == "0.6.3"
+    assert update_cli.read_source_version(source) == "0.6.4"
     assert update_cli.read_installed_version(tmp_path / "empty") is None
 
 
 def test_cmd_update_check_heal(tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch) -> None:
-    target = _write_installed(tmp_path / "app", "0.6.3")
-    source = _write_manifest(tmp_path / "kit", "0.6.3")
+    target = _write_installed(tmp_path / "app", "0.6.4")
+    source = _write_manifest(tmp_path / "kit", "0.6.4")
     monkeypatch.setattr(
         activate_cli,
         "resolve_activate_source",
@@ -92,7 +92,7 @@ def test_cmd_update_check_heal(tmp_path: Path, capsys: pytest.CaptureFixture[str
 
 def test_cmd_update_check_upgrade(tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch) -> None:
     target = _write_installed(tmp_path / "app", "0.6.0")
-    source = _write_manifest(tmp_path / "kit", "0.6.3")
+    source = _write_manifest(tmp_path / "kit", "0.6.4")
     monkeypatch.setattr(activate_cli, "resolve_activate_source", lambda *a, **k: source)
     args = argparse.Namespace(
         directory=target,
@@ -128,7 +128,7 @@ def test_cmd_update_missing_ai_infra(tmp_path: Path) -> None:
 
 def test_cmd_update_missing_kit_version(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     target = _write_installed(tmp_path / "app", None)
-    source = _write_manifest(tmp_path / "kit", "0.6.3")
+    source = _write_manifest(tmp_path / "kit", "0.6.4")
     monkeypatch.setattr(activate_cli, "resolve_activate_source", lambda *a, **k: source)
     args = argparse.Namespace(
         directory=target,
@@ -144,8 +144,8 @@ def test_cmd_update_missing_kit_version(tmp_path: Path, monkeypatch: pytest.Monk
 
 
 def test_cmd_update_heal_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    target = _write_installed(tmp_path / "app", "0.6.3")
-    source = _write_manifest(tmp_path / "kit", "0.6.3")
+    target = _write_installed(tmp_path / "app", "0.6.4")
+    source = _write_manifest(tmp_path / "kit", "0.6.4")
     calls: list[str] = []
 
     monkeypatch.setattr(activate_cli, "resolve_activate_source", lambda *a, **k: source)
@@ -191,11 +191,11 @@ def test_cmd_update_heal_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
 
 def test_cmd_update_upgrade_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     target = _write_installed(tmp_path / "app", "0.6.0")
-    source = _write_manifest(tmp_path / "kit", "0.6.3")
+    source = _write_manifest(tmp_path / "kit", "0.6.4")
     monkeypatch.setattr(activate_cli, "resolve_activate_source", lambda *a, **k: source)
 
     def _scaffold(*a, **k) -> int:
-        (target / ".ai_infra" / ".kit-version").write_text("0.6.3\n", encoding="utf-8")
+        (target / ".ai_infra" / ".kit-version").write_text("0.6.4\n", encoding="utf-8")
         return 0
 
     monkeypatch.setattr(update_cli, "_run_scaffold_upgrade", _scaffold)
@@ -217,12 +217,12 @@ def test_cmd_update_upgrade_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
         profile="with_mcp",
     )
     assert update_cli.cmd_update(args) == 0
-    assert update_cli.read_installed_version(target) == "0.6.3"
+    assert update_cli.read_installed_version(target) == "0.6.4"
 
 
 def test_cmd_update_force_when_equal(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    target = _write_installed(tmp_path / "app", "0.6.3")
-    source = _write_manifest(tmp_path / "kit", "0.6.3")
+    target = _write_installed(tmp_path / "app", "0.6.4")
+    source = _write_manifest(tmp_path / "kit", "0.6.4")
     monkeypatch.setattr(activate_cli, "resolve_activate_source", lambda *a, **k: source)
     ran: list[str] = []
 
@@ -255,11 +255,11 @@ def test_cmd_update_force_when_equal(tmp_path: Path, monkeypatch: pytest.MonkeyP
 def test_cmd_update_refuses_kit_dev_force(
     tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    target = _write_installed(tmp_path / "kit-dev", "0.6.3")
+    target = _write_installed(tmp_path / "kit-dev", "0.6.4")
     marker = target / update_cli.KIT_TESTS_MARKER
     marker.parent.mkdir(parents=True, exist_ok=True)
     marker.write_text("# kit-dev\n", encoding="utf-8")
-    source = _write_manifest(tmp_path / "payload", "0.6.3")
+    source = _write_manifest(tmp_path / "payload", "0.6.4")
     monkeypatch.setattr(activate_cli, "resolve_activate_source", lambda *a, **k: source)
 
     def _boom(*a, **k) -> int:
@@ -289,7 +289,7 @@ def test_cmd_update_check_refuses_kit_dev_upgrade(
     marker = target / update_cli.KIT_TESTS_MARKER
     marker.parent.mkdir(parents=True, exist_ok=True)
     marker.write_text("# kit-dev\n", encoding="utf-8")
-    source = _write_manifest(tmp_path / "payload", "0.6.3")
+    source = _write_manifest(tmp_path / "payload", "0.6.4")
     monkeypatch.setattr(activate_cli, "resolve_activate_source", lambda *a, **k: source)
     args = argparse.Namespace(
         directory=target,
