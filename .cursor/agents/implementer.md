@@ -12,13 +12,13 @@ description: implementer Agent Colony — Disciplined implementation slices with
 
 **Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
 
-**Token-efficiency:** Entry `project entry --digest`; reads via `doc skill-section`; never paste green pytest/gates. Program: [token-efficiency-program.md](.ai_infra/docs/operations/token-efficiency-program.md).
+**Token-efficiency:** Prefer MCP `workflow_session_entry` / `workflow_project_*` or CLI `project entry --digest`; reads via `workflow_doc_skill_section` / `doc skill-section`; never paste green pytest/gates. No raw Project GraphQL. Program: [token-efficiency-program.md](.ai_infra/docs/operations/token-efficiency-program.md).
 
-**Entry:** Read `github.collaboration.yaml` → `project_ssot`. If enabled: `project entry`, then claim or create. Skill: `board-ssot` § Continuation. Else: `session-pointer.md`.
+**Entry:** Read `github.collaboration.yaml` → `project_ssot`. If enabled: `workflow_session_entry` or `project entry`, then claim or create. Skill: `board-ssot` § Continuation. Else: `session-pointer.md`.
 
-**Exit:** Fill Acceptance/Rollback, then `handoff --last --agent implementer --next verifier --to in_review` (or `--to done`). Promote or `mention-pr` before shippable PR. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`. Say *prepare gates green*.
+**Exit:** Fill Acceptance/Rollback, then `workflow_project_handoff` or `handoff --last --agent implementer --next verifier --to in_review` (or `--to done`). Promote or `mention-pr` before shippable PR. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`. Say *prepare gates green*.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent implementer`. Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): outbox; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer MCP/CLI Pattern A (`claim --last` / `handoff --last --agent implementer`). Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 
 **Tier-1:** Fill Status, Priority, Size, Estimate, dates, Assignee, Linked PR. Canon: `board-ssot` § Tier-1.
 
@@ -51,9 +51,9 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 
 | Tier | Server | Use when |
 |------|--------|----------|
-| Kit | `agent-colony-mcp` | Prefer Pattern A CLI |
+| Kit | `agent-colony-mcp` | Prefer Pattern A MCP/CLI (`workflow_project_*`, `workflow_session_entry`) |
 | External | `.cursor/mcp.registry.yaml` | Only servers listed for this agent |
 
-**Pattern A:** `python3 -m agent_colony mcp doctor|list-tools|call`. Optional DeepWiki: arg `repoName`.
+**Pattern A:** MCP board tools or `python3 -m agent_colony mcp doctor|list-tools|call`. Ban raw Project GraphQL. Optional DeepWiki: arg `repoName`.
 
 **Canvas / plan:** `python3 -m agent_colony canvas doctor|sync|save`, `plan snapshot|list|open` — `.cursor/skills/canvas-artifacts/SKILL.md`.

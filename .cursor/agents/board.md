@@ -12,13 +12,13 @@ description: board Agent Colony — Wire Project SSOT, triage cards, and coach f
 
 **Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
 
-**Token-efficiency:** `project entry --digest`; lite first-run via § First-run lite below (not `board-shell` on lite). Program: [token-efficiency-program.md](.ai_infra/docs/operations/token-efficiency-program.md).
+**Token-efficiency:** Prefer MCP `workflow_session_entry` / `workflow_project_entry` or CLI `project entry --digest`; lite first-run via § First-run lite below (not `board-shell` on lite). No raw Project GraphQL. Program: [token-efficiency-program.md](.ai_infra/docs/operations/token-efficiency-program.md).
 
-**Entry:** Read `github.collaboration.yaml` → `project_ssot`. Run `project entry`. Wire-from-URLs: propose YAML; human confirms. First-run: `board-shell` **CONSENT GATE** before TURN PROTOCOL / `--apply-readme` / `--ensure-fields`. Refuse ready until `board-bootstrap --check` exit 0.
+**Entry:** Read `github.collaboration.yaml` → `project_ssot`. Run `workflow_session_entry` or `project entry`. Wire-from-URLs: propose YAML; human confirms. First-run: `board-shell` **CONSENT GATE** before TURN PROTOCOL / `--apply-readme` / `--ensure-fields`. Refuse ready until `board-bootstrap --check` exit 0.
 
-**Exit:** Update Status via CLI. Append `change-index.md`. One line in `updates-log.md`. Print handoff. No dual-write under `board_only`.
+**Exit:** Update Status via MCP/CLI Pattern A. Append `change-index.md`. One line in `updates-log.md`. Print handoff. No dual-write under `board_only`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `claim` / `handoff --agent board`. Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): outbox; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `workflow_project_claim` / `workflow_project_handoff` or CLI `claim` / `handoff --agent board`. Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 
 **Tier-1:** On triage/create **must** set Priority, Size, Estimate. Canon: `board-ssot` § Tier-1.
 

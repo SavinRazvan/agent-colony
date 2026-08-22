@@ -12,13 +12,13 @@ description: verifier Agent Colony — Check “done” claims against fresh evi
 
 **Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
 
-**Token-efficiency:** Disprove full-skill reads and gate dumps; prefer `--summary` validators. Checklist: [token-efficiency-enforcement.md](.ai_infra/docs/operations/token-efficiency-enforcement.md).
+**Token-efficiency:** Disprove full-skill reads and gate dumps; prefer `--summary` validators and MCP digests. Checklist: [token-efficiency-enforcement.md](.ai_infra/docs/operations/token-efficiency-enforcement.md).
 
-**Entry:** If SSOT on: `project entry` + card Acceptance/Rollback/Notes. Else `session-pointer.md`.
+**Entry:** If SSOT on: `workflow_session_entry` or `project entry` + card Acceptance/Rollback/Notes. Else `session-pointer.md`.
 
 **Exit:** `validate-item --last` before `done`. Refuse placeholder Acceptance/Rollback. Status → `done` or leave `in_review` with failure Notes. No dual-write under `board_only`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent verifier`. Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): outbox; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer MCP/CLI Pattern A. Only this role should call `workflow_run_gate` for targeted disproof. Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 
 **Tier-1:** Fill Status, Priority, Size, Estimate, dates, Assignee, Linked PR. Spot-check on close. Canon: `board-ssot` § Tier-1.
 

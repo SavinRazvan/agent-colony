@@ -59,10 +59,10 @@ agent-colony mcp validate
 
 | Tier | Config | Purpose |
 |------|--------|---------|
-| Kit | `mcp.json.kit.example` → merged into `mcp.json` | `agent-colony-mcp` tools (PR, trackers, gates) |
+| Kit | `mcp.json.kit.example` → merged into `mcp.json` | `agent-colony-mcp` tools (PR, board Pattern A, trackers, gates) — ADR-012 |
 | User | `mcp.user.json` + registry YAML | External servers per agent |
 
-See [ADR-004](../decisions/ADR-004-user-mcp-registry.md) and [ADR-009](../decisions/ADR-009-mcp-pattern-a-cli.md) (Pattern A CLI).
+See [ADR-004](../decisions/ADR-004-user-mcp-registry.md), [ADR-009](../decisions/ADR-009-mcp-pattern-a-cli.md) (Pattern A CLI), and [ADR-012](../decisions/ADR-012-mcp-pattern-a-board-tools.md) (board MCP wrappers).
 
 ## Pattern A CLI (canonical agent transport)
 

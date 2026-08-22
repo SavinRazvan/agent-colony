@@ -67,6 +67,12 @@ Program to close the gap between **documented** token contracts ([token-efficien
 - Token instrumentation (if Cursor exposes metering APIs)
 - Marker-aware plain `update` (read `install-profile.json` in `update_cli`) — **deferred**; plain `update` keeps default `with_mcp`
 
+## Shipped in 0.7.2
+
+- **ADR-012** MCP Pattern A board tools — wrap-only `workflow_project_entry|claim|handoff|outbox_status`, `workflow_session_entry`, `workflow_doc_skill_section`
+- Response envelope + EXIT_QUEUED → outbox (never retry); `workflow_run_gate` verifier-only policy
+- `workflow_drift_validate(summary=True)` default
+
 ## Shipped in 0.7.1
 
 - **`agents_skill_allowlist`** on `consumer_lite` — PR slash skills kept; deprecated maintainer skills pruned

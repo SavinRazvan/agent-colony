@@ -94,6 +94,17 @@ Upgrade lite → full: `python3 -m agent_colony update --force --profile with_mc
 
 **Verify:** `python3 -m agent_colony health --summary` · `drift validate --profile consumer --summary`
 
+## Changes in 0.7.2
+
+Kit **0.7.2** ships MCP Pattern A board tools (no rename):
+
+- **ADR-012** — wrap-only MCP adapters for `project entry/claim/handoff/outbox` + `doc skill-section` + `workflow_session_entry`
+- JSON response envelope; EXIT_QUEUED recommends outbox status (never retry)
+- `workflow_run_gate` restricted to verifier via registry/agent policy
+- `workflow_drift_validate(summary=True)` default
+
+Consumers: refresh plugin → `python3 -m agent_colony update --directory .` after **0.7.2** is available.
+
 ## Changes in 0.7.1
 
 Kit **0.7.1** extends **`consumer_lite`** (no rename):

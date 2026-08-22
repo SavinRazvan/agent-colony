@@ -258,7 +258,7 @@ def test_workflow_drift_validate() -> None:
     _env_root()
     from agent_colony_mcp.server import workflow_drift_validate
 
-    text = workflow_drift_validate()
+    text = workflow_drift_validate(summary=False)
     assert text.startswith("exit=0")
     assert "DRIFT-" in text
 
@@ -307,6 +307,67 @@ def test_workflow_contributors_validate() -> None:
 
     text = workflow_contributors_validate()
     assert text == "PASS" or text.startswith("FAIL")
+
+
+def test_workflow_drift_validate_summary(monkeypatch: pytest.MonkeyPatch) -> None:
+    import agent_colony_mcp.server as server
+
+    class FakeDrift:
+        @staticmethod
+        def resolve_profile(root, profile):
+            return "kit-dev"
+
+        @staticmethod
+        def run_checks(root, profile=None):
+            return []
+
+        @staticmethod
+        def exit_code_for(results, profile=None):
+            return 0
+
+        @staticmethod
+        def format_report(results, profile=None):
+            return "FULL REPORT SHOULD NOT APPEAR"
+
+        @staticmethod
+        def format_summary(results, profile=None):
+            return "PASS · profile=kit-dev · checks=0"
+
+    monkeypatch.setattr(server, "workspace_root", lambda: REPO_ROOT)
+    import types
+
+    mod = types.ModuleType("check_drift")
+    mod.resolve_profile = FakeDrift.resolve_profile  # type: ignore[attr-defined]
+    mod.run_checks = FakeDrift.run_checks  # type: ignore[attr-defined]
+    mod.exit_code_for = FakeDrift.exit_code_for  # type: ignore[attr-defined]
+    mod.format_report = FakeDrift.format_report  # type: ignore[attr-defined]
+    mod.format_summary = FakeDrift.format_summary  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "check_drift", mod)
+
+    out = server.workflow_drift_validate(summary=True)
+    assert "exit=0" in out
+    assert "PASS" in out
+    assert "FULL REPORT" not in out
+
+
+def test_workflow_project_entry_tool_wired(monkeypatch: pytest.MonkeyPatch) -> None:
+    import agent_colony_mcp.server as server
+
+    monkeypatch.setattr(
+        server,
+        "run_project_entry",
+        lambda root, digest=True: (
+            '{"exit_code":0,"summary":"ok","next_recommended_tool":"workflow_project_claim","detail":null}'
+        ),
+    )
+    out = server.workflow_project_entry(digest=True)
+    assert "workflow_project_claim" in out
+
+
+def test_workflow_run_gate_docstring_mentions_verifier() -> None:
+    import agent_colony_mcp.server as server
+
+    assert "verifier" in (server.workflow_run_gate.__doc__ or "").lower()
 
 
 def test_workflow_activate_idempotent(monkeypatch: pytest.MonkeyPatch) -> None:
