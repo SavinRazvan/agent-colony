@@ -179,7 +179,7 @@ const PER_AGENT_ENTRY_EXIT = [
   [
     "drift-guard",
     "Must project entry (then scoped list if live)",
-    "Drift card →Done; goal pulse + DRIFT-001…012; remediation via Notes/Ready — no silent tracker edits",
+    "Drift card →Done; goal pulse + DRIFT-001…016; remediation via Notes/Ready — no silent tracker edits",
   ],
   [
     "researcher",
@@ -331,7 +331,7 @@ const SLICE_FLOW = [
 const SIDE_FLOW = [
   "auditor: audit card → CHK-* / enterprise-architecture-audit/ + alignment/ → Notes paths → implementer (Phase 3: drift-guard goal pulse / verifier)",
   "implementer: make drift-validate → P0/P1 or goal-pulse gaps → hand off drift-guard",
-  "drift-guard: board In progress + Acceptance/Notes → drift validate (DRIFT-001…012 kit-dev) → .local/workflow-artifacts/drift/ → card done; remediation via Notes/Ready",
+  "drift-guard: board In progress + Acceptance/Notes → drift validate (DRIFT-001…016 kit-dev) → .local/workflow-artifacts/drift/ → card done; remediation via Notes/Ready",
   "integrator: integration card → integrate validate → escalate to implementer | test-runner | auditor",
 ];
 

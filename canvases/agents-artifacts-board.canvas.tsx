@@ -587,7 +587,7 @@ export default function AgentsArtifactsBoardCanvas() {
           </Text>
           <Text size="small">
             implementer makes drift-validate → P0/P1 or goal-pulse gaps →
-            drift-guard writes drift artifacts (DRIFT-001…012 kit-dev) →
+            drift-guard writes drift artifacts (DRIFT-001…016 kit-dev) →
             remediation via Notes/Ready (never silent tracker Status).
           </Text>
           <Text size="small">

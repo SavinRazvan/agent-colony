@@ -29,7 +29,7 @@ const SOURCES =
 
 const GOALS = [
   "Continuous goal/plan/agent-doctrine/docs coherence (+ DRIFT scripts)",
-  "DRIFT-001…012 script-first; goal pulse prose in drift artifacts",
+  "DRIFT-001…016 script-first; goal pulse prose in drift artifacts",
   "Write drift/ only — no product code; remediations via Notes/Ready",
 ];
 

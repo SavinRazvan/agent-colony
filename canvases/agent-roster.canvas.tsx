@@ -397,7 +397,7 @@ export default function AgentRosterCanvas() {
           auditor · board · drift-guard · implementer · integrator · researcher ·
           test-runner · verifier — skills: board-ssot, implementer-loop,
           test-coverage, auditor-protocol (CHK-*), drift-audit (goal pulse +
-          DRIFT-001…012), integrator-protocol, …
+          DRIFT-001…016), integrator-protocol, …
         </Callout>
         <Callout tone="neutral" title="Quality lane split (2026-08-04)">
           Continuous plan/agent/docs coherence → drift-guard. Deep
