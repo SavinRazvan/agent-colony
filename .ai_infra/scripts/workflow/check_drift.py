@@ -9,7 +9,7 @@ Used By:
 Depends On:
  - .ai_infra/scripts/workflow/drift_checks.py
 Notes:
- - Exit code 1 when any P0 check fails; P1/P2 are advisory in output only.
+ - Exit code 1 on any P0 failure; P1 failures also fail exit on consumer profiles (DRIFT-013 CI).
 """
 
 from __future__ import annotations
@@ -76,8 +76,13 @@ def format_report(results: list[CheckResult], *, profile: str = "kit-dev") -> st
     return "\n".join(lines)
 
 
-def exit_code_for(results: list[CheckResult]) -> int:
-    return 1 if any(not r.passed and r.severity == Severity.P0 for r in results) else 0
+def exit_code_for(results: list[CheckResult], *, profile: str = "kit-dev") -> int:
+    if any(not r.passed and r.severity == Severity.P0 for r in results):
+        return 1
+    if profile in ("consumer", "consumer-board"):
+        if any(not r.passed and r.severity == Severity.P1 for r in results):
+            return 1
+    return 0
 
 
 def resolve_profile(root: Path, override: str | None) -> str:
@@ -121,12 +126,12 @@ def main(argv: list[str] | None = None) -> int:
                 }
                 for r in results
             ],
-            "exit_code": exit_code_for(results),
+            "exit_code": exit_code_for(results, profile=profile),
         }
         print(json.dumps(payload, indent=2))
     else:
         print(format_report(results, profile=profile))
-    return exit_code_for(results)
+    return exit_code_for(results, profile=profile)
 
 
 if __name__ == "__main__":

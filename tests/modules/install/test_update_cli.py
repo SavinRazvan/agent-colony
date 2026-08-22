@@ -12,6 +12,7 @@ Depends On:
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -88,6 +89,32 @@ def test_cmd_update_check_heal(tmp_path: Path, capsys: pytest.CaptureFixture[str
     out = capsys.readouterr().out
     assert "action=heal" in out
     assert "would_heal" in out
+
+
+def test_cmd_update_check_heal_fails_on_agent_delta(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target = _write_installed(tmp_path / "app", "0.6.4")
+    source = _write_manifest(tmp_path / "kit", "0.6.4")
+    for base in (target, source):
+        agents = base / ".cursor" / "agents"
+        agents.mkdir(parents=True)
+        (agents / "implementer.md").write_text("# impl\n", encoding="utf-8")
+    (target / ".cursor" / "agents" / "implementer.md").write_text("# edited\n", encoding="utf-8")
+    monkeypatch.setattr(activate_cli, "resolve_activate_source", lambda *a, **k: source)
+    args = argparse.Namespace(
+        directory=target,
+        source=None,
+        check=True,
+        force=False,
+        with_venv=True,
+        with_mcp_json=True,
+        verify=False,
+        profile="with_mcp",
+    )
+    assert update_cli.cmd_update(args) == 1
+    err = capsys.readouterr().err
+    assert "check: FAIL" in err
 
 
 def test_cmd_update_check_upgrade(tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch) -> None:
@@ -334,6 +361,71 @@ def test_cmd_update_check_refuses_kit_dev_upgrade(
     assert update_cli.cmd_update(args) == 1
     out = capsys.readouterr().out
     assert "would_refuse_kit_dev" in out
+
+
+def test_scan_kit_agent_deltas_detects_edit(tmp_path: Path) -> None:
+    target = tmp_path / "app"
+    source = tmp_path / "kit"
+    for base in (target, source):
+        agents = base / ".cursor" / "agents"
+        agents.mkdir(parents=True)
+        (agents / "implementer.md").write_text("# impl\n", encoding="utf-8")
+    (target / ".cursor" / "agents" / "implementer.md").write_text(
+        "# modified\n", encoding="utf-8"
+    )
+    failures, warnings = update_cli.scan_kit_agent_deltas(target, source)
+    assert failures == [".cursor/agents/implementer.md"]
+    assert warnings == []
+
+
+def test_scan_kit_managed_deltas_detects_skill_edit(tmp_path: Path) -> None:
+    target = tmp_path / "app"
+    source = tmp_path / "kit"
+    contract = {
+        "profiles": {
+            "default": {
+                "kit_managed_globs": [
+                    ".cursor/skills/foo/SKILL.md",
+                ]
+            }
+        }
+    }
+    for base in (target, source):
+        ai = base / ".ai_infra"
+        ai.mkdir(parents=True)
+        skill = base / ".cursor" / "skills" / "foo" / "SKILL.md"
+        skill.parent.mkdir(parents=True)
+        skill.write_text("# skill\n", encoding="utf-8")
+        (ai / "install-contract.json").write_text(json.dumps(contract), encoding="utf-8")
+    (target / ".cursor" / "skills" / "foo" / "SKILL.md").write_text(
+        "# edited\n", encoding="utf-8"
+    )
+    failures, warnings = update_cli.scan_kit_agent_deltas(target, source)
+    assert failures == [".cursor/skills/foo/SKILL.md"]
+    assert warnings == []
+
+
+def test_scan_kit_agent_deltas_warns_extra(tmp_path: Path) -> None:
+    target = tmp_path / "app"
+    source = tmp_path / "kit"
+    for base in (target, source):
+        agents = base / ".cursor" / "agents"
+        agents.mkdir(parents=True)
+        for name in (
+            "auditor",
+            "board",
+            "drift-guard",
+            "implementer",
+            "integrator",
+            "researcher",
+            "test-runner",
+            "verifier",
+        ):
+            (agents / f"{name}.md").write_text(f"# {name}\n", encoding="utf-8")
+    (target / ".cursor" / "agents" / "custom.md").write_text("# c\n", encoding="utf-8")
+    failures, warnings = update_cli.scan_kit_agent_deltas(target, source)
+    assert failures == []
+    assert warnings == [".cursor/agents/custom.md"]
 
 
 def test_register_update_subparser() -> None:

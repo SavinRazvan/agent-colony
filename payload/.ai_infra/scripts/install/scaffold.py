@@ -536,7 +536,13 @@ def _apply_overlay_rules(source: Path, target: Path, rel_overlay: str, dry_run: 
         return
     dest = target / ".cursor" / "rules"
     for mdc in overlay.glob("*.mdc"):
-        _copy_file(mdc, dest / mdc.name, dry_run, log)
+        dest_file = dest / mdc.name
+        if dest_file.is_file() and not dry_run:
+            print(
+                f"WARN overlay: {mdc.name} replaces existing rule at "
+                f"{dest_file.relative_to(target)} — prefer product-*.mdc naming"
+            )
+        _copy_file(mdc, dest_file, dry_run, log)
 
 
 def _load_mcp_manage(source: Path) -> Any | None:

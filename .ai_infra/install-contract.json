@@ -26,6 +26,20 @@
         ".local/workflow-artifacts/enterprise-architecture-audit/README.md",
         ".local/workflow-artifacts/release/README.md",
         ".local/workflow-artifacts/audit/README.md"
+      ],
+      "kit_managed_globs": [
+        ".cursor/agents/auditor.md",
+        ".cursor/agents/board.md",
+        ".cursor/agents/drift-guard.md",
+        ".cursor/agents/implementer.md",
+        ".cursor/agents/integrator.md",
+        ".cursor/agents/researcher.md",
+        ".cursor/agents/test-runner.md",
+        ".cursor/agents/verifier.md",
+        ".cursor/skills/**",
+        ".cursor/rules/**",
+        ".ai_infra/**",
+        "agent_colony/**"
       ]
     },
     "with_mcp": {

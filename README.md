@@ -14,7 +14,7 @@
 
 | | |
 |--|--|
-| **Version** | [`0.6.5`](https://github.com/SavinRazvan/agent-colony/releases) · **Tests** · 1516 · **Agents** · 8 · **Skills** · 15 · **Rules** · **7 universal** · **License** · [Apache-2.0](LICENSE) |
+| **Version** | [`0.6.6`](https://github.com/SavinRazvan/agent-colony/releases) · **Tests** · 1525 · **Agents** · 8 · **Skills** · 15 · **Rules** · **7 universal** · **License** · [Apache-2.0](LICENSE) |
 | **Reference board** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
 
 ---
@@ -27,7 +27,7 @@ Agent chats lose Status. Trackers and docs drift. Teams re-explain the same slic
 
 **Agent Colony** installs a full Cursor kit into *your* app repo (not this kit repo). When Project SSOT is on, the **GitHub Project** is the only writable place for backlog and Status — agents **enter** by reading the board and **exit** by updating Status and Notes. Local `.local/` holds gates, audits, and evidence — not a second Status writer.
 
-**Proof:** 1516 tests · 8 agents · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
+**Proof:** 1525 tests · 8 agents · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
 
 ---
 
@@ -183,6 +183,28 @@ When `project_ssot.enabled`, finish this ladder ([consumer-quickstart](.ai_infra
 
 **Ready when:** `health` passes after activate; **and** (if board SSOT is on) `board-bootstrap --check` exits **0** before day-to-day agents.
 
+### 4. Upgrade kit (when a new release ships)
+
+After you refresh the Cursor plugin (Marketplace), run these in **your app repo** terminal — not in this kit repo:
+
+```bash
+source .venv/bin/activate
+python3 -m agent_colony update --check --directory .
+python3 -m agent_colony update --directory .
+python3 -m agent_colony health
+```
+
+| Flag / command | Role |
+|----------------|------|
+| `update --check` | Report installed vs available version and kit-managed diffs — **no writes** |
+| `update --directory .` | Version-gated refresh: **heal** when current, full kit copy when newer |
+| `update --force` | Full refresh even when versions match — run `--check` first |
+| Agent chat **`/update-agent-colony`** | Same workflow as terminal `update` |
+
+**Preserved on upgrade:** `.local/user_settings/`, trackers, `AGENTS.md`, `mcp.user.json`. **Overwritten on full upgrade:** `.cursor/`, `.ai_infra/`, `agent_colony/` kit copy.
+
+Details: [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md) · isolation: [multi-consumer-isolation.md](.ai_infra/docs/operations/multi-consumer-isolation.md)
+
 ---
 
 ## What happens next
@@ -193,7 +215,7 @@ When `project_ssot.enabled`, finish this ladder ([consumer-quickstart](.ai_infra
 | Board wire + shell | [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md) · [`board-shell`](.cursor/skills/board-shell/SKILL.md) |
 | MCP (DeepWiki, custom servers) | [connect-external-mcp.md](.ai_infra/docs/operations/connect-external-mcp.md) |
 | Research packs | [`research-corpus`](.cursor/skills/research-corpus/SKILL.md) · Guide [use-case matrix](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#6-use-case-matrix) |
-| Upgrade an existing install | `/update-agent-colony` · [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md) |
+| Upgrade an existing install | `python3 -m agent_colony update --check` then `update --directory .` · `/update-agent-colony` · [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md) |
 | Three planes (architecture) | [workflow-architecture.md](.ai_infra/docs/architecture/workflow-architecture.md) |
 
 ---

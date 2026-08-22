@@ -17,6 +17,8 @@ Notes:
 from __future__ import annotations
 
 import argparse
+import fnmatch
+import json
 import re
 import subprocess
 import sys
@@ -164,6 +166,93 @@ def _refuse_kit_dev_upgrade() -> int:
     return 1
 
 
+KIT_AGENT_RELPATHS: tuple[str, ...] = tuple(
+    f".cursor/agents/{agent_id}.md" for agent_id in (
+        "auditor",
+        "board",
+        "drift-guard",
+        "implementer",
+        "integrator",
+        "researcher",
+        "test-runner",
+        "verifier",
+    )
+)
+
+
+def load_kit_managed_globs(source: Path) -> tuple[str, ...]:
+    """Read kit_managed_globs from install-contract on the payload source."""
+    contract = source / ".ai_infra" / "install-contract.json"
+    if not contract.is_file():
+        return KIT_AGENT_RELPATHS
+    raw = json.loads(contract.read_text(encoding="utf-8"))
+    profiles = raw.get("profiles") if isinstance(raw, dict) else None
+    default = profiles.get("default") if isinstance(profiles, dict) else None
+    globs = default.get("kit_managed_globs") if isinstance(default, dict) else None
+    if isinstance(globs, list) and globs:
+        return tuple(str(item) for item in globs)
+    return KIT_AGENT_RELPATHS
+
+
+def _managed_files_under(root: Path, globs: tuple[str, ...]) -> set[str]:
+    if not root.is_dir():
+        return set()
+    found: set[str] = set()
+    for path in root.rglob("*"):
+        if not path.is_file():
+            continue
+        rel = path.relative_to(root).as_posix()
+        if any(fnmatch.fnmatch(rel, pattern) for pattern in globs):
+            found.add(rel)
+    return found
+
+
+def scan_kit_agent_deltas(target: Path, source: Path) -> tuple[list[str], list[str]]:
+    """
+    Diff kit-managed paths (install-contract kit_managed_globs) vs payload source.
+    Returns (hard_fail_paths, warn_extra_agent_paths).
+    """
+    globs = load_kit_managed_globs(source)
+    failures: list[str] = []
+    kit_ids = {Path(p).name.replace(".md", "") for p in KIT_AGENT_RELPATHS}
+    source_files = _managed_files_under(source, globs)
+    target_files = _managed_files_under(target, globs)
+    for rel in sorted(source_files | target_files):
+        installed = target / rel
+        payload = source / rel
+        if installed.is_file() and payload.is_file():
+            if installed.read_bytes() != payload.read_bytes():
+                failures.append(rel)
+        elif installed.is_file() and not payload.is_file():
+            failures.append(f"{rel} (missing in source payload)")
+    warnings: list[str] = []
+    agents_dir = target / ".cursor" / "agents"
+    if agents_dir.is_dir():
+        for path in sorted(agents_dir.glob("*.md")):
+            if path.stem not in kit_ids:
+                warnings.append(str(path.relative_to(target)))
+    return failures, warnings
+
+
+def _print_kit_delta_check(
+    target: Path, source: Path, *, action: str, force: bool
+) -> int:
+    del action, force  # --check always fails on managed deltas
+    failures, warnings = scan_kit_agent_deltas(target, source)
+    for rel in warnings:
+        print(f"check: warn integrator agent {rel}")
+    for rel in failures:
+        print(f"check: kit-managed delta {rel}")
+    if failures:
+        print(
+            "check: FAIL — local kit-managed edits would be overwritten on full refresh; "
+            "stash or commit intentionally before update --force",
+            file=sys.stderr,
+        )
+        return 1
+    return 0
+
+
 def cmd_update(args: argparse.Namespace) -> int:
     from paths import kit_root
 
@@ -222,7 +311,9 @@ def cmd_update(args: argparse.Namespace) -> int:
             print("check: would_upgrade (full kit-managed refresh)")
         else:
             print("check: would_heal (dashboards + runtime gitignore/STARTER/venv)")
-        return 0
+        return _print_kit_delta_check(
+            target, source, action=action, force=bool(args.force)
+        )
 
     if action == "missing":
         print(

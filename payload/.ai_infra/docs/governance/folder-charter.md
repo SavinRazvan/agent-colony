@@ -22,7 +22,7 @@ Notes:
 | Cursor contract | `.cursor/`, `.agents/` | Yes | Agents, skills, rules, MCP wiring |
 | Infrastructure | `.ai_infra/` | Yes (slim subset) | Scripts, docs, templates, kit MCP |
 | Runtime | `.local/` | No (gitignored) | Trackers, PR artifacts, audits, generated data |
-| Overlay | `overlays/rules/` | Yes | Per-project rules merged at install |
+| Overlay | `overlays/rules/` | Yes | Per-project rules merged at install ([naming](../../../overlays/README.md); [isolation](../operations/multi-consumer-isolation.md)) |
 
 ## `.ai_infra/` subtrees (consumer copy via manifest)
 

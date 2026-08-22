@@ -1,0 +1,47 @@
+# File: consumer-gates.yml
+# Path: .ai_infra/templates/ci/consumer-gates.yml
+# Role: Exemplar GitHub Actions workflow for consumer app repos using Agent Colony.
+# Used By:
+#  - consumer-quickstart.md
+#  - multi-consumer-isolation.md
+# Depends On:
+#  - drift validate --profile consumer (DRIFT-013)
+#  - prepare.py resolve_gates() (2 universal gates)
+# Notes:
+#  - Copy to .github/workflows/ in your app repo and adjust Python version / install steps.
+
+name: Agent Colony consumer gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install project + kit CLI deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]" 2>/dev/null || pip install -e .
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+
+      - name: Seed ephemeral .local/ (never commit)
+        run: |
+          python3 -m agent_colony activate --directory . --no-verify || true
+          test -f .local/index-and-planning/current/session-pointer.md
+
+      - name: Consumer drift (includes DRIFT-013)
+        run: python3 -m agent_colony drift validate --directory . --profile consumer
+
+      - name: Prepare gates
+        run: python3 .ai_infra/scripts/pr/prepare.py

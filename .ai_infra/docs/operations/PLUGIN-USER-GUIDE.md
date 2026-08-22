@@ -256,6 +256,27 @@ your-project/
 
 **Re-activate is safe:** existing trackers, `user_settings/`, and `AGENTS.md` are not overwritten. Kit-managed **dashboard HTML**, JS/CSS, `module-audit.html`, and `pages.json` **are refreshed** on each activate.
 
+### Upgrade / preserve (kit-managed vs private)
+
+| Area | Light re-activate / heal | Full `update` or `--force` |
+|------|--------------------------|----------------------------|
+| `.local/user_settings/`, trackers | **Preserved** | **Preserved** |
+| `AGENTS.md`, `mcp.user.json` | **Preserved** | **Preserved** |
+| Dashboard HTML, `pages.json` | **Refreshed** | **Refreshed** |
+| `.cursor/agents`, skills, rules | Skipped | **Overwritten** |
+| `.ai_infra/`, `agent_colony/` | Skipped | **Overwritten** |
+
+Run `python3 -m agent_colony update --check` before `--force`. Isolation contract: [multi-consumer-isolation.md](multi-consumer-isolation.md). Details: [upgrade-kit.md](upgrade-kit.md).
+
+### Verification (multi-consumer isolation)
+
+| Check | Command | Expected |
+|-------|---------|----------|
+| Runtime paths not tracked | `python3 -m agent_colony drift validate --profile consumer` | DRIFT-013 **PASS** (no `.local/`, `.venv/`, `.env`, `mcp.user.json` in git) |
+| Kit agent edits before upgrade | `python3 -m agent_colony update --check` | Exit 0 when clean; exit 1 if kit agent files differ from payload |
+| Extra custom agents | Same drift run | DRIFT-011b **PASS** with P2 advisory if `extra=` agents exist |
+| CI gates (optional) | Copy `.ai_infra/templates/ci/consumer-gates.yml` → `.github/workflows/` | Drift + `prepare.py` green on PR |
+
 ---
 
 ## 4. Agent chat vs terminal

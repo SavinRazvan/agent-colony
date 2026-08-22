@@ -34,4 +34,8 @@ Customize `.ai_infra/scripts/pr/prepare.py` `resolve_gates()` once. Document ext
 - Do not duplicate gate lists — point to `prepare.py` `resolve_gates()`.
 - Do not treat overlays as agent runtime config (Pattern A: scripts).
 
-See [consumer-quickstart.md](../.ai_infra/docs/operations/consumer-quickstart.md) and [IMPLEMENTATION-STATUS.md](../.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md).
+See [consumer-quickstart.md](../.ai_infra/docs/operations/consumer-quickstart.md), [multi-consumer-isolation.md](../.ai_infra/docs/operations/multi-consumer-isolation.md), and [IMPLEMENTATION-STATUS.md](../.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md).
+
+## Naming
+
+Use a **`product-`** prefix for overlay rule files (e.g. `product-my-domain.mdc`). Do **not** reuse basenames of the seven kit-shipped rules under `.cursor/rules/` — activate may overwrite on collision.
