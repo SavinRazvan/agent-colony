@@ -73,6 +73,16 @@ Kit **0.6.4** ships token-efficient agent prose and board Entry reliability (no 
 
 Consumers: `python3 -m agent_colony update` after the plugin refreshes to **0.6.4**.
 
+## Changes in 0.6.5
+
+Kit **0.6.5** fixes consumer `update` leaving a stale `.kit-version` stamp (no rename):
+
+- `scaffold.py` loads profile and `kit_version` from **source** manifest (not pre-copy target manifest)
+- `update_cli.py` `ensure_kit_version_stamp()` repairs stamp after successful upgrade when scaffold skipped write
+- Regression tests: consumer-context subprocess scaffold + stale-stamp update path
+
+Consumers: `python3 -m agent_colony update` after the plugin refreshes to **0.6.5**. If `.kit-version` lags `manifest.yaml` on 0.6.4, run update once or `echo <kit_version> > .ai_infra/.kit-version`.
+
 ## Consumer heal (activate hardening on main → next tag)
 
 If an older activate left only MCP secret lines in `.gitignore`, or omitted the consumer `STARTER-001` drift marker:
@@ -152,7 +162,7 @@ Use `--source payload` when running from the distribution root (see `workflow-ac
 | Dashboard HTML / `pages.json`   | Refreshed on every `activate` (idempotent)                                         |
 | `AGENTS.md`                     | **Not** overwritten if present — delete to refresh from stub, or merge manually    |
 | `mcp.user.json`                 | **Not** overwritten — merge via `python3 -m agent_colony mcp validate`             |
-| `.kit-version`                  | Updated to manifest `kit_version`                                                  |
+| `.kit-version`                  | Updated from **source** manifest `kit_version` (not pre-copy target manifest)      |
 
 
 

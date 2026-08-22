@@ -372,7 +372,7 @@ def test_scaffold_applies_overlay_rules_end_to_end(
     mod = _load_scaffold()
     manifest = mod._load_manifest()
     manifest["profiles"]["default"]["overlay_rules"] = "templates/rules-overlay-test"
-    monkeypatch.setattr(mod, "_load_manifest", lambda: manifest)
+    monkeypatch.setattr(mod, "_load_manifest", lambda manifest_path=None: manifest)
 
     overlay_dir = REPO_ROOT / ".ai_infra" / "templates" / "rules-overlay-test"
     overlay_dir.mkdir(parents=True, exist_ok=True)

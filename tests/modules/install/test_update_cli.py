@@ -220,6 +220,36 @@ def test_cmd_update_upgrade_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     assert update_cli.read_installed_version(target) == "0.6.4"
 
 
+def test_cmd_update_repairs_stale_kit_version_stamp(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    target = _write_installed(tmp_path / "app", "0.6.3")
+    source = _write_manifest(tmp_path / "kit", "0.6.4")
+    monkeypatch.setattr(activate_cli, "resolve_activate_source", lambda *a, **k: source)
+
+    def _scaffold(*a, **k) -> int:
+        return 0
+
+    monkeypatch.setattr(update_cli, "_run_scaffold_upgrade", _scaffold)
+    monkeypatch.setattr(activate_cli, "_heal_consumer_runtime", lambda *a, **k: None)
+    plane = SimpleNamespace(
+        assess_planes=lambda *a, **k: SimpleNamespace(all_ready=True),
+        format_plane_report=lambda s: "planes ok",
+    )
+    monkeypatch.setattr(activate_cli, "_import_plane_status", lambda: plane)
+
+    args = argparse.Namespace(
+        directory=target,
+        source=None,
+        check=False,
+        force=False,
+        with_venv=True,
+        with_mcp_json=True,
+        verify=False,
+        profile="with_mcp",
+    )
+    assert update_cli.cmd_update(args) == 0
+    assert update_cli.read_installed_version(target) == "0.6.4"
+
+
 def test_cmd_update_force_when_equal(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     target = _write_installed(tmp_path / "app", "0.6.4")
     source = _write_manifest(tmp_path / "kit", "0.6.4")
