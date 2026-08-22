@@ -123,32 +123,37 @@ Load the section you need. Do not load whole skills by default. Machine-backed v
 
 ## One command rule (Pattern A)
 
+Prefer **CLI or MCP** (kit 0.7.2+). Do **not** invent raw `gh api graphql` for Project when Pattern A exists. MCP tools return JSON envelope: `exit_code`, `summary`, `next_recommended_tool`, `detail`. On EXIT_QUEUED (6): use outbox status — never retry.
+
 ### PR lane
 
-| Action | Command |
-|--------|---------|
-| Full prepare | `python .ai_infra/scripts/pr/prepare.py --pr … --actor … --agents …` |
-| Governance drift | `python .ai_infra/scripts/architecture/check_governance_consistency.py` |
-| Operational drift | `make drift-validate` or `python -m agent_colony drift validate` |
-| Infrastructure parity | `make integrate-validate` or `python -m agent_colony integrate validate` |
-| Test artifacts guard | (inside prepare) `check_testing_artifacts.py` |
+| Action | Command | MCP (kit 0.7.2+) |
+|--------|---------|------------------|
+| Full prepare | `python .ai_infra/scripts/pr/prepare.py --pr … --actor … --agents …` | `workflow_run_prepare(…, summary=True)` |
+| Governance drift | `python .ai_infra/scripts/architecture/check_governance_consistency.py` | `workflow_check_governance` |
+| Operational drift | `make drift-validate` or `python -m agent_colony drift validate` | `workflow_drift_validate(summary=True)` |
+| Infrastructure parity | `make integrate-validate` or `python -m agent_colony integrate validate` | `workflow_integrate_validate` |
+| Test artifacts guard | (inside prepare) `check_testing_artifacts.py` | — |
+| Single gate (verifier only) | targeted disproof only | `workflow_run_gate` — **verifier only** |
 
 Do **not** run individual gates in chat when `prepare.py` exists unless `verifier` needs a targeted disproof.
 
 ### Board lane (when `project_ssot.enabled`)
 
-| Action | Command |
-|--------|---------|
-| Health | `python -m agent_colony project doctor` |
-| Entry (quota-aware) | `python -m agent_colony project entry` |
-| Export reuse | `python -m agent_colony project export --reuse-if-fresh 900` |
-| Create card | `python -m agent_colony project create-from-template --title "…" --template slice --priority p1 --size s --estimate 1` |
-| Claim | `python -m agent_colony project claim --last --agent <name>` |
-| Handoff | `python -m agent_colony project handoff --last --agent <name> --next <agent> [--to in_review]` |
-| Outbox status | `python -m agent_colony project outbox status` |
-| Queue (no live write) | `python -m agent_colony project queue --op … --last --agent <name>` |
-| Flush outbox | `python -m agent_colony project outbox flush` |
-| Safe recipes | `python -m agent_colony project guide` |
+| Action | Command | MCP (kit 0.7.2+) |
+|--------|---------|------------------|
+| Session start | `python -m agent_colony project entry --digest` | `workflow_session_entry` or `workflow_project_entry(digest=True)` |
+| Health | `python -m agent_colony project doctor` | — |
+| Entry (quota-aware) | `python -m agent_colony project entry --digest` | `workflow_project_entry` |
+| Export reuse | `python -m agent_colony project export --reuse-if-fresh 900` | — |
+| Create card | `python -m agent_colony project create-from-template --title "…" --template slice --priority p1 --size s --estimate 1` | — |
+| Claim | `python -m agent_colony project claim --last --agent <name>` | `workflow_project_claim` |
+| Handoff | `python -m agent_colony project handoff --last --agent <name> --next <agent> [--to in_review]` | `workflow_project_handoff` |
+| Outbox status | `python -m agent_colony project outbox status` | `workflow_project_outbox_status` |
+| Queue (no live write) | `python -m agent_colony project queue --op … --last --agent <name>` | — |
+| Flush outbox | `python -m agent_colony project outbox flush` | — |
+| Skill section | `python -m agent_colony doc skill-section --skill … --section …` | `workflow_doc_skill_section` |
+| Safe recipes | `python -m agent_colony project guide` | — |
 
 Prefer `--last` after `create-from-template`. Never paste docs placeholder ids. Never paste Project settings UI into the shell. On EXIT_QUEUED (6), do not retry — flush after GraphQL quota recovers.
 

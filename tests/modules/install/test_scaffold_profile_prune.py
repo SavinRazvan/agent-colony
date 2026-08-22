@@ -51,7 +51,7 @@ def test_consumer_lite_prune_and_marker(tmp_path: Path) -> None:
     assert marker.is_file()
     data = json.loads(marker.read_text(encoding="utf-8"))
     assert data["profile"] == "consumer_lite"
-    assert data["kit_version"] == "0.7.1"
+    assert data["kit_version"] == "0.7.2"
     agents_skills = tmp_path / ".agents" / "skills"
     skill_dirs = {p.name for p in agents_skills.iterdir() if p.is_dir()}
     assert skill_dirs == {

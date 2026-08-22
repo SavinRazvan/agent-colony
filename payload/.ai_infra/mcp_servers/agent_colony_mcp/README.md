@@ -2,7 +2,7 @@
 
 **Canonical path:** `.ai_infra/mcp_servers/agent_colony_mcp/`
 
-Stdio MCP server that **wraps existing scripts** — it does not duplicate `resolve_gates()` from `.ai_infra/scripts/pr/prepare.py`.
+Stdio MCP server that **wraps existing scripts/CLI** — it does not duplicate `resolve_gates()` or Project GraphQL (ADR-012).
 
 ## Run locally
 
@@ -17,18 +17,31 @@ Install with `--with-mcp-json` merges [`.cursor/mcp.json.kit.example`](../../../
 
 External servers: [connect-external-mcp.md](../../docs/operations/connect-external-mcp.md).
 
-## P0 tools
+## Pattern A board tools (kit 0.7.2+)
+
+JSON envelope: `exit_code`, `summary`, `next_recommended_tool`, `detail`. EXIT_QUEUED (6) → `workflow_project_outbox_status` — never retry.
+
+| Tool | Wraps |
+|------|--------|
+| `workflow_session_entry` | entry digest + last item + change-index tail |
+| `workflow_project_entry` | `project entry` (`digest=True` default) |
+| `workflow_project_claim` | `project claim --last --agent` |
+| `workflow_project_handoff` | `project handoff --last --agent --next [--to]` |
+| `workflow_project_outbox_status` | `project outbox status` |
+| `workflow_doc_skill_section` | `doc skill-section` |
+
+## Other P0 tools
 
 | Tool | Wraps |
 |------|--------|
 | `workflow_run_prepare` | `.ai_infra/scripts/pr/prepare.py` — pass `summary=True` for one-line gate result |
 | `workflow_run_review` | `.ai_infra/scripts/pr/review.py` |
 | `workflow_run_merge_check` | `.ai_infra/scripts/pr/merge.py` |
-| `workflow_run_gate` | single gate from `resolve_gates()` (context-aware) |
+| `workflow_run_gate` | single gate — **verifier only** (registry policy) |
 | `workflow_check_governance` | `check_governance_consistency.py` |
 | `workflow_list_agents` | `.cursor/agents/*.md` |
 | `workflow_get_tracker` | `.local/.../current/{name}.md` |
-| `workflow_gate_count` | `len(load_gates())` → prefers `resolve_gates()` (2 consumer / 4 kit-dev) |
+| `workflow_gate_count` | `len(load_gates())` |
 | `workflow_get_project_config` | `project.config.yaml` or example |
 | `workflow_list_mcp_registry` | `.cursor/mcp.registry.yaml` |
 | `workflow_agent_colony_mcp_connection_guide` | connect-external-mcp.md |
@@ -36,11 +49,11 @@ External servers: [connect-external-mcp.md](../../docs/operations/connect-extern
 | `workflow_render_pr_body` | PR body for named pipeline |
 | `workflow_contributors_validate` | validate user settings YAML |
 | `workflow_list_session_agents` | change-index + session-pointer → merged Agent/s |
-| `workflow_integrate_validate` | `.ai_infra/scripts/integration/validate.py` (INT-001…014) |
-| `workflow_drift_validate` | `.ai_infra/scripts/workflow/check_drift.py` (DRIFT-001…016 kit-dev; consumer subset) |
-| `workflow_activate` | `.ai_infra/install/agent_colony/activate_cli.py` (three-plane install; `--profile consumer_lite` on kit 0.7.0+) |
-| `workflow_doc_facts_validate` | `.ai_infra/scripts/architecture/check_doc_facts.py` (DOC-001…008) |
-| `workflow_verify_all` | `.ai_infra/scripts/architecture/verify_all.py` (maintainer matrix) |
+| `workflow_integrate_validate` | `.ai_infra/scripts/integration/validate.py` |
+| `workflow_drift_validate` | `check_drift.py` — `summary=True` default |
+| `workflow_activate` | `activate_cli.py` |
+| `workflow_doc_facts_validate` | `check_doc_facts.py` |
+| `workflow_verify_all` | `verify_all.py` |
 
 ## P1 resources
 

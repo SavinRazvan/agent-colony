@@ -20,8 +20,8 @@ Notes:
 Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
-**Last updated:** 2026-08-22 (token efficiency Phase 2 — kit 0.7.1, agents_skill_allowlist)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.7.1 · **Tests:** 1557
+**Last updated:** 2026-08-22 (MCP Pattern A board tools — kit 0.7.2, ADR-012)
+**Product:** `agent-colony` · CLI: `agent-colony` 0.7.2 · **Tests:** 1568
 
 ## Shipped (confirmed in repo)
 
@@ -52,7 +52,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Kit canvases | **16** files under `canvases/`; DOC-008 counts **11** roster/agent canvases (excludes concept hubs `board-ssot-vs-trackers.canvas.tsx`, `agents-artifacts-board.canvas.tsx`, `github-api-safety.canvas.tsx`, `naming-roster-audit.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
-| MCP tools + resources | 20 tools + 6 resources | `.ai_infra/mcp_servers/agent_colony_mcp/` |
+| MCP tools + resources | 26 tools + 6 resources (ADR-012 Pattern A board tools) | `.ai_infra/mcp_servers/agent_colony_mcp/` |
 | Install scaffold + contract | `install-contract.json`; idempotent trackers/`AGENTS.md`/`pages.json` on re-activate | `.ai_infra/scripts/install/scaffold.py` |
 | Local artifact tiers | Tier 1 scaffold: all `workflow-artifacts/*` buckets + README stubs; SSOT `local_workflow_paths.py` | `.ai_infra/templates/local-workspace/`, `pages.json` |
 | Integrate validate | INT-001…014; INT-009/011 plugin parity **kit-dev only** | `.ai_infra/scripts/integration/validate.py` |
@@ -63,11 +63,11 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Researcher agent (corpus) | **Shipped / proven** — adaptive Brief; anti-loop ≤6; CLI `research init\|fetch\|validate`; live E2E flexiai-toolsmith (18 curated, validate PASS) + verifier Claim A+B VERIFIED 2026-07-19; corpus **opt-in** after first `research init` | `.cursor/agents/researcher.md` · `research-corpus` · `canvases/agent-researcher.canvas.tsx` · Issue #74 |
-| Kit version on install | `kit_version` 0.7.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
-| Token efficiency program | G1–G6: thin-index CLI, digests, DRIFT-014–016, rules tiering, `consumer_lite` | [token-efficiency-program.md](../operations/token-efficiency-program.md) · ADR-011 |
+| Kit version on install | `kit_version` 0.7.2 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
+| Token efficiency program | G1–G6 + Phase 2 allowlist + ADR-012 MCP Pattern A | [token-efficiency-program.md](../operations/token-efficiency-program.md) · ADR-011 · ADR-012 |
 | Consumer update stamp | Scaffold + `update` write `.kit-version` from source manifest; CLI fallback `ensure_kit_version_stamp` | `scaffold.py` · `update_cli.py` · tests |
 | Multi-consumer isolation | Model A contract doc; DRIFT-013 tracked-runtime guard; DRIFT-011b advisory; `update --check` + `kit_managed_globs`; consumer CI template | `multi-consumer-isolation.md` · `drift_checks.py` · `update_cli.py` · `templates/ci/consumer-gates.yml` |
-| Tests | 1557 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1568 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

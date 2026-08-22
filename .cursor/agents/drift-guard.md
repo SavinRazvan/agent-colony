@@ -16,13 +16,13 @@ Goal/plan/agent-doctrine/docs coherence + DRIFT-001…016 (script-first). Not de
 
 **Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
 
-**Token-efficiency:** Run DRIFT-014–016; one `export --reuse-if-fresh` per wave before validate. Cadence: [token-efficiency-enforcement.md](.ai_infra/docs/operations/token-efficiency-enforcement.md).
+**Token-efficiency:** Run DRIFT-014–016; `workflow_drift_validate(summary=True)` or CLI `--summary`; one `export --reuse-if-fresh` per wave before validate. Cadence: [token-efficiency-enforcement.md](.ai_infra/docs/operations/token-efficiency-enforcement.md).
 
-**Entry:** If SSOT on: `project entry` (must). Prefer `export --reuse-if-fresh` before drift validate. Else `session-pointer.md`.
+**Entry:** If SSOT on: `workflow_session_entry` or `project entry` (must). Prefer `export --reuse-if-fresh` before drift validate. Else `session-pointer.md`.
 
 **Exit:** Write `.local/workflow-artifacts/drift/`. Set drift-pass card → `done` or `in_review`. Remediations via Notes/Ready — never silent tracker dual-write. One line in `updates-log.md`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent drift-guard`. Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): outbox; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer MCP/CLI Pattern A. Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 
 **Tier-1:** Fill Status, Priority, Size, Estimate, dates, Assignee, Linked PR. Canon: `board-ssot` § Tier-1.
 

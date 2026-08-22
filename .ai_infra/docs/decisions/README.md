@@ -13,5 +13,6 @@
 | [ADR-009](ADR-009-mcp-pattern-a-cli.md) | MCP Pattern A CLI (universal agent transport) | accepted |
 | [ADR-010](ADR-010-canvas-plan-local-artifacts.md) | Canvas and plan local artifacts (Pattern A) | accepted |
 | [ADR-011](ADR-011-consumer-lite-profile.md) | Consumer lite install profile | accepted |
+| [ADR-012](ADR-012-mcp-pattern-a-board-tools.md) | MCP Pattern A board tools | accepted |
 
 New decisions: add `ADR-NNN-short-title.md` and update this index.

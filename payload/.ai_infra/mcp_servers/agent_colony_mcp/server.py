@@ -21,6 +21,14 @@ from pathlib import Path
 from mcp.server.mcpserver import MCPServer
 
 from agent_colony_mcp.gates import load_gates
+from agent_colony_mcp.project_tools import (
+    run_doc_skill_section,
+    run_project_claim,
+    run_project_entry,
+    run_project_handoff,
+    run_project_outbox_status,
+    run_session_entry,
+)
 from agent_colony_mcp.resources import (
     build_inventory,
     read_agent,
@@ -103,7 +111,7 @@ def workflow_run_merge_check(
 
 @mcp.tool()
 def workflow_run_gate(index: int) -> str:
-    """Run a single gate from prepare.py GATES by zero-based index."""
+    """Verifier-only: run a single gate from prepare.py GATES by zero-based index."""
     root = workspace_root()
     gates = load_gates(root)
     if index < 0 or index >= len(gates):
@@ -246,8 +254,8 @@ def workflow_integrate_validate() -> str:
 
 
 @mcp.tool()
-def workflow_drift_validate() -> str:
-    """Run drift validate (plan/tracker/session coherence and handoff parity)."""
+def workflow_drift_validate(summary: bool = True) -> str:
+    """Run drift validate (plan/tracker/session coherence). summary=True → one-line."""
     root = workspace_root()
     workflow_dir = root / ".ai_infra" / "scripts" / "workflow"
     if not workflow_dir.is_dir():
@@ -261,8 +269,11 @@ def workflow_drift_validate() -> str:
 
     results = check_drift.run_checks(root)
     profile = check_drift.resolve_profile(root, None)
-    report = check_drift.format_report(results, profile=profile)
     code = check_drift.exit_code_for(results, profile=profile)
+    if summary:
+        report = check_drift.format_summary(results, profile=profile)
+        return f"exit={code}\n{report}"
+    report = check_drift.format_report(results, profile=profile)
     return f"exit={code}\nprofile={profile}\n{report}"
 
 
@@ -350,6 +361,49 @@ def workflow_contributors_validate(check_mcp: bool = False) -> str:
     if errors:
         return "FAIL\n" + "\n".join(f"- {e}" for e in errors)
     return "PASS"
+
+
+# --- Pattern A board / session tools (ADR-012) ---
+
+
+@mcp.tool()
+def workflow_project_entry(digest: bool = True) -> str:
+    """Board Pattern A: `project entry` (digest default). JSON envelope."""
+    return run_project_entry(workspace_root(), digest=digest)
+
+
+@mcp.tool()
+def workflow_project_claim(agent: str, text: str = "claimed") -> str:
+    """Board Pattern A: `project claim --last --agent`. JSON envelope."""
+    return run_project_claim(workspace_root(), agent=agent, text=text)
+
+
+@mcp.tool()
+def workflow_project_handoff(
+    agent: str, next: str, to: str = "", text: str = ""
+) -> str:
+    """Board Pattern A: `project handoff --last --agent --next [--to]`. JSON envelope."""
+    return run_project_handoff(
+        workspace_root(), agent=agent, next_agent=next, to=to, text=text
+    )
+
+
+@mcp.tool()
+def workflow_project_outbox_status() -> str:
+    """Board Pattern A: `project outbox status` after EXIT_QUEUED. JSON envelope."""
+    return run_project_outbox_status(workspace_root())
+
+
+@mcp.tool()
+def workflow_session_entry(agent: str = "") -> str:
+    """Session start: entry digest + last item + change-index row. JSON envelope."""
+    return run_session_entry(workspace_root(), agent=agent or None)
+
+
+@mcp.tool()
+def workflow_doc_skill_section(skill: str, section: str) -> str:
+    """Token-efficient skill read via `doc skill-section`. JSON envelope."""
+    return run_doc_skill_section(workspace_root(), skill=skill, section=section)
 
 
 # --- P1 resources (workflow:// URIs) ---

@@ -2,9 +2,20 @@ version: 1
 servers:
   agent-colony-mcp:
     tier: kit
-    description: PR workflow, trackers, gates
+    description: PR workflow, board Pattern A, trackers, gates
     agents: [implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard, board]
-    tools_hint: [workflow_run_prepare, workflow_get_tracker, workflow_list_mcp_registry, workflow_integrate_validate, workflow_drift_validate]
+    tools_hint:
+      - workflow_session_entry
+      - workflow_project_entry
+      - workflow_project_claim
+      - workflow_project_handoff
+      - workflow_project_outbox_status
+      - workflow_doc_skill_section
+      - workflow_run_prepare
+      - workflow_get_tracker
+      - workflow_list_mcp_registry
+      - workflow_integrate_validate
+      - workflow_drift_validate
   # User adds keys matching mcp.json mcpServers:
   deepwiki:
     tier: external

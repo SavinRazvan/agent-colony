@@ -14,7 +14,7 @@
 
 | | |
 |--|--|
-| **Version** | [`0.7.0`](https://github.com/SavinRazvan/agent-colony/releases) · **Tests** · 1557 · **Agents** · 8 (6 on `consumer_lite`) · **Skills** · 15 (6 on lite) · **Rules** · 7 (4 always-on + 3 requestable) · **License** · [Apache-2.0](LICENSE) |
+| **Version** | [`0.7.2`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.7.2) · **Tests** · 1568 · **Agents** · 8 (6 on `consumer_lite`) · **Skills** · 15 (6 on lite) · **Rules** · 7 (4 always-on + 3 requestable) · **License** · [Apache-2.0](LICENSE) |
 | **Reference board** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
 
 ---
