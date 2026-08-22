@@ -308,7 +308,10 @@ source .venv/bin/activate
 | Command | Purpose |
 |---------|---------|
 | `python3 -m agent_colony activate --directory .` | First install / light heal when planes ready |
+| `python3 -m agent_colony update --check --directory .` | Installed vs available + kit-managed diffs (no writes) |
 | `python3 -m agent_colony update --directory .` | Version-gated upgrade (heal or full refresh) |
+| `python3 -m agent_colony update --directory . --clean-only` | Cleanup runtime noise + orphans without scaffold (0.6.7+) |
+| `python3 -m agent_colony update --directory . --force` | Full overwrite — run `--check` first |
 | `python3 -m agent_colony contributors validate` | After editing collaboration YAML |
 | `python3 -m agent_colony health` | Layout + version |
 | `python3 -m agent_colony integrate validate` | Integration checks |
@@ -387,7 +390,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` `resolve_gates()` | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
 | **Add agents / skills / MCP** | `/integrator` + `/integrator-protocol` | `integrate validate` | [integrator-protocol skill](../../.cursor/skills/integrator-protocol/SKILL.md) · [mas-infrastructure-integration.md](mas-infrastructure-integration.md) (ops filename kept) |
 | **Connect external MCP** | `/mcp-connect` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
-| **Upgrade / version-gated refresh** | `/update-agent-colony` | `python3 -m agent_colony update --directory .` | [upgrade-kit.md](upgrade-kit.md) · [update-agent-colony skill](../../.cursor/skills/update-agent-colony/SKILL.md) |
+| **Upgrade / version-gated refresh** | `/update-agent-colony` | Step A: `/add-plugin agent-colony@https://github.com/SavinRazvan/agent-colony` · Step B: `update --check` → `update --directory .` → `health` | [upgrade-kit.md](upgrade-kit.md) · [update-agent-colony skill](../../.cursor/skills/update-agent-colony/SKILL.md) |
 | **Check install health** | — | `python3 -m agent_colony health` | [gate-matrix.md](gate-matrix.md) |
 | **Dry-run install preview** | — | `python3 -m agent_colony install --target <dir> --dry-run` | [install-dry-run.md](install-dry-run.md) |
 

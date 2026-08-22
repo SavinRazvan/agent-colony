@@ -44,7 +44,17 @@ Install **Agent Colony** (`agent-colony`) into your project in a few minutes. No
 
 **Healthy install?** `python3 -m agent_colony health` · with board on: `gh auth status` → `project doctor` → `project board-bootstrap --check`
 
-**Update kit later (optional):** merge kit changes to `main` → in your app Agent chat `/add-plugin https://github.com/SavinRazvan/agent-colony` → **`/update-agent-colony`** (or `python3 -m agent_colony update --directory .`). First install remains `/workflow-activate`. Full force/semver: [upgrade-kit.md](upgrade-kit.md). **Does not** create GitHub Project views — finish step 4 for that.
+**Update kit later (optional):** when a new release ships ([Releases](https://github.com/SavinRazvan/agent-colony/releases)) — **Step A** Agent chat: `/add-plugin agent-colony@https://github.com/SavinRazvan/agent-colony` (re-add even if installed) → **Step B** terminal in **your app**:
+
+```bash
+source .venv/bin/activate
+python3 -m agent_colony update --check --directory .
+python3 -m agent_colony update --directory .
+python3 -m agent_colony health
+python3 -m agent_colony drift validate --profile consumer
+```
+
+Verify: `.kit-version`, `manifest.yaml` `kit_version`, and `update --check` `installed`/`available` all match (exit **0**, `action=heal`). Chat shortcut: **`/update-agent-colony`**. Optional cleanup without upgrade: `update --clean-only --directory .` (0.6.7+). First install remains `/workflow-activate`. Full semver/force: [upgrade-kit.md](upgrade-kit.md). **Does not** create GitHub Project views — finish step 4 for that.
 
 > **Cheat sheet:** [Visual walkthrough](#visual-walkthrough) · [Agent chat vs terminal](#agent-chat-vs-terminal) · [Dashboards (deprecated)](#control-center-dashboards-deprecated) · [All CLI commands](#terminal-commands-cheat-sheet)
 
@@ -523,17 +533,28 @@ python3 -m http.server 8000
 
 ### Refresh after a kit update
 
-Re-run activate (chat or terminal):
+Use the **version-gated update** path — not a full re-activate unless `.ai_infra/` is missing.
+
+**Step A — Agent chat** (your app project open):
 
 ```text
-/workflow-activate
+/add-plugin agent-colony@https://github.com/SavinRazvan/agent-colony
 ```
+
+**Step B — terminal** (your app folder):
 
 ```bash
-python3 -m agent_colony activate --directory .
+source .venv/bin/activate
+python3 -m agent_colony update --check --directory .
+python3 -m agent_colony update --directory .
+python3 -m agent_colony health
 ```
 
-This overwrites kit-managed dashboard files with the latest templates from the plugin payload.
+Or **`/update-agent-colony`** in Agent chat (same gate). Kit **0.6.7+** auto-cleans `__pycache__` and kit orphans on heal/upgrade. Optional: `update --clean-only --directory .` for cleanup without scaffold.
+
+**Verify:** `cat .ai_infra/.kit-version` · `grep kit_version .ai_infra/manifest.yaml` · `update --check` → `installed==available`, exit **0**.
+
+Light heal only (dashboards/runtime) when already on latest kit: `python3 -m agent_colony activate --directory .` or `/workflow-activate`. Full upgrade semantics: [upgrade-kit.md](upgrade-kit.md) · [README § Upgrade](https://github.com/SavinRazvan/agent-colony#4-upgrade-kit-when-a-new-release-ships).
 
 ---
 

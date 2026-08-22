@@ -229,8 +229,8 @@ python3 -m agent_colony mcp validate
 Read the first lines of `--check`:
 
 ```text
-installed=0.6.5
-available=0.6.6
+installed=0.6.6
+available=0.6.7
 source=…/payload
 action=upgrade
 ```
@@ -264,7 +264,7 @@ All three must match the [latest release](https://github.com/SavinRazvan/agent-c
 cat .ai_infra/.kit-version
 grep kit_version .ai_infra/manifest.yaml
 python3 -m agent_colony update --check --directory .   # installed == available
-test -f .ai_infra/docs/operations/multi-consumer-isolation.md && echo OK   # 0.6.6+
+test -f .ai_infra/docs/operations/multi-consumer-isolation.md && echo OK   # 0.6.6+ feature file
 python3 -m agent_colony drift validate --profile consumer
 ```
 

@@ -144,7 +144,14 @@ python3 -m agent_colony update --directory .
 # or Agent chat: /update-agent-colony
 ```
 
-**Verify:** `cat .ai_infra/.kit-version` and `grep kit_version .ai_infra/manifest.yaml` must match; `update --check` should show `installed` == `available`. One `update` is enough when `action=upgrade` and `--check` exits 0 — reserve `--force` for kit-managed deltas you choose to overwrite.
+**Verify:** `cat .ai_infra/.kit-version` and `grep kit_version .ai_infra/manifest.yaml` must match; `update --check` should show `installed` == `available` (exit **0**, `action=heal`). One `update` is enough when `action=upgrade` and `--check` exits 0 — reserve `--force` for kit-managed deltas you choose to overwrite.
+
+```bash
+python3 -m agent_colony health
+python3 -m agent_colony drift validate --profile consumer
+```
+
+**Optional (0.6.7+):** `python3 -m agent_colony update --clean-only --directory .` — cleanup `__pycache__` and kit orphans without scaffold. **`--no-clean`** skips auto cleanup (debug only).
 
 Compares `.ai_infra/.kit-version` to the activate source `manifest.yaml` `kit_version`:
 
