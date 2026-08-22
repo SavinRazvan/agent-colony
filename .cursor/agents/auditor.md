@@ -16,6 +16,8 @@ Evidence-only architecture audit (CHK-*). Not continuous plan pulse — that is 
 
 **Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
 
+**Token-efficiency:** CHK-TOKEN on governance PRs; category `token_contract`. Alignment: [alignment-audit-schema.md](.ai_infra/docs/roadmap/alignment-audit-schema.md).
+
 **Entry:** If SSOT on: `project status`. If no audit card: `create-from-template` `[AUDIT]` → `claim --last --agent auditor`. Else `session-pointer.md`.
 
 **Exit:** Write audit artifacts. Status → `in_review`/`done`. Put paths in Notes. No dual-write under `board_only`.

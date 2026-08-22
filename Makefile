@@ -1,13 +1,23 @@
-.PHONY: install-dry-run smoke-consumer live-board-smoke test gates sync-plugin check-plugin integrate-validate drift-validate ci-seed verify-all doc-validate type-check coverage-index
+.PHONY: install-dry-run install-dry-run-lite smoke-consumer live-board-smoke test gates sync-plugin check-plugin integrate-validate drift-validate ci-seed verify-all doc-validate type-check coverage-index
 
 install-dry-run:
 	rm -rf /tmp/agent-colony-dry-run
 	.venv/bin/python -m agent_colony install \
 		--target /tmp/agent-colony-dry-run \
+		--profile with_mcp \
 		--with-venv \
 		--with-mcp-json \
 		--verify
 	.venv/bin/python .ai_infra/scripts/architecture/check_consumer_purity.py --target /tmp/agent-colony-dry-run
+
+install-dry-run-lite:
+	rm -rf /tmp/agent-colony-dry-run-lite
+	.venv/bin/python -m agent_colony install \
+		--target /tmp/agent-colony-dry-run-lite \
+		--profile consumer_lite \
+		--with-venv --with-mcp-json --verify
+	.venv/bin/python .ai_infra/scripts/architecture/check_consumer_purity.py \
+		--target /tmp/agent-colony-dry-run-lite
 
 smoke-consumer:
 	bash .ai_infra/scripts/install/smoke_marketplace.sh

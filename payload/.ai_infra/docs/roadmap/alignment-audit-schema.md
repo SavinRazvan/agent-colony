@@ -54,6 +54,7 @@ Standardize advisory audit findings so outputs from skills, rules checks, and ma
 - `strategy_product_boundary_drift`
 - `test_coverage_mapping_gap`
 - `rule_parser_or_format_risk`
+- `token_contract`
 
 ## Canonical Outputs
 

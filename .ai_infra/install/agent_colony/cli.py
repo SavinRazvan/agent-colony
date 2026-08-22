@@ -160,7 +160,7 @@ def cmd_health(args: argparse.Namespace) -> int:
             issues.append(f"missing {path.relative_to(root)}")
 
     kit_version = root / ".ai_infra" / ".kit-version"
-    if kit_version.is_file():
+    if kit_version.is_file() and not getattr(args, "summary", False):
         print(f"kit_version: {kit_version.read_text(encoding='utf-8').strip()}")
 
     if (root / ".cursor" / "mcp.json.kit.example").is_file() and (
@@ -202,10 +202,17 @@ def cmd_health(args: argparse.Namespace) -> int:
         issues.append("user_settings: missing .ai_infra/scripts/pr (kit incomplete)")
 
     if issues:
+        if getattr(args, "summary", False):
+            print(f"health: FAIL · issues={len(issues)}")
+            return 1
         print("health: FAIL")
         for issue in issues:
             print(f" - {issue}")
         return 1
+
+    if getattr(args, "summary", False):
+        print("health: PASS")
+        return 0
 
     print("health: PASS")
     return 0
@@ -216,7 +223,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="agent-colony",
         description="Cursor Agent Infrastructure Plugin — install and gate helpers.",
     )
-    parser.add_argument("--version", action="version", version="agent-colony 0.6.7")
+    parser.add_argument("--version", action="version", version="agent-colony 0.7.0")
     sub = parser.add_subparsers(dest="command", required=True)
 
     install = sub.add_parser("install", help="Install infrastructure into a target project")
@@ -230,7 +237,7 @@ def build_parser() -> argparse.ArgumentParser:
     install.add_argument(
         "--profile",
         default="default",
-        choices=("default", "with_mcp"),
+        choices=("default", "with_mcp", "consumer_lite"),
         help="Install profile from .ai_infra/manifest.yaml",
     )
     install.add_argument("--dry-run", action="store_true")
@@ -261,6 +268,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=".",
         help="Project root (default: current directory)",
+    )
+    health.add_argument(
+        "--summary",
+        action="store_true",
+        help="One-line PASS/FAIL summary",
     )
     health.set_defaults(func=cmd_health)
 

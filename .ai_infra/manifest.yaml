@@ -1,5 +1,5 @@
 version: 1
-kit_version: "0.6.7"
+kit_version: "0.7.0"
 profiles:
   default:
     copy_dirs:
@@ -44,3 +44,29 @@ profiles:
       - requirements-mcp.txt
       - requirements-dev.txt
     mcp_json: true
+  consumer_lite:
+    extends: with_mcp
+    agents_md: stub_lite
+    skill_allowlist:
+      - board-ssot
+      - implementer-loop
+      - evidence-first
+      - test-coverage
+      - workflow-activate
+      - mcp-connect
+    agent_allowlist:
+      - board
+      - implementer
+      - test-runner
+      - verifier
+      - drift-guard
+      - integrator
+    rule_always_apply:
+      - project-ssot-precedence.mdc
+      - implementation-workflow-governance.mdc
+      - pr-workflow-enforcement.mdc
+      - local-artifact-protection.mdc
+    rule_requestable:
+      - advisory-audit-alignment-enforcement.mdc
+      - commit-trailer-format.mdc
+      - file-docstring-header-relations.mdc

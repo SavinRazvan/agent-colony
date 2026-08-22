@@ -550,7 +550,7 @@ def register_update_subparser(sub: argparse._SubParsersAction) -> None:
     update.add_argument(
         "--profile",
         default="with_mcp",
-        choices=("default", "with_mcp"),
+        choices=("default", "with_mcp", "consumer_lite"),
         help="Install profile (default: with_mcp)",
     )
     update.add_argument("--with-venv", action="store_true", default=True)

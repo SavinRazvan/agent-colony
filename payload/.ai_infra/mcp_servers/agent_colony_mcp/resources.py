@@ -13,11 +13,18 @@ Notes:
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import yaml
 
 from agent_colony_mcp.gates import load_gates
+
+_MCP_ROOT = Path(__file__).resolve().parents[2]
+_INSTALL_PKG = _MCP_ROOT / "install" / "agent_colony"
+if str(_INSTALL_PKG) not in sys.path:
+    sys.path.insert(0, str(_INSTALL_PKG))
+from markdown_sections import extract_section, slugify_heading  # noqa: E402
 
 _PR_PHASES = {
     "review": "review.md",
@@ -60,6 +67,19 @@ def _find_skill_path(root: Path, skill_id: str) -> Path:
         if path.is_file():
             return path
     raise FileNotFoundError(f"skill not found: {skill_id}")
+
+
+def read_skill_section(root: Path, skill_id: str, section_slug: str) -> str:
+    path = _find_skill_path(root, skill_id)
+    text = _read_text(path)
+    for heading in text.splitlines():
+        if heading.startswith("## "):
+            title = heading[3:].strip()
+            if slugify_heading(title) == section_slug or title.lower() == section_slug.lower():
+                body = extract_section(text, title)
+                if body:
+                    return f"## {title}\n\n{body}"
+    raise FileNotFoundError(f"section not found: {skill_id}/{section_slug}")
 
 
 def read_skill(root: Path, skill_id: str) -> str:

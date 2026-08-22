@@ -12,6 +12,8 @@ description: test-runner Agent Colony — Module-focused tests, regressions, cov
 
 **Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
 
+**Token-efficiency:** Cite pytest command + pass/fail counts from **this run** — not full green output.
+
 **Entry:** If SSOT on: `project status` / claim; read Acceptance/Notes. Else `session-pointer.md`. Read `test-index.md` when tests change.
 
 **Exit:** `handoff --last` / claim. Status → `in_review` if tests gate PR, else `done`. Update `change-index.md`, `test-index.md` / `test-plan.md`. No dual-write under `board_only`.

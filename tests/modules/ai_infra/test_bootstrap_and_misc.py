@@ -22,6 +22,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.modules.install._manifest_version import expected_kit_version
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -32,7 +34,7 @@ def test_ai_infra_package_exposes_version() -> None:
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    assert mod.__version__ == "0.6.7"
+    assert mod.__version__ == expected_kit_version()
 
 
 def test_bootstrap_ensure_paths_import_inserts_ai_infra_dir() -> None:

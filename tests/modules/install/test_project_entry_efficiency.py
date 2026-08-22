@@ -664,3 +664,34 @@ def test_cmd_entry_json(
     assert payload["mode"] == "live"
     assert payload["item_count"] == 0
     assert payload["next"] == "claim|get"
+
+
+def test_cmd_doctor_digest(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    import project_handlers  # noqa: E402
+    import project_outbox  # noqa: E402
+
+    ssot = _ssot_with_efficiency()
+    _write_collab(tmp_path, ssot)
+    tpl_src = REPO_ROOT / ".ai_infra" / "templates" / "project-board"
+    tpl_dst = tmp_path / ".ai_infra" / "templates" / "project-board"
+    tpl_dst.mkdir(parents=True)
+    for name in project_cli._TEMPLATE_NAMES:
+        src = tpl_src / f"card-body-{name}.md"
+        if src.is_file():
+            (tpl_dst / f"card-body-{name}.md").write_text(
+                src.read_text(encoding="utf-8"), encoding="utf-8"
+            )
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    monkeypatch.setattr(
+        project_outbox,
+        "graphql_rate_limit",
+        lambda: {"remaining": 10, "limit": 5000, "error": None},
+    )
+    args = argparse.Namespace(directory=tmp_path, digest=True)
+    assert project_handlers.run_doctor(args) == project_cli.EXIT_OK
+    out = capsys.readouterr().out
+    assert out.startswith("doctor: ok ·")
+    assert "outbox_pending=" in out

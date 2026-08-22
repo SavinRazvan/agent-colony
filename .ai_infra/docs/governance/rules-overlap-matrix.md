@@ -8,22 +8,21 @@ Depends On:
  - AGENTS.md
  - docs/operations/agent-workflow-procedures.md
 Notes:
- - This product ships **7** always-applied rules under `.cursor/rules/` (6 kit + `project-ssot-precedence`).
- - Additional product rules may also live in `overlays/rules/` (copy at install).
- - Last reviewed: 2026-07-19
+ - Kit 0.7.0: **4** always-applied + **3** requestable (load at commit, new files, architecture-impacting prepare).
+ - Last reviewed: 2026-08-22
 -->
 
 # Rules overlap matrix (Cursor)
 
-| Rule file | Purpose | Overlap with | Posture |
-|-----------|---------|--------------|---------|
-| `pr-workflow-enforcement.mdc` | PR-first, artifacts, merge gates | `workflow-complete.md`, `pr-workflow/SKILL.md` | **Short pointer** to `local_workflow_paths.py` + `prepare.py` `resolve_gates()` (`GATES` = 2-gate alias) |
-| `implementation-workflow-governance.mdc` | Slice lifecycle, planning discipline, testing, evidence-first | `implementer.md`, `token-efficiency.md`, `evidence-first` | **Keep** |
-| `advisory-audit-alignment-enforcement.mdc` | Alignment artifacts (authored via `auditor`) | `agent-workflow-procedures.md` | **Keep** |
-| `commit-trailer-format.mdc` | Required commit trailers + optional `Assisted-by` (no `Made-with:`) | `README.md`, `AGENTS.md` § Commits | **Keep separate** |
-| `file-docstring-header-relations.mdc` | File headers | All new source files | **Keep** |
-| `local-artifact-protection.mdc` | `.coverage`, `.env` (project paths) | ops runbooks | **Keep** |
-| `project-ssot-precedence.mdc` | Board SSOT precedes local trackers when `project_ssot.enabled` (ADR-008) | `board-ssot` skill, ADR-008 | **Keep** (product SSOT; also under `overlays/rules/`) |
+| Rule file | alwaysApply | Purpose | Overlap with | Posture |
+|-----------|-------------|---------|--------------|---------|
+| `pr-workflow-enforcement.mdc` | yes | PR-first, artifacts, merge gates | `workflow-complete.md`, `pr-workflow/SKILL.md` | **Short pointer** to `local_workflow_paths.py` + `prepare.py` `resolve_gates()` |
+| `implementation-workflow-governance.mdc` | yes | Slice lifecycle, planning discipline, testing, evidence-first | `implementer.md`, `token-efficiency.md`, `evidence-first` | **Keep** |
+| `advisory-audit-alignment-enforcement.mdc` | requestable | Alignment artifacts (authored via `auditor`) | `agent-workflow-procedures.md` | Load before architecture-impacting `/prepare-pr` |
+| `commit-trailer-format.mdc` | requestable | Required commit trailers + optional `Assisted-by` | `README.md`, `AGENTS.md` § Commits | Load at commit time |
+| `file-docstring-header-relations.mdc` | requestable | File headers | All new source files | Load on new sources |
+| `local-artifact-protection.mdc` | yes | `.coverage`, `.env` (project paths) | ops runbooks | **Keep** |
+| `project-ssot-precedence.mdc` | yes | Board SSOT precedes local trackers when `project_ssot.enabled` (ADR-008) | `board-ssot` skill, ADR-008 | **Keep** |
 
 ## Not in universal core
 
@@ -33,6 +32,6 @@ Notes:
 
 ## Track D status
 
-- **D0 inventory:** this matrix (**7** shipped rules: 6 kit + `project-ssot-precedence`).
+- **D0 inventory:** this matrix (**7** rules: **4** alwaysApply + **3** requestable; GOV-RULES-001).
 - **D1 concise pass:** applied — short invariants + links to `prepare.py`.
 - **D2 merge/remove:** `test-implementation-standard.mdc` **removed** (content in `implementation-workflow-governance.mdc`).

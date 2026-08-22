@@ -30,6 +30,9 @@ Detect **operational workflow drift** and a **falsifiable goal/doctrine pulse**:
 - **DRIFT-011b** (consumer) extra integrator agents — advisory only
 - **DRIFT-012** `.local/plans/` snapshot-only under `board_only` (no live/current plan SSOT in that dir)
 - **DRIFT-013** git index must not track `.local/`, secrets, or `.venv/` (consumer + kit-dev)
+- **DRIFT-014** token-efficiency anchor in agent cards (profile-aware)
+- **DRIFT-015** (kit-dev) plugin+workspace rule basename dup — WARN
+- **DRIFT-016** thin-index § headings for skills on disk (profile-aware skip)
 - Prose goal pulse: board Acceptance/Notes vs plan pointers vs `AGENTS.md` / agent cards (flag gaps; hand off — do not rewrite architecture)
 
 Does **not** replace `auditor` (CHK-* scorecard) or `verifier`.

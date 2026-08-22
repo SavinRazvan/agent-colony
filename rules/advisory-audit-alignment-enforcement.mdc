@@ -1,6 +1,6 @@
 ---
 description: Architecture-impacting advisory audits before prepare/merge (authored via auditor)
-alwaysApply: true
+alwaysApply: false
 ---
 
 # Alignment audit (architecture-impacting)

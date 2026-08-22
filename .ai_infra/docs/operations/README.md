@@ -31,6 +31,9 @@ Depends On:
 - [`upgrade-kit.md`](upgrade-kit.md) — reinstall / semver upgrade
 - [`project-config.md`](project-config.md) — optional `project.config.yaml` metadata
 - [`token-efficiency.md`](token-efficiency.md) — agent read/write contract
+- [`token-efficiency-program.md`](token-efficiency-program.md) — program goals G1–G6, locked decisions
+- [`token-efficiency-enforcement.md`](token-efficiency-enforcement.md) — verifier/drift-guard disproof checklist
+- [`consumer-lite-profile.md`](consumer-lite-profile.md) — optional `consumer_lite` install profile
 - [`asd-ste100-prose.md`](asd-ste100-prose.md) — **Use ASD-STE100** (free prose guide; not compliance; AI assists, human reviews)
 - [`logging-and-errors.md`](logging-and-errors.md) — logging baseline
 - [`abbreviations-notepad.md`](abbreviations-notepad.md) — shared abbreviations

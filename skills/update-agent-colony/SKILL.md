@@ -48,6 +48,16 @@ python3 -m agent_colony update --directory .
 python3 -m agent_colony update --directory . --clean-only   # optional: cleanup without upgrade
 python3 -m agent_colony update --directory . --force      # only when --check lists deltas to overwrite
 python3 -m agent_colony update --directory . --no-clean     # debug: skip pre/post cleanup
+python3 -m agent_colony update --force --profile with_mcp --directory .   # upgrade consumer_lite → full kit (0.7.0+)
+```
+
+**Lite profile (0.7.0+):** Re-activate on lite with `activate --directory . --profile consumer_lite`. Upgrade to full kit with `update --force --profile with_mcp --directory .`. See [consumer-lite-profile.md](../../.ai_infra/docs/operations/consumer-lite-profile.md).
+
+**Token-efficient verify:**
+
+```bash
+python3 -m agent_colony health --summary
+python3 -m agent_colony drift validate --profile consumer --summary
 ```
 
 **Source resolution:** `WORKFLOW_KIT_PAYLOAD` → `./payload/` → kit/plugin `payload/` (highest `kit_version` complete tree) → `--source`.

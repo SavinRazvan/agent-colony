@@ -35,7 +35,7 @@ Install **Agent Colony** (`agent-colony`) into your project in a few minutes. No
 | Step | Action |
 |------|--------|
 | **1. Plugin** | In **Agent chat** (not terminal): `/add-plugin https://github.com/SavinRazvan/agent-colony` — or **Cursor → Marketplace** when listed |
-| **2. Activate** | Open **your app folder** → Agent chat: **`/workflow-activate`** → wait for **`VERIFY PASS`** |
+| **2. Activate** | Open **your app folder** → Agent chat: **`/workflow-activate`** → wait for **`VERIFY PASS`**. Optional lite: see [Lite install](#lite-install-consumer_lite) |
 | **3. Identity** | Edit `github.collaboration.yaml` → `display_name` + `github_user` → `source .venv/bin/activate && python3 -m agent_colony contributors validate` |
 | **3b. GitHub auth** *(board SSOT)* | `gh auth status` — if Project scopes missing: `gh auth refresh -h github.com -s read:project,project`. Device flow: [github.com/login/device](https://github.com/login/device). Canon: [permissions-and-prerequisites.md § GitHub CLI](permissions-and-prerequisites.md#2-github-cli-gh--main-github-authorization). |
 | **3c. Wire board** *(board SSOT)* | Agent chat **`/board`** + paste **Project URL + repo URL** → agent proposes `project_ssot` + `default_repo` (confirm) → `project doctor` + `project status` |
@@ -171,6 +171,32 @@ Also creates `.venv`, merges MCP config (profile **`with_mcp`**), seeds DeepWiki
 cd ~/Projects/my-app          # your activated project
 source .venv/bin/activate     # after first activate
 python3 -m agent_colony activate --directory .
+```
+
+### Lite install (`consumer_lite`)
+
+Smaller Cursor footprint — **6 agents**, **6 skills**, no `board-shell` skill. First-run board coaching is inline in `board.md`. Full reference: [consumer-lite-profile.md](consumer-lite-profile.md).
+
+**First install** (module absent — use plugin payload):
+
+```bash
+cd ~/Projects/my-app
+PAYLOAD="$(ls -1dt ~/.cursor/plugins/cache/agent-colony/agent-colony/*/payload 2>/dev/null | head -1)"
+test -n "$PAYLOAD" || { echo "Re-run /add-plugin first"; exit 1; }
+python3 "$PAYLOAD/agent_colony" activate --directory . --source "$PAYLOAD" --profile consumer_lite
+```
+
+**Re-activate / heal** (after VERIFY PASS):
+
+```bash
+source .venv/bin/activate
+python3 -m agent_colony activate --directory . --profile consumer_lite
+```
+
+**Upgrade to full kit later:**
+
+```bash
+python3 -m agent_colony update --force --profile with_mcp --directory .
 ```
 
 ### First activate troubleshooting
@@ -484,19 +510,28 @@ source .venv/bin/activate          # recommended; gates auto-use `.venv/bin/pyth
 | Command | When |
 |---------|------|
 | `python3 -m agent_colony activate --directory .` | First install, re-activate, or refresh dashboards |
+| `python3 -m agent_colony activate --directory . --profile consumer_lite` | Lite install — 6 agents / 6 skills — see [Lite install](#lite-install-consumer_lite) |
+| `python3 -m agent_colony update --check --directory .` | Before upgrade — installed vs available (no writes) |
+| `python3 -m agent_colony update --directory .` | Version-gated kit upgrade |
+| `python3 -m agent_colony update --force --profile with_mcp --directory .` | Upgrade lite → full kit |
 | `python3 -m agent_colony contributors validate` | After editing `github.collaboration.yaml` — must PASS before PR |
-| `python3 -m agent_colony health` | Quick layout + `kit_version` (no kit smoke pytest under `tests/` by default) |
+| `python3 -m agent_colony health` | Quick layout + `kit_version` |
+| `python3 -m agent_colony health --summary` | One-line health (token-efficient) |
 | `python3 -m agent_colony integrate validate` | Agent/skill/MCP integration sanity (P0 = 0) |
 | `python3 -m agent_colony gates` | Full smoke gates (pytest skipped when consumer has no tests/) |
-| `python3 -m agent_colony drift validate` | Plan ↔ tracker coherence |
 | `python3 -m agent_colony drift validate --profile consumer` | **Use on consumer apps** — no agent required; see [Drift on consumer apps](#drift-on-consumer-apps) |
+| `python3 -m agent_colony drift validate --profile consumer --summary` | One-line consumer drift |
+| `python3 -m agent_colony project entry --digest` | Board Entry digest when SSOT on |
+| `python3 -m agent_colony project doctor --digest` | One-line board doctor |
+| `python3 -m agent_colony project status` | Board-first Entry (full output) |
 | `python3 -m agent_colony project heal-cards --check` | Board SSOT: inventory empty Status / incomplete Tier-1 (`--apply` repairs CLOSED+empty→Done) |
+| `python3 -m agent_colony doc skill-section --skill board-ssot --section "Continuation contract"` | Read one skill section without loading full skill |
 | `python3 -m agent_colony mcp validate` | MCP config after edits |
 | `python3 -m http.server 8000` | Serve dashboards — open http://localhost:8000/.local/agents-control-center/dashboards/index.html |
 
 Commit trailer preview: `python3 -m agent_colony contributors commit-trailers`
 
----
+Token-efficiency program: [token-efficiency-program.md](token-efficiency-program.md) · lite profile: [consumer-lite-profile.md](consumer-lite-profile.md)
 
 ## Control Center dashboards (deprecated)
 

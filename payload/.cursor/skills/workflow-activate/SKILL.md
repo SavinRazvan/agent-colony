@@ -58,6 +58,22 @@ From the **open workspace** (Pattern A — one script command). Defaults: **`wit
 python3 -m agent_colony activate --directory .
 ```
 
+**Lite profile (kit 0.7.0+)** — 6 agents, 6 skills, smaller Cursor footprint; first-run board coaching inline in `board.md` (no `board-shell` skill):
+
+```bash
+python3 -m agent_colony activate --directory . --profile consumer_lite
+```
+
+On **first install** when the module is absent, use the payload path (see below) and add `--profile consumer_lite`. Full spec: [consumer-lite-profile.md](../../.ai_infra/docs/operations/consumer-lite-profile.md). Upgrade lite → full: `python3 -m agent_colony update --force --profile with_mcp --directory .`
+
+**Token-efficient reads after activate:**
+
+```bash
+python3 -m agent_colony project entry --digest
+python3 -m agent_colony doc skill-section --skill board-ssot --section "Continuation contract"
+python3 -m agent_colony health --summary
+```
+
 **Auto source resolution:** `WORKFLOW_KIT_PAYLOAD` → `./payload/` → kit `payload/` → **`~/.cursor/plugins/cache/agent-colony/*/payload`** (after `/add-plugin`). Override with `--source /path/to/payload`.
 
 **MCP:** `workflow_activate` on the `agent-colony-mcp` server (same behavior).
@@ -71,6 +87,7 @@ cd /path/to/your-app
 PAYLOAD="$(ls -1dt ~/.cursor/plugins/cache/agent-colony/agent-colony/*/payload 2>/dev/null | head -1)"
 test -n "$PAYLOAD" || { echo "Plugin payload missing — re-run /add-plugin"; exit 1; }
 python3 "$PAYLOAD/agent_colony" activate --directory . --source "$PAYLOAD"
+# Lite (kit 0.7.0+): add --profile consumer_lite
 ```
 
 Equivalent zero-dep helper (same payload):

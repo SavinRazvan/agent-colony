@@ -30,7 +30,9 @@ Integrate **new agents, skills, MCP servers, scripts, or docs** for unpack + per
 | **Infrastructure** | script, gate | `.ai_infra/`, manifest, tests |
 | **Doc-only** | runbook | `.ai_infra/docs/` |
 
-Ask: MAS-integrated vs independent (ADR-006)? Architecture/manifest touch → plan `auditor`. Consumer-visible → `manifest.yaml` + `install-contract.json`. Research pack → read `AGENT_BRIEF.md`.
+Ask: MAS-integrated vs independent (ADR-006)? Architecture/manifest touch → plan `auditor`. Consumer-visible → `manifest.yaml` + `install-contract.json`. **`consumer_lite` profile** → [consumer-lite-profile.md](../../.ai_infra/docs/operations/consumer-lite-profile.md). Research pack → read `AGENT_BRIEF.md`.
+
+**Token-efficiency:** Do not duplicate gate lists in new docs — link `prepare.py` `resolve_gates()`.
 
 ## Phase 1 — Read base workflow
 

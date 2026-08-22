@@ -91,7 +91,7 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs — for **con
 | P0 / P1 / P2 / P3 | Priority — board uses `p0\|p1\|p2`; chat P3 → board `p2` + Notes `deferred` | `board-ssot` skill |
 | xs…xl | Size options on the board (Tier-1) | Size↔Estimate table in skill |
 
-High-signal drift ids you will see often: **DRIFT-009** (no competing tracker `in_progress` under `board_only`), **DRIFT-010** (board Status vs PRs / stale In progress; uses read-only `project export`), **DRIFT-011** (`.cursor/agents` basenames == eight live kit agent ids — goal/doctrine pulse), **DRIFT-012** (`.local/plans/` snapshot-only under `board_only`).
+High-signal drift ids you will see often: **DRIFT-009** (no competing tracker `in_progress` under `board_only`), **DRIFT-010** (board Status vs PRs / stale In progress; uses read-only `project export`), **DRIFT-011** (`.cursor/agents` basenames == eight live kit agent ids — goal/doctrine pulse), **DRIFT-012** (`.local/plans/` snapshot-only under `board_only`), **DRIFT-014** (token-efficiency anchor in agent cards), **DRIFT-016** (thin-index § headings for skills on disk).
 
 **Canvas / plan (ADR-010):** repo `canvases/` → `canvas sync` → IDE preview → optional `canvas save` → `.local/canvases/`; plan history in `.local/plans/` via `plan snapshot|list|open` (live plan on board card).
 
@@ -132,3 +132,5 @@ High-signal drift ids you will see often: **DRIFT-009** (no competing tracker `i
 | Drift checks | ADR-007 + `.cursor/skills/drift-audit/SKILL.md` |
 | Board ops | `.ai_infra/docs/operations/project-board-collaboration.md` |
 | Token / log discipline | `.ai_infra/docs/operations/token-efficiency.md` |
+| Token efficiency program | `.ai_infra/docs/operations/token-efficiency-program.md` |
+| Consumer lite profile | `consumer_lite` — 6 agents, 6 skills; ADR-011 |

@@ -138,9 +138,10 @@ The path `.ai_infra/templates/local-workspace/ci/kit-dev/` holds **kit-repositor
 | ---------- | -------------------------------------------------------------------------------- |
 | `default`  | `.cursor/`, `.agents/`, slim `.ai_infra/`, `.local/` exemplars, `AGENTS.md` stub |
 | `with_mcp` | `.ai_infra/mcp_servers/agent_colony_mcp/`, `requirements-mcp.txt`, merged `.cursor/mcp.json`, MCP worksheets (`mcp.*.example`, `.cursor/mcp.d/`) |
+| `consumer_lite` | Subset of agents/skills (6 each); `AGENTS.stub-lite.md`; prunes `board-shell`, `integrator-protocol`, etc.; same MCP as `with_mcp`; marker `.local/generated-data/install-profile.json` |
 
 
-Product rules already ship in `.cursor/rules/` via activate. Optional `overlays/rules/*.mdc` remain kit-dev / install-time extras — not a separate consumer profile.
+Product rules ship in `.cursor/rules/` via activate (**4** always-on + **3** requestable after kit 0.7.0). Optional `overlays/rules/*.mdc` remain kit-dev / install-time extras — not a separate consumer profile.
 
 **Skill merge policy:**
 

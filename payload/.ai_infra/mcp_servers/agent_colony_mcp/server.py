@@ -29,6 +29,7 @@ from agent_colony_mcp.resources import (
     read_pr_artifact,
     read_project_config,
     read_skill,
+    read_skill_section,
     read_tracker,
 )
 from agent_colony_mcp.runner import run_cmd, run_script
@@ -58,12 +59,16 @@ def _tracker_path(name: str, root: Path) -> Path:
 
 
 @mcp.tool()
-def workflow_run_prepare(pr: str, actor: str, agents: str, skip_gates: bool = False) -> str:
+def workflow_run_prepare(
+    pr: str, actor: str, agents: str, skip_gates: bool = False, summary: bool = False
+) -> str:
     """Run `.ai_infra/scripts/pr/prepare.py` (all GATES unless skip_gates)."""
     root = workspace_root()
     args = ["--pr", pr, "--actor", actor, "--agents", agents]
     if skip_gates:
         args.append("--skip-gates")
+    if summary:
+        args.append("--summary")
     code, out = run_script("scripts/pr/prepare.py", args, root)
     return f"exit={code}\n{out}"
 
@@ -370,6 +375,15 @@ def resource_skill(skill_id: str) -> str:
     """Skill body from .cursor/skills or .agents/skills."""
     try:
         return read_skill(workspace_root(), skill_id)
+    except FileNotFoundError as exc:
+        return f"not found: {exc}"
+
+
+@mcp.resource("workflow://skills/{skill_id}/{section_slug}")
+def resource_skill_section(skill_id: str, section_slug: str) -> str:
+    """One ## section from a skill (thin-index URI)."""
+    try:
+        return read_skill_section(workspace_root(), skill_id, section_slug)
     except FileNotFoundError as exc:
         return f"not found: {exc}"
 

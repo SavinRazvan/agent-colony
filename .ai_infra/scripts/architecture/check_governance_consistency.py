@@ -347,6 +347,74 @@ def _collect_integration_validate_violations() -> list[str]:
     return violations
 
 
+def _collect_gov_token_001_violations() -> list[str]:
+    """GOV-TOKEN-001: token-efficiency anchor in agent cards (all kit-dev; on-disk for consumer)."""
+    anchor = "token-efficiency.md"
+    violations: list[str] = []
+    agents = ROOT / ".cursor" / "agents"
+    if not agents.is_dir():
+        return ["GOV-TOKEN-001: missing .cursor/agents/"]
+    kit_dev = (ROOT / ".ai_infra" / "docs" / "handoff" / "IMPLEMENTATION-STATUS.md").is_file()
+    paths = sorted(agents.glob("*.md")) if not kit_dev else sorted(agents.glob("*.md"))
+    if kit_dev:
+        expected = {
+            "auditor", "board", "drift-guard", "implementer", "integrator",
+            "researcher", "test-runner", "verifier",
+        }
+        on_disk = {p.stem for p in paths}
+        missing_files = sorted(expected - on_disk)
+        violations.extend(
+            f"GOV-TOKEN-001: missing agent card {name}.md" for name in missing_files
+        )
+    for path in paths:
+        if anchor not in _read_text(path):
+            violations.append(f"GOV-TOKEN-001: {path.relative_to(ROOT)} missing {anchor}")
+    return violations
+
+
+def _collect_gov_token_002_violations() -> list[str]:
+    """GOV-TOKEN-002: no duplicated gate command strings outside prepare.py SSOT."""
+    gate_markers = ("check_testing_artifacts.py",)
+    surfaces = (
+        ROOT / ".cursor" / "agents",
+        ROOT / ".cursor" / "skills",
+        ROOT / ".cursor" / "rules",
+        ROOT / ".agents" / "skills",
+    )
+    violations: list[str] = []
+    for surface in surfaces:
+        if not surface.is_dir():
+            continue
+        for path in surface.rglob("*"):
+            if not path.is_file() or path.suffix not in {".md", ".mdc"}:
+                continue
+            text = _read_text(path)
+            body = "\n".join(text.splitlines()[20:])
+            if not any(marker in body for marker in gate_markers):
+                continue
+            if "resolve_gates()" in text or "prepare gates green" in text.lower():
+                continue
+            rel = path.relative_to(ROOT).as_posix()
+            violations.append(f"GOV-TOKEN-002: {rel} duplicates gate command strings")
+    return violations
+
+
+def _collect_gov_rules_001_violations() -> list[str]:
+    """GOV-RULES-001: alwaysApply count matches matrix (7 until PR-4 tiering → 4)."""
+    expected = int(__import__("os").environ.get("GOV_RULES_ALWAYS_APPLY_EXPECT", "4"))
+    rules_dir = ROOT / ".cursor" / "rules"
+    if not rules_dir.is_dir():
+        return ["GOV-RULES-001: missing .cursor/rules/"]
+    count = sum(
+        1
+        for path in rules_dir.glob("*.mdc")
+        if "alwaysApply: true" in _read_text(path)
+    )
+    if count != expected:
+        return [f"GOV-RULES-001: alwaysApply count {count} != expected {expected}"]
+    return []
+
+
 def _collect_asd_ste100_banner_violations() -> list[str]:
     """Every agent card and cursor skill must declare Use ASD-STE100."""
     needle = "Use ASD-STE100"
@@ -377,6 +445,9 @@ def main() -> int:
     violations.extend(_collect_owner_path_violations())
     violations.extend(_collect_file_header_violations())
     violations.extend(_collect_asd_ste100_banner_violations())
+    violations.extend(_collect_gov_token_001_violations())
+    violations.extend(_collect_gov_token_002_violations())
+    violations.extend(_collect_gov_rules_001_violations())
     violations.extend(_collect_integration_validate_violations())
     if violations:
         print("Governance consistency check failed:")

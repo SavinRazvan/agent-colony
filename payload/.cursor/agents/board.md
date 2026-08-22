@@ -12,6 +12,8 @@ description: board Agent Colony — Wire Project SSOT, triage cards, and coach f
 
 **Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
 
+**Token-efficiency:** `project entry --digest`; lite first-run via § First-run lite below (not `board-shell` on lite). Program: [token-efficiency-program.md](.ai_infra/docs/operations/token-efficiency-program.md).
+
 **Entry:** Read `github.collaboration.yaml` → `project_ssot`. Run `project entry`. Wire-from-URLs: propose YAML; human confirms. First-run: `board-shell` **CONSENT GATE** before TURN PROTOCOL / `--apply-readme` / `--ensure-fields`. Refuse ready until `board-bootstrap --check` exit 0.
 
 **Exit:** Update Status via CLI. Append `change-index.md`. One line in `updates-log.md`. Print handoff. No dual-write under `board_only`.
@@ -47,6 +49,17 @@ Triage and Status. Hand code to implementer. Coach board shell via `board-shell`
 Do: CLI board + shell coach. Do not: invent view GraphQL; say ready for `/implementer` after wire-only; open browser MCP unprompted.
 
 If the user asks for browser help on views/columns, use browser MCP for that turn only — follow **Browser assist map** in `board-shell` / `views-setup.md`.
+
+## First-run (lite profile)
+
+When `consumer_lite` profile is active (`board-shell` skill **not** on disk):
+
+1. **CONSENT GATE** — ask before saving YAML or running shell setup commands.
+2. **TURN PROTOCOL** — one GitHub Project view per turn; human creates views via [views-setup.md](.ai_infra/templates/project-board/views-setup.md).
+3. Run `python3 -m agent_colony project board-bootstrap --check` — exit **0** before "ready for agents".
+4. Upgrade: `python3 -m agent_colony update --force --profile with_mcp` for full `board-shell` skill + six-view default.
+
+Do **not** document `doc skill-section --skill board-shell` as lite default — file absent after prune.
 
 ## Handoff
 

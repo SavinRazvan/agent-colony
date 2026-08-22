@@ -14,7 +14,7 @@
 
 | | |
 |--|--|
-| **Version** | [`0.6.7`](https://github.com/SavinRazvan/agent-colony/releases) · **Tests** · 1537 · **Agents** · 8 · **Skills** · 15 · **Rules** · **7 universal** · **License** · [Apache-2.0](LICENSE) |
+| **Version** | [`0.7.0`](https://github.com/SavinRazvan/agent-colony/releases) · **Tests** · 1554 · **Agents** · 8 (6 on `consumer_lite`) · **Skills** · 15 (6 on lite) · **Rules** · 7 (4 always-on + 3 requestable) · **License** · [Apache-2.0](LICENSE) |
 | **Reference board** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
 
 ---
@@ -27,7 +27,7 @@ Agent chats lose Status. Trackers and docs drift. Teams re-explain the same slic
 
 **Agent Colony** installs a full Cursor kit into *your* app repo (not this kit repo). When Project SSOT is on, the **GitHub Project** is the only writable place for backlog and Status — agents **enter** by reading the board and **exit** by updating Status and Notes. Local `.local/` holds gates, audits, and evidence — not a second Status writer.
 
-**Proof:** 1537 tests · 8 agents · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
+**Proof:** 1554 tests · 8 agents (optional **`consumer_lite`**: 6 agents, 6 skills) · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
 
 ---
 
@@ -35,7 +35,7 @@ Agent chats lose Status. Trackers and docs drift. Teams re-explain the same slic
 
 | | |
 |--|--|
-| **Is** | Installable Cursor workflow kit: 8 agents, PR gates, local evidence; optional GitHub Project coordination, MCP, and research packs |
+| **Is** | Installable Cursor workflow kit: 8 agents (or **`consumer_lite`**: 6), PR gates, local evidence; optional GitHub Project coordination, MCP, and research packs |
 | **Is not** | A new LLM runtime, chatbot framework, or hosted SaaS |
 
 ---
@@ -75,7 +75,7 @@ Slash skills cover activate, update, board protocols, PR lifecycle (`/review-pr`
 
 **Full checklist:** [What you need — permissions & prerequisites](.ai_infra/docs/operations/permissions-and-prerequisites.md) (Cursor, `gh` scopes, git, MCP)
 
-**For agents:** **Use ASD-STE100** (inspired by; not compliant) — [asd-ste100-prose.md](.ai_infra/docs/operations/asd-ste100-prose.md) · [token-efficiency.md](.ai_infra/docs/operations/token-efficiency.md)
+**For agents:** **Use ASD-STE100** (inspired by; not compliant) — [asd-ste100-prose.md](.ai_infra/docs/operations/asd-ste100-prose.md) · [token-efficiency.md](.ai_infra/docs/operations/token-efficiency.md) · [token-efficiency-program.md](.ai_infra/docs/operations/token-efficiency-program.md)
 
 ---
 
@@ -120,7 +120,17 @@ Open **your app folder** in Cursor. In **Agent chat**:
 /workflow-activate
 ```
 
-Wait for **`VERIFY PASS`**, then set identity in `.local/user_settings/github.collaboration.yaml`:
+Wait for **`VERIFY PASS`**, then set identity in `.local/user_settings/github.collaboration.yaml`.
+
+**Optional — smaller footprint (`consumer_lite`, kit 0.7.0+):** use terminal activate with profile instead of default full kit:
+
+```bash
+cd ~/Projects/your-app
+PAYLOAD="$(ls -1dt ~/.cursor/plugins/cache/agent-colony/agent-colony/*/payload 2>/dev/null | head -1)"
+python3 "$PAYLOAD/agent_colony" activate --directory . --source "$PAYLOAD" --profile consumer_lite
+```
+
+See [consumer-lite-profile.md](.ai_infra/docs/operations/consumer-lite-profile.md). Upgrade to full kit later: `python3 -m agent_colony update --force --profile with_mcp --directory .`
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/04_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
@@ -189,7 +199,7 @@ Upgrading is **two steps**: refresh the **plugin payload** in Cursor, then run *
 
 #### Step A — Refresh the plugin (Cursor)
 
-Distribution is **GitHub `/add-plugin`**, not an auto-updating Marketplace listing. A new git tag (e.g. [`v0.6.7`](https://github.com/SavinRazvan/agent-colony/releases)) does **not** change your local plugin cache until you re-add the plugin.
+Distribution is **GitHub `/add-plugin`**, not an auto-updating Marketplace listing. A new git tag (e.g. [`v0.7.0`](https://github.com/SavinRazvan/agent-colony/releases)) does **not** change your local plugin cache until you re-add the plugin.
 
 In **Agent chat** (your app project open):
 
@@ -229,10 +239,10 @@ python3 -m agent_colony mcp validate
 Read the first lines of `--check`:
 
 ```text
-installed=0.6.6
-available=0.6.7
+installed=0.7.0
+available=0.7.0
 source=…/payload
-action=upgrade
+action=heal
 ```
 
 | Output | Meaning | What to do |
@@ -268,16 +278,25 @@ test -f .ai_infra/docs/operations/multi-consumer-isolation.md && echo OK   # 0.6
 python3 -m agent_colony drift validate --profile consumer
 ```
 
-Example on **0.6.7** (consumer update reliability):
+Example on **0.7.0** (token efficiency program + `consumer_lite`):
 
 ```text
-0.6.7
-kit_version: "0.6.7"
-installed=0.6.7
-available=0.6.7
+0.7.0
+kit_version: "0.7.0"
+installed=0.7.0
+available=0.7.0
 action=heal
 check: PASS — kit version current
 ```
+
+**Optional lite install** (terminal, first install via payload):
+
+```bash
+PAYLOAD="$(ls -1dt ~/.cursor/plugins/cache/agent-colony/agent-colony/*/payload 2>/dev/null | head -1)"
+python3 "$PAYLOAD/agent_colony" activate --directory . --source "$PAYLOAD" --profile consumer_lite
+```
+
+See [consumer-lite-profile.md](.ai_infra/docs/operations/consumer-lite-profile.md).
 
 If `.kit-version` and `manifest.yaml` disagree, the upgrade did not finish cleanly — run `update --directory .` once more (same payload source).
 

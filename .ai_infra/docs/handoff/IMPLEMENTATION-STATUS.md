@@ -20,14 +20,14 @@ Notes:
 Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
-**Last updated:** 2026-08-22 (consumer update reliability — auto-clean, payload discovery, kit 0.6.7)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.6.7 · **Tests:** 1537
+**Last updated:** 2026-08-22 (token efficiency program — kit 0.7.0, consumer_lite profile)
+**Product:** `agent-colony` · CLI: `agent-colony` 0.7.0 · **Tests:** 1554
 
 ## Shipped (confirmed in repo)
 
 | Area | Status | Location |
 |------|--------|----------|
-| Universal rules | 7 `.mdc` | `.cursor/rules/` **and** `payload/.cursor/rules/` (6 kit + `project-ssot-precedence`) |
+| Universal rules | 7 `.mdc` (4 alwaysApply + 3 requestable) | `.cursor/rules/` |
 | Agents | 8 core; `model: auto`; audit agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` |
 | Canonical skills | 15 folders | `.cursor/skills/` |
 | Maintainer skills | 6 folders (additive plugin merge; includes `full-pr-workflow`) | `.agents/skills/` |
@@ -63,10 +63,11 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Researcher agent (corpus) | **Shipped / proven** — adaptive Brief; anti-loop ≤6; CLI `research init\|fetch\|validate`; live E2E flexiai-toolsmith (18 curated, validate PASS) + verifier Claim A+B VERIFIED 2026-07-19; corpus **opt-in** after first `research init` | `.cursor/agents/researcher.md` · `research-corpus` · `canvases/agent-researcher.canvas.tsx` · Issue #74 |
-| Kit version on install | `kit_version` 0.6.7 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
+| Kit version on install | `kit_version` 0.7.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
+| Token efficiency program | G1–G6: thin-index CLI, digests, DRIFT-014–016, rules tiering, `consumer_lite` | [token-efficiency-program.md](../operations/token-efficiency-program.md) · ADR-011 |
 | Consumer update stamp | Scaffold + `update` write `.kit-version` from source manifest; CLI fallback `ensure_kit_version_stamp` | `scaffold.py` · `update_cli.py` · tests |
 | Multi-consumer isolation | Model A contract doc; DRIFT-013 tracked-runtime guard; DRIFT-011b advisory; `update --check` + `kit_managed_globs`; consumer CI template | `multi-consumer-isolation.md` · `drift_checks.py` · `update_cli.py` · `templates/ci/consumer-gates.yml` |
-| Tests | 1537 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1554 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

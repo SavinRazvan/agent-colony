@@ -49,6 +49,22 @@
         "requirements-mcp.txt"
       ],
       "forbidden_paths": []
+    },
+    "consumer_lite": {
+      "extends": "with_mcp",
+      "required_paths": [
+        ".cursor/agents/board.md",
+        ".cursor/agents/implementer.md",
+        ".cursor/agents/verifier.md",
+        ".cursor/skills/board-ssot/SKILL.md",
+        ".cursor/skills/workflow-activate/SKILL.md",
+        ".local/generated-data/install-profile.json"
+      ],
+      "forbidden_paths": [
+        ".cursor/agents/auditor.md",
+        ".cursor/agents/researcher.md",
+        ".cursor/skills/board-shell/SKILL.md"
+      ]
     }
   }
 }

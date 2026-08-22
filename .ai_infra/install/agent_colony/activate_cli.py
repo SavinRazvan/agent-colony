@@ -455,7 +455,7 @@ def register_activate_subparser(sub: argparse._SubParsersAction) -> None:
     activate.add_argument(
         "--profile",
         default="with_mcp",
-        choices=("default", "with_mcp"),
+        choices=("default", "with_mcp", "consumer_lite"),
         help="Install profile (default: with_mcp for plugin flow)",
     )
     activate.add_argument("--with-venv", action="store_true", default=True)

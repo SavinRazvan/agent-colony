@@ -39,6 +39,12 @@ def cmd_drift_validate(args: argparse.Namespace) -> int:
 
     profile = check_drift.resolve_profile(root, args.profile)
     results = check_drift.run_checks(root, args.profile)
+    exit_code = check_drift.exit_code_for(results, profile=profile)
+    if getattr(args, "summary", False):
+        failed = sum(1 for r in results if not r.passed)
+        status = "PASS" if exit_code == 0 else "FAIL"
+        print(f"drift validate: {status} · profile={profile} · checks={len(results)} · fail={failed}")
+        return exit_code
     if args.json:
         import json
 
@@ -75,9 +81,14 @@ def register_drift_subparser(sub: argparse._SubParsersAction) -> None:
     validate_cmd.add_argument("--directory", type=Path, default=".")
     validate_cmd.add_argument(
         "--profile",
-        choices=("kit-dev", "consumer"),
+        choices=("kit-dev", "consumer", "consumer-board"),
         default=None,
         help="Override auto-detected profile",
     )
     validate_cmd.add_argument("--json", action="store_true", help="Emit JSON report")
+    validate_cmd.add_argument(
+        "--summary",
+        action="store_true",
+        help="One-line PASS/FAIL summary",
+    )
     validate_cmd.set_defaults(func=cmd_drift_validate)
