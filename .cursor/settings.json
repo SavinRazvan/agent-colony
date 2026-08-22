@@ -2,6 +2,11 @@
   "plugins": {
     "cursor-team-kit": {
       "enabled": true
+    },
+    "agent-colony/agent-colony": {
+      "enabled": true,
+      "gitUrl": "https://github.com/SavinRazvan/agent-colony",
+      "gitRef": "main"
     }
   }
 }
