@@ -70,6 +70,8 @@ flowchart LR
 | **`default`** | 8 | 15 | No | `/board` + `board-shell` skill |
 | **`consumer_lite`** | 6 (includes `board`, `integrator`; no `researcher`, `auditor`) | 6 (no `board-shell`, `auditor-protocol`, …) | Yes | Inline in `board.md` — no `board-shell` skill |
 
+**Lite + `update` (0.7.1+):** Plain `python3 -m agent_colony update --directory .` defaults to profile **`with_mcp`** and upgrades lite to **15 skills / 8 agents** on version bump. To stay lite, use `--profile consumer_lite`. See [consumer-lite-profile.md](consumer-lite-profile.md) § Upgrade.
+
 **Rules (all profiles):** 7 files — **4** always-on + **3** requestable. See [consumer-lite-profile.md](consumer-lite-profile.md) and [token-efficiency-program.md](token-efficiency-program.md).
 
 **Full kit (default)** — Agent chat:

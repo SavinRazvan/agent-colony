@@ -15,8 +15,8 @@ Related: [token-efficiency-program.md](../operations/token-efficiency-program.md
 2. Scaffold **prunes** skill dirs and agent `.md` files not in allowlists after copy; rules are **not** deleted — global 4+3 tiering applies to all profiles.
 3. Write profile marker to `.local/generated-data/install-profile.json` on activate.
 4. **Lite first-run:** embed CONSENT GATE + TURN PROTOCOL in `board.md` § First-run lite — do **not** ship `board-shell` skill on lite (avoids broken `doc skill-section` references).
-5. **Defer** `.agents/skills` prune to Phase 2 — maintainer slash skills remain for PR quality (`disable-model-invocation`).
-6. Bump **kit_version to 0.7.0** with this feature set.
+5. **Phase 2 (0.7.1):** **`agents_skill_allowlist`** on `consumer_lite` — keeps PR slash skills (`review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `full-pr-workflow`); prunes `audit-alignment` and legacy root MD files. Plain `update` still defaults to `with_mcp` (lite → full on version bump); documented in consumer-lite-profile.
+6. Bump **kit_version to 0.7.0** with the initial lite feature set; **0.7.1** adds agents_skill allowlist.
 
 ## Consequences
 

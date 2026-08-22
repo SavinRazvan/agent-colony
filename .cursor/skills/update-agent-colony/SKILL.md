@@ -49,9 +49,20 @@ python3 -m agent_colony update --directory . --clean-only   # optional: cleanup 
 python3 -m agent_colony update --directory . --force      # only when --check lists deltas to overwrite
 python3 -m agent_colony update --directory . --no-clean     # debug: skip pre/post cleanup
 python3 -m agent_colony update --force --profile with_mcp --directory .   # upgrade consumer_lite → full kit (0.7.0+)
+python3 -m agent_colony update --profile consumer_lite --force --directory .   # stay on lite after kit bump (0.7.1+)
 ```
 
-**Lite profile (0.7.0+):** Re-activate on lite with `activate --directory . --profile consumer_lite`. Upgrade to full kit with `update --force --profile with_mcp --directory .`. See [consumer-lite-profile.md](../../.ai_infra/docs/operations/consumer-lite-profile.md).
+**Lite profile (0.7.0+):** Re-activate on lite with `activate --directory . --profile consumer_lite`. Upgrade to full kit with `update --force --profile with_mcp --directory .`.
+
+> **Warning — plain `update` upgrades lite to full.** `update --directory .` (no `--profile`) uses default **`with_mcp`**. On version bump it restores 15 skills and 8 agents. To **preserve lite**, pass `--profile consumer_lite` on update or re-run activate with that profile.
+
+| Command | Profile used | Lite tree after version upgrade |
+|---------|--------------|--------------------------------|
+| `update --directory .` | `with_mcp` (default) | **Full kit** (15 skills, 8 agents) |
+| `update --profile consumer_lite --force --directory .` | `consumer_lite` | **Lite** (6 skills, 6 agents) |
+| `update --force --profile with_mcp --directory .` | `with_mcp` | **Full kit** (explicit upgrade) |
+
+See [consumer-lite-profile.md](../../.ai_infra/docs/operations/consumer-lite-profile.md).
 
 **Token-efficient verify:**
 

@@ -94,6 +94,15 @@ Upgrade lite → full: `python3 -m agent_colony update --force --profile with_mc
 
 **Verify:** `python3 -m agent_colony health --summary` · `drift validate --profile consumer --summary`
 
+## Changes in 0.7.1
+
+Kit **0.7.1** extends **`consumer_lite`** (no rename):
+
+- **`agents_skill_allowlist`** — lite keeps PR slash skills only (`review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `full-pr-workflow`); prunes `audit-alignment` and legacy root MD files
+- **Plain `update` behavior documented** — default `--profile with_mcp` upgrades lite → full on version bump; use `--profile consumer_lite` to stay lite
+
+Consumers on lite: read [consumer-lite-profile.md](consumer-lite-profile.md) § Upgrade before running plain `update`.
+
 ## Changes in 0.6.7
 
 Kit **0.6.7** ships consumer update reliability (no rename):

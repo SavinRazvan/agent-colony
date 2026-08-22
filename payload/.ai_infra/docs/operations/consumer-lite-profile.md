@@ -31,7 +31,7 @@ python3 -m agent_colony activate --directory . --profile consumer_lite
 Profile marker written to `.local/generated-data/install-profile.json`:
 
 ```json
-{"profile": "consumer_lite", "kit_version": "0.7.0"}
+{"profile": "consumer_lite", "kit_version": "0.7.1"}
 ```
 
 ## Included (6 skills, 6 agents)
@@ -40,13 +40,22 @@ Profile marker written to `.local/generated-data/install-profile.json`:
 |--------|--------|
 | `board-ssot`, `implementer-loop`, `evidence-first`, `test-coverage`, `workflow-activate`, `mcp-connect` | `board`, `implementer`, `test-runner`, `verifier`, `drift-guard`, `integrator` |
 
+## Maintainer slash skills (`.agents/skills`)
+
+Lite keeps PR workflow slash skills only (kit **0.7.1+**):
+
+| Kept on lite | Pruned on lite |
+|--------------|----------------|
+| `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `full-pr-workflow` | `audit-alignment`, `PR_WORKFLOW.md`, `RESEARCH_WORKFLOW.md` |
+
+All use `disable-model-invocation`. `README.md` is kept.
+
 ## Excluded
 
 | Excluded | Why | Upgrade |
 |----------|-----|---------|
 | Skills: `board-shell`, `auditor-protocol`, `drift-audit`, `audit-*`, `research-corpus`, `canvas-artifacts`, `update-agent-colony` | Size / maintainer / day-0 non-critical | `update --force --profile with_mcp` |
 | Agents: `researcher`, `auditor` | Research + deep audit | Full profile |
-| `.agents/skills/*` (6 slash skills) | **Still copied** — Phase 2 allowlist | Slash skills use `disable-model-invocation` |
 
 ## First-run board (no `board-shell` skill)
 
@@ -82,13 +91,21 @@ Lite installs copy [AGENTS.stub-lite.md](../../templates/AGENTS.stub-lite.md) wh
 
 ## Upgrade to full kit
 
+> **Plain `update` upgrades lite to full.** `python3 -m agent_colony update --directory .` uses default profile **`with_mcp`** and restores **15 skills / 8 agents** on version bump. To **stay on lite** after a kit refresh, pass `--profile consumer_lite` explicitly:
+>
+> ```bash
+> python3 -m agent_colony update --profile consumer_lite --force --directory .
+> # or re-activate:
+> python3 -m agent_colony activate --directory . --profile consumer_lite
+> ```
+
 ```bash
 python3 -m agent_colony update --force --profile with_mcp --directory .
 python3 -m agent_colony health
 python3 -m agent_colony drift validate --profile consumer
 ```
 
-Restores 15 skills, 8 agents, full thin-index validation.
+Restores 15 skills, 8 agents, full thin-index validation, and all `.agents/skills` dirs.
 
 ## When to use lite vs full
 
