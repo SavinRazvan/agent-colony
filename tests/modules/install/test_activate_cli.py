@@ -31,9 +31,17 @@ import activate_cli  # noqa: E402
 import paths  # noqa: E402
 
 
-def _manifest_dir(base: Path) -> Path:
+def _manifest_dir(base: Path, *, version: str = "0.0.0") -> Path:
     (base / ".ai_infra").mkdir(parents=True, exist_ok=True)
-    (base / ".ai_infra" / "manifest.yaml").write_text("kit_version: 0.0.0\n", encoding="utf-8")
+    (base / ".ai_infra" / "manifest.yaml").write_text(
+        f"kit_version: {version}\n", encoding="utf-8"
+    )
+    impl = base / ".cursor" / "agents" / "implementer.md"
+    impl.parent.mkdir(parents=True, exist_ok=True)
+    impl.write_text("# implementer\n", encoding="utf-8")
+    main = base / "agent_colony" / "__main__.py"
+    main.parent.mkdir(parents=True, exist_ok=True)
+    main.write_text('"""main"""\n', encoding="utf-8")
     return base
 
 
@@ -119,20 +127,53 @@ def test_resolve_source_nothing_found_raises(tmp_path: Path, monkeypatch: pytest
         activate_cli.resolve_activate_source(None, tmp_path / "target", tmp_path / "default")
 
 
-def test_discover_cursor_plugin_payload_newest(tmp_path: Path) -> None:
+def test_discover_cursor_plugin_payload_highest_version_wins_over_mtime(
+    tmp_path: Path,
+) -> None:
     plugins = tmp_path / ".cursor" / "plugins"
-    older = plugins / "cache" / "agent-colony" / "agent-colony" / "aaa" / "payload"
-    newer = plugins / "cache" / "agent-colony" / "agent-colony" / "bbb" / "payload"
-    _manifest_dir(older)
-    _manifest_dir(newer)
+    newer_mtime = plugins / "cache" / "agent-colony" / "agent-colony" / "aaa" / "payload"
+    higher_version = plugins / "cache" / "agent-colony" / "agent-colony" / "bbb" / "payload"
+    _manifest_dir(newer_mtime, version="0.6.4")
+    _manifest_dir(higher_version, version="0.6.6")
     import os
     import time
 
     now = time.time()
-    os.utime(older, (now - 100, now - 100))
-    os.utime(newer, (now, now))
+    os.utime(newer_mtime, (now, now))
+    os.utime(higher_version, (now - 100, now - 100))
     found = activate_cli.discover_cursor_plugin_payload(home=tmp_path)
-    assert found == newer.resolve()
+    assert found == higher_version.resolve()
+
+
+def test_discover_cursor_plugin_payload_incomplete_marketplace_loses_to_cache(
+    tmp_path: Path,
+) -> None:
+    plugins = tmp_path / ".cursor" / "plugins"
+    incomplete = (
+        plugins / "marketplaces" / "github.com" / "owner" / "agent-colony" / "deadbeef" / "payload"
+    )
+    complete = plugins / "cache" / "agent-colony" / "agent-colony" / "cafebabe" / "payload"
+    (incomplete / ".ai_infra").mkdir(parents=True)
+    (incomplete / ".ai_infra" / "manifest.yaml").write_text(
+        "kit_version: 9.9.9\n", encoding="utf-8"
+    )
+    _manifest_dir(complete, version="0.6.4")
+    found = activate_cli.discover_cursor_plugin_payload(home=tmp_path)
+    assert found == complete.resolve()
+
+
+def test_discover_cursor_plugin_payload_cache_beats_marketplace_on_tie(
+    tmp_path: Path,
+) -> None:
+    plugins = tmp_path / ".cursor" / "plugins"
+    cache_payload = plugins / "cache" / "agent-colony" / "agent-colony" / "aaa" / "payload"
+    marketplace_payload = (
+        plugins / "marketplaces" / "github.com" / "owner" / "agent-colony" / "bbb" / "payload"
+    )
+    _manifest_dir(cache_payload, version="0.6.6")
+    _manifest_dir(marketplace_payload, version="0.6.6")
+    found = activate_cli.discover_cursor_plugin_payload(home=tmp_path)
+    assert found == cache_payload.resolve()
 
 
 def test_resolve_source_falls_back_to_cursor_plugin_cache(

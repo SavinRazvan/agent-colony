@@ -676,7 +676,9 @@ After the kit fix, expect:
 | Subagents/skills missing in **`/`** menu | Open **your activated project**, not `agent-colony`; re-run **`/workflow-activate`** if planes are incomplete |
 | Control Center shows **Failed to fetch** | From project root: `python3 -m http.server 8000` then open http://localhost:8000/.local/agents-control-center/dashboards/index.html — not `file://` |
 | Raw markdown (no tables/bold) in Control Center | Re-run **`/workflow-activate`** to refresh `local-markdown.js` |
-| Stale dashboard UI after kit update | `python3 -m agent_colony activate --directory .` |
+| Stale dashboard UI after kit update | `python3 -m agent_colony update --directory .` (or `/update-agent-colony`) |
+| `update --check` FAIL on `__pycache__` / orphans only | Upgrade to kit **0.6.7+** or `python3 -m agent_colony update --clean-only --directory .` |
+| `available` older than [Releases](https://github.com/SavinRazvan/agent-colony/releases) | Re-run `/add-plugin agent-colony@https://github.com/SavinRazvan/agent-colony` in Agent chat, then `--check` again |
 | `DRIFT-005 FAIL` on `drift validate --profile consumer` | **Kit bug (not your app)** — false positive when kit lacks the skip-if-absent fix; upgrade kit or ignore until fixed. See [DRIFT-005](#drift-005-fail--kit-bug-not-your-app) |
 | `drift validate` without `--profile consumer` shows DRIFT-003/006 | Auto profile picked **kit-dev** — re-run with `--profile consumer` |
 | `mcp validate` → typer required | Use `python3 -m agent_colony mcp validate` — not bare `mcp validate` |

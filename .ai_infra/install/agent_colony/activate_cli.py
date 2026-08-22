@@ -36,13 +36,57 @@ def _manifest_root(path: Path) -> bool:
     return (path / ".ai_infra" / "manifest.yaml").is_file()
 
 
+def _payload_complete(payload: Path) -> bool:
+    """Reject bare marketplace git checkouts missing installable payload trees."""
+    return (
+        (payload / ".cursor" / "agents" / "implementer.md").is_file()
+        and (payload / "agent_colony" / "__main__.py").is_file()
+    )
+
+
+def _read_payload_kit_version(payload: Path) -> tuple[int, ...]:
+    manifest = payload / ".ai_infra" / "manifest.yaml"
+    if not manifest.is_file():
+        return (0, 0, 0)
+    try:
+        raw = yaml.safe_load(manifest.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError):
+        return (0, 0, 0)
+    if not isinstance(raw, dict):
+        return (0, 0, 0)
+    version = str(raw.get("kit_version", "")).strip()
+    parts: list[int] = []
+    for piece in version.split("."):
+        if piece.isdigit():
+            parts.append(int(piece))
+        else:
+            break
+    while len(parts) < 3:
+        parts.append(0)
+    return tuple(parts[:3])
+
+
+def _payload_origin_rank(payload: Path) -> int:
+    text = payload.as_posix()
+    if "/cache/" in text:
+        return 0
+    if "/marketplaces/" in text:
+        return 1
+    if "/local/" in text:
+        return 2
+    return 3
+
+
 def discover_cursor_plugin_payload(*, home: Path | None = None) -> Path | None:
-    """Newest Agent Colony ``payload/`` under Cursor plugin cache or marketplaces.
+    """Best Agent Colony ``payload/`` under Cursor plugin cache or marketplaces.
 
     After ``/add-plugin``, Cursor stores a checkout under
     ``~/.cursor/plugins/cache/agent-colony/agent-colony/<sha>/`` with a full
     ``payload/`` tree (``with_mcp`` profile). Agents on a brand-new app can
     activate from that path without a local kit clone.
+
+    Picks highest ``kit_version`` from manifest; tie-break cache > marketplaces >
+    local; then newest mtime. Skips incomplete checkouts (no agents/CLI).
     """
     home_path = home if home is not None else Path.home()
     plugins = home_path / ".cursor" / "plugins"
@@ -60,13 +104,20 @@ def discover_cursor_plugin_payload(*, home: Path | None = None) -> Path | None:
     )
     for pattern in patterns:
         for match in plugins.glob(pattern):
-            if match.is_dir() and _manifest_root(match):
+            if match.is_dir() and _manifest_root(match) and _payload_complete(match):
                 candidates.append(match.resolve())
 
     if not candidates:
         return None
-    # Newest checkout wins (mtime of payload dir).
-    return max(set(candidates), key=lambda p: p.stat().st_mtime)
+
+    def sort_key(path: Path) -> tuple[tuple[int, ...], int, float]:
+        return (
+            _read_payload_kit_version(path),
+            -_payload_origin_rank(path),
+            path.stat().st_mtime,
+        )
+
+    return max(set(candidates), key=sort_key)
 
 
 def resolve_activate_source(raw: Path | None, target: Path, default_kit_root: Path) -> Path:

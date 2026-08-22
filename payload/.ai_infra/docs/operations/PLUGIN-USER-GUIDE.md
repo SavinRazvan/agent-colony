@@ -499,7 +499,8 @@ Details: [gate-matrix.md](gate-matrix.md). **`make gates`** / **`make verify-all
 | Activate blocked in kit repo | Open your app folder — activate refuses self-install |
 | Broken YAML in collaboration file | Keep `human_coauthors: []` or use a proper list |
 | Control Center **Failed to fetch** | `python3 -m http.server 8000` from project root, then http://localhost:8000/.local/agents-control-center/dashboards/index.html — not `file://` |
-| Stale dashboard / kit files after plugin update | Re-run `/update-agent-colony` or `python3 -m agent_colony update --directory .` |
+| Stale dashboard / kit files after plugin update | Re-run `/update-agent-colony` or `python3 -m agent_colony update --directory .` — see [upgrade-kit.md § 0.6.7](upgrade-kit.md#changes-in-067) for auto-clean |
+| `update --check` false FAIL (`__pycache__`, orphans) | Kit **0.6.7+** fixes this; until then `update --clean-only` or manual `find .ai_infra agent_colony -type d -name __pycache__ -prune -exec rm -rf {} +` |
 | `DRIFT-005 FAIL` on consumer drift | **Kit bug (not your app)** — upgrade kit or ignore until skip-if-absent fix ships. Details: [consumer-quickstart](consumer-quickstart.md#drift-005-fail--kit-bug-not-your-app) |
 | `mcp validate` → typer required | Use `python3 -m agent_colony mcp validate` — not bare `mcp validate` |
 

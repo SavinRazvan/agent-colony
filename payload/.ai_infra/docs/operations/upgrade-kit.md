@@ -73,6 +73,21 @@ Kit **0.6.4** ships token-efficient agent prose and board Entry reliability (no 
 
 Consumers: `python3 -m agent_colony update` after the plugin refreshes to **0.6.4**.
 
+## Changes in 0.6.7
+
+Kit **0.6.7** ships consumer update reliability (no rename):
+
+- **`kit_cleanup.py`** — pre/post cleanup on heal and upgrade: removes `__pycache__/` and `*.pyc` under `.ai_infra/` and `agent_colony/`; prunes kit-managed orphan files not in payload
+- **`update --clean-only`** — cleanup + `--check` report without scaffold (useful on existing installs before full upgrade)
+- **`update --no-clean`** — skip pre/post cleanup (debug escape hatch)
+- **`discover_cursor_plugin_payload`** — picks highest `kit_version` complete payload (cache > marketplaces > local); rejects incomplete marketplace checkouts
+- **`update --check`** — ignores `.kit-version`, `__pycache__/`, `*.pyc`; orphans warn only; exit **0** on heal when versions match
+- **`project list --status "In progress"`** — space normalization fix
+
+Consumers: refresh plugin → `python3 -m agent_colony update --check` → `update --directory .` after **0.6.7** is available.
+
+**Verify after upgrade:** `.kit-version`, `manifest.yaml` `kit_version`, and `update --check` `installed` / `available` must all match. One `update --directory .` is enough — no second run or `--force` for normal version bumps.
+
 ## Changes in 0.6.6
 
 Kit **0.6.6** ships multi-consumer isolation (Model A):
@@ -82,8 +97,11 @@ Kit **0.6.6** ships multi-consumer isolation (Model A):
 - **DRIFT-011b** — P2 advisory for extra integrator agents
 - **`update --check`** — diffs `kit_managed_globs` from install-contract; fails on heal or upgrade when kit-managed files differ
 - Overlay collision WARN on activate; `product-*.mdc` naming in `overlays/README.md`
+- **`update` uses payload `scaffold.py`** — upgrades from older kits no longer run the consumer's stale install script; `.kit-version` is reconciled to `available` after scaffold
 
 Consumers: refresh plugin → `python3 -m agent_colony update --check` → `update --directory .` after **0.6.6** is on Marketplace.
+
+**Verify after upgrade:** `.kit-version`, `manifest.yaml` `kit_version`, and `update --check` `installed` / `available` must all match. If `.kit-version` lags (e.g. stamp `0.6.4` but manifest `0.6.6`), run `update --directory .` again — do not assume `--force` is required when `action=upgrade`.
 
 ## Changes in 0.6.5
 
@@ -108,8 +126,9 @@ If an older activate left only MCP secret lines in `.gitignore`, or omitted the 
 ## Before upgrade
 
 1. Note current version: `cat .ai_infra/.kit-version`
-2. Commit or stash local changes (especially `.cursor/`, `.ai_infra/`, `.local/`)
-3. Back up custom overlays under `overlays/rules/` and any `mcp.user.json` secrets
+2. **Refresh the Cursor plugin** (Agent chat): `/add-plugin agent-colony@https://github.com/SavinRazvan/agent-colony` — confirm preview version matches [Releases](https://github.com/SavinRazvan/agent-colony/releases)
+3. Commit or stash local changes (especially `.cursor/`, `.ai_infra/`, `.local/`)
+4. Back up custom overlays under `overlays/rules/` and any `mcp.user.json` secrets
 
 
 
@@ -120,9 +139,12 @@ If an older activate left only MCP secret lines in `.gitignore`, or omitted the 
 ```bash
 cd ~/Projects/my-app    # your activated project
 source .venv/bin/activate
+python3 -m agent_colony update --check --directory .
 python3 -m agent_colony update --directory .
 # or Agent chat: /update-agent-colony
 ```
+
+**Verify:** `cat .ai_infra/.kit-version` and `grep kit_version .ai_infra/manifest.yaml` must match; `update --check` should show `installed` == `available`. One `update` is enough when `action=upgrade` and `--check` exits 0 — reserve `--force` for kit-managed deltas you choose to overwrite.
 
 Compares `.ai_infra/.kit-version` to the activate source `manifest.yaml` `kit_version`:
 

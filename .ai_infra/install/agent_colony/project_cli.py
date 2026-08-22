@@ -177,7 +177,7 @@ def cmd_list(args: argparse.Namespace) -> int:
     if ssot is None:
         return code
     eff = load_efficiency_config(ssot)
-    filter_status = (args.status or "").strip().lower().replace("-", "_")
+    filter_status = (args.status or "").strip().lower().replace("-", "_").replace(" ", "_")
     if filter_status in ("inprogress",):
         filter_status = "in_progress"
     if filter_status in ("review",):
