@@ -14,11 +14,14 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
+import subprocess
 import sys
 import uuid
 from pathlib import Path
 
 import pytest
+import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SCAFFOLD_PATH = REPO_ROOT / ".ai_infra" / "scripts" / "install" / "scaffold.py"
@@ -271,6 +274,48 @@ def test_scaffold_rejects_same_source_and_target() -> None:
     mod = _load_scaffold()
     with pytest.raises(ValueError, match="must differ"):
         mod.scaffold(REPO_ROOT, REPO_ROOT)
+
+
+def test_scaffold_kit_version_from_source_when_run_from_consumer_context(
+    tmp_path: Path,
+) -> None:
+    """Consumer update runs scaffold.py from target; stamp must use source manifest."""
+    target = tmp_path / "consumer"
+    shutil.copytree(REPO_ROOT / ".ai_infra", target / ".ai_infra")
+    stale_manifest = yaml.safe_load(
+        (REPO_ROOT / ".ai_infra" / "manifest.yaml").read_text(encoding="utf-8")
+    )
+    stale_manifest["kit_version"] = "0.1.0"
+    (target / ".ai_infra" / "manifest.yaml").write_text(
+        yaml.safe_dump(stale_manifest, sort_keys=False),
+        encoding="utf-8",
+    )
+    (target / ".ai_infra" / ".kit-version").write_text("0.1.0\n", encoding="utf-8")
+
+    script = target / ".ai_infra" / "scripts" / "install" / "scaffold.py"
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--target",
+            str(target),
+            "--source",
+            str(REPO_ROOT),
+            "--profile",
+            "with_mcp",
+            "--with-mcp-json",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 0, proc.stderr or proc.stdout
+
+    expected = yaml.safe_load(
+        (REPO_ROOT / ".ai_infra" / "manifest.yaml").read_text(encoding="utf-8")
+    )["kit_version"]
+    stamp = (target / ".ai_infra" / ".kit-version").read_text(encoding="utf-8").strip()
+    assert stamp == expected
+    assert stamp != "0.1.0"
 
 
 def test_scaffold_copies_project_config_example(tmp_path: Path) -> None:

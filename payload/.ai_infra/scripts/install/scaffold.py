@@ -11,6 +11,7 @@ Depends On:
 Notes:
  - Default profile: .cursor, .agents, slim .ai_infra, .local exemplars, AGENTS stub.
  - MCP merge loads mcp_manage with install/agent_colony on sys.path (cursor_host_paths).
+ - Profile + kit_version: read from source/.ai_infra/manifest.yaml (consumer upgrade safe).
 """
 
 from __future__ import annotations
@@ -131,10 +132,11 @@ def _log(messages: list[str], line: str) -> None:
     print(line)
 
 
-def _load_manifest() -> dict[str, Any]:
-    data = yaml.safe_load(MANIFEST_PATH.read_text(encoding="utf-8"))
+def _load_manifest(manifest_path: Path | None = None) -> dict[str, Any]:
+    path = manifest_path if manifest_path is not None else MANIFEST_PATH
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict) or "profiles" not in data:
-        raise RuntimeError(f"invalid manifest: {MANIFEST_PATH}")
+        raise RuntimeError(f"invalid manifest: {path}")
     return data
 
 
@@ -669,7 +671,10 @@ def scaffold(
     if with_mcp_json and profile == "default":
         profile = "with_mcp"
 
-    manifest = _load_manifest()
+    source_manifest_path = source / ".ai_infra" / "manifest.yaml"
+    if not source_manifest_path.is_file():
+        raise FileNotFoundError(f"missing source manifest: {source_manifest_path}")
+    manifest = _load_manifest(source_manifest_path)
     spec = _resolve_profile(manifest, profile)
     ai_src = source / ".ai_infra"
     ai_dst = target / ".ai_infra"

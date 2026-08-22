@@ -11,6 +11,7 @@ Depends On:
  - .ai_infra/scripts/install/scaffold.py (via activate force path)
 Notes:
  - First install remains activate; update is for already-activated apps after plugin/kit bump.
+ - ensure_kit_version_stamp: fallback when scaffold exits 0 but leaves stale .kit-version.
 """
 
 from __future__ import annotations
@@ -55,6 +56,15 @@ def read_source_version(source: Path) -> str:
     if not version:
         raise ValueError(f"manifest missing kit_version: {manifest}")
     return version
+
+
+def ensure_kit_version_stamp(target: Path, available: str) -> None:
+    """Write `.ai_infra/.kit-version` when scaffold skipped or left a stale stamp."""
+    stamp_path = target / ".ai_infra" / ".kit-version"
+    current = stamp_path.read_text(encoding="utf-8").strip() if stamp_path.is_file() else ""
+    if current != available:
+        stamp_path.parent.mkdir(parents=True, exist_ok=True)
+        stamp_path.write_text(f"{available}\n", encoding="utf-8")
 
 
 def _parse_version_tuple(version: str) -> tuple[int, ...] | None:
@@ -252,6 +262,7 @@ def cmd_update(args: argparse.Namespace) -> int:
     if code != 0:
         return code
 
+    ensure_kit_version_stamp(target, available)
     activate_cli._heal_consumer_runtime(target, with_venv=bool(args.with_venv))
     status = plane_status.assess_planes(
         target, profile=args.profile, require_venv=bool(args.with_venv)

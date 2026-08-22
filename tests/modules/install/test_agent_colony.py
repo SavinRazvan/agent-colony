@@ -63,4 +63,4 @@ def test_gates_invokes_five_steps(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_version_in_package() -> None:
     import agent_colony
 
-    assert agent_colony.__version__ == "0.6.4"
+    assert agent_colony.__version__ == "0.6.5"
