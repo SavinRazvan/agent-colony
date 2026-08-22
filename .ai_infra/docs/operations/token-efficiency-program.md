@@ -37,7 +37,7 @@ Program to close the gap between **documented** token contracts ([token-efficien
 | # | Choice | Quality | Tokens |
 |---|--------|---------|--------|
 | 1 | **6 skills, no 7th `board-shell`** + inline first-run in `board.md` | Lite has no `board-shell/` dir; skill-section would FAIL | Saves ~8 KB skill on disk |
-| 2 | **Defer `.agents/skills` prune (Phase 2)** | Keeps `/review-pr`, `/prepare-pr`, `/merge-pr` on disk | ~12 KB vs ~79 KB `.cursor/skills` pruned |
+| 2 | **Partial `.agents/skills` prune (0.7.1)** | Keeps PR slash skills on lite; prunes deprecated `audit-alignment` + legacy MDs | ~3–5 KB vs full ~17 KB tree |
 | 3 | **Keep all 7 rule files + global 4+3 tiering** | Upgrade `lite → with_mcp` restores from payload | Drops ~3 KB always-on overhead per turn |
 
 ## Consumer workflow
@@ -64,8 +64,13 @@ Program to close the gap between **documented** token contracts ([token-efficien
 
 ## Phase 2 backlog
 
-- `.agents/skills` allowlist for lite profile (if catalog bloat proven)
 - Token instrumentation (if Cursor exposes metering APIs)
+- Marker-aware plain `update` (read `install-profile.json` in `update_cli`) — **deferred**; plain `update` keeps default `with_mcp`
+
+## Shipped in 0.7.1
+
+- **`agents_skill_allowlist`** on `consumer_lite` — PR slash skills kept; deprecated maintainer skills pruned
+- Plain **`update` lite → full** behavior documented (no `update_cli` marker read)
 
 ## Upgrade paths
 

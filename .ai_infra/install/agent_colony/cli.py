@@ -223,7 +223,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="agent-colony",
         description="Cursor Agent Infrastructure Plugin — install and gate helpers.",
     )
-    parser.add_argument("--version", action="version", version="agent-colony 0.7.0")
+    parser.add_argument("--version", action="version", version="agent-colony 0.7.1")
     sub = parser.add_subparsers(dest="command", required=True)
 
     install = sub.add_parser("install", help="Install infrastructure into a target project")

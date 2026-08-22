@@ -20,8 +20,8 @@ Notes:
 Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
-**Last updated:** 2026-08-22 (token efficiency program — kit 0.7.0, consumer_lite profile)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.7.0 · **Tests:** 1557
+**Last updated:** 2026-08-22 (token efficiency Phase 2 — kit 0.7.1, agents_skill_allowlist)
+**Product:** `agent-colony` · CLI: `agent-colony` 0.7.1 · **Tests:** 1557
 
 ## Shipped (confirmed in repo)
 

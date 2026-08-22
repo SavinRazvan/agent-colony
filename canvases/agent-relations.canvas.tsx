@@ -71,7 +71,7 @@ const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
   },
   {
     id: "drift-guard",
-    role: "drift-guard Agent Colony · drift-audit (goal pulse + DRIFT-001…012)",
+    role: "drift-guard Agent Colony · drift-audit (goal pulse + DRIFT-001…016)",
     lane: "Quality",
   },
   {

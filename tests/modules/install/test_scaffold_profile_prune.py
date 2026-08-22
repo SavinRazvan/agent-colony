@@ -51,4 +51,17 @@ def test_consumer_lite_prune_and_marker(tmp_path: Path) -> None:
     assert marker.is_file()
     data = json.loads(marker.read_text(encoding="utf-8"))
     assert data["profile"] == "consumer_lite"
-    assert data["kit_version"] == "0.7.0"
+    assert data["kit_version"] == "0.7.1"
+    agents_skills = tmp_path / ".agents" / "skills"
+    skill_dirs = {p.name for p in agents_skills.iterdir() if p.is_dir()}
+    assert skill_dirs == {
+        "review-pr",
+        "prepare-pr",
+        "merge-pr",
+        "pr-workflow",
+        "full-pr-workflow",
+    }
+    assert not (agents_skills / "audit-alignment").exists()
+    assert (agents_skills / "README.md").is_file()
+    assert not (agents_skills / "PR_WORKFLOW.md").exists()
+    assert not (agents_skills / "RESEARCH_WORKFLOW.md").exists()
