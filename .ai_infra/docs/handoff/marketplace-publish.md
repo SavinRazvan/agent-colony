@@ -241,6 +241,8 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-08-21 ASD-STE100 + board Entry reliability):** ASD-STE100 banners + governance; Entry false-offline fix; `--last` PVTI_ validation; heal Day-N playbook; **1514** tests; **8** / **14** / **7**; kit version **0.6.4**.
 
+**Listing copy refresh (2026-08-22 token efficiency Phase 2):** `agents_skill_allowlist` on lite (PR slash skills kept); plain `update` lite→full documented; canvas DRIFT-001…016; **1557** tests; **8** / **15** / **7** (lite: **6** / **6**); kit version **0.7.1**.
+
 **Listing copy refresh (2026-08-22 token efficiency program):** `consumer_lite` profile (6 agents / 6 skills); rules tiering (4 always-on + 3 requestable); `doc skill-section`, `--summary` / `--digest` CLI; DRIFT-014–016; **1557** tests; **8** / **15** / **7** (lite: **6** / **6**); kit version **0.7.0**.
 
 **Listing copy refresh (2026-08-22 consumer update reliability):** Auto pre/post clean on `update`; `--clean-only` / `--no-clean`; payload source picks highest `kit_version`; `--check` ignores runtime noise; **1537** tests; **8** / **15** / **7**; kit version **0.6.7**. *(historical patch release; superseded by 0.7.0 token-efficiency refresh above)*
