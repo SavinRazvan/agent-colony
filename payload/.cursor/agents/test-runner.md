@@ -10,6 +10,8 @@ description: test-runner Agent Colony — Module-focused tests, regressions, cov
 
 **Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md` · `.ai_infra/docs/operations/token-efficiency.md`
 
+**Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
+
 **Entry:** If SSOT on: `project status` / claim; read Acceptance/Notes. Else `session-pointer.md`. Read `test-index.md` when tests change.
 
 **Exit:** `handoff --last` / claim. Status → `in_review` if tests gate PR, else `done`. Update `change-index.md`, `test-index.md` / `test-plan.md`. No dual-write under `board_only`.

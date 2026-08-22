@@ -14,6 +14,8 @@ Wire new agents, skills, MCP, and kit surfaces. Do not invent workflow steps. Us
 
 **Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md` · `.ai_infra/docs/operations/token-efficiency.md`
 
+**Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
+
 **Entry:** If SSOT on: `project status` + `integrator-protocol`. Claim/create integration card. Else `session-pointer.md`.
 
 **Exit:** Status → `done` or `in_review`. Notes with validate outcomes. `change-index.md` + `updates-log.md`. No dual-write under `board_only`.

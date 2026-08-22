@@ -7,6 +7,14 @@ alwaysApply: true
 
 **Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
 
+## Evidence-first
+
+**We always use facts, check for evidence, then take responsible action based on evidence.**
+
+- Before “done”, “complete”, “shipped”, or “bumped everywhere”: gather **fresh** path/command evidence or label **Partial** / **Not verified**.
+- Do not conflate **repo SSOT** with **published** surfaces (git tag, GitHub Release, plugin cache) — check both when release matters.
+- Canon: [evidence-first.md](.ai_infra/docs/operations/evidence-first.md) · skill `evidence-first`.
+
 ## Lifecycle
 
 - Sequence: `plan -> interfaces -> implementation -> tests -> evidence -> docs update`.

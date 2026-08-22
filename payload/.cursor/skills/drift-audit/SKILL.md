@@ -58,6 +58,8 @@ Does **not** replace `auditor` (CHK-* scorecard) or `verifier`.
 
 ## Evidence contract
 
+**Universal canon:** `evidence-first` skill · [evidence-first.md](../../.ai_infra/docs/operations/evidence-first.md). Drift-specific labels:
+
 | Label | Meaning |
 |-------|---------|
 | Confirmed | Script output + file path cited |

@@ -10,6 +10,8 @@ description: board Agent Colony — Wire Project SSOT, triage cards, and coach f
 
 **Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md` · `.ai_infra/docs/operations/token-efficiency.md`
 
+**Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
+
 **Entry:** Read `github.collaboration.yaml` → `project_ssot`. Run `project entry`. Wire-from-URLs: propose YAML; human confirms. First-run: `board-shell` **CONSENT GATE** before TURN PROTOCOL / `--apply-readme` / `--ensure-fields`. Refuse ready until `board-bootstrap --check` exit 0.
 
 **Exit:** Update Status via CLI. Append `change-index.md`. One line in `updates-log.md`. Print handoff. No dual-write under `board_only`.

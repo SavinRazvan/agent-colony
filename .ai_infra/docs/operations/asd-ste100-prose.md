@@ -75,6 +75,7 @@ STEMG maintains ASD-STE100. This kit is not STEMG software.
 
 ## Related
 
+- [evidence-first.md](evidence-first.md) — facts → evidence → responsible action
 - [token-efficiency.md](token-efficiency.md) — read/write contract
 - [board-ssot skill](../../../.cursor/skills/board-ssot/SKILL.md) — Tier-1 and Continuation
 - Official standard (reference only): [asd-ste100.org](https://asd-ste100.org/)

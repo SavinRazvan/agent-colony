@@ -856,7 +856,7 @@ export default function NamingRosterAuditCanvas() {
             B-safe SHIPPED
           </Pill>
           <Pill tone="neutral" size="sm">
-            8 agents · 14 skills
+            8 agents · 15 skills
           </Pill>
         </Row>
         <Text tone="secondary" size="small">
@@ -897,7 +897,7 @@ export default function NamingRosterAuditCanvas() {
       {view === "plan" ? (
         <Stack gap={16}>
           <Callout tone="success" title="B-safe rename SHIPPED — 2026-08-03">
-            Live filesystem roster: 8 agents / 14 canonical skills / 7 rules.
+            Live filesystem roster: 8 agents / 15 canonical skills / 7 rules.
             Agent descriptions prefixed Agent Colony (#153). Shared board-ssot is
             Entry/Exit for all agents. Plan rows below are keep/keep against the
             shipped names — not a pending rename plan.

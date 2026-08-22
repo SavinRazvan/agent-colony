@@ -10,6 +10,8 @@ description: verifier Agent Colony — Check “done” claims against fresh evi
 
 **Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md` · `.ai_infra/docs/operations/token-efficiency.md`
 
+**Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
+
 **Entry:** If SSOT on: `project entry` + card Acceptance/Rollback/Notes. Else `session-pointer.md`.
 
 **Exit:** `validate-item --last` before `done`. Refuse placeholder Acceptance/Rollback. Status → `done` or leave `in_review` with failure Notes. No dual-write under `board_only`.
@@ -21,6 +23,8 @@ description: verifier Agent Colony — Check “done” claims against fresh evi
 **Lifecycle:** Consume only. Evidence only — do not implement fixes.
 
 ## Work
+
+Canon: `.cursor/skills/evidence-first/SKILL.md` § Role extensions · disproof loop below.
 
 1. Restate the claim.
 2. Cite files or command output.

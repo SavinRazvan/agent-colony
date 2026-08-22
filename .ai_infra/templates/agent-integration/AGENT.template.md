@@ -10,6 +10,8 @@ description: {{ONE_LINE_DESCRIPTION}}
 
 **Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md` · `.ai_infra/docs/operations/token-efficiency.md`
 
+**Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
+
 **Entry:** If `project_ssot.enabled`: `project entry`, then claim one card. Else: `.local/index-and-planning/current/session-pointer.md`, then {{SKILL_OR_DOC_PATH}}.
 
 **Exit:** Board Status + Notes when SSOT on (no dual-write to trackers). Else update `session-pointer.md`, append `change-index.md` (Agent: `{{AGENT_ID}}`), one line in `history/updates-log.md`.

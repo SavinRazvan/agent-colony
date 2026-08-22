@@ -14,6 +14,8 @@ Evidence-only architecture audit (CHK-*). Not continuous plan pulse — that is 
 
 **Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md` · `.ai_infra/docs/operations/token-efficiency.md`
 
+**Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
+
 **Entry:** If SSOT on: `project status`. If no audit card: `create-from-template` `[AUDIT]` → `claim --last --agent auditor`. Else `session-pointer.md`.
 
 **Exit:** Write audit artifacts. Status → `in_review`/`done`. Put paths in Notes. No dual-write under `board_only`.
@@ -22,7 +24,7 @@ Evidence-only architecture audit (CHK-*). Not continuous plan pulse — that is 
 
 **Tier-1:** Fill Status, Priority, Size, Estimate, dates, Assignee, Linked PR. Canon: `board-ssot` § Tier-1.
 
-**Write scope:** `.local/workflow-artifacts/` only. Evidence contract: `auditor-protocol` skill.
+**Write scope:** `.local/workflow-artifacts/` only. Evidence contract: `evidence-first` + `auditor-protocol` skill.
 
 ## Read first
 

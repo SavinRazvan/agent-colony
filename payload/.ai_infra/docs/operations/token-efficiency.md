@@ -25,6 +25,7 @@ Load the section you need. Do not load whole skills by default.
 
 | Skill | Read when | Prefer |
 |-------|-----------|--------|
+| `evidence-first` | Any done/complete/shipped claim; user challenges prior answer | Universal contract + role § |
 | `board-ssot` | Mutating Status / Tier-1 | § Continuation · § Tier-1 |
 | `board-shell` | First-run shell / bootstrap FAIL | § CONSENT GATE · § TURN PROTOCOL |
 | `implementer-loop` | Implement slice | Full skill (short) |

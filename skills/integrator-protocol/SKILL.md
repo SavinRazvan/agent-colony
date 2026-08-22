@@ -15,6 +15,8 @@ Integrate **new agents, skills, MCP servers, scripts, or docs** for unpack + per
 
 ## Evidence contract
 
+**Universal canon:** `evidence-first` skill · [evidence-first.md](../../.ai_infra/docs/operations/evidence-first.md). Integrator-specific:
+
 - Every claim cites **repo path** or **command output**.
 - Not inspected → **Unknown**. No invented layout or gate behavior.
 
