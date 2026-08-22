@@ -21,7 +21,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
 **Last updated:** 2026-08-22 (token efficiency program — kit 0.7.0, consumer_lite profile)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.7.0 · **Tests:** 1554
+**Product:** `agent-colony` · CLI: `agent-colony` 0.7.0 · **Tests:** 1557
 
 ## Shipped (confirmed in repo)
 
@@ -67,7 +67,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Token efficiency program | G1–G6: thin-index CLI, digests, DRIFT-014–016, rules tiering, `consumer_lite` | [token-efficiency-program.md](../operations/token-efficiency-program.md) · ADR-011 |
 | Consumer update stamp | Scaffold + `update` write `.kit-version` from source manifest; CLI fallback `ensure_kit_version_stamp` | `scaffold.py` · `update_cli.py` · tests |
 | Multi-consumer isolation | Model A contract doc; DRIFT-013 tracked-runtime guard; DRIFT-011b advisory; `update --check` + `kit_managed_globs`; consumer CI template | `multi-consumer-isolation.md` · `drift_checks.py` · `update_cli.py` · `templates/ci/consumer-gates.yml` |
-| Tests | 1554 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1557 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

@@ -35,12 +35,12 @@ Verifier-owned disproof checklist. Label each claim: **Verified** | **Partial** 
 | 9 | MCP section URI | `workflow://skills/board-ssot/continuation-contract` returns section only | PR-2 | P1 |
 | 10 | Plugin dup WARN | DRIFT-015 WARN when plugin cache rules intersect workspace rules (kit-dev only) | PR-3 | P2 |
 
-## Verification results (2026-08-22)
+## Verification results (2026-08-22 closure)
 
 | # | Label | Evidence |
 |---|-------|----------|
 | 1 | **Verified** | `doc validate-thin-index --summary` → PASS · checked=17 · fail=0 |
-| 2 | **Verified** | `du -sb .cursor`: lite **66,196 B** vs full **113,687 B** (~**42%** smaller) |
+| 2 | **Verified** | `du -sb .cursor` after dry-run: lite **67,032 B** vs full **118,597 B** (~**43%** smaller). *Byte counts vary slightly by payload sync date; re-run `make install-dry-run*` before release audits.* |
 | 3 | **Verified** | `rg 'alwaysApply: true' .cursor/rules \| wc -l` → **4** |
 | 4 | **Verified** | `test_drift_token_efficiency.py` — missing anchor → DRIFT-014 FAIL |
 | 5 | **Verified** | `test_scaffold_profile_prune.py` · marker `.local/generated-data/install-profile.json` |
@@ -48,7 +48,7 @@ Verifier-owned disproof checklist. Label each claim: **Verified** | **Partial** 
 | 7 | **Verified** | `check_governance_consistency.py` PASS |
 | 8 | **Verified** | `test_cmd_doctor_digest` + summary CLIs PASS |
 | 9 | **Verified** | `test_read_skill_section_returns_h2_only` · MCP URI in `server.py` |
-| 10 | **Verified** | DRIFT-015 PASS on kit-dev drift run (no dup WARN this workspace) |
+| 10 | **Verified** | DRIFT-015 PASS with WARN — 6 overlapping basenames (plugin cache ∩ workspace): `advisory-audit-alignment-enforcement.mdc`, `commit-trailer-format.mdc`, `file-docstring-header-relations.mdc`, `implementation-workflow-governance.mdc`, `local-artifact-protection.mdc`, `pr-workflow-enforcement.mdc`; informational P2 per § DRIFT-015 false positives |
 
 ## Byte-count disproof (thin-index)
 

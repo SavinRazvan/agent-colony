@@ -1,7 +1,7 @@
 """
 File: test_scaffold_profile_prune.py
 Path: tests/modules/install/test_scaffold_profile_prune.py
-Role: Tests consumer_lite profile prune and install-profile marker.
+Role: Tests consumer_lite profile prune and install-profile marker (closure plan: no separate test_install_profile_marker.py).
 Used By:
  - pytest
 Depends On:
