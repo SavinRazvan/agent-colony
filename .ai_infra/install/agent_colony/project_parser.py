@@ -325,6 +325,11 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         help="Validate project_ssot config, templates, and gh project access",
     )
     doc_cmd.add_argument("--directory", type=Path, default=".")
+    doc_cmd.add_argument(
+        "--digest",
+        action="store_true",
+        help="One-line token-efficient summary",
+    )
     doc_cmd.set_defaults(func=pc.cmd_doctor)
 
     boot_cmd = project_sub.add_parser(

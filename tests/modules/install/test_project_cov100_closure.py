@@ -911,6 +911,8 @@ def test_run_checks_consumer_profile_not_board_only(tmp_path: Path) -> None:
         "DRIFT-008",
         "DRIFT-013",
         "DRIFT-011b",
+        "DRIFT-014",
+        "DRIFT-016",
     ]
 
 

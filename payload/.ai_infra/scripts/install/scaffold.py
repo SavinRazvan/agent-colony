@@ -155,14 +155,77 @@ def _resolve_profile(manifest: dict[str, Any], name: str) -> dict[str, Any]:
             "agents_md": base.get("agents_md"),
             "mcp_json": base.get("mcp_json", False),
             "overlay_rules": base.get("overlay_rules"),
+            "skill_allowlist": base.get("skill_allowlist"),
+            "agent_allowlist": base.get("agent_allowlist"),
+            "rule_always_apply": base.get("rule_always_apply"),
+            "rule_requestable": base.get("rule_requestable"),
         }
         for key in ("copy_dirs", "copy_ai_infra", "copy_files"):
             merged[key] = merged[key] + list(raw.get(key, []))
-        for key in ("scaffold_local", "agents_md", "mcp_json", "overlay_rules"):
+        for key in (
+            "scaffold_local",
+            "agents_md",
+            "mcp_json",
+            "overlay_rules",
+            "skill_allowlist",
+            "agent_allowlist",
+            "rule_always_apply",
+            "rule_requestable",
+        ):
             if key in raw:
                 merged[key] = raw[key]
         return merged
     return raw
+
+
+def _apply_profile_prune(
+    target: Path, spec: dict[str, Any], dry_run: bool, log: list[str]
+) -> None:
+    """Remove skills/agents not in profile allowlists (consumer_lite)."""
+    skill_allow = spec.get("skill_allowlist")
+    if isinstance(skill_allow, list) and skill_allow:
+        skills_dir = target / ".cursor" / "skills"
+        allow = {str(x) for x in skill_allow}
+        if skills_dir.is_dir():
+            for entry in skills_dir.iterdir():
+                if entry.is_dir() and entry.name not in allow:
+                    if dry_run:
+                        _log(log, f"DRY-RUN prune skill {entry}")
+                    else:
+                        shutil.rmtree(entry)
+                        _log(log, f"PRUNE skill {entry.name}")
+    agent_allow = spec.get("agent_allowlist")
+    if isinstance(agent_allow, list) and agent_allow:
+        agents_dir = target / ".cursor" / "agents"
+        allow = {str(x) for x in agent_allow}
+        if agents_dir.is_dir():
+            for entry in agents_dir.glob("*.md"):
+                if entry.stem not in allow:
+                    if dry_run:
+                        _log(log, f"DRY-RUN prune agent {entry.name}")
+                    else:
+                        entry.unlink()
+                        _log(log, f"PRUNE agent {entry.stem}")
+
+
+def _write_install_profile_marker(
+    target: Path,
+    profile: str,
+    kit_version: str,
+    dry_run: bool,
+    log: list[str],
+) -> None:
+    import json
+
+    marker_dir = target / ".local" / "generated-data"
+    marker_path = marker_dir / "install-profile.json"
+    payload = {"profile": profile, "kit_version": kit_version}
+    if dry_run:
+        _log(log, f"DRY-RUN write {marker_path}")
+        return
+    marker_dir.mkdir(parents=True, exist_ok=True)
+    marker_path.write_text(json.dumps(payload) + "\n", encoding="utf-8")
+    _log(log, f"WRITE {marker_path}")
 
 
 def _copy_tree(
@@ -700,6 +763,8 @@ def scaffold(
             ignore = shutil.ignore_patterns(*CURSOR_LIVE_MCP_IGNORE)
         _copy_tree(source / rel_src, target / rel_dst, dry_run, log, ignore=ignore)
 
+    _apply_profile_prune(target, spec, dry_run, log)
+
     for rel in spec.get("copy_ai_infra", []):
         _copy_ai_infra_rel(ai_src, ai_dst, rel, dry_run, log)
 
@@ -721,6 +786,11 @@ def scaffold(
     if spec.get("agents_md") == "stub":
         stub = ai_src / "templates" / "AGENTS.stub.md"
         _copy_file_if_missing(stub, target / "AGENTS.md", dry_run, log)
+    elif spec.get("agents_md") == "stub_lite":
+        stub = ai_src / "templates" / "AGENTS.stub-lite.md"
+        _copy_file_if_missing(stub, target / "AGENTS.md", dry_run, log)
+
+    _write_install_profile_marker(target, profile, kit_version, dry_run, log)
 
     if with_readme:
         _copy_file(source / "README.md", target / "README.md", dry_run, log)

@@ -72,7 +72,7 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Optional payload/ or kit root (default: auto-discover)",
     )
-    parser.add_argument("--profile", default="with_mcp", choices=("default", "with_mcp"))
+    parser.add_argument("--profile", default="with_mcp", choices=("default", "with_mcp", "consumer_lite"))
     parser.add_argument("--no-venv", action="store_true", help="Skip .venv creation")
     parser.add_argument("--no-verify", action="store_true", help="Skip post-install verify gates")
     parser.add_argument("--force", action="store_true")

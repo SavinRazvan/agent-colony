@@ -20,6 +20,8 @@ from types import ModuleType
 
 import pytest
 
+from tests.modules.install._manifest_version import expected_kit_version
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 INSTALL_PARENT = REPO_ROOT / ".ai_infra" / "install"
 PKG = INSTALL_PARENT / "agent_colony"
@@ -34,7 +36,7 @@ def test_install_init_version() -> None:
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    assert mod.__version__ == "0.6.7"
+    assert mod.__version__ == expected_kit_version()
 
 
 def test_install_main_module(monkeypatch) -> None:

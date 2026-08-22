@@ -21,7 +21,7 @@ External servers: [connect-external-mcp.md](../../docs/operations/connect-extern
 
 | Tool | Wraps |
 |------|--------|
-| `workflow_run_prepare` | `.ai_infra/scripts/pr/prepare.py` |
+| `workflow_run_prepare` | `.ai_infra/scripts/pr/prepare.py` — pass `summary=True` for one-line gate result |
 | `workflow_run_review` | `.ai_infra/scripts/pr/review.py` |
 | `workflow_run_merge_check` | `.ai_infra/scripts/pr/merge.py` |
 | `workflow_run_gate` | single gate from `resolve_gates()` (context-aware) |
@@ -37,8 +37,8 @@ External servers: [connect-external-mcp.md](../../docs/operations/connect-extern
 | `workflow_contributors_validate` | validate user settings YAML |
 | `workflow_list_session_agents` | change-index + session-pointer → merged Agent/s |
 | `workflow_integrate_validate` | `.ai_infra/scripts/integration/validate.py` (INT-001…014) |
-| `workflow_drift_validate` | `.ai_infra/scripts/workflow/check_drift.py` (DRIFT-001…010 kit-dev; consumer subset) |
-| `workflow_activate` | `.ai_infra/install/agent_colony/activate_cli.py` (three-plane install) |
+| `workflow_drift_validate` | `.ai_infra/scripts/workflow/check_drift.py` (DRIFT-001…016 kit-dev; consumer subset) |
+| `workflow_activate` | `.ai_infra/install/agent_colony/activate_cli.py` (three-plane install; `--profile consumer_lite` on kit 0.7.0+) |
 | `workflow_doc_facts_validate` | `.ai_infra/scripts/architecture/check_doc_facts.py` (DOC-001…008) |
 | `workflow_verify_all` | `.ai_infra/scripts/architecture/verify_all.py` (maintainer matrix) |
 
@@ -48,7 +48,8 @@ External servers: [connect-external-mcp.md](../../docs/operations/connect-extern
 |-----|---------|
 | `workflow://inventory` | Agent ids, skill ids, gate count (JSON) |
 | `workflow://agents/{agent_id}` | Agent prompt markdown |
-| `workflow://skills/{skill_id}` | Skill body from `.cursor/skills` or `.agents/skills` |
+| `workflow://skills/{skill_id}` | Full skill body from `.cursor/skills` or `.agents/skills` |
+| `workflow://skills/{skill_id}/{section_slug}` | One H2 section only (token-efficient; slug from heading) |
 | `workflow://artifacts/pr/{phase}` | PR artifact (`review` \| `prep` \| `prepare` \| `merge`) |
 | `workflow://trackers/{name}` | Tracker markdown from `.local/.../current/` |
 | `workflow://mcp/registry` | Merged MCP registry JSON |

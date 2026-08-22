@@ -72,19 +72,19 @@ Full walkthrough: [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-G
 4. [`.ai_infra/docs/operations/token-efficiency.md`](.ai_infra/docs/operations/token-efficiency.md)
 5. When `project_ssot.enabled` + `board_only`: `python3 -m agent_colony project status` (board-first). Else / offline: `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 
-## Rules (always applied in Cursor)
+## Rules (Cursor)
 
-**7 rules** — 6 universal kit rules plus `project-ssot-precedence.mdc` when Project SSOT is enabled (ADR-008).
+**7 rules** — **4 always-on** + **3 requestable** (kit 0.7.0+). Requestable rules load at commit, new source files, or architecture-impacting prepare. Program: [token-efficiency-program.md](.ai_infra/docs/operations/token-efficiency-program.md).
 
-| Rule | Topic |
-|------|--------|
-| `.cursor/rules/implementation-workflow-governance.mdc` | Slice lifecycle, trackers, tests |
-| `.cursor/rules/pr-workflow-enforcement.mdc` | PR-first, artifacts, branch safety |
-| `.cursor/rules/commit-trailer-format.mdc` | Commit trailers + optional `Assisted-by` |
-| `.cursor/rules/file-docstring-header-relations.mdc` | **File headers** on new sources |
-| `.cursor/rules/local-artifact-protection.mdc` | Protected paths (`.coverage`, `.env`) |
-| `.cursor/rules/advisory-audit-alignment-enforcement.mdc` | Architecture audits → alignment artifacts |
-| `.cursor/rules/project-ssot-precedence.mdc` | Board SSOT precedence when `project_ssot.enabled` (ADR-008) |
+| Tier | Rule | Topic |
+|------|------|--------|
+| Always-on | `.cursor/rules/implementation-workflow-governance.mdc` | Slice lifecycle, trackers, tests |
+| Always-on | `.cursor/rules/pr-workflow-enforcement.mdc` | PR-first, artifacts, branch safety |
+| Always-on | `.cursor/rules/local-artifact-protection.mdc` | Protected paths (`.coverage`, `.env`) |
+| Always-on | `.cursor/rules/project-ssot-precedence.mdc` | Board SSOT when `project_ssot.enabled` (ADR-008) |
+| Requestable | `.cursor/rules/commit-trailer-format.mdc` | Commit trailers + optional `Assisted-by` |
+| Requestable | `.cursor/rules/file-docstring-header-relations.mdc` | **File headers** on new sources |
+| Requestable | `.cursor/rules/advisory-audit-alignment-enforcement.mdc` | Architecture audits → alignment artifacts |
 
 ## Commits
 

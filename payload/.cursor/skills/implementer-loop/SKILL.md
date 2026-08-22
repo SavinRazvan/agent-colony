@@ -9,6 +9,8 @@ description: Disciplined implementation slices with board SSOT continuation and 
 
 **Evidence-first:** `.cursor/skills/evidence-first/SKILL.md` — verify with fresh evidence before “done” or release claims.
 
+**Token-efficiency:** Entry `project entry --digest`; skill reads via `doc skill-section`; say *prepare gates green* only after run — never paste full gate output.
+
 ## When
 
 New or continued `feature/` | `fix/` | `chore/` work; recovery from blocked slices.

@@ -64,6 +64,21 @@ When scope includes **version bump** or **release**:
 | **test-runner** | Cite pytest command + pass/fail counts from this run |
 | **researcher** | Pack rows need source refs — `research-corpus` |
 
+## Token-efficiency extensions
+
+| Agent | Extension |
+|-------|-----------|
+| **implementer** | `project entry --digest`; `doc skill-section`; never paste green pytest/gates |
+| **verifier** | Disprove full-skill reads; prefer `--summary` validators |
+| **drift-guard** | DRIFT-014–016; one export per wave |
+| **auditor** | CHK-TOKEN; category `token_contract` |
+| **board** | Lite first-run via `board.md` § First-run lite |
+| **integrator** | Lite profile docs; no gate duplication |
+| **test-runner** | Pass/fail counts from this run only |
+| **researcher** | Source refs in packs; not on lite profile |
+
+Program: `.ai_infra/docs/operations/token-efficiency-program.md`.
+
 ## Handoff line (optional)
 
 ```text

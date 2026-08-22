@@ -46,6 +46,9 @@ Notes:
 | MCP registry mapping | `.cursor/mcp.registry.yaml` | Agents, `connect-external-mcp.md` |
 | External MCP connect procedure | `.ai_infra/docs/operations/connect-external-mcp.md` | Users + agents |
 | Repository orientation | `AGENTS.md`, `README.md` | All agents |
+| Token-efficiency SSOT | `.ai_infra/docs/operations/token-efficiency.md`, `token-efficiency-program.md` | All agents, rules |
+| Skill thin-index CLI | `doc skill-section`, `doc validate-thin-index` in `.ai_infra/install/agent_colony/doc_cli.py` | Agents, MCP |
+| Install profile marker | `.local/generated-data/install-profile.json` (written by scaffold) | integrate validate, drift DRIFT-016 |
 
 **Rule:** If text disagrees with `prepare.py` or `local_workflow_paths.py`, update the text in the **same PR** as the script change, or immediately after.
 

@@ -28,19 +28,21 @@
 3. [IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) · [workflow-architecture](.ai_infra/docs/architecture/workflow-architecture.md)
 4. [ADR index](.ai_infra/docs/decisions/README.md) · [local-workspace-layout](.ai_infra/docs/operations/local-workspace-layout.md) · [multi-consumer-isolation](.ai_infra/docs/operations/multi-consumer-isolation.md) · [workflow-source-owners](.ai_infra/docs/governance/workflow-source-owners.md)
 
-Token contract: [token-efficiency.md](.ai_infra/docs/operations/token-efficiency.md).
+Token contract: [token-efficiency.md](.ai_infra/docs/operations/token-efficiency.md) · program: [token-efficiency-program.md](.ai_infra/docs/operations/token-efficiency-program.md).
 
 ## Rules (always applied)
+
+**7 rules** — **4 always-on** + **3 requestable** (kit 0.7.0). See [token-efficiency-program.md](.ai_infra/docs/operations/token-efficiency-program.md).
 
 | Rule | Topic |
 |------|--------|
 | `implementation-workflow-governance.mdc` | Slice lifecycle, trackers, tests |
 | `pr-workflow-enforcement.mdc` | PR-first, artifacts, branch safety |
-| `commit-trailer-format.mdc` | Commit trailers + `Assisted-by` |
-| `file-docstring-header-relations.mdc` | File headers |
 | `local-artifact-protection.mdc` | Protected `.coverage`, `.env` |
-| `advisory-audit-alignment-enforcement.mdc` | Alignment audits → `auditor` |
 | `project-ssot-precedence.mdc` | Board SSOT (ADR-008) |
+| `commit-trailer-format.mdc` | Commit trailers (requestable) |
+| `file-docstring-header-relations.mdc` | File headers (requestable) |
+| `advisory-audit-alignment-enforcement.mdc` | Alignment audits (requestable) |
 
 Product rules: [`overlays/rules/`](overlays/README.md). Say *prepare gates green* — do not duplicate gate lists.
 
@@ -85,7 +87,7 @@ PR artifacts: `Action-By` / `GitHub-User` / `Agent/s` via `--pipeline` (`.agents
 | `.cursor/agents/` | 8 agent cards — `auditor`, `board`, `drift-guard`, `implementer`, `integrator`, `researcher`, `test-runner`, `verifier` |
 | `.cursor/skills/` | 15 canonical protocols — see [repository-map](.ai_infra/docs/handoff/repository-map.md) |
 | `.agents/skills/` | 6 maintainer slash skills (PR workflow) |
-| `.cursor/rules/` | 7 `alwaysApply` rules |
+| `.cursor/rules/` | 7 rules (4 always-on + 3 requestable) |
 
 | Role | Entry |
 |------|--------|

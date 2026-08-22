@@ -468,6 +468,7 @@ def run_promote_to_issue(args: argparse.Namespace) -> int:
 def run_doctor(args: argparse.Namespace) -> int:
     import project_cli as pc
     root = Path(args.directory).resolve()
+    digest = bool(getattr(args, "digest", False))
     ssot, errs = pc.load_project_ssot(root)
     if errs or ssot is None:
         return pc.fail('doctor', pc.EXIT_USAGE, errs[0] if errs else 'project_ssot missing')
@@ -504,9 +505,26 @@ def run_doctor(args: argparse.Namespace) -> int:
         if proc.returncode != 0:
             detail = (proc.stderr or proc.stdout or 'gh project not readable').strip()
             if _outbox.is_rate_limit_error(detail):
-                print('doctor: WARN — gh project item-list rate-limited; config still ok', file=sys.stderr)
+                if not digest:
+                    print('doctor: WARN — gh project item-list rate-limited; config still ok', file=sys.stderr)
             else:
+                if digest:
+                    print(f'doctor: FAIL · gh · {detail[:120]}')
                 return pc.fail('doctor', pc.EXIT_GH, detail)
+    if digest:
+        import project_outbox as _outbox_digest
+        cfg_d = _outbox_digest.load_outbox_config(ssot)
+        path_d = _outbox_digest.outbox_path(root, cfg_d)
+        counts_d = _outbox_digest.count_outbox(path_d)
+        incomplete = 0
+        if not skip_live:
+            items, items_err = pc.fetch_project_items(ssot, limit=100)
+            if not items_err:
+                incomplete = pc.summarize_card_completeness(ssot, items)['incomplete']
+        print(
+            f"doctor: ok · project={ssot.get('name')} · outbox_pending={counts_d['pending']} · incomplete_cards={incomplete}"
+        )
+        return pc.EXIT_OK
     print('doctor: ok')
     print(f'project: {ssot.get('name')} ({ssot.get('url')})')
     print(f'human: {user}')

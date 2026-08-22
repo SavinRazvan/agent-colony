@@ -61,6 +61,8 @@ def test_gates_invokes_five_steps(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_version_in_package() -> None:
+    from tests.modules.install._manifest_version import expected_kit_version
+
     import agent_colony
 
-    assert agent_colony.__version__ == "0.6.7"
+    assert agent_colony.__version__ == expected_kit_version()

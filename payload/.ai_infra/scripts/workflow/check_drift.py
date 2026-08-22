@@ -93,6 +93,13 @@ def resolve_profile(root: Path, override: str | None) -> str:
     return detect_profile(tracker_text, override, board_only=board_only)
 
 
+def format_summary(results: list[CheckResult], *, profile: str = "kit-dev") -> str:
+    exit_code = exit_code_for(results, profile=profile)
+    failed = sum(1 for r in results if not r.passed)
+    status = "PASS" if exit_code == 0 else "FAIL"
+    return f"drift validate: {status} · profile={profile} · checks={len(results)} · fail={failed}"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Operational workflow drift validate")
     parser.add_argument(
@@ -108,11 +115,20 @@ def main(argv: list[str] | None = None) -> int:
         help="Override auto-detected profile",
     )
     parser.add_argument("--json", action="store_true", help="Emit JSON report")
+    parser.add_argument(
+        "--summary",
+        action="store_true",
+        help="One-line PASS/FAIL summary",
+    )
     args = parser.parse_args(argv)
 
     project_root = args.directory.resolve()
     profile = resolve_profile(project_root, args.profile)
     results = run_checks(project_root, args.profile)
+
+    if args.summary:
+        print(format_summary(results, profile=profile))
+        return exit_code_for(results, profile=profile)
 
     if args.json:
         payload = {

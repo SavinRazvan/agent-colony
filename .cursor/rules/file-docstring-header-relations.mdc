@@ -1,6 +1,6 @@
 ---
 description: Top-of-file module header with File/Path/Role/relations
-alwaysApply: true
+alwaysApply: false
 ---
 
 # File header (docstring / comment block)

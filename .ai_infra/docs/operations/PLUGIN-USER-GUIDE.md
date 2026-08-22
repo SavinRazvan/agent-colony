@@ -62,6 +62,33 @@ flowchart LR
 
 **Important:** Enabling the plugin does **not** replace activate. Open **your app folder** in Cursor, then run **`/workflow-activate`** once (safe to re-run — idempotent).
 
+### Install profiles (kit 0.7.0+)
+
+| Profile | Agents | Skills | MCP | First-run board coach |
+|---------|--------|--------|-----|------------------------|
+| **`with_mcp`** *(default)* | 8 | 15 | Yes | `/board` + `board-shell` skill |
+| **`default`** | 8 | 15 | No | `/board` + `board-shell` skill |
+| **`consumer_lite`** | 6 (no `board`, `integrator`) | 6 (no `board-shell`, `integrator-protocol`, …) | Yes | Inline in `board.md` — no `board-shell` skill |
+
+**Rules (all profiles):** 7 files — **4** always-on + **3** requestable. See [consumer-lite-profile.md](consumer-lite-profile.md) and [token-efficiency-program.md](token-efficiency-program.md).
+
+**Full kit (default)** — Agent chat:
+
+```text
+/workflow-activate
+```
+
+**Lite kit (terminal)** — first install when `agent_colony` module is absent:
+
+```bash
+cd ~/Projects/my-app
+PAYLOAD="$(ls -1dt ~/.cursor/plugins/cache/agent-colony/agent-colony/*/payload 2>/dev/null | head -1)"
+test -n "$PAYLOAD" || { echo "Re-run /add-plugin first"; exit 1; }
+python3 "$PAYLOAD/agent_colony" activate --directory . --source "$PAYLOAD" --profile consumer_lite
+```
+
+After VERIFY PASS, later commands use `source .venv/bin/activate && python3 -m agent_colony …`. Upgrade lite → full: `python3 -m agent_colony update --force --profile with_mcp --directory .`
+
 ### Install plugin from GitHub (recommended until Marketplace listing)
 
 In **Agent chat** (not the terminal):
@@ -223,16 +250,16 @@ Daily Entry after onboarding: `project status` (board first) — see [project-bo
 
 ## 3. What lands on disk after activate
 
-From `manifest.yaml` (default profile **`with_mcp`**):
+From `manifest.yaml` (default profile **`with_mcp`**; optional **`consumer_lite`** — see §1):
 
 ```text
 your-project/
-├── AGENTS.md                      # thin router (not overwritten on re-activate)
+├── AGENTS.md                      # thin router (lite: stub-lite variant)
 ├── .cursor/
-│   ├── agents/                    # 8 subagents (incl. board)
-│   ├── skills/                    # protocols (activate, audit, integration, …)
-│   ├── rules/                     # always-applied governance
-│   └── mcp.json                   # with_mcp profile
+│   ├── agents/                    # 8 subagents (6 on consumer_lite)
+│   ├── skills/                    # 15 protocols (6 on consumer_lite)
+│   ├── rules/                     # 7 rules (4 always-on + 3 requestable)
+│   └── mcp.json                   # with_mcp / consumer_lite profile
 ├── .agents/skills/                # maintainer slash skills (/review-pr, …)
 ├── .ai_infra/
 │   ├── manifest.yaml
@@ -307,17 +334,24 @@ source .venv/bin/activate
 
 | Command | Purpose |
 |---------|---------|
-| `python3 -m agent_colony activate --directory .` | First install / light heal when planes ready |
+| `python3 -m agent_colony activate --directory .` | First install / light heal when planes ready (profile **`with_mcp`** default) |
+| `python3 -m agent_colony activate --directory . --profile consumer_lite` | Smaller footprint — 6 agents, 6 skills; see [consumer-lite-profile.md](consumer-lite-profile.md) |
 | `python3 -m agent_colony update --check --directory .` | Installed vs available + kit-managed diffs (no writes) |
 | `python3 -m agent_colony update --directory .` | Version-gated upgrade (heal or full refresh) |
 | `python3 -m agent_colony update --directory . --clean-only` | Cleanup runtime noise + orphans without scaffold (0.6.7+) |
 | `python3 -m agent_colony update --directory . --force` | Full overwrite — run `--check` first |
+| `python3 -m agent_colony update --force --profile with_mcp --directory .` | Upgrade **consumer_lite** → full kit |
 | `python3 -m agent_colony contributors validate` | After editing collaboration YAML |
 | `python3 -m agent_colony health` | Layout + version |
+| `python3 -m agent_colony health --summary` | One-line layout + version (token-efficient) |
 | `python3 -m agent_colony integrate validate` | Integration checks |
 | `python3 -m agent_colony gates` | Full smoke gates |
-| `python3 -m agent_colony drift validate --profile consumer` | Consumer drift (no agent required) — see [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
-| `python3 -m agent_colony health` | Layout check (activate VERIFY; no kit smoke pytest by default) |
+| `python3 -m agent_colony drift validate --profile consumer` | Consumer drift (no agent required) |
+| `python3 -m agent_colony drift validate --profile consumer --summary` | One-line consumer drift result |
+| `python3 -m agent_colony project entry --digest` | Board Entry digest (when SSOT on) |
+| `python3 -m agent_colony project doctor --digest` | One-line board doctor summary |
+| `python3 -m agent_colony doc skill-section --skill board-ssot --section "Continuation contract"` | Read one skill section (token-efficient) |
+| `python3 -m agent_colony doc validate --summary` | One-line doc-facts result (kit-dev) |
 
 Full list: [consumer-quickstart.md](consumer-quickstart.md) § Terminal commands cheat sheet.
 
@@ -381,6 +415,7 @@ Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dash
 | I want to… | Type in chat | Or run | Deep dive |
 |------------|--------------|--------|-----------|
 | **First-time setup** | `/workflow-activate` | `python3 -m agent_colony activate --directory .` | §2 above · [workflow-activate skill](../../.cursor/skills/workflow-activate/SKILL.md) |
+| **Lite install (smaller footprint)** | — | `activate --profile consumer_lite` (payload path on first install) | [consumer-lite-profile.md](consumer-lite-profile.md) |
 | **First-run board shell** *(SSOT on)* | `/board` | paste Project+repo URLs → wire YAML → `project doctor` → `board-bootstrap --check` | [board-shell](../../.cursor/skills/board-shell/SKILL.md) · checklist §3b–4 |
 | **Implement a feature slice** | `/implementer` | — | [implementer-loop](../../.cursor/skills/implementer-loop/SKILL.md) |
 | **Run tests / coverage** | `/test-runner` | `pytest -q` | [workflow-complete.md](workflow-complete.md) §C |
@@ -429,7 +464,7 @@ Every session:
 4. **`/implementer`** (or specialist agent from §6)
 5. Optional: [Control Center dashboards (deprecated)](#5-control-center-dashboards-deprecated) — `http.server` + full URL in §5
 
-Token contract: [token-efficiency.md](token-efficiency.md) · Layout: [local-workspace-layout.md](local-workspace-layout.md).
+Token contract: [token-efficiency.md](token-efficiency.md) · [token-efficiency-program.md](token-efficiency-program.md) · Layout: [local-workspace-layout.md](local-workspace-layout.md).
 
 ---
 
@@ -502,7 +537,7 @@ Details: [gate-matrix.md](gate-matrix.md). **`make gates`** / **`make verify-all
 | Activate blocked in kit repo | Open your app folder — activate refuses self-install |
 | Broken YAML in collaboration file | Keep `human_coauthors: []` or use a proper list |
 | Control Center **Failed to fetch** | `python3 -m http.server 8000` from project root, then http://localhost:8000/.local/agents-control-center/dashboards/index.html — not `file://` |
-| Stale dashboard / kit files after plugin update | Re-run `/update-agent-colony` or `python3 -m agent_colony update --directory .` — see [upgrade-kit.md § 0.6.7](upgrade-kit.md#changes-in-067) for auto-clean |
+| Stale dashboard / kit files after plugin update | Re-run `/update-agent-colony` or `python3 -m agent_colony update --directory .` — see [upgrade-kit.md § 0.7.0](upgrade-kit.md#changes-in-070) |
 | `update --check` false FAIL (`__pycache__`, orphans) | Kit **0.6.7+** fixes this; until then `update --clean-only` or manual `find .ai_infra agent_colony -type d -name __pycache__ -prune -exec rm -rf {} +` |
 | `DRIFT-005 FAIL` on consumer drift | **Kit bug (not your app)** — upgrade kit or ignore until skip-if-absent fix ships. Details: [consumer-quickstart](consumer-quickstart.md#drift-005-fail--kit-bug-not-your-app) |
 | `mcp validate` → typer required | Use `python3 -m agent_colony mcp validate` — not bare `mcp validate` |
@@ -523,6 +558,7 @@ More: [consumer-quickstart.md](consumer-quickstart.md) § Troubleshooting.
 | MCP (DeepWiki, custom) | [connect-external-mcp.md](connect-external-mcp.md) |
 | Research packs | skill `research-corpus` |
 | Why plugin + payload | [ADR-001](../decisions/ADR-001-distribution-activation.md) |
+| Token efficiency / thin reads | [token-efficiency-program.md](token-efficiency-program.md) · [consumer-lite-profile.md](consumer-lite-profile.md) |
 | Upgrade / semver | [upgrade-kit.md](upgrade-kit.md) |
 | Optional project metadata | [project-config.md](project-config.md) |
 

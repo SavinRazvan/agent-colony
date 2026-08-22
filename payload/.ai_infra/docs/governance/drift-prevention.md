@@ -60,6 +60,9 @@ Script-first checks for plan ↔ tracker ↔ session-pointer coherence, handoff 
 | Plugin/payload SHA drift | `sync_plugin_bundle.py --check` | Bundle sync |
 | Slice claim verification | `verifier` | Evidence-based claim verification (Verified\|Partial\|Not verified) |
 | Architecture / security / perf scorecard (CHK-*) | `auditor` | Module deep-dive / EA phases |
+| Token-efficiency anchors / thin-index | DRIFT-014, DRIFT-016; GOV-TOKEN-* in governance scanner | Duplicated gate lists in prose |
+
+**Token-efficiency (kit 0.7.0+):** DRIFT-014 (agent anchor), DRIFT-015 (plugin rule dup WARN, kit-dev only), DRIFT-016 (thin-index parity). See [token-efficiency-enforcement.md](../operations/token-efficiency-enforcement.md).
 
 **Command:** `python -m agent_colony drift validate --directory .` or `make drift-validate`.
 

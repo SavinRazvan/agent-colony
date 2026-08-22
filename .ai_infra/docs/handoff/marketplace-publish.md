@@ -28,7 +28,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 4. `make sync-plugin` — rebuild `agents/`, `rules/`, `skills/`, `payload/` (commit the result)
 5. `make check-plugin` — bundle parity green
 6. `.venv/bin/python .ai_infra/scripts/architecture/check_debrand.py`
-7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02); **done** 0.4.0 → 0.5.0 (2026-08-07); **done** 0.5.0 → 0.6.0 (2026-08-07, CLI module rename); **done** 0.6.0 → 0.6.1 (2026-08-07, MCP package rename); **done** 0.6.1 → 0.6.2 (2026-08-09, board Status + Tier-1 / heal-cards); **done** 0.6.2 → 0.6.3 (2026-08-09, board End date on Done); **done** 0.6.3 → 0.6.4 (2026-08-21, ASD-STE100 + board Entry reliability); **done** 0.6.4 → 0.6.5 (2026-08-22, consumer update `.kit-version` stamp); **done** 0.6.5 → 0.6.6 (2026-08-22, multi-consumer isolation); **done** 0.6.6 → 0.6.7 (2026-08-22, consumer update reliability)
+7. [x] Bump **all version SSOT fields together** (see [Versioning](#versioning) below) — **done** 0.3.0 → 0.4.0 (2026-07-02); **done** 0.4.0 → 0.5.0 (2026-08-07); **done** 0.5.0 → 0.6.0 (2026-08-07, CLI module rename); **done** 0.6.0 → 0.6.1 (2026-08-07, MCP package rename); **done** 0.6.1 → 0.6.2 (2026-08-09, board Status + Tier-1 / heal-cards); **done** 0.6.2 → 0.6.3 (2026-08-09, board End date on Done); **done** 0.6.3 → 0.6.4 (2026-08-21, ASD-STE100 + board Entry reliability); **done** 0.6.4 → 0.6.5 (2026-08-22, consumer update `.kit-version` stamp); **done** 0.6.5 → 0.6.6 (2026-08-22, multi-consumer isolation); **done** 0.6.6 → 0.6.7 (2026-08-22, consumer update reliability); **done** 0.6.7 → 0.7.0 (2026-08-22, token efficiency program + `consumer_lite`)
 8. [x] `assets/agent-colony-logo.png` (1:1, background plate) — see `assets/README.md` — **present** (~1254×1254 PNG; include `.png` in URLs)
 9. [x] Manual `/workflow-activate` UI smoke (Cursor chat `/` menu, real project) — **PASS 2026-07-08**
    on **Smart-Notes** (`~/Projects/Smart-Notes`): chat activate + terminal matrix green.
@@ -40,7 +40,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 
 ## Versioning
 
-**Current release:** `0.6.7` (git tag [`v0.6.7`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.6.7)).
+**Current release:** `0.7.0` (git tag [`v0.7.0`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.7.0) when published).
 
 **Superseded:** `v0.3.0` (`1f16af1`) predates `PLUGIN-FLATTEN` (#15) — its tagged tree has **zero**
 files under `agents/`, `rules/`, `skills/`, `payload/` (the gitignore bug #15 fixed). Do not
@@ -240,6 +240,8 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 **Listing copy refresh (2026-08-09 board End date on Done):** Agents set End date (UTC) on Status→Done; validate/heal/board-shell Tier-1; `set_end_date_on_done`; **1510** tests; **8** / **14** / **7**; kit version **0.6.3**.
 
 **Listing copy refresh (2026-08-21 ASD-STE100 + board Entry reliability):** ASD-STE100 banners + governance; Entry false-offline fix; `--last` PVTI_ validation; heal Day-N playbook; **1514** tests; **8** / **14** / **7**; kit version **0.6.4**.
+
+**Listing copy refresh (2026-08-22 token efficiency program):** `consumer_lite` profile (6 agents / 6 skills); rules tiering (4 always-on + 3 requestable); `doc skill-section`, `--summary` / `--digest` CLI; DRIFT-014–016; **1547** tests; **8** / **15** / **7** (lite: **6** / **6**); kit version **0.7.0**.
 
 **Listing copy refresh (2026-08-22 consumer update reliability):** Auto pre/post clean on `update`; `--clean-only` / `--no-clean`; payload source picks highest `kit_version`; `--check` ignores runtime noise; **1537** tests; **8** / **15** / **7**; kit version **0.6.7**.
 

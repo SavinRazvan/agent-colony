@@ -73,6 +73,27 @@ Kit **0.6.4** ships token-efficient agent prose and board Entry reliability (no 
 
 Consumers: `python3 -m agent_colony update` after the plugin refreshes to **0.6.4**.
 
+## Changes in 0.7.0
+
+Kit **0.7.0** ships the **Token Efficiency Program** and optional **`consumer_lite`** install profile (no rename):
+
+- **`consumer_lite` profile** — 6 agents, 6 skills, `AGENTS.stub-lite.md`; marker `.local/generated-data/install-profile.json`; no `board-shell` skill (first-run inline in `board.md`)
+- **Rules tiering** — 7 rule files: **4** `alwaysApply: true` + **3** requestable (`commit-trailer-format`, `file-docstring-header-relations`, `advisory-audit-alignment-enforcement`)
+- **Token-efficient CLI** — `doc skill-section`, `doc validate-thin-index --summary`, `health --summary`, `drift validate --summary`, `project doctor --digest`, `project entry --digest`
+- **MCP** — `workflow://skills/{skill_id}/{section_slug}` resource; `workflow_run_prepare(..., summary=True)`
+- **DRIFT-014/015/016** — thin-index, agent card size, lite profile markers (profile-aware)
+- **GOV-TOKEN-001/002, GOV-RULES-001** — governance checks for token program
+
+Consumers: refresh plugin → `python3 -m agent_colony update --check` → `update --directory .`. New lite installs:
+
+```bash
+python3 -m agent_colony activate --directory . --profile consumer_lite
+```
+
+Upgrade lite → full: `python3 -m agent_colony update --force --profile with_mcp --directory .`
+
+**Verify:** `python3 -m agent_colony health --summary` · `drift validate --profile consumer --summary`
+
 ## Changes in 0.6.7
 
 Kit **0.6.7** ships consumer update reliability (no rename):

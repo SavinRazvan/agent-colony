@@ -237,12 +237,20 @@ def check_doc004_rules_count(paths: DocFactsPaths) -> CheckResult:
         )
     status_count = _parse_status_rules_count(_read(paths.implementation_status))
     readme_text = _read(paths.readme)
-    readme_ok = re.search(rf"\b{actual}\s+universal\b", readme_text, re.IGNORECASE) is not None
+    readme_ok = (
+        re.search(rf"\b{actual}\s+universal\b", readme_text, re.IGNORECASE) is not None
+        or re.search(
+            rf"\bRules\b[^\n|]*\b{actual}\b", readme_text, re.IGNORECASE
+        )
+        is not None
+    )
     status_ok = status_count == actual if status_count is not None else False
     passed = readme_ok and status_ok
     parts: list[str] = []
     if not readme_ok:
-        parts.append(f"README missing '{actual} universal'")
+        parts.append(
+            f"README missing rules count ({actual} universal or Rules · {actual})"
+        )
     if status_count is None:
         parts.append("IMPLEMENTATION-STATUS missing Universal rules row")
     elif not status_ok:

@@ -93,21 +93,39 @@ def check_canvas_agent_file(path: Path) -> list[str]:
     return violations
 
 
+def _load_install_profile(root: Path) -> str | None:
+    marker = root / ".local" / "generated-data" / "install-profile.json"
+    if not marker.is_file():
+        return None
+    try:
+        import json
+
+        data = json.loads(marker.read_text(encoding="utf-8"))
+        return str(data.get("profile") or "") or None
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
 def check_registry_parity(
     *,
     agents_dir: Path,
     registry_path: Path,
+    root: Path | None = None,
 ) -> list[str]:
     """Registry agent ids must resolve to .cursor/agents/<id>.md files."""
     violations: list[str] = []
     file_ids = agent_file_ids(agents_dir)
     reg_ids = registry_agent_ids(registry_path)
+    profile = _load_install_profile(root) if root is not None else None
 
     for agent_id in sorted(reg_ids):
-        if agent_id not in file_ids:
-            violations.append(
-                f"registry agent '{agent_id}' has no file .cursor/agents/{agent_id}.md"
-            )
+        if agent_id in file_ids:
+            continue
+        if profile == "consumer_lite":
+            continue
+        violations.append(
+            f"registry agent '{agent_id}' has no file .cursor/agents/{agent_id}.md"
+        )
 
     return violations
 

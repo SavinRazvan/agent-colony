@@ -12,5 +12,6 @@
 | [ADR-008](ADR-008-project-board-ssot.md) | GitHub Project board as agent SSOT (product doctrine) | accepted |
 | [ADR-009](ADR-009-mcp-pattern-a-cli.md) | MCP Pattern A CLI (universal agent transport) | accepted |
 | [ADR-010](ADR-010-canvas-plan-local-artifacts.md) | Canvas and plan local artifacts (Pattern A) | accepted |
+| [ADR-011](ADR-011-consumer-lite-profile.md) | Consumer lite install profile | accepted |
 
 New decisions: add `ADR-NNN-short-title.md` and update this index.

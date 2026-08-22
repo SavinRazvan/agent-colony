@@ -12,6 +12,8 @@ description: verifier Agent Colony — Check “done” claims against fresh evi
 
 **Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
 
+**Token-efficiency:** Disprove full-skill reads and gate dumps; prefer `--summary` validators. Checklist: [token-efficiency-enforcement.md](.ai_infra/docs/operations/token-efficiency-enforcement.md).
+
 **Entry:** If SSOT on: `project entry` + card Acceptance/Rollback/Notes. Else `session-pointer.md`.
 
 **Exit:** `validate-item --last` before `done`. Refuse placeholder Acceptance/Rollback. Status → `done` or leave `in_review` with failure Notes. No dual-write under `board_only`.

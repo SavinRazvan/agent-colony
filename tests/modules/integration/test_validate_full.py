@@ -165,7 +165,7 @@ def test_check_int014_missing_alwaysapply_and_missing_references(tmp_path: Path)
 
     result = validate._check_int014(tmp_path)
     assert not result.passed
-    assert "missing alwaysApply: true" in result.detail
+    assert "missing alwaysApply frontmatter" in result.detail
     assert "implementer.md missing file-docstring-header-relations reference" in result.detail
     assert "implementer-loop/SKILL.md missing file-docstring-header reference" in result.detail
 

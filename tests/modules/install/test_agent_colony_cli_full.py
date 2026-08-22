@@ -453,11 +453,13 @@ def test_cmd_mcp_link_failure(tmp_path: Path) -> None:
 
 
 def test_build_parser_version_exits(capsys: pytest.CaptureFixture[str]) -> None:
+    from tests.modules.install._manifest_version import expected_kit_version
+
     parser = cli.build_parser()
     with pytest.raises(SystemExit) as exc:
         parser.parse_args(["--version"])
     assert exc.value.code == 0
-    assert "agent-colony 0.6.7" in capsys.readouterr().out
+    assert f"agent-colony {expected_kit_version()}" in capsys.readouterr().out
 
 
 def test_main_install_dispatch(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

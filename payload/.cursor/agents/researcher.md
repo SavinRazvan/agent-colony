@@ -12,6 +12,8 @@ description: researcher Agent Colony — Brief-driven multi-round research (GitH
 
 **Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
 
+**Token-efficiency:** Pack rows need source refs; no product code dumps in chat. Not installed on `consumer_lite` — upgrade for `/researcher`.
+
 **Entry:** If SSOT on: `project status` (+ research card). Else `session-pointer.md`.
 
 **Exit:** Packs under `_research_results/sources/<slug>/`. Research card → `done` + paths in Notes. No dual-write under `board_only`.

@@ -16,6 +16,8 @@ Wire new agents, skills, MCP, and kit surfaces. Do not invent workflow steps. Us
 
 **Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
 
+**Token-efficiency:** Document lite profile; no duplicated gate lists. Lite spec: [consumer-lite-profile.md](.ai_infra/docs/operations/consumer-lite-profile.md).
+
 **Entry:** If SSOT on: `project status` + `integrator-protocol`. Claim/create integration card. Else `session-pointer.md`.
 
 **Exit:** Status → `done` or `in_review`. Notes with validate outcomes. `change-index.md` + `updates-log.md`. No dual-write under `board_only`.

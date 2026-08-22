@@ -19,9 +19,24 @@ Notes:
 
 **Use ASD-STE100** for agent-facing prose: [asd-ste100-prose.md](asd-ste100-prose.md). For AI-assisted writing limits, read [asd-ste100-prose.md § AI and STE](asd-ste100-prose.md#ai-and-ste).
 
-## Skill thin-index (intent)
+## Role pointers
 
-Load the section you need. Do not load whole skills by default.
+| Agent | Token-efficiency duty |
+|-------|----------------------|
+| **implementer** | Entry: `project entry --digest`; reads via `doc skill-section`; never paste green pytest/gates |
+| **verifier** | Disprove full-skill reads and gate dumps; prefer `--summary` validators |
+| **drift-guard** | Run DRIFT-014–016; one export per wave before validate |
+| **auditor** | CHK-TOKEN on governance PRs; category `token_contract` |
+| **board** | `entry --digest`; lite first-run via `board.md` § First-run lite (not `board-shell` on lite) |
+| **integrator** | Document lite profile; no duplicated gate lists |
+| **test-runner** | Cite pytest counts from this run only — not full green output |
+| **researcher** | Pack refs only; no product code reads in chat dumps |
+
+Program overview: [token-efficiency-program.md](token-efficiency-program.md).
+
+## Skill thin-index
+
+Load the section you need. Do not load whole skills by default. Machine-backed via `doc skill-section` (kit 0.7.0+).
 
 | Skill | Read when | Prefer |
 |-------|-----------|--------|
@@ -76,6 +91,11 @@ Load the section you need. Do not load whole skills by default.
 | Agent roster | `python -m agent_colony doc roster-digest` |
 | Doc head | `python -m agent_colony doc summarize --path …` |
 | Prepare gates | `python .ai_infra/scripts/pr/prepare.py … --summary` |
+| Skill section | `python -m agent_colony doc skill-section --skill <id> --section "<heading>"` |
+| Thin-index validate | `python -m agent_colony doc validate-thin-index` |
+| Health summary | `python -m agent_colony health --summary` |
+| Drift summary | `python -m agent_colony drift validate --summary` |
+| Doctor digest | `python -m agent_colony project doctor --digest` |
 
 ## Write set (slice close)
 

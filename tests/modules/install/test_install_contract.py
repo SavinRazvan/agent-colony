@@ -17,6 +17,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.modules.install._manifest_version import expected_kit_version
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CONTRACT_PATH = REPO_ROOT / ".ai_infra" / "install-contract.json"
 SCAFFOLD_PATH = REPO_ROOT / ".ai_infra" / "scripts" / "install" / "scaffold.py"
@@ -57,7 +59,7 @@ def _assert_contract(target: Path, profile: str) -> None:
         assert (target / rel).exists(), f"missing recommended path: {rel}"
 
 
-@pytest.mark.parametrize("profile", ("default", "with_mcp"))
+@pytest.mark.parametrize("profile", ("default", "with_mcp", "consumer_lite"))
 def test_install_contract_profiles(tmp_path: Path, profile: str) -> None:
     mod = _load_scaffold()
     target = tmp_path / f"consumer-{profile}"
@@ -65,9 +67,15 @@ def test_install_contract_profiles(tmp_path: Path, profile: str) -> None:
         target,
         REPO_ROOT,
         profile=profile,
-        with_mcp_json=(profile == "with_mcp"),
+        with_mcp_json=(profile in ("with_mcp", "consumer_lite")),
     )
     _assert_contract(target, profile)
     kit_version = target / ".ai_infra" / ".kit-version"
     assert kit_version.is_file()
-    assert kit_version.read_text(encoding="utf-8").strip() == "0.6.7"
+    assert kit_version.read_text(encoding="utf-8").strip() == expected_kit_version()
+    if profile == "consumer_lite":
+        assert not (target / ".cursor" / "agents" / "auditor.md").exists()
+        assert not (target / ".cursor" / "skills" / "board-shell").exists()
+        marker = target / ".local" / "generated-data" / "install-profile.json"
+        assert marker.is_file()
+        assert json.loads(marker.read_text(encoding="utf-8"))["profile"] == "consumer_lite"

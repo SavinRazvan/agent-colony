@@ -83,6 +83,19 @@ What **`/workflow-activate`** copies into **your app** (e.g. Smart-Notes):
 
 ```text
 my-app/
+├── AGENTS.md                       Stub router (from template; stub_lite for consumer_lite)
+├── .cursor/
+│   ├── agents/                     8 agents (6 on consumer_lite)
+│   ├── rules/                      7 rules (4 alwaysApply + 3 requestable after kit 0.7.0)
+│   └── skills/                     15 canonical (6 on consumer_lite)
+```
+
+**Profiles:** `default`, `with_mcp`, `consumer_lite` — see [consumer-lite-profile.md](../operations/consumer-lite-profile.md). **CLI:** `doc skill-section`, `doc validate-thin-index`, `health --summary`, `drift validate --summary`.
+
+Full tree (default profile):
+
+```text
+my-app/
 ├── AGENTS.md                       Stub router (from template)
 ├── .cursor/
 │   ├── agents/                     8 agents (from payload; incl. board)

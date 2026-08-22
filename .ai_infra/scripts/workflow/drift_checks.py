@@ -8,6 +8,7 @@ Depends On:
  - subprocess, re, datetime (stdlib)
 Notes:
  - Does not duplicate governance, integrate, or test-artifact scanners (ADR-007).
+ - DRIFT-014–016 token-efficiency checks (ADR-007 overlap table).
 """
 
 from __future__ import annotations
@@ -24,6 +25,11 @@ _AI_INFRA = Path(__file__).resolve().parents[2]
 if str(_AI_INFRA) not in sys.path:
     sys.path.insert(0, str(_AI_INFRA))
 from paths import resolve_project_python  # noqa: E402
+
+_INSTALL_PKG = _AI_INFRA / "install" / "agent_colony"
+if str(_INSTALL_PKG) not in sys.path:
+    sys.path.insert(0, str(_INSTALL_PKG))
+from markdown_sections import section_block as _section_block  # noqa: E402
 
 
 class Severity(str, Enum):
@@ -99,15 +105,6 @@ def _extract_table_field(text: str, field: str) -> str:
     pattern = rf"\|\s*\*\*{re.escape(field)}\*\*\s*\|\s*([^|]+)\|"
     match = re.search(pattern, text)
     return match.group(1).strip() if match else ""
-
-
-def _section_block(text: str, heading: str) -> str:
-    marker = f"## {heading}"
-    if marker not in text:
-        return text
-    section = text.split(marker, 1)[1]
-    next_heading = re.search(r"\n## [^\n]+", section)
-    return section[: next_heading.start()] if next_heading else section
 
 
 def _extract_active_task(text: str) -> str | None:
@@ -1029,6 +1026,181 @@ def check_drift011b(paths: DriftPaths) -> CheckResult:
     )
 
 
+TOKEN_EFFICIENCY_ANCHOR = "token-efficiency.md"
+
+LITE_AGENT_ALLOWLIST: frozenset[str] = frozenset(
+    {
+        "board",
+        "implementer",
+        "test-runner",
+        "verifier",
+        "drift-guard",
+        "integrator",
+    }
+)
+
+LITE_SKILL_ALLOWLIST: frozenset[str] = frozenset(
+    {
+        "board-ssot",
+        "implementer-loop",
+        "evidence-first",
+        "test-coverage",
+        "workflow-activate",
+        "mcp-connect",
+    }
+)
+
+
+def _load_install_profile(root: Path) -> str | None:
+    marker = root / ".local" / "generated-data" / "install-profile.json"
+    if not marker.is_file():
+        return None
+    try:
+        import json
+
+        data = json.loads(marker.read_text(encoding="utf-8"))
+        return str(data.get("profile") or "") or None
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
+def _expected_agent_ids(paths: DriftPaths) -> set[str]:
+    profile = _load_install_profile(paths.root)
+    if profile == "consumer_lite":
+        return set(LITE_AGENT_ALLOWLIST)
+    if paths.implementation_status.is_file():
+        return set(LIVE_KIT_AGENT_IDS)
+    agents_dir = paths.root / ".cursor" / "agents"
+    if agents_dir.is_dir():
+        return {p.stem for p in agents_dir.glob("*.md") if p.is_file()}
+    return set(LIVE_KIT_AGENT_IDS)
+
+
+def check_drift014(paths: DriftPaths) -> CheckResult:
+    """Token-efficiency anchor in installed agent cards (profile-aware)."""
+    agents_dir = paths.root / ".cursor" / "agents"
+    if not agents_dir.is_dir():
+        if not paths.implementation_status.is_file():
+            return CheckResult(
+                check_id="DRIFT-014",
+                severity=Severity.P1,
+                passed=True,
+                detail=".cursor/agents/ missing — skipped (consumer install)",
+            )
+        return CheckResult(
+            check_id="DRIFT-014",
+            severity=Severity.P1,
+            passed=False,
+            detail="missing .cursor/agents/",
+        )
+    expected = _expected_agent_ids(paths)
+    missing_anchor: list[str] = []
+    for agent_id in sorted(expected):
+        path = agents_dir / f"{agent_id}.md"
+        if not path.is_file():
+            missing_anchor.append(f"{agent_id}: missing file")
+            continue
+        if TOKEN_EFFICIENCY_ANCHOR not in path.read_text(encoding="utf-8"):
+            missing_anchor.append(agent_id)
+    if missing_anchor:
+        return CheckResult(
+            check_id="DRIFT-014",
+            severity=Severity.P1,
+            passed=False,
+            detail=f"missing token-efficiency anchor: {', '.join(missing_anchor[:8])}",
+        )
+    return CheckResult(
+        check_id="DRIFT-014",
+        severity=Severity.P1,
+        passed=True,
+        detail=f"token-efficiency anchor in {len(expected)} agent card(s)",
+    )
+
+
+def check_drift015(paths: DriftPaths) -> CheckResult:
+    """Kit-dev: WARN when plugin cache rules duplicate workspace rule basenames."""
+    import glob
+    home = Path.home()
+    cache_glob = str(home / ".cursor" / "plugins" / "cache" / "agent-colony" / "agent-colony" / "*" / "rules" / "*.mdc")
+    cache_rules = {Path(p).name for p in glob.glob(cache_glob)}
+    ws_rules_dir = paths.root / ".cursor" / "rules"
+    if not ws_rules_dir.is_dir() or not cache_rules:
+        return CheckResult(
+            check_id="DRIFT-015",
+            severity=Severity.P2,
+            passed=True,
+            detail="plugin/workspace rule dup check skipped (no cache or no workspace rules)",
+        )
+    ws_names = {p.name for p in ws_rules_dir.glob("*.mdc")}
+    overlap = sorted(cache_rules & ws_names)
+    if overlap:
+        return CheckResult(
+            check_id="DRIFT-015",
+            severity=Severity.P2,
+            passed=True,
+            detail=f"WARN plugin+workspace rule basename overlap: {', '.join(overlap[:6])}",
+        )
+    return CheckResult(
+        check_id="DRIFT-015",
+        severity=Severity.P2,
+        passed=True,
+        detail="no plugin/workspace rule basename overlap",
+    )
+
+
+def check_drift016(paths: DriftPaths) -> CheckResult:
+    """Thin-index § headings exist for skills present on disk (profile-aware)."""
+    if str(_INSTALL_PKG) not in sys.path:
+        sys.path.insert(0, str(_INSTALL_PKG))
+    import doc_cli  # noqa: E402
+
+    allowlist: set[str] | None = None
+    if _load_install_profile(paths.root) == "consumer_lite":
+        allowlist = set(LITE_SKILL_ALLOWLIST)
+    rows = doc_cli._parse_thin_index_rows(paths.root)
+    if not rows:
+        if not paths.implementation_status.is_file():
+            return CheckResult(
+                check_id="DRIFT-016",
+                severity=Severity.P1,
+                passed=True,
+                detail="thin-index absent — skipped (consumer install)",
+            )
+        return CheckResult(
+            check_id="DRIFT-016",
+            severity=Severity.P1,
+            passed=False,
+            detail="token-efficiency thin-index table missing or empty",
+        )
+    failures: list[str] = []
+    skipped = 0
+    for row in rows:
+        skill_id = row["skill"]
+        if allowlist is not None and skill_id not in allowlist:
+            skipped += 1
+            continue
+        if doc_cli._find_skill_path(paths.root, skill_id) is None:
+            if allowlist is not None:
+                skipped += 1
+                continue
+            failures.append(f"{skill_id}: missing on disk")
+            continue
+        failures.extend(doc_cli._validate_skill_prefer(paths.root, skill_id, row["prefer"]))
+    if failures:
+        return CheckResult(
+            check_id="DRIFT-016",
+            severity=Severity.P1,
+            passed=False,
+            detail=f"thin-index failures ({len(failures)}): {failures[0]}",
+        )
+    return CheckResult(
+        check_id="DRIFT-016",
+        severity=Severity.P1,
+        passed=True,
+        detail=f"thin-index parity ok (skipped={skipped})",
+    )
+
+
 KIT_DEV_CHECKS = (
     check_drift001,
     check_drift002,
@@ -1044,6 +1216,9 @@ KIT_DEV_CHECKS = (
     check_drift011,
     check_drift012,
     check_drift013,
+    check_drift014,
+    check_drift015,
+    check_drift016,
 )
 
 CONSUMER_CHECKS = (
@@ -1051,6 +1226,8 @@ CONSUMER_CHECKS = (
     check_drift008,
     check_drift013,
     check_drift011b,
+    check_drift014,
+    check_drift016,
 )
 
 CONSUMER_BOARD_CHECKS = (
@@ -1061,4 +1238,6 @@ CONSUMER_BOARD_CHECKS = (
     check_drift012,
     check_drift013,
     check_drift011b,
+    check_drift014,
+    check_drift016,
 )

@@ -98,10 +98,11 @@ def _check_int001(paths: dict[str, Path]) -> CheckResult:
     )
 
 
-def _check_registry_file(paths: dict[str, Path]) -> CheckResult:
+def _check_registry_file(paths: dict[str, Path], root: Path) -> CheckResult:
     violations = check_registry_parity(
         agents_dir=paths["agents_dir"],
         registry_path=paths["registry_example"],
+        root=root,
     )
     return CheckResult(
         check_id="INT-002",
@@ -378,8 +379,8 @@ def _check_int014(root: Path) -> CheckResult:
     rule = root / ".cursor" / "rules" / "file-docstring-header-relations.mdc"
     if not rule.is_file():
         violations.append("missing .cursor/rules/file-docstring-header-relations.mdc")
-    elif "alwaysApply: true" not in rule.read_text(encoding="utf-8"):
-        violations.append("file-docstring-header-relations.mdc missing alwaysApply: true")
+    elif "alwaysApply:" not in rule.read_text(encoding="utf-8"):
+        violations.append("file-docstring-header-relations.mdc missing alwaysApply frontmatter")
     implementer = root / ".cursor" / "agents" / "implementer.md"
     if implementer.is_file():
         text = implementer.read_text(encoding="utf-8")
@@ -403,7 +404,7 @@ def run_checks(root: Path | None = None) -> list[CheckResult]:
     paths = _paths(project_root)
     us = _import_user_settings(project_root)
 
-    registry_result = _check_registry_file(paths)
+    registry_result = _check_registry_file(paths, project_root)
     return [
         _check_int001(paths),
         registry_result,

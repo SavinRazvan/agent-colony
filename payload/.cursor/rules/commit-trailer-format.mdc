@@ -1,6 +1,6 @@
 ---
 description: Required git commit trailers + optional Assisted-by (AI)
-alwaysApply: true
+alwaysApply: false
 ---
 
 # Commit trailer format

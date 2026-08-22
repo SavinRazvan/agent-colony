@@ -48,3 +48,11 @@ def test_load_registry_yaml_not_found(tmp_path: Path) -> None:
 def test_read_mcp_connection_guide_not_found(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError):
         resources.read_mcp_connection_guide(tmp_path)
+
+
+def test_read_skill_section_returns_h2_only() -> None:
+    root = Path(__file__).resolve().parents[3]
+    text = resources.read_skill_section(root, "board-ssot", "continuation-contract")
+    assert "Continuation contract" in text or "continuation" in text.lower()
+    full = resources.read_skill(root, "board-ssot")
+    assert len(text) < len(full)

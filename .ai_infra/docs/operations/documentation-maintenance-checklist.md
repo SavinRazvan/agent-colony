@@ -32,7 +32,8 @@ Run when a PR changes kit architecture, install manifest, governance, workflow p
 - [ ] After `.ai_infra/docs/` or exemplar changes: run `make sync-plugin` and `make check-plugin`.
 - [ ] After agent roster, rules count, or IMPLEMENTATION-STATUS changes: run `make doc-validate`.
 - [ ] If alignment audit categories change: sync `.ai_infra/docs/roadmap/alignment-audit-schema.md` and enterprise-audit skill references.
-- [ ] If install manifest, scaffold, or activate flow changes: run `make install-dry-run`, update `PLUGIN-USER-GUIDE.md`, `consumer-quickstart.md`, `PLUGIN-ARCHITECTURE.md`, and `workflow-activate` skill.
+- [ ] If install manifest, scaffold, or activate flow changes: run `make install-dry-run` and `make install-dry-run-lite`, update `PLUGIN-USER-GUIDE.md`, `consumer-quickstart.md`, `consumer-lite-profile.md`, `PLUGIN-ARCHITECTURE.md`, and `workflow-activate` skill.
+- [ ] If token-efficiency CLI, thin-index, or rules tiering changes: sync `token-efficiency.md`, `token-efficiency-program.md`, `token-efficiency-enforcement.md`, `workflow/drift README`, `agent_colony_mcp/README.md`; run `doc validate-thin-index --summary`.
 - [ ] If ADRs change: update `.ai_infra/docs/decisions/README.md` index.
 - [ ] Verify no contradictions against `.cursor/rules/*.mdc` and `.agents/skills/pr-workflow/SKILL.md`.
 - [ ] Run `python .ai_infra/scripts/architecture/check_governance_consistency.py`.

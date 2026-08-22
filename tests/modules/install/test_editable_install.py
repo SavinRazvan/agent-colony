@@ -13,11 +13,13 @@ Notes:
 
 from __future__ import annotations
 
+from tests.modules.install._manifest_version import expected_kit_version
+
 
 def test_import_agent_colony_package() -> None:
     import agent_colony
 
-    assert agent_colony.__version__ == "0.6.7"
+    assert agent_colony.__version__ == expected_kit_version()
 
 
 def test_import_agent_colony_mcp_package() -> None:
