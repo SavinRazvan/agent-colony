@@ -17,6 +17,7 @@
 - Shippable cards as **Issues** (`item_kind_default: issue`). Draft is scratch-only.
 - Fill **Tier-1** fields: Status, Priority, Size/Estimate, Start/End dates, Assignee, Linked PR (`mention-pr`).
 - EXIT_QUEUED (6) → `project outbox`; outbox is not SSOT.
+- **Evidence-first:** use facts, check fresh evidence, then act — [evidence-first.md](.ai_infra/docs/operations/evidence-first.md) · skill `evidence-first`. Do not claim complete without evidence or explicit **Partial** gaps.
 
 **Consumer install:** plugin + `/workflow-activate` — see [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
 
@@ -82,7 +83,7 @@ PR artifacts: `Action-By` / `GitHub-User` / `Agent/s` via `--pipeline` (`.agents
 | Root | Role |
 |------|------|
 | `.cursor/agents/` | 8 agent cards — `auditor`, `board`, `drift-guard`, `implementer`, `integrator`, `researcher`, `test-runner`, `verifier` |
-| `.cursor/skills/` | 14 canonical protocols — see [repository-map](.ai_infra/docs/handoff/repository-map.md) |
+| `.cursor/skills/` | 15 canonical protocols — see [repository-map](.ai_infra/docs/handoff/repository-map.md) |
 | `.agents/skills/` | 6 maintainer slash skills (PR workflow) |
 | `.cursor/rules/` | 7 `alwaysApply` rules |
 
@@ -93,7 +94,7 @@ PR artifacts: `Action-By` / `GitHub-User` / `Agent/s` via `--pipeline` (`.agents
 | Implement | `implementer` + `implementer-loop` |
 | Integrate | `integrator` + `integrator-protocol` |
 | Tests | `test-runner` + `test-coverage` |
-| Verify | `verifier` (evidence only) |
+| Verify | `verifier` (evidence only) + `evidence-first` |
 | Drift | `drift-guard` + `drift-audit` |
 | Audit | `auditor` + `auditor-protocol` |
 | Research | `researcher` + `research-corpus` |

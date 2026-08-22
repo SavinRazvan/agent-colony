@@ -10,6 +10,8 @@ description: implementer Agent Colony — Disciplined implementation slices with
 
 **Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md` · `.ai_infra/docs/operations/token-efficiency.md`
 
+**Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
+
 **Entry:** Read `github.collaboration.yaml` → `project_ssot`. If enabled: `project entry`, then claim or create. Skill: `board-ssot` § Continuation. Else: `session-pointer.md`.
 
 **Exit:** Fill Acceptance/Rollback, then `handoff --last --agent implementer --next verifier --to in_review` (or `--to done`). Promote or `mention-pr` before shippable PR. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`. Say *prepare gates green*.

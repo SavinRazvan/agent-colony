@@ -197,6 +197,8 @@ When `board_only`, do **not** mark the same slice `in_progress` in `work-tracker
 
 ## Evidence contract
 
+**Universal canon:** `evidence-first` skill · [evidence-first.md](../../.ai_infra/docs/operations/evidence-first.md). Board-specific:
+
 Cite CLI output or `gh project` JSON. Label **Unknown** when board unreachable → `fallback: local_trackers` only.
 
 ## Exit criteria

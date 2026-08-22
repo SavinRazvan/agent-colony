@@ -52,7 +52,7 @@ Do **not** dump gate lists or maintainer `make` commands.
 
 ## One command
 
-From the **open workspace** (Pattern A — one script command). Defaults: **`with_mcp`**, **`.venv`**, **verify gates** — full consumer kit (8 agents, 14 skills, MCP, PR scripts, `.local/` scaffold, runtime `.gitignore`, `STARTER-001`).
+From the **open workspace** (Pattern A — one script command). Defaults: **`with_mcp`**, **`.venv`**, **verify gates** — full consumer kit (8 agents, 15 skills, MCP, PR scripts, `.local/` scaffold, runtime `.gitignore`, `STARTER-001`).
 
 ```bash
 python3 -m agent_colony activate --directory .

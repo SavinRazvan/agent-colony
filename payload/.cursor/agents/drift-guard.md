@@ -14,6 +14,8 @@ Goal/plan/agent-doctrine/docs coherence + DRIFT-001…012 (script-first). Not de
 
 **Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md` · `.ai_infra/docs/operations/token-efficiency.md`
 
+**Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
+
 **Entry:** If SSOT on: `project entry` (must). Prefer `export --reuse-if-fresh` before drift validate. Else `session-pointer.md`.
 
 **Exit:** Write `.local/workflow-artifacts/drift/`. Set drift-pass card → `done` or `in_review`. Remediations via Notes/Ready — never silent tracker dual-write. One line in `updates-log.md`.

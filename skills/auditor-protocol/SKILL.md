@@ -25,6 +25,8 @@ Produce a **step-by-step, facts-first** enterprise architecture assessment of **
 
 ## Evidence contract (mandatory)
 
+**Universal canon:** `.cursor/skills/evidence-first/SKILL.md` · `.ai_infra/docs/operations/evidence-first.md`. Below adds **auditor-specific** labels and scorecard rules.
+
 Audits are **evidence-backed** or they fail the contract. Chat-only opinions without traceable repo pointers are not acceptable in written deliverables.
 
 **What counts as evidence (priority order)**

@@ -10,6 +10,8 @@ description: researcher Agent Colony — Brief-driven multi-round research (GitH
 
 **Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md` · `.ai_infra/docs/operations/token-efficiency.md`
 
+**Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
+
 **Entry:** If SSOT on: `project status` (+ research card). Else `session-pointer.md`.
 
 **Exit:** Packs under `_research_results/sources/<slug>/`. Research card → `done` + paths in Notes. No dual-write under `board_only`.

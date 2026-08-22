@@ -7,6 +7,8 @@ description: Disciplined implementation slices with board SSOT continuation and 
 
 **Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
 
+**Evidence-first:** `.cursor/skills/evidence-first/SKILL.md` — verify with fresh evidence before “done” or release claims.
+
 ## When
 
 New or continued `feature/` | `fix/` | `chore/` work; recovery from blocked slices.

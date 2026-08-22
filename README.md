@@ -14,7 +14,7 @@
 
 | | |
 |--|--|
-| **Version** | [`0.6.5`](https://github.com/SavinRazvan/agent-colony/releases) · **Tests** · 1516 · **Agents** · 8 · **Skills** · 14 · **Rules** · **7 universal** · **License** · [Apache-2.0](LICENSE) |
+| **Version** | [`0.6.5`](https://github.com/SavinRazvan/agent-colony/releases) · **Tests** · 1516 · **Agents** · 8 · **Skills** · 15 · **Rules** · **7 universal** · **License** · [Apache-2.0](LICENSE) |
 | **Reference board** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
 
 ---

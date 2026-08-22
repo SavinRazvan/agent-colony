@@ -40,7 +40,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 
 ## Versioning
 
-**Current release:** `0.6.5` (git tag [`v0.6.5`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.6.5) when published).
+**Current release:** `0.6.5` (git tag [`v0.6.5`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.6.5)).
 
 **Superseded:** `v0.3.0` (`1f16af1`) predates `PLUGIN-FLATTEN` (#15) — its tagged tree has **zero**
 files under `agents/`, `rules/`, `skills/`, `payload/` (the gitignore bug #15 fixed). Do not
@@ -240,6 +240,8 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 **Listing copy refresh (2026-08-09 board End date on Done):** Agents set End date (UTC) on Status→Done; validate/heal/board-shell Tier-1; `set_end_date_on_done`; **1510** tests; **8** / **14** / **7**; kit version **0.6.3**.
 
 **Listing copy refresh (2026-08-21 ASD-STE100 + board Entry reliability):** ASD-STE100 banners + governance; Entry false-offline fix; `--last` PVTI_ validation; heal Day-N playbook; **1514** tests; **8** / **14** / **7**; kit version **0.6.4**.
+
+**Listing copy refresh (2026-08-22 consumer update `.kit-version` stamp):** Scaffold + `update` stamp from source manifest; CLI `ensure_kit_version_stamp` fallback; STEMG STE docs (0.6.4); **1516** tests; **8** / **14** / **7**; kit version **0.6.5**.
 
 **Listing copy refresh (2026-07-20 DOC-CANVAS-ALIGN):** Canvases re-aligned to live CLI (**22** leaves incl. `board-bootstrap`), board-shell day-0 story, test-runner `coverage.json` + post-100% doc sync, VERIFIED **2026-07-20**; metrics unchanged (**1178** / **7089** / **100%**; **8** / **12** / **7**).
 
