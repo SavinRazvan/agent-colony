@@ -58,12 +58,14 @@
         ".cursor/agents/verifier.md",
         ".cursor/skills/board-ssot/SKILL.md",
         ".cursor/skills/workflow-activate/SKILL.md",
+        ".agents/skills/review-pr/SKILL.md",
         ".local/generated-data/install-profile.json"
       ],
       "forbidden_paths": [
         ".cursor/agents/auditor.md",
         ".cursor/agents/researcher.md",
-        ".cursor/skills/board-shell/SKILL.md"
+        ".cursor/skills/board-shell/SKILL.md",
+        ".agents/skills/audit-alignment/SKILL.md"
       ]
     }
   }

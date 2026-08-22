@@ -159,6 +159,7 @@ def _resolve_profile(manifest: dict[str, Any], name: str) -> dict[str, Any]:
             "agent_allowlist": base.get("agent_allowlist"),
             "rule_always_apply": base.get("rule_always_apply"),
             "rule_requestable": base.get("rule_requestable"),
+            "agents_skill_allowlist": base.get("agents_skill_allowlist"),
         }
         for key in ("copy_dirs", "copy_ai_infra", "copy_files"):
             merged[key] = merged[key] + list(raw.get(key, []))
@@ -171,6 +172,7 @@ def _resolve_profile(manifest: dict[str, Any], name: str) -> dict[str, Any]:
             "agent_allowlist",
             "rule_always_apply",
             "rule_requestable",
+            "agents_skill_allowlist",
         ):
             if key in raw:
                 merged[key] = raw[key]
@@ -206,6 +208,24 @@ def _apply_profile_prune(
                     else:
                         entry.unlink()
                         _log(log, f"PRUNE agent {entry.stem}")
+    agents_skill_allow = spec.get("agents_skill_allowlist")
+    if isinstance(agents_skill_allow, list) and agents_skill_allow:
+        agents_skills_dir = target / ".agents" / "skills"
+        allow = {str(x) for x in agents_skill_allow}
+        if agents_skills_dir.is_dir():
+            for entry in agents_skills_dir.iterdir():
+                if entry.is_dir() and entry.name not in allow:
+                    if dry_run:
+                        _log(log, f"DRY-RUN prune agents-skill {entry}")
+                    else:
+                        shutil.rmtree(entry)
+                        _log(log, f"PRUNE agents-skill {entry.name}")
+                elif entry.is_file() and entry.name != "README.md":
+                    if dry_run:
+                        _log(log, f"DRY-RUN prune agents-skill file {entry.name}")
+                    else:
+                        entry.unlink()
+                        _log(log, f"PRUNE agents-skill file {entry.name}")
 
 
 def _write_install_profile_marker(

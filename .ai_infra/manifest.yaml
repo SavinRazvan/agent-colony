@@ -1,5 +1,5 @@
 version: 1
-kit_version: "0.7.0"
+kit_version: "0.7.1"
 profiles:
   default:
     copy_dirs:
@@ -70,3 +70,9 @@ profiles:
       - advisory-audit-alignment-enforcement.mdc
       - commit-trailer-format.mdc
       - file-docstring-header-relations.mdc
+    agents_skill_allowlist:
+      - review-pr
+      - prepare-pr
+      - merge-pr
+      - pr-workflow
+      - full-pr-workflow
