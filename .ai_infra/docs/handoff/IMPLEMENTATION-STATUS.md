@@ -21,7 +21,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
 **Last updated:** 2026-08-22 (consumer update `.kit-version` stamp fix; kit 0.6.5)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.6.5 · **Tests:** 1514
+**Product:** `agent-colony` · CLI: `agent-colony` 0.6.5 · **Tests:** 1516
 
 ## Shipped (confirmed in repo)
 
@@ -65,7 +65,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Researcher agent (corpus) | **Shipped / proven** — adaptive Brief; anti-loop ≤6; CLI `research init\|fetch\|validate`; live E2E flexiai-toolsmith (18 curated, validate PASS) + verifier Claim A+B VERIFIED 2026-07-19; corpus **opt-in** after first `research init` | `.cursor/agents/researcher.md` · `research-corpus` · `canvases/agent-researcher.canvas.tsx` · Issue #74 |
 | Kit version on install | `kit_version` 0.6.5 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
 | Consumer update stamp | Scaffold + `update` write `.kit-version` from source manifest; CLI fallback `ensure_kit_version_stamp` | `scaffold.py` · `update_cli.py` · tests |
-| Tests | 1514 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1516 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 
