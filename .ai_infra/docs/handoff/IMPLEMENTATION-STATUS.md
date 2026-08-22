@@ -29,7 +29,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 |------|--------|----------|
 | Universal rules | 7 `.mdc` | `.cursor/rules/` **and** `payload/.cursor/rules/` (6 kit + `project-ssot-precedence`) |
 | Agents | 8 core; `model: auto`; audit agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` |
-| Canonical skills | 14 folders | `.cursor/skills/` |
+| Canonical skills | 15 folders | `.cursor/skills/` |
 | Maintainer skills | 6 folders (additive plugin merge; includes `full-pr-workflow`) | `.agents/skills/` |
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
