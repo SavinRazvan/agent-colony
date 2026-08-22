@@ -317,6 +317,46 @@ def test_cmd_update_force_when_equal(tmp_path: Path, monkeypatch: pytest.MonkeyP
     assert ran == ["upgrade"]
 
 
+def test_cmd_update_force_with_mcp_passes_profile_to_scaffold(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target = _write_installed(tmp_path / "app", "0.7.0")
+    marker_dir = target / ".local" / "generated-data"
+    marker_dir.mkdir(parents=True)
+    (marker_dir / "install-profile.json").write_text(
+        '{"profile": "consumer_lite", "kit_version": "0.7.0"}',
+        encoding="utf-8",
+    )
+    source = _write_manifest(tmp_path / "kit", "0.7.0")
+    monkeypatch.setattr(activate_cli, "resolve_activate_source", lambda *a, **k: source)
+    captured: dict[str, object] = {}
+
+    def _scaffold(*_a, **kwargs) -> int:
+        captured.update(kwargs)
+        return 0
+
+    monkeypatch.setattr(update_cli, "_run_scaffold_upgrade", _scaffold)
+    monkeypatch.setattr(activate_cli, "_heal_consumer_runtime", lambda *a, **k: None)
+    plane = SimpleNamespace(
+        assess_planes=lambda *a, **k: SimpleNamespace(all_ready=True),
+        format_plane_report=lambda s: "planes ok",
+    )
+    monkeypatch.setattr(activate_cli, "_import_plane_status", lambda: plane)
+
+    args = argparse.Namespace(
+        directory=target,
+        source=None,
+        check=False,
+        force=True,
+        with_venv=True,
+        with_mcp_json=True,
+        verify=False,
+        profile="with_mcp",
+    )
+    assert update_cli.cmd_update(args) == 0
+    assert captured.get("profile") == "with_mcp"
+
+
 def test_cmd_update_refuses_kit_dev_force(
     tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
