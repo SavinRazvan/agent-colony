@@ -457,7 +457,7 @@ def test_build_parser_version_exits(capsys: pytest.CaptureFixture[str]) -> None:
     with pytest.raises(SystemExit) as exc:
         parser.parse_args(["--version"])
     assert exc.value.code == 0
-    assert "agent-colony 0.6.6" in capsys.readouterr().out
+    assert "agent-colony 0.6.7" in capsys.readouterr().out
 
 
 def test_main_install_dispatch(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

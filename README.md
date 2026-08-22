@@ -14,7 +14,7 @@
 
 | | |
 |--|--|
-| **Version** | [`0.6.6`](https://github.com/SavinRazvan/agent-colony/releases) · **Tests** · 1525 · **Agents** · 8 · **Skills** · 15 · **Rules** · **7 universal** · **License** · [Apache-2.0](LICENSE) |
+| **Version** | [`0.6.7`](https://github.com/SavinRazvan/agent-colony/releases) · **Tests** · 1537 · **Agents** · 8 · **Skills** · 15 · **Rules** · **7 universal** · **License** · [Apache-2.0](LICENSE) |
 | **Reference board** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
 
 ---
@@ -27,7 +27,7 @@ Agent chats lose Status. Trackers and docs drift. Teams re-explain the same slic
 
 **Agent Colony** installs a full Cursor kit into *your* app repo (not this kit repo). When Project SSOT is on, the **GitHub Project** is the only writable place for backlog and Status — agents **enter** by reading the board and **exit** by updating Status and Notes. Local `.local/` holds gates, audits, and evidence — not a second Status writer.
 
-**Proof:** 1525 tests · 8 agents · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
+**Proof:** 1537 tests · 8 agents · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
 
 ---
 
@@ -185,21 +185,108 @@ When `project_ssot.enabled`, finish this ladder ([consumer-quickstart](.ai_infra
 
 ### 4. Upgrade kit (when a new release ships)
 
-After you refresh the Cursor plugin (Marketplace), run these in **your app repo** terminal — not in this kit repo:
+Upgrading is **two steps**: refresh the **plugin payload** in Cursor, then run **`update`** in **your app repo** terminal (not this kit repo).
+
+#### Step A — Refresh the plugin (Cursor)
+
+Distribution is **GitHub `/add-plugin`**, not an auto-updating Marketplace listing. A new git tag (e.g. [`v0.6.7`](https://github.com/SavinRazvan/agent-colony/releases)) does **not** change your local plugin cache until you re-add the plugin.
+
+In **Agent chat** (your app project open):
+
+```text
+/add-plugin agent-colony@https://github.com/SavinRazvan/agent-colony
+```
+
+Plain URL form also works when discovery is healthy:
+
+```text
+/add-plugin https://github.com/SavinRazvan/agent-colony
+```
+
+Confirm the preview shows the **latest version** (see the badge at the top of this README). Re-add even if the plugin is already installed — Cursor stores a checkout under `~/.cursor/plugins/cache/agent-colony/…/payload/`.
+
+**Optional (maintainers with a local kit clone):** skip Step A and point update at the clone:
 
 ```bash
+export WORKFLOW_KIT_PAYLOAD=/path/to/agent-colony/payload
+```
+
+#### Step B — Update your app repo (terminal)
+
+Open **your app folder** (e.g. `~/Projects/module-ai`), not `agent-colony`:
+
+```bash
+cd ~/Projects/your-app
 source .venv/bin/activate
+
 python3 -m agent_colony update --check --directory .
 python3 -m agent_colony update --directory .
+python3 -m agent_colony update --directory . --clean-only   # optional: runtime + orphan cleanup without upgrade
 python3 -m agent_colony health
+python3 -m agent_colony mcp validate
 ```
+
+Read the first lines of `--check`:
+
+```text
+installed=0.6.6
+available=0.6.7
+source=…/payload
+action=upgrade
+```
+
+| Output | Meaning | What to do |
+|--------|---------|------------|
+| `available` **matches** latest release | Plugin cache is fresh | Run `update --directory .` |
+| `available` **older** than [Releases](https://github.com/SavinRazvan/agent-colony/releases) | Stale plugin cache | Repeat **Step A**, then `--check` again |
+| `installed` **newer** than `available` | Stamp ahead of payload (common after partial update) | Refresh plugin (Step A); do **not** assume you are on the latest kit |
+| `action=heal` | Installed ≥ available — light heal only | Refresh plugin if you expected a full upgrade |
+| `action=upgrade` | Source is newer — full kit copy | Run `update --directory .` once — **no `--force`** unless `--check` lists deltas you accept overwriting |
+| `--check` exit **1** + kit-managed deltas | Local edits differ from payload | Review diffs; use `update --force` only if you accept overwrite |
+| `--check` FAIL on `__pycache__` / orphans only | Pre-0.6.7 noise | Upgrade to **0.6.7+** or run `update --clean-only --directory .` |
+
+Full refresh when `--check` lists kit-managed deltas you want overwritten:
+
+```bash
+python3 -m agent_colony update --check --directory .
+python3 -m agent_colony update --directory . --force
+```
+
+**Do not** need `--force` when `--check` shows `action=upgrade` and exits 0 — one plain `update --directory .` is enough when the payload source is fresh. Kit **0.6.7+** runs pre/post cleanup automatically (`__pycache__`, kit orphans) on heal and upgrade.
+
+Agent chat equivalent: **`/update-agent-colony`** (same version gate as terminal `update`).
+
+#### Step C — Verify (your app repo)
+
+All three must match the [latest release](https://github.com/SavinRazvan/agent-colony/releases):
+
+```bash
+cat .ai_infra/.kit-version
+grep kit_version .ai_infra/manifest.yaml
+python3 -m agent_colony update --check --directory .   # installed == available
+test -f .ai_infra/docs/operations/multi-consumer-isolation.md && echo OK   # 0.6.6+ feature file
+python3 -m agent_colony drift validate --profile consumer
+```
+
+Example on **0.6.7** (consumer update reliability):
+
+```text
+0.6.7
+kit_version: "0.6.7"
+installed=0.6.7
+available=0.6.7
+action=heal
+check: PASS — kit version current
+```
+
+If `.kit-version` and `manifest.yaml` disagree, the upgrade did not finish cleanly — run `update --directory .` once more (same payload source).
 
 | Flag / command | Role |
 |----------------|------|
-| `update --check` | Report installed vs available version and kit-managed diffs — **no writes** |
-| `update --directory .` | Version-gated refresh: **heal** when current, full kit copy when newer |
-| `update --force` | Full refresh even when versions match — run `--check` first |
-| Agent chat **`/update-agent-colony`** | Same workflow as terminal `update` |
+| `update --check` | Installed vs available + kit-managed diffs — **no writes** |
+| `update --directory .` | **Heal** when current; **full upgrade** when `available` > `installed` |
+| `update --force` | Full refresh from current `source` — run `--check` first |
+| `WORKFLOW_KIT_PAYLOAD` | Use a local `payload/` tree instead of plugin cache |
 
 **Preserved on upgrade:** `.local/user_settings/`, trackers, `AGENTS.md`, `mcp.user.json`. **Overwritten on full upgrade:** `.cursor/`, `.ai_infra/`, `agent_colony/` kit copy.
 
@@ -215,7 +302,7 @@ Details: [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md) · isolation
 | Board wire + shell | [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md) · [`board-shell`](.cursor/skills/board-shell/SKILL.md) |
 | MCP (DeepWiki, custom servers) | [connect-external-mcp.md](.ai_infra/docs/operations/connect-external-mcp.md) |
 | Research packs | [`research-corpus`](.cursor/skills/research-corpus/SKILL.md) · Guide [use-case matrix](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#6-use-case-matrix) |
-| Upgrade an existing install | `python3 -m agent_colony update --check` then `update --directory .` · `/update-agent-colony` · [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md) |
+| Upgrade an existing install | Step A: `/add-plugin` (refresh cache) → Step B: `update --check` then `update --directory .` · [§4 Upgrade kit](#4-upgrade-kit-when-a-new-release-ships) · [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md) |
 | Three planes (architecture) | [workflow-architecture.md](.ai_infra/docs/architecture/workflow-architecture.md) |
 
 ---

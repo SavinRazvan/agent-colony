@@ -140,7 +140,9 @@ Gitignoring `.cursor/` and `.ai_infra/` after activate would avoid git merge fig
 
 ## Kit-managed paths (contract)
 
-Listed in [install-contract.json](../../install-contract.json) `kit_managed_globs` — `update --check` diffs every matching file on disk against the payload source before a full refresh.
+Listed in [install-contract.json](../../install-contract.json) `kit_managed_globs` — `update --check` diffs kit-managed **source files** against the payload. Ignores `.kit-version`, `__pycache__/`, and `*.pyc`. Extra workspace files not in the payload warn (orphans from older kits) — they do not fail `--check` when versions match.
+
+**Cleanup contract (0.6.7+):** heal and upgrade run pre/post cleanup on `__pycache__/`, `*.pyc`, and kit-managed orphans under `.ai_infra/` and `agent_colony/`. Use `update --clean-only` for cleanup without scaffold; `update --no-clean` to skip.
 
 ## Related
 

@@ -183,6 +183,30 @@ def test_cmd_list_filters_status(
     assert out and out[0].count("\t") == 5
 
 
+def test_cmd_list_filters_in_progress_with_space(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    payload = {
+        "items": [
+            {"id": "a", "title": "Active", "status": "In progress"},
+            {"id": "b", "title": "Idle", "status": "Ready"},
+        ]
+    }
+
+    def fake_gh(args: list[str], *, timeout_s: float = 60.0):
+        return SimpleNamespace(returncode=0, stdout=json.dumps(payload), stderr="")
+
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (SAMPLE_SSOT, []))
+    monkeypatch.setattr(project_cli, "run_gh", fake_gh)
+    args = argparse.Namespace(directory=tmp_path, status="In progress", limit=50, json=False)
+    assert project_cli.cmd_list(args) == 0
+    out = capsys.readouterr().out
+    assert "Active" in out
+    assert "Idle" not in out
+
+
 def test_append_notes_to_body_idempotent() -> None:
     body, changed = project_cli.append_notes_to_body("", "Merged: https://example/pull/1 @ abc")
     assert changed

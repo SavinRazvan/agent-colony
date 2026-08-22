@@ -30,22 +30,27 @@ User ran **`/workflow-activate`** in **their app**, then updated the Agent Colon
 ## Guide the user
 
 1. Confirm folder is **their activated app**, not kit-dev repo.
-2. Prefer **`/update-agent-colony`** or Pattern A command below.
-3. Version gate:
+2. **Refresh plugin first** (Agent chat): `/add-plugin agent-colony@https://github.com/SavinRazvan/agent-colony` — confirm preview version matches [Releases](https://github.com/SavinRazvan/agent-colony/releases).
+3. Prefer **`/update-agent-colony`** or Pattern A command below.
+4. Version gate:
    - **same / newer installed** → light heal (dashboards, `.gitignore`, `STARTER-001`, missing `.venv`)
-   - **source newer** or **`--force`** → full overwrite of kit-managed agents/rules/skills/scripts
-4. After upgrade: `health` + `mcp validate`.
+   - **`available > installed`** → one full scaffold refresh (payload `scaffold.py`; no `--force` unless `--check` lists deltas)
+   - **`--force`** → full overwrite even when versions match, or when accepting kit-managed delta overwrites
+5. **Verify:** `.kit-version`, `manifest.yaml` `kit_version`, and `update --check` `installed`/`available` all match.
+6. After upgrade: `health` + `mcp validate`.
 
 ## Commands
 
 ```bash
 source .venv/bin/activate
+python3 -m agent_colony update --check --directory .
 python3 -m agent_colony update --directory .
-python3 -m agent_colony update --directory . --check      # no writes; reports kit agent deltas vs payload
-python3 -m agent_colony update --directory . --force      # full refresh (run --check first)
+python3 -m agent_colony update --directory . --clean-only   # optional: cleanup without upgrade
+python3 -m agent_colony update --directory . --force      # only when --check lists deltas to overwrite
+python3 -m agent_colony update --directory . --no-clean     # debug: skip pre/post cleanup
 ```
 
-**Source resolution:** `WORKFLOW_KIT_PAYLOAD` → `./payload/` → kit/plugin `payload/` → `--source`.
+**Source resolution:** `WORKFLOW_KIT_PAYLOAD` → `./payload/` → kit/plugin `payload/` (highest `kit_version` complete tree) → `--source`.
 
 ## What update does
 
@@ -55,7 +60,11 @@ python3 -m agent_colony update --directory . --force      # full refresh (run --
 | `installed == available` (not `--force`) | Light heal only |
 | `available > installed` or `--force` | Full scaffold refresh |
 
-**`update --check`:** prints planned action plus diffs on the eight kit agent files vs payload. Exit **1** when local kit agent edits would be lost on upgrade/`--force`. Integrator **extra** agents print as warnings only.
+**Auto-clean (0.6.7+):** pre/post cleanup removes runtime noise (`__pycache__/`, `*.pyc`) and kit-managed orphans on heal and upgrade.
+
+**`update --check`:** compares payload files to your workspace. **Fails** only on byte diffs for paths present in both trees (real local edits). **Warns** on integrator extra agents and orphan files left from older kits (`__pycache__/`, `.kit-version`, and target-only paths are ignored). When `action=heal` and versions match, exit **0** unless kit files were edited.
+
+**`--clean-only`:** run cleanup + check report without scaffold (no version bump).
 
 **Preserved:** `AGENTS.md` (if present), `mcp.user.json`, `.local/user_settings/`, trackers.
 
@@ -64,6 +73,9 @@ python3 -m agent_colony update --directory . --force      # full refresh (run --
 ## Post-update
 
 ```bash
+cat .ai_infra/.kit-version
+grep kit_version .ai_infra/manifest.yaml
+python3 -m agent_colony update --check --directory .
 python3 -m agent_colony health
 python3 -m agent_colony mcp validate
 ```
@@ -72,6 +84,7 @@ Optional: `integrate validate`, `canvas doctor`. Breaking renames: [upgrade-kit.
 
 ## Anti-patterns
 
+- Run `update --force` when `action=upgrade` and `--check` exits 0 — one plain `update` is enough.
 - Re-run plain `/workflow-activate` expecting agents/skills refresh — heals only when planes ready.
 - Overwrite consumer `user_settings` or invent second Status writer under `board_only`.
 - Run `update --force` in **kit-dev repo** — fails (`forbidden in slim install`). Kit-dev: edit sources → `make sync-plugin` → commit.
