@@ -241,11 +241,11 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-08-21 ASD-STE100 + board Entry reliability):** ASD-STE100 banners + governance; Entry false-offline fix; `--last` PVTI_ validation; heal Day-N playbook; **1514** tests; **8** / **14** / **7**; kit version **0.6.4**.
 
-**Listing copy refresh (2026-08-22 token efficiency program):** `consumer_lite` profile (6 agents / 6 skills); rules tiering (4 always-on + 3 requestable); `doc skill-section`, `--summary` / `--digest` CLI; DRIFT-014–016; **1547** tests; **8** / **15** / **7** (lite: **6** / **6**); kit version **0.7.0**.
+**Listing copy refresh (2026-08-22 token efficiency program):** `consumer_lite` profile (6 agents / 6 skills); rules tiering (4 always-on + 3 requestable); `doc skill-section`, `--summary` / `--digest` CLI; DRIFT-014–016; **1557** tests; **8** / **15** / **7** (lite: **6** / **6**); kit version **0.7.0**.
 
-**Listing copy refresh (2026-08-22 consumer update reliability):** Auto pre/post clean on `update`; `--clean-only` / `--no-clean`; payload source picks highest `kit_version`; `--check` ignores runtime noise; **1537** tests; **8** / **15** / **7**; kit version **0.6.7**.
+**Listing copy refresh (2026-08-22 consumer update reliability):** Auto pre/post clean on `update`; `--clean-only` / `--no-clean`; payload source picks highest `kit_version`; `--check` ignores runtime noise; **1537** tests; **8** / **15** / **7**; kit version **0.6.7**. *(historical patch release; superseded by 0.7.0 token-efficiency refresh above)*
 
-**Listing copy refresh (2026-08-22 multi-consumer isolation):** DRIFT-013 + DRIFT-011b; `update --check` + `kit_managed_globs`; consumer CI template; README upgrade CLI; **1525** tests; **8** / **15** / **7**; kit version **0.6.6**.
+**Listing copy refresh (2026-08-22 multi-consumer isolation):** DRIFT-013 + DRIFT-011b; `update --check` + `kit_managed_globs`; consumer CI template; README upgrade CLI; **1525** tests; **8** / **15** / **7**; kit version **0.6.6**. *(historical; superseded by 0.7.0)*
 
 **Listing copy refresh (2026-07-20 DOC-CANVAS-ALIGN):** Canvases re-aligned to live CLI (**22** leaves incl. `board-bootstrap`), board-shell day-0 story, test-runner `coverage.json` + post-100% doc sync, VERIFIED **2026-07-20**; metrics unchanged (**1178** / **7089** / **100%**; **8** / **12** / **7**).
 
