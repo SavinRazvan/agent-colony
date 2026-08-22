@@ -26,7 +26,7 @@
 1. [`README.md`](README.md) · [`CONTRIBUTING.md`](CONTRIBUTING.md) · [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md)
 2. [docs index](.ai_infra/docs/README.md) · [repository-map](.ai_infra/docs/handoff/repository-map.md) · [PLUGIN-ARCHITECTURE](.ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md)
 3. [IMPLEMENTATION-STATUS](.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md) · [workflow-architecture](.ai_infra/docs/architecture/workflow-architecture.md)
-4. [ADR index](.ai_infra/docs/decisions/README.md) · [local-workspace-layout](.ai_infra/docs/operations/local-workspace-layout.md) · [workflow-source-owners](.ai_infra/docs/governance/workflow-source-owners.md)
+4. [ADR index](.ai_infra/docs/decisions/README.md) · [local-workspace-layout](.ai_infra/docs/operations/local-workspace-layout.md) · [multi-consumer-isolation](.ai_infra/docs/operations/multi-consumer-isolation.md) · [workflow-source-owners](.ai_infra/docs/governance/workflow-source-owners.md)
 
 Token contract: [token-efficiency.md](.ai_infra/docs/operations/token-efficiency.md).
 

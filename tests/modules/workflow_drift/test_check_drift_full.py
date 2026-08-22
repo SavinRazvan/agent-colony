@@ -65,6 +65,13 @@ def test_exit_code_for_p0_failure() -> None:
     assert cd.exit_code_for(results) == 1
 
 
+def test_exit_code_for_consumer_p1_failure() -> None:
+    results = [cd.CheckResult(check_id="DRIFT-013", severity=cd.Severity.P1, passed=False, detail="x")]
+    assert cd.exit_code_for(results, profile="kit-dev") == 0
+    assert cd.exit_code_for(results, profile="consumer") == 1
+    assert cd.exit_code_for(results, profile="consumer-board") == 1
+
+
 def test_main_text_output_on_kit_repo(capsys: pytest.CaptureFixture[str]) -> None:
     code = cd.main(["--directory", str(REPO_ROOT), "--profile", "kit-dev"])
     captured = capsys.readouterr()
@@ -110,6 +117,8 @@ def test_run_checks_uses_consumer_board_when_board_only(tmp_path: Path) -> None:
         "DRIFT-009",
         "DRIFT-010",
         "DRIFT-012",
+        "DRIFT-013",
+        "DRIFT-011b",
     ]
 
 

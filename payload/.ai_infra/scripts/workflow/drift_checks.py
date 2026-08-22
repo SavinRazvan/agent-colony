@@ -1,7 +1,7 @@
 """
 File: drift_checks.py
 Path: .ai_infra/scripts/workflow/drift_checks.py
-Role: Individual DRIFT-001…011 (+004b) check functions for workflow drift validation.
+Role: Individual DRIFT-001…013 (+004b) check functions for workflow drift validation.
 Used By:
  - .ai_infra/scripts/workflow/check_drift.py
 Depends On:
@@ -186,6 +186,35 @@ def _git_porcelain(root: Path) -> str:
         timeout=30,
     )
     return proc.stdout.strip()
+
+
+def _git_ls_files(root: Path) -> list[str]:
+    if not (root / ".git").is_dir():
+        return []
+    proc = subprocess.run(
+        ["git", "ls-files"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    if proc.returncode != 0:
+        return []
+    return [line.strip() for line in proc.stdout.splitlines() if line.strip()]
+
+
+def _is_tracked_runtime_path(rel: str) -> bool:
+    if rel.startswith(".local/"):
+        return True
+    if rel.startswith(".venv/"):
+        return True
+    if rel == ".cursor/mcp.user.json":
+        return True
+    if rel == ".env":
+        return True
+    if rel.startswith(".env.") and rel != ".env.example":
+        return True
+    return False
 
 
 def check_drift001(paths: DriftPaths) -> CheckResult:
@@ -933,6 +962,73 @@ def check_drift012(paths: DriftPaths) -> CheckResult:
     )
 
 
+_RECOVERY_HINT = (
+    "recovery: .ai_infra/docs/operations/upgrade-kit.md "
+    "(git rm -r --cached .local .venv)"
+)
+
+
+def check_drift013(paths: DriftPaths) -> CheckResult:
+    """Fail when git index tracks private runtime paths (.local/, secrets, venv)."""
+    tracked = _git_ls_files(paths.root)
+    if not tracked and not (paths.root / ".git").is_dir():
+        return CheckResult(
+            check_id="DRIFT-013",
+            severity=Severity.P1,
+            passed=True,
+            detail="not a git repo — skipped",
+        )
+    forbidden = sorted(p for p in tracked if _is_tracked_runtime_path(p))
+    if forbidden:
+        sample = ", ".join(forbidden[:5])
+        suffix = f" (+{len(forbidden) - 5} more)" if len(forbidden) > 5 else ""
+        return CheckResult(
+            check_id="DRIFT-013",
+            severity=Severity.P1,
+            passed=False,
+            detail=f"tracked runtime paths: {sample}{suffix}; {_RECOVERY_HINT}",
+        )
+    return CheckResult(
+        check_id="DRIFT-013",
+        severity=Severity.P1,
+        passed=True,
+        detail="no tracked .local/, .venv/, .env, or mcp.user.json",
+    )
+
+
+def check_drift011b(paths: DriftPaths) -> CheckResult:
+    """
+    Consumer advisory: extra `.cursor/agents/*.md` beyond the eight kit ids.
+    Always passes; surfaces integrator extensions that full upgrade may overwrite.
+    """
+    agents_dir = paths.root / ".cursor" / "agents"
+    if not agents_dir.is_dir():
+        return CheckResult(
+            check_id="DRIFT-011b",
+            severity=Severity.P2,
+            passed=True,
+            detail=".cursor/agents/ missing — skipped",
+        )
+    on_disk = {p.stem for p in agents_dir.glob("*.md") if p.is_file()}
+    extra = sorted(on_disk - LIVE_KIT_AGENT_IDS)
+    if not extra:
+        return CheckResult(
+            check_id="DRIFT-011b",
+            severity=Severity.P2,
+            passed=True,
+            detail=f"no extra agents ({len(LIVE_KIT_AGENT_IDS)} kit ids only)",
+        )
+    return CheckResult(
+        check_id="DRIFT-011b",
+        severity=Severity.P2,
+        passed=True,
+        detail=(
+            f"extra integrator agents (advisory): {','.join(extra)} — "
+            "commit team-owned; full update may overwrite non-payload files"
+        ),
+    )
+
+
 KIT_DEV_CHECKS = (
     check_drift001,
     check_drift002,
@@ -947,11 +1043,14 @@ KIT_DEV_CHECKS = (
     check_drift010,
     check_drift011,
     check_drift012,
+    check_drift013,
 )
 
 CONSUMER_CHECKS = (
     check_drift005,
     check_drift008,
+    check_drift013,
+    check_drift011b,
 )
 
 CONSUMER_BOARD_CHECKS = (
@@ -960,4 +1059,6 @@ CONSUMER_BOARD_CHECKS = (
     check_drift009,
     check_drift010,
     check_drift012,
+    check_drift013,
+    check_drift011b,
 )

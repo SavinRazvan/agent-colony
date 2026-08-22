@@ -257,7 +257,7 @@ def workflow_drift_validate() -> str:
     results = check_drift.run_checks(root)
     profile = check_drift.resolve_profile(root, None)
     report = check_drift.format_report(results, profile=profile)
-    code = check_drift.exit_code_for(results)
+    code = check_drift.exit_code_for(results, profile=profile)
     return f"exit={code}\nprofile={profile}\n{report}"
 
 

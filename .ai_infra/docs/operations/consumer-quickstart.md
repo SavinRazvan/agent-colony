@@ -153,6 +153,8 @@ Also creates `.venv`, merges MCP config (profile **`with_mcp`**), seeds DeepWiki
 
 **Re-activate is safe:** won't overwrite your trackers, `user_settings/`, or `AGENTS.md`. Kit-managed **dashboard HTML**, JS/CSS, `module-audit.html`, and `pages.json` **are refreshed** on each activate (from plugin payload when available).
 
+**Isolation cheat sheet:** One payload for all customers · settings in `.local/` only · kit committed per team · never `git ls-files .local/` · full doc: [multi-consumer-isolation.md](multi-consumer-isolation.md).
+
 **Terminal equivalent** (same as `/workflow-activate`):
 
 ```bash
@@ -610,8 +612,8 @@ Use **`--profile consumer`** for the minimal consumer set. When the tracker cont
 
 | Profile | Checks |
 |---------|--------|
-| `consumer` | DRIFT-005 + DRIFT-008 |
-| `consumer-board` | DRIFT-005 + DRIFT-008 + DRIFT-009 + DRIFT-010 |
+| `consumer` | DRIFT-005 + DRIFT-008 + **DRIFT-013** + **DRIFT-011b** (advisory) |
+| `consumer-board` | DRIFT-005 + DRIFT-008 + DRIFT-009 + DRIFT-010 + DRIFT-012 + **DRIFT-013** + **DRIFT-011b** |
 
 Auto-detect defaults to **`kit-dev`** unless `work-tracker.md` contains `STARTER-001`; without the flag you may see kit-dev-only checks (DRIFT-003, DRIFT-006) that do not apply to your app.
 
@@ -619,6 +621,18 @@ Auto-detect defaults to **`kit-dev`** unless `work-tracker.md` contains `STARTER
 |--------------------------|---------|
 | **DRIFT-005** | IMPLEMENTATION-STATUS test count — **not shipped to consumer installs** |
 | **DRIFT-008** | Scaffold trackers (`session-pointer`, `plan`, `work-tracker`) present |
+| **DRIFT-013** | Git must not track `.local/`, `.venv/`, `.env`, or `mcp.user.json` — see [multi-consumer-isolation.md](multi-consumer-isolation.md) |
+| **DRIFT-011b** | Advisory: extra integrator agents beyond eight kit ids |
+
+---
+
+## CI on consumer apps (optional)
+
+Copy the exemplar workflow from `.ai_infra/templates/ci/consumer-gates.yml` into your repo as `.github/workflows/agent-colony-gates.yml`. It runs consumer drift (including DRIFT-013) and `prepare.py` gates. Seed `.local/` in the job only — **never commit** runtime paths.
+
+Isolation contract: [multi-consumer-isolation.md](multi-consumer-isolation.md).
+
+---
 
 ### DRIFT-005 FAIL — kit bug (not your app)
 

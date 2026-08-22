@@ -53,12 +53,12 @@ def cmd_drift_validate(args: argparse.Namespace) -> int:
                 }
                 for r in results
             ],
-            "exit_code": check_drift.exit_code_for(results),
+            "exit_code": check_drift.exit_code_for(results, profile=profile),
         }
         print(json.dumps(payload, indent=2))
     else:
         print(check_drift.format_report(results, profile=profile))
-    return check_drift.exit_code_for(results)
+    return check_drift.exit_code_for(results, profile=profile)
 
 
 def register_drift_subparser(sub: argparse._SubParsersAction) -> None:

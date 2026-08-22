@@ -22,6 +22,7 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 - **Never commit** paths under `.local/`.
 - Canonical workflow text: **`.ai_infra/docs/operations/agent-workflow-procedures.md`**, **`workflow-complete.md`**.
 - **Sanity check:** `git ls-files .local/` should print **nothing**.
+- **Automated check:** `drift validate --profile consumer` runs **DRIFT-013** (tracked runtime guard). See [multi-consumer-isolation.md](multi-consumer-isolation.md).
 
 ## Agent efficiency (read order)
 

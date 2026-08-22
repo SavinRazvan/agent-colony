@@ -1,5 +1,5 @@
 version: 1
-kit_version: "0.6.5"
+kit_version: "0.6.6"
 profiles:
   default:
     copy_dirs:
@@ -23,6 +23,7 @@ profiles:
       - templates/agent-integration
       - templates/project-board
       - templates/research-corpus
+      - templates/ci
       - workflows
     copy_files:
       - bootstrap.py

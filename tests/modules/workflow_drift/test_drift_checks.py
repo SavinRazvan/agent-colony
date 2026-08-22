@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import sys
 import time
+import subprocess
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -32,6 +33,8 @@ from drift_checks import (  # noqa: E402
     check_drift007,
     check_drift008,
     check_drift011,
+    check_drift011b,
+    check_drift013,
     detect_profile,
     drift_paths,
 )
@@ -392,3 +395,52 @@ def test_drift011_fails_on_extra_agent(tmp_path: Path) -> None:
     result = check_drift011(drift_paths(tmp_path))
     assert not result.passed
     assert "extra=ghost-agent" in result.detail
+
+
+def test_drift013_passes_when_runtime_untracked(tmp_path: Path) -> None:
+    subprocess.run(["git", "init"], cwd=tmp_path, check=True, capture_output=True)
+    (tmp_path / ".local" / "user_settings").mkdir(parents=True)
+    (tmp_path / ".local" / "user_settings" / "github.collaboration.yaml").write_text(
+        "version: 1\n", encoding="utf-8"
+    )
+    result = check_drift013(drift_paths(tmp_path))
+    assert result.passed
+    assert result.check_id == "DRIFT-013"
+
+
+def test_drift013_fails_when_local_tracked(tmp_path: Path) -> None:
+    subprocess.run(["git", "init"], cwd=tmp_path, check=True, capture_output=True)
+    secret = tmp_path / ".local" / "tracked.txt"
+    secret.parent.mkdir(parents=True)
+    secret.write_text("oops\n", encoding="utf-8")
+    subprocess.run(["git", "add", ".local/tracked.txt"], cwd=tmp_path, check=True, capture_output=True)
+    result = check_drift013(drift_paths(tmp_path))
+    assert not result.passed
+    assert "tracked runtime paths" in result.detail
+    assert "upgrade-kit.md" in result.detail
+
+
+def test_drift013_tracked_local_fails_consumer_exit(tmp_path: Path) -> None:
+    import check_drift
+
+    subprocess.run(["git", "init"], cwd=tmp_path, check=True, capture_output=True)
+    planning = tmp_path / ".local/index-and-planning/current"
+    planning.mkdir(parents=True)
+    (planning / "work-tracker.md").write_text("# Tracker\n\n## Active\n\n(none)\n", encoding="utf-8")
+    tracked = tmp_path / ".local" / "tracked.txt"
+    tracked.write_text("oops\n", encoding="utf-8")
+    subprocess.run(["git", "add", ".local/tracked.txt"], cwd=tmp_path, check=True, capture_output=True)
+    code = check_drift.main(["--directory", str(tmp_path), "--profile", "consumer"])
+    assert code == 1
+
+
+def test_drift011b_advisory_extra_agent(tmp_path: Path) -> None:
+    agents = tmp_path / ".cursor" / "agents"
+    agents.mkdir(parents=True)
+    for name in LIVE_KIT_AGENT_IDS:
+        (agents / f"{name}.md").write_text(f"# {name}\n", encoding="utf-8")
+    (agents / "security-reviewer.md").write_text("# extra\n", encoding="utf-8")
+    result = check_drift011b(drift_paths(tmp_path))
+    assert result.passed
+    assert "extra integrator agents" in result.detail
+    assert "security-reviewer" in result.detail

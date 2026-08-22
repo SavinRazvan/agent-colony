@@ -78,4 +78,8 @@ Plugin bundle copies `.cursor/skills/` first; maintainer skills are **additive o
 
 Canvas/plan local artifacts: [ADR-010](../decisions/ADR-010-canvas-plan-local-artifacts.md) · skill `canvas-artifacts`.
 
+## Multi-consumer isolation
+
+One universal Marketplace **payload**; each activated app gets its own gitignored `.local/` and **team-committed** kit copy. Private settings never land on GitHub when DRIFT-013 passes. Full contract: [multi-consumer-isolation.md](../operations/multi-consumer-isolation.md).
+
 See [folder-charter.md](../governance/folder-charter.md) and [decisions/README.md](../decisions/README.md).

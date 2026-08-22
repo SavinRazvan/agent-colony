@@ -906,7 +906,12 @@ def test_run_checks_consumer_profile_not_board_only(tmp_path: Path) -> None:
         board_only=False,
     ) == "consumer"
     results = cd.run_checks(tmp_path)
-    assert [r.check_id for r in results] == ["DRIFT-005", "DRIFT-008"]
+    assert [r.check_id for r in results] == [
+        "DRIFT-005",
+        "DRIFT-008",
+        "DRIFT-013",
+        "DRIFT-011b",
+    ]
 
 
 def test_board_shell_view_alnum_match() -> None:

@@ -73,6 +73,18 @@ Kit **0.6.4** ships token-efficient agent prose and board Entry reliability (no 
 
 Consumers: `python3 -m agent_colony update` after the plugin refreshes to **0.6.4**.
 
+## Changes in 0.6.6
+
+Kit **0.6.6** ships multi-consumer isolation (Model A):
+
+- SSOT doc [multi-consumer-isolation.md](multi-consumer-isolation.md) — preserve vs overwrite, hard rules, consumer CI template
+- **DRIFT-013** — P1 fail when git tracks `.local/`, `.venv/`, `.env`, or `mcp.user.json` (consumer exit code enforced)
+- **DRIFT-011b** — P2 advisory for extra integrator agents
+- **`update --check`** — diffs `kit_managed_globs` from install-contract; fails on heal or upgrade when kit-managed files differ
+- Overlay collision WARN on activate; `product-*.mdc` naming in `overlays/README.md`
+
+Consumers: refresh plugin → `python3 -m agent_colony update --check` → `update --directory .` after **0.6.6** is on Marketplace.
+
 ## Changes in 0.6.5
 
 Kit **0.6.5** fixes consumer `update` leaving a stale `.kit-version` stamp (no rename):
