@@ -85,7 +85,7 @@ const FALLBACK_LABELS: Record<string, string> = {
 
 const READ_FIRST = [
   [".cursor/skills/board-ssot/SKILL.md", "Board SSOT canon"],
-  [".cursor/skills/board-shell/SKILL.md", "First-run Playground shell coach"],
+  [".cursor/skills/board-shell/SKILL.md", "First-run Playground shell coach (full profile only)"],
   [".ai_infra/templates/project-board/board-shell.schema.yaml", "Kit default desired state"],
   [".local/user_settings/github.collaboration.yaml", "project_ssot block"],
   [".ai_infra/templates/project-board/README.md", "Card templates"],
@@ -96,7 +96,7 @@ const READ_FIRST = [
 
 const PATTERNS = [
   ["Independent-governed", "Not in default PR pipelines"],
-  ["First-run shell", "board-bootstrap --check → views-setup until Playground six-view green"],
+  ["First-run shell", "board-bootstrap --check → views-setup until Playground six-view green (full profile; lite uses board-ssot only)"],
   ["Loop", "status → list ready → create-from-template + claim --last → handoff"],
   ["Triage Tier-1", "set-field Priority/Size/Estimate (skill Size↔Estimate table)"],
   ["Promote", "promote-to-issue OR mention-pr auto (promote_to_issue_on_pr) before shippable PR"],

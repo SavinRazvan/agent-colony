@@ -103,7 +103,7 @@ const FALLBACK_LABELS: Record<string, string> = {
 
 const READ_FIRST = [
   [".cursor/skills/implementer-loop/SKILL.md", "Slice lifecycle"],
-  [".cursor/skills/board-shell/SKILL.md", "Day-0 Playground shell (before claim)"],
+  [".cursor/skills/board-shell/SKILL.md", "Day-0 Playground shell (full profile only; before claim)"],
   [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
   [".ai_infra/templates/project-board/board-shell.schema.yaml", "Kit default desired state"],
   [".ai_infra/templates/project-board/README.md", "When creating cards"],

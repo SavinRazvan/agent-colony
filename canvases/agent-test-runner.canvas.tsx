@@ -107,7 +107,7 @@ const PATTERNS = [
   ["Tier-1", "Shared Board rights; promote only if opening a shippable PR"],
   ["Module layout", "tests/modules/<module>/ matching source boundaries"],
   ["Coverage evidence", "pytest --cov writes coverage.json only — do not invent alternate names"],
-  ["Shell filters", "Prefer grep/python over rg (often absent from PATH)"],
+  ["Shell filters", "Prefer rg or repo search tools (kit dev PATH includes ripgrep)"],
   ["Post-100% sync", "IMPLEMENTATION-STATUS + make coverage-index + make doc-validate"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
   ["Attribution", "@owner.github_user/test-runner via --agent test-runner"],
@@ -275,7 +275,7 @@ export default function AgentTestRunnerCanvas() {
           <Text>3. Run module-focused tests; regressions; coverage when required.</Text>
           <Text>
             4. Coverage evidence: pytest --cov writes coverage.json only; prefer
-            grep/python over rg.
+            rg or repo search tools.
           </Text>
           <Text>5. check_testing_artifacts.py before PR path.</Text>
           <Text>
