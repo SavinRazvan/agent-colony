@@ -40,9 +40,9 @@ python3 -m agent_colony activate --directory .
 | Infrastructure | `.ai_infra/`, `agent_colony/` | No — scripts/CLI |
 | Runtime | `.local/` Tier 1 scaffold: trackers, six `workflow-artifacts/*` buckets + README stubs; `user_settings/` exemplars | No — gitignored |
 
-Re-activate does not overwrite trackers, `user_settings/`, or `AGENTS.md`. Kit 0.7.3 removes leftover deprecated dashboard files during activate.
+Re-activate does not overwrite trackers, `user_settings/`, or `AGENTS.md`. Kit 0.7.3 deletes leftover `.local/agents-control-center/` if present (removed in 0.7.3).
 
-- Idempotent: skips full install when all planes already pass `install-contract.json`, but still cleans deprecated dashboard leftovers
+- Idempotent: skips full install when all planes already pass `install-contract.json`, but still cleans leftover `.local/agents-control-center/` if present
 - Creates `.venv`, merges MCP json, runs verify gates
 - Prints **settings-only** next steps (no re-install)
 

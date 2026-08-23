@@ -283,7 +283,7 @@ your-project/
 
 **Not installed:** kit full `tests/`, `Makefile`, `docs/handoff/`, CI/release scripts, maintainer megadocs. Those exist only in the [kit repository](https://github.com/SavinRazvan/agent-colony).
 
-**Re-activate is safe:** existing trackers, `user_settings/`, and `AGENTS.md` are not overwritten. Kit 0.7.3 removes leftover deprecated dashboard files during activate.
+**Re-activate is safe:** existing trackers, `user_settings/`, and `AGENTS.md` are not overwritten. Kit 0.7.3 deletes leftover `.local/agents-control-center/` if present (removed in 0.7.3).
 
 ### Upgrade / preserve (kit-managed vs private)
 
@@ -291,7 +291,7 @@ your-project/
 |------|--------------------------|----------------------------|
 | `.local/user_settings/`, trackers | **Preserved** | **Preserved** |
 | `AGENTS.md`, `mcp.user.json` | **Preserved** | **Preserved** |
-| Deprecated dashboard leftovers | Deleted on activate (kit 0.7.3+) | Deleted on activate (kit 0.7.3+) |
+| Leftover `.local/agents-control-center/` (pre-0.7.3) | Deleted on activate (kit 0.7.3+) | Deleted on activate (kit 0.7.3+) |
 | `.cursor/agents`, skills, rules | Skipped | **Overwritten** |
 | `.ai_infra/`, `agent_colony/` | Skipped | **Overwritten** |
 
@@ -361,7 +361,7 @@ Full list: [consumer-quickstart.md](consumer-quickstart.md) § Terminal commands
 
 ## 5. Canvases and offline markdown
 
-Use the **GitHub Project board** (`python3 -m agent_colony project status`) for backlog and Status. Use **Ctrl+Shift+P → Open Canvas** for kit visualizations. Local trackers under `.local/index-and-planning/` are offline markdown only; they are not browser dashboards and do not replace the board when `board_only` is enabled.
+Use the **GitHub Project board** (`python3 -m agent_colony project status`) for backlog and Status. Use **Ctrl+Shift+P → Open Canvas** for kit visualizations. Local trackers under `.local/index-and-planning/` are offline markdown only and do not replace the board when `board_only` is enabled.
 
 ### Kit canvases (Open Canvas)
 

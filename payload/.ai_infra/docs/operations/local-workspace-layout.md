@@ -86,12 +86,12 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 |--------|----------|
 | `.ai_infra/scripts/pr/check_testing_artifacts.py` | Default `--planning-dir`: `.local/index-and-planning/current` |
 | `.ai_infra/scripts/pr/review.py`, `prepare.py`, `merge.py` | Artifacts via `local_workflow_paths.py` |
-| `.ai_infra/scripts/install/scaffold.py` | Tier 1: exemplar trackers (if missing), artifact buckets, README stubs, `AGENTS.md` (if missing); kit 0.7.3 removes leftover deprecated dashboard files on activate |
+| `.ai_infra/scripts/install/scaffold.py` | Tier 1: exemplar trackers (if missing), artifact buckets, README stubs, `AGENTS.md` (if missing); kit 0.7.3 deletes leftover `.local/agents-control-center/` if present |
 | `.ai_infra/scripts/ci/seed_kit_workspace.py` | CI fixture seed; same bucket set as scaffold |
 
 ## Templates (versioned in git)
 
-Copy from **`.ai_infra/templates/local-workspace/`** into `.local/` at scaffold (`exemplars/`, `artifact-stubs/`). Runtime scaffold no longer refreshes browser dashboard files or dashboard registries.
+Copy from **`.ai_infra/templates/local-workspace/`** into `.local/` at scaffold (`exemplars/`, `artifact-stubs/`). Activate/update heal deletes leftover `.local/agents-control-center/` if present (removed in 0.7.3).
 
 **Board snapshot:** `.local/generated-data/project-board-snapshot.json` is read-only evidence for DRIFT-010 / drift-guard. Refresh with `python3 -m agent_colony project export`. The snapshot never writes GitHub Project Status and must not become a competing SSOT; prefer the live Project board when `project_ssot.enabled`.
 

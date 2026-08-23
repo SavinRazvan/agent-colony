@@ -52,7 +52,7 @@ Install the **Agent Colony** plugin once in Cursor. Run **`/workflow-activate`**
 | Trackers under `.local/index-and-planning/` | **Preserved** (copy-if-missing) | **Preserved** |
 | `AGENTS.md` | **Preserved** if present | **Preserved** if present |
 | `.cursor/mcp.user.json` | **Preserved** | **Preserved** |
-| Deprecated dashboard leftovers | Deleted on activate (kit 0.7.3+) | Deleted on activate (kit 0.7.3+) |
+| Leftover `.local/agents-control-center/` (pre-0.7.3) | Deleted on activate (kit 0.7.3+) | Deleted on activate (kit 0.7.3+) |
 | `.cursor/agents`, skills, rules | Skipped (no full install) | **Overwritten** from payload |
 | `.ai_infra/`, `agent_colony/` | Skipped | **Overwritten** |
 | `.ai_infra/.kit-version` | Healed if stale | **Updated** from source manifest |

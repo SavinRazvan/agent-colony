@@ -20,7 +20,7 @@ Notes:
 Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
-**Last updated:** 2026-08-23 (dashboard removal docs — kit 0.7.3)
+**Last updated:** 2026-08-23 (ICC removed — kit 0.7.3)
 **Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1544
 
 ## Shipped (confirmed in repo)
@@ -53,7 +53,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
 | MCP tools + resources | 26 tools + 6 resources (ADR-012 Pattern A board tools) | `.ai_infra/mcp_servers/agent_colony_mcp/` |
-| Install scaffold + contract | `install-contract.json`; idempotent trackers/`AGENTS.md` on re-activate; kit 0.7.3 removes deprecated dashboard leftovers | `.ai_infra/scripts/install/scaffold.py` |
+| Install scaffold + contract | `install-contract.json`; idempotent trackers/`AGENTS.md` on re-activate; kit 0.7.3 deletes leftover `.local/agents-control-center/` if present | `.ai_infra/scripts/install/scaffold.py` |
 | Local artifact tiers | Tier 1 scaffold: all `workflow-artifacts/*` buckets + README stubs; SSOT `local_workflow_paths.py` | `.ai_infra/templates/local-workspace/` |
 | Integrate validate | INT-001…014; INT-009/011 plugin parity **kit-dev only** | `.ai_infra/scripts/integration/validate.py` |
 | Canvas / plan CLI | ADR-010 Pattern A — `canvas doctor|sync|save`, `plan snapshot|list|open` | `.ai_infra/install/agent_colony/canvas_cli.py`, `plan_cli.py` · `canvas-artifacts` skill |

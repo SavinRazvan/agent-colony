@@ -161,7 +161,7 @@ Or type `/` and pick **workflow-activate** from the menu.
 Also creates `.venv`, merges MCP config (profile **`with_mcp`**), seeds DeepWiki into
 `mcp.user.json` + live registry when missing, runs smoke gates.
 
-**Re-activate is safe:** won't overwrite your trackers, `user_settings/`, or `AGENTS.md`. Kit 0.7.3 removes leftover deprecated dashboard files during activate.
+**Re-activate is safe:** won't overwrite your trackers, `user_settings/`, or `AGENTS.md`. Kit 0.7.3 deletes leftover `.local/agents-control-center/` if present (removed in 0.7.3).
 
 **Isolation cheat sheet:** One payload for all customers · settings in `.local/` only · kit committed per team · never `git ls-files .local/` · full doc: [multi-consumer-isolation.md](multi-consumer-isolation.md).
 
