@@ -25,7 +25,7 @@ type SsotMode = "board" | "fallback";
 
 const VERIFIED = "2026-08-06";
 const SOURCES =
-  ".cursor/agents/researcher.md · research-corpus/SKILL.md · research_cli.py · .agents/skills/RESEARCH_WORKFLOW.md · live pack flexiai-toolsmith + verifier";
+  ".cursor/agents/researcher.md · research-corpus/SKILL.md · research_cli.py · live pack flexiai-toolsmith + verifier";
 
 const GOALS = [
   "Adaptive Brief from chat, peer agent Notes/handoffs, or board research card",

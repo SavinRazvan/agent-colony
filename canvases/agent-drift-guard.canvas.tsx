@@ -89,7 +89,7 @@ const READ_FIRST = [
   [".cursor/skills/drift-audit/SKILL.md", "Drift audit + goal pulse"],
   [".cursor/skills/board-ssot/SKILL.md", "Board SSOT when enabled"],
   ["python3 -m agent_colony drift validate", "CLI entry"],
-  ["DRIFT-009 / 010 / 011 / 012", "Board + agent roster pulse"],
+  ["DRIFT-009 / 010 / 011 / 012", "Board subset of DRIFT-001…016 (roster + plan snapshots)"],
   ["project export", "DRIFT-010 evidence"],
   [".local/plans/", "DRIFT-012 snapshot-only under board_only"],
   [".cursor/skills/canvas-artifacts/SKILL.md", "ADR-010 canvas/plan tiers"],
@@ -217,7 +217,7 @@ export default function AgentDriftGuardCanvas() {
 
       <Grid columns={3} gap={12}>
         <Stat value="MUST status" label="Entry when board on" />
-        <Stat value="DRIFT-009…012" label="Board + roster pulse" />
+        <Stat value="DRIFT-009…012" label="Board subset (DRIFT-001…016)" />
         <Stat value="EXIT_QUEUED" label="Outbox on rate-limit" tone="warning" />
       </Grid>
 
@@ -253,7 +253,7 @@ export default function AgentDriftGuardCanvas() {
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
           <Text>1. project entry (prefer over unfiltered list; board required when on).</Text>
-          <Text>2. Run drift validate; check DRIFT-009 / 010 / 011 / 012 (kit-dev).</Text>
+          <Text>2. Run drift validate; check DRIFT-009…012 board subset (full catalog DRIFT-001…016).</Text>
           <Text>3. Goal pulse: board Acceptance/Notes + plan pointers + roster.</Text>
           <Text>4. project export --reuse-if-fresh for DRIFT-010 when needed.</Text>
           <Text>

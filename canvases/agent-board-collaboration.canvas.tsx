@@ -555,7 +555,8 @@ export default function AgentBoardCollaborationCanvas() {
           <Text>
             /board + board-shell until board-bootstrap --check
             matches the Playground six-view default (Priority/Size/Estimate/Start
-            date on Status board + Prioritized backlog).
+            date on Status board + Prioritized backlog). Full profile only —
+            consumer_lite installs board-ssot without board-shell.
           </Text>
           <Text>
             /auditor is architecture-impacting / pre-merge — not day-0.
