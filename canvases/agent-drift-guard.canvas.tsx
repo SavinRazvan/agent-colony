@@ -112,7 +112,7 @@ const ARTIFACTS = [
   [
     ".local/generated-data/project-board-snapshot.json",
     "project export",
-    "DRIFT-010 snapshot/export only — no dashboard UI",
+    "DRIFT-010 snapshot/export only",
   ],
   [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
 ];

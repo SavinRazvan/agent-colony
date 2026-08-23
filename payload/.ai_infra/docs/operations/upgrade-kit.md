@@ -107,10 +107,10 @@ Consumers: refresh plugin → `python3 -m agent_colony update --directory .` aft
 
 ## Changes in 0.7.3
 
-Kit **0.7.3** removes deprecated dashboard documentation and runtime surface:
+Kit **0.7.3** removes the local Agents Control Center HTML surface:
 
-- Browser dashboard files and registry files are no longer documented or refreshed.
-- `activate` deletes leftover deprecated dashboard files from older installs.
+- Templates and refresh paths for `.local/agents-control-center/` are gone.
+- `activate` / update light heal delete leftover `.local/agents-control-center/` if present.
 - Use the GitHub Project board for backlog and Status, **Ctrl+Shift+P → Open Canvas** for kit visualizations, and `.local/index-and-planning/` trackers for offline markdown only.
 
 Consumers: refresh plugin → `python3 -m agent_colony update --directory .` after **0.7.3** is available.
@@ -208,7 +208,7 @@ Compares `.ai_infra/.kit-version` to the activate source `manifest.yaml` `kit_ve
 
 | Result | Action |
 |--------|--------|
-| Up to date | Light heal — runtime `.gitignore`, `STARTER-001`, missing `.venv`, cleanup of deprecated dashboard leftovers |
+| Up to date | Light heal — runtime `.gitignore`, `STARTER-001`, missing `.venv`, leftover `.local/agents-control-center/` cleanup |
 | Source newer | Full kit-managed refresh (agents/rules/skills/scripts) |
 | `--check` | Report only (no writes) |
 | `--force` | Full refresh even when versions match |
@@ -251,7 +251,7 @@ Use `--source payload` when running from the distribution root (see `workflow-ac
 | `.ai_infra/scripts/`            | Overwritten from manifest profile                                                  |
 | `.cursor/agents`, rules, skills | Overwritten from kit                                                               |
 | `.local/` exemplars             | Re-copied on `--force` only; trackers and user settings preserved                  |
-| Deprecated dashboard leftovers | Removed on activate (kit 0.7.3+)                                                   |
+| Leftover `.local/agents-control-center/` (pre-0.7.3) | Removed on activate (kit 0.7.3+)                                                   |
 | `AGENTS.md`                     | **Not** overwritten if present — delete to refresh from stub, or merge manually    |
 | `mcp.user.json`                 | **Not** overwritten — merge via `python3 -m agent_colony mcp validate`             |
 | `.kit-version`                  | Updated from **source** manifest `kit_version` (not pre-copy target manifest)      |
