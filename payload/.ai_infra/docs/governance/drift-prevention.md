@@ -39,7 +39,6 @@ Additionally when changing governance, workflows, `.cursor/`, `.agents/`, or tra
 
 1. Update **`.ai_infra/docs/operations/local-workspace-layout.md`**.
 2. Update **`.ai_infra/scripts/pr/local_workflow_paths.py`** (and `review.py` / `prepare.py` / `merge.py` consumers).
-3. Refresh **`.ai_infra/templates/local-workspace/pages.json`** if dashboard tabs change.
 
 ## After changing **git commit** trailer policy
 

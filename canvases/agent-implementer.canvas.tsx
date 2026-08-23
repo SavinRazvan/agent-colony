@@ -135,7 +135,7 @@ const ARTIFACTS = [
   [
     "coverage-index (make coverage-index)",
     "When coverage mattered",
-    "ICC / maintainers",
+    "maintainers",
   ],
   [
     "Board Status + Notes",

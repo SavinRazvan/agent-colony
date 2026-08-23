@@ -40,7 +40,7 @@ Use the kit venv interpreter (`.venv/bin/python`) or `python3` — bare `python`
 
 ## Versioning
 
-**Current release:** `0.7.2` (git tag [`v0.7.2`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.7.2) when published).
+**Current release:** `0.7.3` (git tag [`v0.7.3`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.7.3) when published).
 
 **Superseded:** `v0.3.0` (`1f16af1`) predates `PLUGIN-FLATTEN` (#15) — its tagged tree has **zero**
 files under `agents/`, `rules/`, `skills/`, `payload/` (the gitignore bug #15 fixed). Do not
@@ -160,7 +160,7 @@ Or from kit repo without opening target in Cursor:
 
 ### Automated smoke (kit repo)
 
-Full Track A (direct install) + Track B (payload activate) with dashboard path checks and idempotency:
+Full Track A (direct install) + Track B (payload activate) with layout checks and idempotency:
 
 ```bash
 make smoke-consumer
@@ -175,7 +175,6 @@ bash .ai_infra/scripts/install/smoke_marketplace.sh
 | `install --verify` / `activate --verify` | `VERIFY PASS` | `VERIFY PASS` |
 | `check_consumer_purity.py` | PASS | PASS |
 | No `ci/kit-dev` in templates | PASS | PASS |
-| Tier-1 `pages.json` paths | All PASS | (same layout) |
 | `gates` / governance | PASS | PASS |
 | `integrate validate` | P0 = 0 (kit-dev) | P0 = 0; INT-009/011 skipped on consumer |
 | `user_settings` idempotency | PASS (valid exemplar + re-install) | N/A |
@@ -241,7 +240,9 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 **Listing copy refresh (2026-08-21 ASD-STE100 + board Entry reliability):** ASD-STE100 banners + governance; Entry false-offline fix; `--last` PVTI_ validation; heal Day-N playbook; **1514** tests; **8** / **14** / **7**; kit version **0.6.4**.
 
-**Listing copy refresh (2026-08-22 MCP Pattern A board tools):** ADR-012 wrap-only MCP tools (`workflow_project_*`, `workflow_session_entry`, `workflow_doc_skill_section`); EXIT_QUEUED envelope; verifier-only `workflow_run_gate`; **1568** tests; **8** / **15** / **7** (lite: **6** / **6**); kit version **0.7.2**.
+**Listing copy refresh (2026-08-23 ICC dashboard removal):** Deprecated ICC HTML / `.local/agents-control-center/` removed; activate/update deletes leftovers; module-audit → `workflow-artifacts/audit/`; **1544** tests; **8** / **15** / **7** (lite: **6** / **6**); kit version **0.7.3**.
+
+**Listing copy refresh (2026-08-22 MCP Pattern A board tools):** ADR-012 wrap-only MCP tools (`workflow_project_*`, `workflow_session_entry`, `workflow_doc_skill_section`); EXIT_QUEUED envelope; verifier-only `workflow_run_gate`; **1557** tests; **8** / **15** / **7** (lite: **6** / **6**); kit version **0.7.2**.
 
 **Listing copy refresh (2026-08-22 token efficiency Phase 2):** `agents_skill_allowlist` on lite (PR slash skills kept); plain `update` lite→full documented; canvas DRIFT-001…016; **1557** tests; **8** / **15** / **7** (lite: **6** / **6**); kit version **0.7.1**.
 

@@ -58,11 +58,10 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs — for **con
 | Assisted-by | Git commit trailer for AI disclosure (`Assisted-by: <tool>[:<model>]`); not a STEMG or ASD endorsement |
 | TBD | To Be Determined — placeholder in file headers / relations |
 | DAG | Directed Acyclic Graph — agent **handoff** edges (canvases); no cycles |
-| ACC | Agents Control Center — `.local/agents-control-center/` (folder name) |
-| ICC | Implementation Control Center — HTML dashboard under ACC (**deprecated**; prefer board + canvases) |
-| HTML | Local dashboard pages served via `http.server` (not `file://`) |
+| ACC / ICC | Removed in kit 0.7.3; use board + canvases |
+| HTML | HyperText Markup Language |
 | JSON | Machine artifacts (coverage, board export, registries, MCP config) |
-| IDE | Editor host (Cursor) — canvases open via Open Canvas, not raw `file://` HTML |
+| IDE | Editor host (Cursor) — canvases open via Open Canvas |
 
 ## Board / Project SSOT
 
@@ -77,7 +76,7 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs — for **con
 | EXIT_QUEUED | CLI exit code **6** — write queued to outbox; later `project outbox flush` |
 | dual-write | Forbidden under `board_only`: writing competing Status into local trackers |
 | Entry / Exit | Every agent: read board on Entry; update Status (+ Notes) on Exit |
-| canvas | Cursor Canvas visualization (`canvases/*.canvas.tsx`) — prefer over deprecated ICC HTML |
+| canvas | Cursor Canvas visualization (`canvases/*.canvas.tsx`) |
 
 ## Drift, audit, and check ids
 

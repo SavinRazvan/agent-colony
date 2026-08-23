@@ -238,7 +238,7 @@ const ARTIFACT_FLOWS = [
     ".local/index-and-planning/current/change-index.md",
     "implementer, board, integrator, verifier, test-runner, auditor (Exit)",
     "Slice close / triage",
-    "Next agents, humans, ICC",
+    "Next agents and humans",
     "Append row; scope pointer for continuation",
   ],
   [
@@ -301,7 +301,7 @@ const ARTIFACT_FLOWS = [
     ".local/generated-data/project-board-snapshot.json",
     "project export [--reuse-if-fresh] (read-only)",
     "DRIFT-010 refresh (+ kit-dev DRIFT-011 roster in validate)",
-    "drift-guard · ICC (EA-010)",
+    "drift-guard",
     "Read-only export; never writes Status",
   ],
   [

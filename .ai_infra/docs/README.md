@@ -44,4 +44,4 @@
 
 ## UI templates
 
-[`.ai_infra/templates/local-workspace/`](../templates/local-workspace/) — Control Center dashboards and tracker exemplars.
+[`.ai_infra/templates/local-workspace/`](../templates/local-workspace/) — tracker exemplars and local-workspace templates.

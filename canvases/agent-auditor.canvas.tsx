@@ -127,7 +127,7 @@ const ARTIFACTS = [
   [
     ".local/generated-data/project-board-snapshot.json",
     "project export (read-only)",
-    "Deprecated HTML ICC (EA-010) — offline only; prefer board + Open Canvas",
+    "DRIFT-010 evidence for drift-guard",
   ],
   [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
   [

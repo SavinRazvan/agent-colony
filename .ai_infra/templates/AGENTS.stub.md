@@ -48,13 +48,7 @@ Details: [consumer-quickstart § First activate troubleshooting](.ai_infra/docs/
 4. If Project SSOT is disabled: read `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`
 5. **`/implementer`** when bootstrap is green (not day-0: `/auditor`)
 
-**Dashboards (optional):** from project root:
-
-```bash
-python3 -m http.server 8000
-```
-
-Open http://localhost:8000/.local/agents-control-center/dashboards/index.html *(not `file://`)*.
+**Canvases:** use **Ctrl+Shift+P → Open Canvas** for kit visualizations. Offline markdown trackers live under `.local/index-and-planning/`.
 
 Full walkthrough: [PLUGIN-USER-GUIDE.md](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) · [consumer-quickstart.md](.ai_infra/docs/operations/consumer-quickstart.md)
 

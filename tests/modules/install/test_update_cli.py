@@ -188,11 +188,15 @@ def test_cmd_update_heal_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     def _fake_heal(t: Path, *, with_venv: bool) -> None:
         calls.append(f"heal:{with_venv}")
 
-    def _fake_refresh(t: Path, s: Path | None, k: Path) -> None:
-        calls.append("refresh")
+    class _FakeScaffold:
+        @staticmethod
+        def remove_deprecated_agents_control_center(t: Path, dry_run: bool = False) -> list[str]:
+            del t, dry_run
+            calls.append("acc-remove")
+            return []
 
     monkeypatch.setattr(activate_cli, "_heal_consumer_runtime", _fake_heal)
-    monkeypatch.setattr(activate_cli, "_refresh_dashboard_templates", _fake_refresh)
+    monkeypatch.setattr(activate_cli, "_import_scaffold_refresh", lambda: _FakeScaffold)
 
     plane = SimpleNamespace(
         assess_planes=lambda *a, **k: SimpleNamespace(all_ready=True),
@@ -219,7 +223,7 @@ def test_cmd_update_heal_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
         profile="with_mcp",
     )
     assert update_cli.cmd_update(args) == 0
-    assert "refresh" in calls
+    assert "acc-remove" in calls
     assert any(c.startswith("heal:") for c in calls)
     assert scaffold_calls == []
 

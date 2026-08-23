@@ -11,6 +11,7 @@ Depends On:
 from __future__ import annotations
 
 import argparse
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -367,7 +368,7 @@ def test_cmd_activate_all_ready_heals_gitignore_and_creates_venv(
         _create_venv = staticmethod(_fake_create)
 
     monkeypatch.setattr(activate_cli, "_import_scaffold_refresh", lambda: _FakeScaffold)
-    monkeypatch.setattr(activate_cli, "_refresh_dashboard_templates", lambda *a, **k: None)
+    monkeypatch.setattr(activate_cli, "_remove_deprecated_agents_control_center", lambda *a, **k: None)
     monkeypatch.setattr(
         activate_cli.subprocess,
         "run",
@@ -384,39 +385,33 @@ def test_cmd_activate_all_ready_heals_gitignore_and_creates_venv(
     ).read_text(encoding="utf-8")
 
 
-def test_cmd_activate_idempotent_refreshes_dashboards_fallback(
+def test_cmd_activate_removes_agents_control_center(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     target = tmp_path / "target"
     _make_ready(target)
-    ui = target / ".ai_infra" / "templates" / "local-workspace"
-    ui.mkdir(parents=True)
-    (ui / "index.html").write_text("<html><title>Local control center</title></html>", encoding="utf-8")
+    acc = target / ".local" / "agents-control-center" / "dashboards"
+    acc.mkdir(parents=True)
+    (acc / "index.html").write_text("<html></html>", encoding="utf-8")
 
-    calls: list[tuple[Path, Path | None, Path]] = []
+    removed: list[Path] = []
 
-    def _fake_refresh(t: Path, source: Path | None, default_root: Path) -> None:
-        calls.append((t, source, default_root))
+    def _fake_remove(t: Path) -> None:
+        removed.append(t)
+        shutil.rmtree(t / ".local" / "agents-control-center", ignore_errors=True)
 
-    monkeypatch.setattr(activate_cli, "_refresh_dashboard_templates", _fake_refresh)
+    monkeypatch.setattr(activate_cli, "_remove_deprecated_agents_control_center", _fake_remove)
     monkeypatch.setattr(activate_cli, "_heal_consumer_runtime", lambda *a, **k: None)
-    monkeypatch.setattr(
-        activate_cli,
-        "resolve_activate_source",
-        lambda *a, **k: (_ for _ in ()).throw(FileNotFoundError("no payload")),
-    )
     monkeypatch.setattr(
         activate_cli.subprocess,
         "run",
         lambda *a, **k: SimpleNamespace(returncode=0, stdout="PASS", stderr=""),
     )
-    monkeypatch.delenv("WORKFLOW_KIT_PAYLOAD", raising=False)
 
     code = activate_cli.cmd_activate(_args(directory=target))
     assert code == 0
-    assert len(calls) == 1
-    assert calls[0][0] == target.resolve()
-    assert calls[0][1] is None
+    assert removed == [target.resolve()]
+    assert not (target / ".local" / "agents-control-center").exists()
 
 
 def test_cmd_activate_all_ready_settings_fail_pending_allowed(
@@ -563,13 +558,13 @@ def test_cmd_activate_install_succeeds_settings_fail_pending_disallowed(
 
 
 # ---------------------------------------------------------------------------
-# Dashboard refresh helpers
+# Scaffold refresh helpers (ACC removal)
 # ---------------------------------------------------------------------------
 
 
 def test_import_scaffold_refresh_returns_scaffold_module() -> None:
     scaffold = activate_cli._import_scaffold_refresh()
-    assert hasattr(scaffold, "refresh_dashboards")
+    assert hasattr(scaffold, "remove_deprecated_agents_control_center")
 
 
 def test_import_scaffold_refresh_inserts_install_dir_on_sys_path() -> None:
@@ -584,68 +579,26 @@ def test_import_scaffold_refresh_inserts_install_dir_on_sys_path() -> None:
         sys.path[:] = original
 
 
-def test_resolve_dashboard_refresh_source_embedded_fallback(
+def test_remove_deprecated_agents_control_center_helper(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     target = tmp_path / "target"
-    ui = target / ".ai_infra" / "templates" / "local-workspace"
-    ui.mkdir(parents=True)
-    (ui / "index.html").write_text("<html></html>", encoding="utf-8")
-
-    def _raise(*_a, **_k):  # noqa: ANN001
-        raise FileNotFoundError("no payload")
-
-    monkeypatch.setattr(activate_cli, "resolve_activate_source", _raise)
-    result = activate_cli._resolve_dashboard_refresh_source(None, target, tmp_path / "default")
-    assert result == target
-
-
-def test_resolve_dashboard_refresh_source_no_embedded_returns_none(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    target = tmp_path / "target"
-    target.mkdir()
-
-    def _raise(*_a, **_k):  # noqa: ANN001
-        raise FileNotFoundError("no payload")
-
-    monkeypatch.setattr(activate_cli, "resolve_activate_source", _raise)
-    result = activate_cli._resolve_dashboard_refresh_source(None, target, tmp_path / "default")
-    assert result is None
-
-
-def test_refresh_dashboard_templates_skips_when_no_source(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    target = tmp_path / "target"
-    target.mkdir()
-    calls: list[tuple[Path, Path]] = []
+    acc = target / ".local" / "agents-control-center"
+    acc.mkdir(parents=True)
+    calls: list[Path] = []
 
     class _FakeScaffold:
         @staticmethod
-        def refresh_dashboards(source: Path, t: Path, dry_run: bool = False) -> list[str]:  # noqa: ARG004
-            calls.append((source, t))
-            return []
-
-    monkeypatch.setattr(activate_cli, "_resolve_dashboard_refresh_source", lambda *a, **k: None)
-    monkeypatch.setattr(activate_cli, "_import_scaffold_refresh", lambda: _FakeScaffold())
-    activate_cli._refresh_dashboard_templates(target, None, tmp_path / "default")
-    assert calls == []
-
-
-def test_refresh_dashboard_templates_calls_scaffold(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    target = tmp_path / "target"
-    source = tmp_path / "source"
-    source.mkdir()
-    calls: list[tuple[Path, Path]] = []
-
-    class _FakeScaffold:
-        @staticmethod
-        def refresh_dashboards(s: Path, t: Path, dry_run: bool = False) -> list[str]:  # noqa: ARG004
-            calls.append((s, t))
-            return ["ok"]
+        def remove_deprecated_agents_control_center(t: Path, dry_run: bool = False) -> list[str]:
+            del dry_run
+            calls.append(t)
+            shutil.rmtree(t / ".local" / "agents-control-center", ignore_errors=True)
+            return [f"RMTREE {t / '.local' / 'agents-control-center'}"]
 
     monkeypatch.setattr(activate_cli, "_import_scaffold_refresh", lambda: _FakeScaffold())
-    activate_cli._refresh_dashboard_templates(target, source, tmp_path / "default")
-    assert calls == [(source, target)]
+    activate_cli._remove_deprecated_agents_control_center(target)
+    assert calls == [target]
+    assert not acc.exists()
 
 
 def test_register_activate_subparser_defaults_and_flags() -> None:

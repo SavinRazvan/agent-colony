@@ -58,7 +58,7 @@ flowchart LR
 |-------|-------|--------------|---------|
 | **Cursor contract** | `.cursor/`, `.agents/`, `AGENTS.md` | Yes | Agents, skills, rules, MCP config |
 | **Infrastructure** | `.ai_infra/`, `agent_colony/` | No | Scripts, docs, templates, optional MCP server |
-| **Runtime** | `.local/`, `.venv` | No | Trackers, deprecated HTML dashboards, user settings (gitignored) |
+| **Runtime** | `.local/`, `.venv` | No | Trackers, local artifacts, user settings (gitignored) |
 
 **Important:** Enabling the plugin does **not** replace activate. Open **your app folder** in Cursor, then run **`/workflow-activate`** once (safe to re-run — idempotent).
 
@@ -272,10 +272,10 @@ your-project/
 │   ├── templates/local-workspace|user-settings|agent-integration/
 │   ├── mcp_servers/agent_colony_mcp/  # with_mcp profile
 │   └── workflows/
-├── .local/                        # trackers, deprecated HTML dashboards (gitignored)
+├── .local/                        # trackers and local artifacts (gitignored)
 │   ├── index-and-planning/current/
 │   ├── user_settings/             # YOU edit these
-│   └── agents-control-center/
+│   └── workflow-artifacts/
 ├── agent_colony/               # python3 -m agent_colony shim
 ├── .venv/                         # created on activate
 └── (your app tests under tests/ — kit does not leave a smoke pytest by default)
@@ -283,7 +283,7 @@ your-project/
 
 **Not installed:** kit full `tests/`, `Makefile`, `docs/handoff/`, CI/release scripts, maintainer megadocs. Those exist only in the [kit repository](https://github.com/SavinRazvan/agent-colony).
 
-**Re-activate is safe:** existing trackers, `user_settings/`, and `AGENTS.md` are not overwritten. Kit-managed **dashboard HTML**, JS/CSS, `module-audit.html`, and `pages.json` **are refreshed** on each activate.
+**Re-activate is safe:** existing trackers, `user_settings/`, and `AGENTS.md` are not overwritten. Kit 0.7.3 removes leftover deprecated dashboard files during activate.
 
 ### Upgrade / preserve (kit-managed vs private)
 
@@ -291,7 +291,7 @@ your-project/
 |------|--------------------------|----------------------------|
 | `.local/user_settings/`, trackers | **Preserved** | **Preserved** |
 | `AGENTS.md`, `mcp.user.json` | **Preserved** | **Preserved** |
-| Dashboard HTML, `pages.json` | **Refreshed** | **Refreshed** |
+| Deprecated dashboard leftovers | Deleted on activate (kit 0.7.3+) | Deleted on activate (kit 0.7.3+) |
 | `.cursor/agents`, skills, rules | Skipped | **Overwritten** |
 | `.ai_infra/`, `agent_colony/` | Skipped | **Overwritten** |
 
@@ -313,7 +313,7 @@ Run `python3 -m agent_colony update --check` before `--force`. Isolation contrac
 | Where | Use for |
 |-------|---------|
 | **Agent chat** (`/` menu) | Plugin install, activate, subagents, skills, PR slash workflow |
-| **Terminal** | `python3 -m agent_colony …`, pytest, serving deprecated dashboards |
+| **Terminal** | `python3 -m agent_colony …`, pytest, local verification |
 
 ### Agent chat commands
 
@@ -359,10 +359,9 @@ Full list: [consumer-quickstart.md](consumer-quickstart.md) § Terminal commands
 
 ---
 
-## 5. Control Center dashboards (deprecated)
+## 5. Canvases and offline markdown
 
-> **Deprecated (2026-07-19).** Prefer the **GitHub Project board** (`python3 -m agent_colony project status`)
-> and **Ctrl+Shift+P → Open Canvas**. HTML under `.local/agents-control-center/` is offline fallback only (ADR-008).
+Use the **GitHub Project board** (`python3 -m agent_colony project status`) for backlog and Status. Use **Ctrl+Shift+P → Open Canvas** for kit visualizations. Local trackers under `.local/index-and-planning/` are offline markdown only; they are not browser dashboards and do not replace the board when `board_only` is enabled.
 
 ### Kit canvases (Open Canvas)
 
@@ -388,27 +387,6 @@ python3 -m agent_colony plan open --slug my-slice
 ```
 
 Skill: `.cursor/skills/canvas-artifacts/SKILL.md`
-
-Legacy browser UI still ships on activate. **Do not open HTML via `file://`**. From project root:
-
-```bash
-cd ~/Projects/my-app
-python3 -m http.server 8000
-```
-
-**Open in browser:** http://localhost:8000/.local/agents-control-center/dashboards/index.html
-
-*(Port busy? Use `8001` — swap the port in every URL below.)*
-
-| Page | URL |
-|------|-----|
-| Home | http://localhost:8000/.local/agents-control-center/dashboards/index.html |
-| Control Center | http://localhost:8000/.local/agents-control-center/dashboards/implementation-control-center.html |
-| Module audit | http://localhost:8000/.local/agents-control-center/audits/module-audit.html |
-
-Refresh after kit update: **`/update-agent-colony`** or `python3 -m agent_colony update --directory .`
-
-Details: [consumer-quickstart.md](consumer-quickstart.md) § Control Center dashboards.
 
 ---
 
@@ -464,7 +442,7 @@ Every session:
 2. Board card Status/Notes — attribution `@user/agent · <ISO-8601-UTC> · …` (CLI stamps); local `history/continuity-index.md` rolls ≥3 days (local `plan.md` / `work-tracker.md` = offline fallback under `board_only`)
 3. Rate-limit / precheck: EXIT_QUEUED (6) → do not retry-loop; `python3 -m agent_colony project outbox flush` after quota recovers (`project_ssot.outbox` in collaboration YAML — includes `precheck_writes` / `dedupe_pending`)
 4. **`/implementer`** (or specialist agent from §6)
-5. Optional: [Control Center dashboards (deprecated)](#5-control-center-dashboards-deprecated) — `http.server` + full URL in §5
+5. Optional: [Canvases and offline markdown](#5-canvases-and-offline-markdown)
 
 Token contract: [token-efficiency.md](token-efficiency.md) · [token-efficiency-program.md](token-efficiency-program.md) · Layout: [local-workspace-layout.md](local-workspace-layout.md).
 
@@ -538,8 +516,8 @@ Details: [gate-matrix.md](gate-matrix.md). **`make gates`** / **`make verify-all
 | `pytest` not found | Re-run activate (creates `.venv`); use `source .venv/bin/activate` |
 | Activate blocked in kit repo | Open your app folder — activate refuses self-install |
 | Broken YAML in collaboration file | Keep `human_coauthors: []` or use a proper list |
-| Control Center **Failed to fetch** | `python3 -m http.server 8000` from project root, then http://localhost:8000/.local/agents-control-center/dashboards/index.html — not `file://` |
-| Stale dashboard / kit files after plugin update | Re-run `/update-agent-colony` or `python3 -m agent_colony update --directory .` — see [upgrade-kit.md § 0.7.0](upgrade-kit.md#changes-in-070) |
+| Canvas does not appear in Open Canvas | Run `python3 -m agent_colony canvas sync --missing`, then use **Ctrl+Shift+P → Open Canvas** |
+| Stale kit files after plugin update | Re-run `/update-agent-colony` or `python3 -m agent_colony update --directory .` — see [upgrade-kit.md](upgrade-kit.md) |
 | `update --check` false FAIL (`__pycache__`, orphans) | Kit **0.6.7+** fixes this; until then `update --clean-only` or manual `find .ai_infra agent_colony -type d -name __pycache__ -prune -exec rm -rf {} +` |
 | `DRIFT-005 FAIL` on consumer drift | **Kit bug (not your app)** — upgrade kit or ignore until skip-if-absent fix ships. Details: [consumer-quickstart](consumer-quickstart.md#drift-005-fail--kit-bug-not-your-app) |
 | `mcp validate` → typer required | Use `python3 -m agent_colony mcp validate` — not bare `mcp validate` |

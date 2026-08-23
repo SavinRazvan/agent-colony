@@ -521,8 +521,7 @@ export default function AgentsArtifactsBoardCanvas() {
         Repo path canvases/*.canvas.tsx opens as source in the explorer. Live
         visualization: Ctrl+Shift+P → Open Canvas (managed copies under{" "}
         {`~/.cursor/projects/<workspace-id>/canvases/`}
-        ). HTML Control Center is deprecated — prefer the GitHub Project board +
-        Open Canvas.
+        ). Prefer the GitHub Project board + Open Canvas.
       </Callout>
 
       <ThreePlanes />

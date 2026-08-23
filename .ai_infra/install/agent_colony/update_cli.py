@@ -175,22 +175,10 @@ def _run_scaffold_upgrade(
 
 
 def _run_light_heal(target: Path, source: Path, *, with_venv: bool) -> None:
-    from paths import kit_root
-
-    if is_kit_dev_repo(target):
-        # Do not copy payload install/scripts onto kit-dev authoring SSOT.
-        scaffold = activate_cli._import_scaffold_refresh()
-        for line in scaffold.sync_kit_ui_templates(source, target):
-            print(line)
-        ui_root = scaffold.ui_local_workspace(source)
-        log: list[str] = []
-        scaffold._scaffold_dashboards(ui_root, target, False, log)
-        for line in log:
-            print(line)
-        activate_cli._heal_consumer_runtime(target, with_venv=with_venv)
-        return
-
-    activate_cli._refresh_dashboard_templates(target, source, kit_root())
+    del source  # retained for call-site compatibility; template sync removed in 0.7.3
+    scaffold = activate_cli._import_scaffold_refresh()
+    for line in scaffold.remove_deprecated_agents_control_center(target):
+        print(line)
     activate_cli._heal_consumer_runtime(target, with_venv=with_venv)
 
 

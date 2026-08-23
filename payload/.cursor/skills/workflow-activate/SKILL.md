@@ -120,13 +120,13 @@ See [consumer-quickstart.md](../../.ai_infra/docs/operations/consumer-quickstart
 |-------|-----------------|---------------|
 | Cursor contract | `.cursor/`, `.agents/`, `AGENTS.md` | Yes |
 | Infrastructure | `.ai_infra/`, `agent_colony/` | No — scripts/CLI |
-| Runtime | `.local/` Tier 1 scaffold: trackers, six `workflow-artifacts/*` buckets + README stubs, `.local/canvases/` + `.local/plans/` index stubs (ADR-010), `pages.json`, dashboards; `user_settings/` exemplars | No — gitignored |
+| Runtime | `.local/` Tier 1 scaffold: trackers, six `workflow-artifacts/*` buckets + README stubs, `.local/canvases/` + `.local/plans/` index stubs (ADR-010); `user_settings/` exemplars | No — gitignored |
 
-Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear when agents/scripts run. See [local-workspace-layout.md](../../.ai_infra/docs/operations/local-workspace-layout.md) § Artifact tiers. Re-activate does not overwrite existing trackers, `user_settings/`, or `AGENTS.md`. Kit-managed dashboard HTML, JS/CSS assets, `module-audit.html`, and `pages.json` are refreshed from the activate source (plugin `payload/` when resolved) or embedded `.ai_infra/templates/local-workspace/` when not.
+Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear when agents/scripts run. See [local-workspace-layout.md](../../.ai_infra/docs/operations/local-workspace-layout.md) § Artifact tiers. Re-activate does not overwrite existing trackers, `user_settings/`, or `AGENTS.md`. Kit 0.7.3 removes leftover deprecated dashboard files during activate.
 
 **Later upgrades** (after Marketplace/plugin kit bump): use **`/update-agent-colony`** (`python3 -m agent_colony update`) — version-gated heal vs full kit-managed refresh. Plain re-activate does **not** overwrite agents/skills/scripts unless `--force`. See [update-agent-colony](update-agent-colony/SKILL.md) and [upgrade-kit.md](../../.ai_infra/docs/operations/upgrade-kit.md).
 
-- Idempotent: skips full install when all planes already pass `install-contract.json`, but still refreshes dashboards
+- Idempotent: skips full install when all planes already pass `install-contract.json`, but still cleans deprecated dashboard leftovers
 - Creates `.venv`, merges MCP json, runs verify gates
 - Prints **settings-only** next steps (no re-install)
 
@@ -141,8 +141,7 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 5. When board SSOT enabled: optional **minimal 2-view overlay** ([Playground #3](https://github.com/users/SavinRazvan/projects/3)) → **`/board`** + `board-shell` (**CONSENT GATE** then TURN PROTOCOL) → `board-bootstrap --check` until **exit 0** → `project status`. See [views-setup.md](../../.ai_infra/templates/project-board/views-setup.md).
 6. **`/implementer`** to start · each session Entry: **`source .venv/bin/activate && python3 -m agent_colony project status`** when board SSOT on; else read `session-pointer.md` first. Audit (`/auditor`) is later — not day-0.
 
-**Dashboards (optional):** from project root run `source .venv/bin/activate && python3 -m http.server 8000`, then open
-http://localhost:8000/.local/agents-control-center/dashboards/index.html (not `file://`).
+Use **Ctrl+Shift+P → Open Canvas** for kit visualizations. Trackers under `.local/index-and-planning/` are offline markdown only.
 
 Optional: `integrate validate`, `health`, `canvas doctor` (ADR-010 three-tier canvases). Add infrastructure later: **`/integrator`**.
 

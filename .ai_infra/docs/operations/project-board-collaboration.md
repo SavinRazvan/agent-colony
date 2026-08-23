@@ -129,7 +129,7 @@ All subcommands registered in `.ai_infra/install/agent_colony/project_parser.py`
 | `board-bootstrap` | Schema-aware shell check (`--check`); opt-in `--ensure-fields` / `--apply-readme` | board first-run / human |
 | `set-assignee` | Assign GitHub human user (Issue-backed items) | board, implementer |
 | `find-by-pr` | Resolve project item id from PR number or URL | verifier, merge.py |
-| `export` | Read-only board snapshot (`--reuse-if-fresh` / `--force`); never mutates Status | drift-guard, ICC |
+| `export` | Read-only board snapshot (`--reuse-if-fresh` / `--force`); never mutates Status | drift-guard |
 | `queue` | Enqueue a board op to local outbox (EXIT_QUEUED=6) | Any (rate-limit fallback) |
 | `outbox status` | Outbox counts + GraphQL remaining | Any |
 | `outbox flush` | Apply pending outbox ops when quota allows | implementer, board |

@@ -43,10 +43,7 @@ def _copy_ci_fixture_tree(tmp_path: Path) -> None:
         kit_dev,
         tmp_path / ".ai_infra/templates/local-workspace/ci/kit-dev",
     )
-    pages = REPO_ROOT / ".ai_infra/templates/local-workspace/pages.json"
-    pages_dst = tmp_path / ".ai_infra/templates/local-workspace/pages.json"
-    pages_dst.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(pages, pages_dst)
+    (tmp_path / ".ai_infra/templates/local-workspace").mkdir(parents=True, exist_ok=True)
     pr_scripts = REPO_ROOT / ".ai_infra/scripts/pr"
     pr_dst = tmp_path / ".ai_infra/scripts/pr"
     pr_dst.mkdir(parents=True, exist_ok=True)
@@ -69,16 +66,6 @@ def test_seed_kit_workspace_creates_artifact_buckets(tmp_path: Path) -> None:
     stubs_src = REPO_ROOT / ".ai_infra/templates/local-workspace/artifact-stubs"
     stubs_dst = tmp_path / ".ai_infra/templates/local-workspace/artifact-stubs"
     shutil.copytree(stubs_src, stubs_dst)
-    ui_src = REPO_ROOT / ".ai_infra/templates/local-workspace"
-    ui_dst = tmp_path / ".ai_infra/templates/local-workspace"
-    for name in (
-        "index.html",
-        "implementation-control-center.html",
-        "site-nav.js",
-        "local-shell.css",
-        "local-markdown.js",
-    ):
-        shutil.copy2(ui_src / name, ui_dst / name)
     pr_scripts = REPO_ROOT / ".ai_infra/scripts/pr"
     pr_dst = tmp_path / ".ai_infra/scripts/pr"
     pr_dst.mkdir(parents=True, exist_ok=True)
@@ -91,9 +78,7 @@ def test_seed_kit_workspace_creates_artifact_buckets(tmp_path: Path) -> None:
         assert (tmp_path / ".local" / "workflow-artifacts" / bucket).is_dir()
         assert (tmp_path / ".local" / "workflow-artifacts" / bucket / "README.md").is_file()
 
-    dash = tmp_path / ".local" / "agents-control-center" / "dashboards"
-    assert (dash / "index.html").is_file()
-    assert (dash / "local-markdown.js").is_file()
+    assert not (tmp_path / ".local" / "agents-control-center").exists()
 
 
 def test_seed_passes_check_testing_artifacts(tmp_path: Path) -> None:
@@ -102,7 +87,6 @@ def test_seed_passes_check_testing_artifacts(tmp_path: Path) -> None:
 
     for rel in (
         ".ai_infra/templates/local-workspace/ci/kit-dev",
-        ".ai_infra/templates/local-workspace/pages.json",
         ".ai_infra/scripts/pr/check_testing_artifacts.py",
         "tests/modules",
     ):

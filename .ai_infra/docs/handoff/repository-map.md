@@ -232,7 +232,6 @@ Product overlays: `overlays/rules/*.mdc` remains the source for domain overlays;
 | `workflow-artifacts/alignment/` | 2 | `auditor` |
 | `workflow-artifacts/drift/` | 2 | `drift-guard` |
 | `workflow-artifacts/enterprise-architecture-audit/` | 2 | `auditor` |
-| `agents-control-center/` | 1 + refresh | scaffold / activate |
 | `user_settings/` | 1 | human (gitignored) |
 | `canvases/` | 2 | agents — `canvas save` session evidence (ADR-010) |
 | `plans/` | 2 | agents — `plan snapshot` history only; live plan on board / `plan.md` (DRIFT-012) |

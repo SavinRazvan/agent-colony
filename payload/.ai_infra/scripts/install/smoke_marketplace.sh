@@ -44,26 +44,11 @@ echo
 echo "=== TRACK A: direct install checks ==="
 "$PY" .ai_infra/scripts/architecture/check_consumer_purity.py --target "$SMOKE"
 test ! -d "$SMOKE/.ai_infra/templates/local-workspace/ci"
+test ! -d "$SMOKE/.local/agents-control-center"
 
-"$PY" - "$SMOKE" <<'PY'
-import json
-import sys
-from pathlib import Path
-
-smoke = Path(sys.argv[1])
-config = smoke / ".local/agents-control-center/config"
-pages = json.loads((config / "pages.json").read_text(encoding="utf-8"))
-for page in pages["pages"]:
-    rel = page["file"]
-    # Tier 2 / runtime: stubs refreshed later, or machine output (board export).
-    if rel.startswith("../../workflow-artifacts/") or "/generated-data/" in rel:
-        print(f"SKIP {page['id']} (runtime)")
-        continue
-    ok = (config / rel).resolve().is_file()
-    if not ok:
-        raise SystemExit(f"FAIL {page['id']}: {rel}")
-    print(f"PASS {page['id']}: {rel}")
-PY
+# Placeholders fail health; seed smoke identity before diagnostic gate.
+sed -i 's/Your Full Name/SMOKE_CUSTOM_USER/' "$SMOKE/.local/user_settings/github.collaboration.yaml"
+sed -i 's/@yourhandle/@smoke-user/' "$SMOKE/.local/user_settings/github.collaboration.yaml"
 
 "$SMOKE/.venv/bin/python" -m agent_colony gates --directory "$SMOKE"
 "$SMOKE/.venv/bin/python" -m agent_colony health --directory "$SMOKE"
@@ -71,7 +56,7 @@ test ! -f "$SMOKE/tests/modules/smoke/test_kit_installed.py"
 
 echo
 echo "=== TRACK A: user_settings idempotency ==="
-sed -i 's/Your Full Name/SMOKE_CUSTOM_USER/' "$SMOKE/.local/user_settings/github.collaboration.yaml"
+# Re-assert custom display_name survives re-install (already set above).
 "$PY" -m agent_colony install \
   --target "$SMOKE" \
   --with-venv \

@@ -9,11 +9,11 @@ description: Builds a deep per-module workflow map with importance, goals, and v
 
 ## Relationship to audits
 
-Depth tool for **`auditor`**, not a separate audit authority. Run when enterprise audit (or focused alignment pass) needs HTML/topology evidence. Fold outputs into parent audit citations.
+Depth tool for **`auditor`**, not a separate audit authority. Run when enterprise audit (or focused alignment pass) needs module topology evidence. Fold outputs into parent audit citations.
 
 ## When
 
-- **`auditor`** requests deep module topology or `module-audit.html` export
+- **`auditor`** requests deep module topology
 - Team needs current module map before architecture reconciliation
 - Documentation drift suspected across module boundaries
 
@@ -40,7 +40,7 @@ Depth tool for **`auditor`**, not a separate audit authority. Run when enterpris
 4. Identify drift/gaps: module-to-test mapping, doc coverage, rules/skill guidance.
 5. Emit:
    - `.local/module-map.md`
-   - `.local/agents-control-center/audits/module-audit.html`
+   - `.local/workflow-artifacts/audit/module-audit.md`
    - Optional: append to `alignment-audit.md` + `alignment-todos.md`
 
 ## Output contract (per module)
