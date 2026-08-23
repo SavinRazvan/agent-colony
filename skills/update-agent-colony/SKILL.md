@@ -33,7 +33,7 @@ User ran **`/workflow-activate`** in **their app**, then updated the Agent Colon
 2. **Refresh plugin first** (Agent chat): `/add-plugin agent-colony@https://github.com/SavinRazvan/agent-colony` — confirm preview version matches [Releases](https://github.com/SavinRazvan/agent-colony/releases).
 3. Prefer **`/update-agent-colony`** or Pattern A command below.
 4. Version gate:
-   - **same / newer installed** → light heal (dashboards, `.gitignore`, `STARTER-001`, missing `.venv`)
+   - **same / newer installed** → light heal (`.gitignore`, `STARTER-001`, missing `.venv`, deprecated dashboard cleanup)
    - **`available > installed`** → one full scaffold refresh (payload `scaffold.py`; no `--force` unless `--check` lists deltas)
    - **`--force`** → full overwrite even when versions match, or when accepting kit-managed delta overwrites
 5. **Verify:** `.kit-version`, `manifest.yaml` `kit_version`, and `update --check` `installed`/`available` all match.
@@ -89,7 +89,7 @@ python3 -m agent_colony drift validate --profile consumer --summary
 
 **Preserved:** `AGENTS.md` (if present), `mcp.user.json`, `.local/user_settings/`, trackers.
 
-**Overwritten on upgrade:** `.cursor/agents|rules|skills`, `.ai_infra/scripts`, `agent_colony/` CLI, `.kit-version`, dashboards.
+**Overwritten on upgrade:** `.cursor/agents|rules|skills`, `.ai_infra/scripts`, `agent_colony/` CLI, `.kit-version`.
 
 ## Post-update
 

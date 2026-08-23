@@ -69,15 +69,6 @@ AUDIT_EXEMPLARS = (
     "agent-governance-audit.md",
     "agent-governance-todos.md",
 )
-DASHBOARD_HTML = ("index.html", "implementation-control-center.html")
-# Deprecated HTML ICC (2026-07-19): still refreshed on activate for offline fallback;
-# prefer GitHub Project board (ADR-008) + Cursor Open Canvas.
-DASHBOARD_ASSETS = (
-    "site-nav.js",
-    "local-shell.css",
-    "local-markdown.js",
-    "local-board-snapshot.js",
-)
 ARTIFACT_TAB_STUBS: dict[str, tuple[str, ...]] = {
     "pr": ("review.md", "prep.md", "merge.md", "finalize.md"),
     "alignment": ("alignment-audit.md", "alignment-todos.md"),
@@ -376,68 +367,31 @@ def _scaffold_local_canvas_plan_buckets(
             _copy_file_if_missing(src, dst, dry_run, log)
 
 
-def _scaffold_dashboards(ui_root: Path, target: Path, dry_run: bool, log: list[str]) -> None:
-    """Copy kit-managed dashboard shells; always refresh from templates on each scaffold/activate."""
-    dash = target / ".local" / "agents-control-center" / "dashboards"
-    if dry_run:
-        _log(log, f"DRY-RUN mkdir {dash}")
-    else:
-        dash.mkdir(parents=True, exist_ok=True)
-    for name in DASHBOARD_HTML:
-        src = ui_root / name
-        dst = dash / name
-        if src.is_file():
-            _copy_file(src, dst, dry_run, log)
-    for name in DASHBOARD_ASSETS:
-        src = ui_root / name
-        dst = dash / name
-        if src.is_file():
-            _copy_file(src, dst, dry_run, log)
-    pages_src = ui_root / "pages.json"
-    pages_dst = target / ".local" / "agents-control-center" / "config" / "pages.json"
-    if pages_src.is_file():
-        if dry_run:
-            _log(log, f"DRY-RUN copy {pages_src} -> {pages_dst}")
-        else:
-            pages_dst.parent.mkdir(parents=True, exist_ok=True)
-        _copy_file(pages_src, pages_dst, dry_run, log)
-    audit_src = ui_root / "audits" / "module-audit.html"
-    audit_dst = target / ".local" / "agents-control-center" / "audits" / "module-audit.html"
-    if audit_src.is_file():
-        if dry_run:
-            _log(log, f"DRY-RUN copy {audit_dst}")
-        else:
-            audit_dst.parent.mkdir(parents=True, exist_ok=True)
-        _copy_file(audit_src, audit_dst, dry_run, log)
-
-
 _ACTIVATE_RUNTIME_REL = ("install/agent_colony", "scripts/install")
-_KIT_UI_TEMPLATE_FILES = DASHBOARD_HTML + DASHBOARD_ASSETS + ("pages.json",)
-_KIT_UI_TEMPLATE_DIRS = ("audits",)
+
+
+def remove_deprecated_agents_control_center(target: Path, dry_run: bool = False) -> list[str]:
+    """Delete .local/agents-control-center/ if present (ICC removed in 0.7.3)."""
+    log: list[str] = []
+    acc = target / ".local" / "agents-control-center"
+    if not acc.exists():
+        return log
+    if dry_run:
+        _log(log, f"DRY-RUN rmtree {acc}")
+        return log
+    shutil.rmtree(acc)
+    _log(log, f"RMTREE {acc}")
+    return log
 
 
 def sync_kit_ui_templates(source: Path, target: Path, dry_run: bool = False) -> list[str]:
-    """Refresh embedded `.ai_infra/templates/local-workspace/` kit-managed files in target."""
+    """No-op since 0.7.3. Kept for call-site compatibility."""
+    del dry_run  # API compat
     log: list[str] = []
     if source.resolve() == target.resolve():
         return log
-    ai_dst = target / ".ai_infra"
-    if not ai_dst.is_dir():
+    if not (target / ".ai_infra").is_dir():
         return log
-    ui_src = ui_local_workspace(source)
-    ui_dst = ai_dst / "templates" / "local-workspace"
-    if dry_run:
-        _log(log, f"DRY-RUN mkdir {ui_dst}")
-    else:
-        ui_dst.mkdir(parents=True, exist_ok=True)
-    for name in _KIT_UI_TEMPLATE_FILES:
-        src = ui_src / name
-        if src.is_file():
-            _copy_file(src, ui_dst / name, dry_run, log)
-    for dirname in _KIT_UI_TEMPLATE_DIRS:
-        src_dir = ui_src / dirname
-        if src_dir.is_dir():
-            _copy_tree(src_dir, ui_dst / dirname, dry_run, log)
     return log
 
 
@@ -457,26 +411,14 @@ def sync_activate_runtime(source: Path, target: Path, dry_run: bool = False) -> 
     return log
 
 
-def refresh_dashboards(source: Path, target: Path, dry_run: bool = False) -> list[str]:
-    """Refresh kit-managed HTML dashboards and pages.json (safe on idempotent activate)."""
-    log: list[str] = []
-    log.extend(sync_activate_runtime(source, target, dry_run))
-    log.extend(sync_kit_ui_templates(source, target, dry_run))
-    ui_root = ui_local_workspace(source)
-    _scaffold_dashboards(ui_root, target, dry_run, log)
-    return log
-
-
 def _scaffold_local(source: Path, target: Path, dry_run: bool, log: list[str]) -> None:
     ui_root = ui_local_workspace(source)
     exemplars = ui_root / "exemplars"
-    pages_src = ui_root / "pages.json"
     current = target / ".local" / "index-and-planning" / "current"
     history = target / ".local" / "index-and-planning" / "history"
     audits = target / ".local" / "index-and-planning" / "audits"
-    acc_config = target / ".local" / "agents-control-center" / "config"
 
-    for path in (current, history, audits, acc_config):
+    for path in (current, history, audits):
         if dry_run:
             _log(log, f"DRY-RUN mkdir {path}")
         else:
@@ -516,10 +458,7 @@ def _scaffold_local(source: Path, target: Path, dry_run: bool, log: list[str]) -
         )
         _log(log, f"WRITE {arch_stub}")
 
-    if pages_src.is_file():
-        _copy_file_if_missing(pages_src, acc_config / "pages.json", dry_run, log)
-
-    _scaffold_dashboards(ui_root, target, dry_run, log)
+    log.extend(remove_deprecated_agents_control_center(target, dry_run=dry_run))
 
 
 def _scaffold_user_settings(source: Path, target: Path, dry_run: bool, log: list[str]) -> None:
@@ -898,17 +837,9 @@ def main() -> int:
     parser.add_argument("--with-venv", action="store_true", help="Create .venv and install deps")
     parser.add_argument("--with-mcp-json", action="store_true", help="Use with_mcp profile + mcp.json")
     parser.add_argument("--verify", action="store_true", help="Run gates after install")
-    parser.add_argument(
-        "--refresh-dashboards-only",
-        action="store_true",
-        help="Refresh kit-managed dashboard HTML/assets and pages.json only",
-    )
     args = parser.parse_args()
 
     try:
-        if args.refresh_dashboards_only:
-            refresh_dashboards(args.source, args.target)
-            return 0
         scaffold(
             args.target,
             args.source,

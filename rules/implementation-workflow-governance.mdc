@@ -38,7 +38,7 @@ alwaysApply: true
 - Scope-only: `plan.md` / `work-tracker.md` + `updates-log.md`.
 - Blocked: mark blocker in `work-tracker.md`.
 - **ADR-010:** `.local/plans/` = snapshots only; live plan on board (`board_only`) or `plan.md`.
-- Slice closure: regenerate `coverage-index.md` when needed; new tracker path → update `pages.json` + dashboard **Depends On**.
+- Slice closure: regenerate `coverage-index.md` when needed; document new tracker paths in local workspace docs when the contract changes.
 
 ## Merge gates
 

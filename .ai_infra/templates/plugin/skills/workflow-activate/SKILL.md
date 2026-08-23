@@ -38,11 +38,11 @@ python3 -m agent_colony activate --directory .
 |-------|-----------------|---------------|
 | Cursor contract | `.cursor/`, `.agents/`, `AGENTS.md` | Yes |
 | Infrastructure | `.ai_infra/`, `agent_colony/` | No — scripts/CLI |
-| Runtime | `.local/` Tier 1 scaffold: trackers, six `workflow-artifacts/*` buckets + README stubs, `pages.json`, dashboards; `user_settings/` exemplars | No — gitignored |
+| Runtime | `.local/` Tier 1 scaffold: trackers, six `workflow-artifacts/*` buckets + README stubs; `user_settings/` exemplars | No — gitignored |
 
-Re-activate does not overwrite trackers, `user_settings/`, or `AGENTS.md`. Kit-managed dashboard HTML, JS/CSS, `module-audit.html`, and `pages.json` refresh from the activate source (`payload/` when resolved) or embedded `.ai_infra/templates/local-workspace/`.
+Re-activate does not overwrite trackers, `user_settings/`, or `AGENTS.md`. Kit 0.7.3 removes leftover deprecated dashboard files during activate.
 
-- Idempotent: skips full install when all planes already pass `install-contract.json`, but still refreshes dashboards
+- Idempotent: skips full install when all planes already pass `install-contract.json`, but still cleans deprecated dashboard leftovers
 - Creates `.venv`, merges MCP json, runs verify gates
 - Prints **settings-only** next steps (no re-install)
 
@@ -56,6 +56,8 @@ runs — not before. Use **`/mcp-connect`** after activate.
 2. Terminal: `source .venv/bin/activate && python3 -m agent_colony contributors validate` (must PASS). Grant `gh` Project scopes before doctor.
 3. When board SSOT enabled: `python3 -m agent_colony project doctor` → **`/board`** + `board-shell` → `python3 -m agent_colony project board-bootstrap --check` until **default Playground shell** green → `python3 -m agent_colony project status`
 4. **`/implementer`** to start · audit (`/auditor`) is later / architecture-impacting — not day-0.
+
+Use **Ctrl+Shift+P → Open Canvas** for kit visualizations. Trackers under `.local/index-and-planning/` are offline markdown only.
 
 Optional: `integrate validate`, `health`. Add infrastructure later: **`/integrator`**.
 

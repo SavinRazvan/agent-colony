@@ -33,9 +33,6 @@ USER_SETTINGS_FILES = (
     "mcp.agents.yaml",
 )
 
-DASHBOARD_HTML = ("index.html", "implementation-control-center.html")
-DASHBOARD_ASSETS = ("site-nav.js", "local-shell.css", "local-markdown.js")
-
 
 def _import_local_workflow_paths(root: Path):
     pr_scripts = root / ".ai_infra" / "scripts" / "pr"
@@ -68,25 +65,6 @@ def _copy_artifact_readme_stubs(root: Path, bucket_names: tuple[str, ...], log: 
         log.append(f"copy {src.relative_to(root)} -> {dst.relative_to(root)}")
 
 
-def _seed_dashboards(root: Path, log: list[str]) -> None:
-    ui_root = root / ".ai_infra" / "templates" / "local-workspace"
-    dash = root / ".local" / "agents-control-center" / "dashboards"
-    dash.mkdir(parents=True, exist_ok=True)
-    log.append(f"mkdir {dash.relative_to(root)}")
-    for name in DASHBOARD_HTML:
-        src = ui_root / name
-        dst = dash / name
-        if src.is_file() and not dst.exists():
-            shutil.copy2(src, dst)
-            log.append(f"copy {src.relative_to(root)} -> {dst.relative_to(root)}")
-    for name in DASHBOARD_ASSETS:
-        src = ui_root / name
-        dst = dash / name
-        if src.is_file():
-            shutil.copy2(src, dst)
-            log.append(f"copy+ {src.relative_to(root)} -> {dst.relative_to(root)}")
-
-
 def seed_kit_workspace(root: Path, profile: str = "kit-dev") -> list[str]:
     root = root.resolve()
     fixtures = fixture_root(root, profile)
@@ -108,7 +86,6 @@ def seed_kit_workspace(root: Path, profile: str = "kit-dev") -> list[str]:
         log.append(f"mkdir {directory}")
 
     _copy_artifact_readme_stubs(root, lwp.ARTIFACT_STUB_BUCKET_NAMES, log)
-    _seed_dashboards(root, log)
 
     for name in FIXTURE_TRACKERS:
         src = fixtures / name
@@ -144,14 +121,6 @@ def seed_kit_workspace(root: Path, profile: str = "kit-dev") -> list[str]:
                 dst = user_settings / name
                 shutil.copy2(src, dst)
                 log.append(f"copy {src.relative_to(root)} -> {dst.relative_to(root)}")
-
-    pages = root / ".ai_infra" / "templates" / "local-workspace" / "pages.json"
-    if pages.is_file():
-        dst = root / ".local" / "agents-control-center" / "config" / "pages.json"
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        if not dst.exists():
-            shutil.copy2(pages, dst)
-            log.append(f"copy {pages.relative_to(root)} -> {dst.relative_to(root)}")
 
     arch_stub = current / "architecture.md"
     if not arch_stub.is_file():

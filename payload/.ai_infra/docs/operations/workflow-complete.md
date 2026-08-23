@@ -107,9 +107,8 @@ This is the **implementation agent** end-of-loop on top of sections **C** and **
 2. **`.local/index-and-planning/current/work-tracker.md`** — resolve task status; keep one primary `in_progress`.
 3. **`test-plan.md` / `test-index.md`** — update when tests or ownership changed.
 4. **`coverage-index.md`** — regenerate after any coverage run that matters.
-5. **`implementation-control-center.html` (deprecated)** — under `.local/agents-control-center/dashboards/`; offline tracker browser only. Prefer board SSOT when enabled. If you still add a tracker tab, update **`../config/pages.json`**.
-6. **`module-audit.html`** — touch only when deliberately refreshing a deep module audit export.
-7. **`make drift-validate`** — hand off to **`drift-guard`** on P0/P1.
+5. **Offline markdown trackers** — keep local-only status in `.local/index-and-planning/` when board SSOT is disabled or unreachable.
+6. **`make drift-validate`** — hand off to **`drift-guard`** on P0/P1.
 
 Canonical detail: **`.local/index-and-planning/current/plan.md`** / board card body; skill `.cursor/skills/board-ssot/SKILL.md` § Continuation contract.
 

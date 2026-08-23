@@ -56,7 +56,7 @@ python3 -m agent_colony drift validate --profile consumer
 
 Verify: `.kit-version`, `manifest.yaml` `kit_version`, and `update --check` `installed`/`available` all match (exit **0**, `action=heal`). Chat shortcut: **`/update-agent-colony`**. Optional cleanup without upgrade: `update --clean-only --directory .` (0.6.7+). First install remains `/workflow-activate`. Full semver/force: [upgrade-kit.md](upgrade-kit.md). **Does not** create GitHub Project views — finish step 4 for that.
 
-> **Cheat sheet:** [Visual walkthrough](#visual-walkthrough) · [Agent chat vs terminal](#agent-chat-vs-terminal) · [Dashboards (deprecated)](#control-center-dashboards-deprecated) · [All CLI commands](#terminal-commands-cheat-sheet)
+> **Cheat sheet:** [Visual walkthrough](#visual-walkthrough) · [Agent chat vs terminal](#agent-chat-vs-terminal) · [Canvases and offline markdown](#canvases-and-offline-markdown) · [All CLI commands](#terminal-commands-cheat-sheet)
 
 ## Visual walkthrough
 
@@ -156,12 +156,12 @@ Or type `/` and pick **workflow-activate** from the menu.
 |-------|-------------------|
 | Cursor | `.cursor/`, `.agents/`, `AGENTS.md` |
 | Infrastructure | `.ai_infra/`, `agent_colony/` |
-| Runtime | `.local/` trackers + dashboards (gitignored) |
+| Runtime | `.local/` trackers and local artifacts (gitignored) |
 
 Also creates `.venv`, merges MCP config (profile **`with_mcp`**), seeds DeepWiki into
 `mcp.user.json` + live registry when missing, runs smoke gates.
 
-**Re-activate is safe:** won't overwrite your trackers, `user_settings/`, or `AGENTS.md`. Kit-managed **dashboard HTML**, JS/CSS, `module-audit.html`, and `pages.json` **are refreshed** on each activate (from plugin payload when available).
+**Re-activate is safe:** won't overwrite your trackers, `user_settings/`, or `AGENTS.md`. Kit 0.7.3 removes leftover deprecated dashboard files during activate.
 
 **Isolation cheat sheet:** One payload for all customers · settings in `.local/` only · kit committed per team · never `git ls-files .local/` · full doc: [multi-consumer-isolation.md](multi-consumer-isolation.md).
 
@@ -233,12 +233,6 @@ python3 -m agent_colony activate --directory .
 ```
 
 After **VERIFY PASS**, always prefix CLI commands with `source .venv/bin/activate &&`.
-
-To pull the latest dashboards after a kit update without a full reinstall:
-
-```bash
-python3 -m agent_colony activate --directory .
-```
 
 <details>
 <summary><strong>Alternative: terminal activate (no plugin UI)</strong></summary>
@@ -465,7 +459,7 @@ Detail: [connect-external-mcp.md § DeepWiki](connect-external-mcp.md#worked-exa
 3. If board writes hit GraphQL rate-limit (EXIT_QUEUED): `project outbox status` / later `outbox flush` — enable `project_ssot.outbox` defaults after activate
 4. **`/implementer`** (or `/test-runner`, `/verifier`; `/auditor` only for architecture-impacting / pre-merge audits — not day-0 onboarding)
 5. Canvas/plan (ADR-010): `canvas doctor` · `canvas sync --name <stem>` · `plan snapshot|list|open` — see [canvas-artifacts](../../.cursor/skills/canvas-artifacts/SKILL.md)
-6. Dashboard (optional, **deprecated**): see [Control Center dashboards](#control-center-dashboards-deprecated) below
+6. Canvases and offline markdown: use **Ctrl+Shift+P → Open Canvas** and trackers under `.local/index-and-planning/`
 
 **Add your own agent/skill/MCP:** **`/integrator`** + **`/integrator-protocol`**
 
@@ -476,7 +470,7 @@ Detail: [connect-external-mcp.md § DeepWiki](connect-external-mcp.md#worked-exa
 | Where | Use for | Examples |
 |-------|---------|----------|
 | **Agent chat** | Plugin install, subagents, skills, slash workflows | `/add-plugin …`, `/workflow-activate`, `/implementer`, `/review-pr` |
-| **Terminal** | Validation, health, gates, serving deprecated dashboards | `python3 -m agent_colony health`, `http.server` → [dashboard URL](#control-center-dashboards-deprecated) |
+| **Terminal** | Validation, health, gates, local evidence commands | `python3 -m agent_colony health`, `python3 -m agent_colony canvas sync --missing` |
 
 **Rule:** `/add-plugin` and `/workflow-activate` are **chat commands** — do not paste them into bash.
 
@@ -509,7 +503,7 @@ source .venv/bin/activate          # recommended; gates auto-use `.venv/bin/pyth
 
 | Command | When |
 |---------|------|
-| `python3 -m agent_colony activate --directory .` | First install, re-activate, or refresh dashboards |
+| `python3 -m agent_colony activate --directory .` | First install or re-activate |
 | `python3 -m agent_colony activate --directory . --profile consumer_lite` | Lite install — 6 agents / 6 skills — see [Lite install](#lite-install-consumer_lite) |
 | `python3 -m agent_colony update --check --directory .` | Before upgrade — installed vs available (no writes) |
 | `python3 -m agent_colony update --directory .` | Version-gated kit upgrade |
@@ -527,44 +521,14 @@ source .venv/bin/activate          # recommended; gates auto-use `.venv/bin/pyth
 | `python3 -m agent_colony project heal-cards --check` | Board SSOT: inventory empty Status / incomplete Tier-1 (`--apply` repairs CLOSED+empty→Done) |
 | `python3 -m agent_colony doc skill-section --skill board-ssot --section "Continuation contract"` | Read one skill section without loading full skill |
 | `python3 -m agent_colony mcp validate` | MCP config after edits |
-| `python3 -m http.server 8000` | Serve dashboards — open http://localhost:8000/.local/agents-control-center/dashboards/index.html |
 
 Commit trailer preview: `python3 -m agent_colony contributors commit-trailers`
 
 Token-efficiency program: [token-efficiency-program.md](token-efficiency-program.md) · lite profile: [consumer-lite-profile.md](consumer-lite-profile.md)
 
-## Control Center dashboards (deprecated)
+## Canvases and offline markdown
 
-> **Deprecated (2026-07-19).** Prefer the **GitHub Project board** when `project_ssot.enabled`
-> (`python3 -m agent_colony project status`) and **Ctrl+Shift+P → Open Canvas** for kit
-> visualizations. Local HTML under `.local/agents-control-center/` remains an **offline**
-> markdown/tracker browser only; it is not the backlog or status SSOT (ADR-008).
-
-Local HTML pages still ship on activate for legacy/offline use.
-
-**Do not** open HTML via `file://` — browsers block `fetch()`.
-
-From **project root**:
-
-```bash
-cd ~/Projects/my-app
-python3 -m http.server 8000
-```
-
-**Open in browser:** http://localhost:8000/.local/agents-control-center/dashboards/index.html
-
-*(Port busy? Use `8001` — swap the port in every URL below.)*
-
-| Page | URL |
-|------|-----|
-| **Home** | http://localhost:8000/.local/agents-control-center/dashboards/index.html |
-| **Implementation Control Center** | http://localhost:8000/.local/agents-control-center/dashboards/implementation-control-center.html |
-| **Module audit** | http://localhost:8000/.local/agents-control-center/audits/module-audit.html |
-
-### What still works (offline only)
-
-- **Control Center** — sidebar tabs over local markdown (`session-pointer`, `plan`, …) and read-only board export snapshot
-- **Module audit** — workflow module map HTML when exported
+Use the **GitHub Project board** when `project_ssot.enabled` (`python3 -m agent_colony project status`) and **Ctrl+Shift+P → Open Canvas** for kit visualizations. Local trackers under `.local/index-and-planning/` are offline markdown only; they are not a browser UI and do not replace the board when `board_only` is enabled.
 
 ### Refresh after a kit update
 
@@ -589,7 +553,7 @@ Or **`/update-agent-colony`** in Agent chat (same gate). Kit **0.6.7+** auto-cle
 
 **Verify:** `cat .ai_infra/.kit-version` · `grep kit_version .ai_infra/manifest.yaml` · `update --check` → `installed==available`, exit **0**.
 
-Light heal only (dashboards/runtime) when already on latest kit: `python3 -m agent_colony activate --directory .` or `/workflow-activate`. Full upgrade semantics: [upgrade-kit.md](upgrade-kit.md) · [README § Upgrade](https://github.com/SavinRazvan/agent-colony#4-upgrade-kit-when-a-new-release-ships).
+Light heal only when already on latest kit: `python3 -m agent_colony activate --directory .` or `/workflow-activate`. Full upgrade semantics: [upgrade-kit.md](upgrade-kit.md) · [README § Upgrade](https://github.com/SavinRazvan/agent-colony#4-upgrade-kit-when-a-new-release-ships).
 
 ---
 
@@ -730,9 +694,8 @@ After the kit fix, expect:
 | `pytest` not found | Re-run **`/workflow-activate`** (creates `.venv`) |
 | Permission denied on `/path` | You used a placeholder path — create a real folder |
 | Subagents/skills missing in **`/`** menu | Open **your activated project**, not `agent-colony`; re-run **`/workflow-activate`** if planes are incomplete |
-| Control Center shows **Failed to fetch** | From project root: `python3 -m http.server 8000` then open http://localhost:8000/.local/agents-control-center/dashboards/index.html — not `file://` |
-| Raw markdown (no tables/bold) in Control Center | Re-run **`/workflow-activate`** to refresh `local-markdown.js` |
-| Stale dashboard UI after kit update | `python3 -m agent_colony update --directory .` (or `/update-agent-colony`) |
+| Canvas does not appear in Open Canvas | Run `python3 -m agent_colony canvas sync --missing`, then use **Ctrl+Shift+P → Open Canvas** |
+| Stale kit UI/docs after update | `python3 -m agent_colony update --directory .` (or `/update-agent-colony`) |
 | `update --check` FAIL on `__pycache__` / orphans only | Upgrade to kit **0.6.7+** or `python3 -m agent_colony update --clean-only --directory .` |
 | `available` older than [Releases](https://github.com/SavinRazvan/agent-colony/releases) | Re-run `/add-plugin agent-colony@https://github.com/SavinRazvan/agent-colony` in Agent chat, then `--check` again |
 | `DRIFT-005 FAIL` on `drift validate --profile consumer` | **Kit bug (not your app)** — false positive when kit lacks the skip-if-absent fix; upgrade kit or ignore until fixed. See [DRIFT-005](#drift-005-fail--kit-bug-not-your-app) |

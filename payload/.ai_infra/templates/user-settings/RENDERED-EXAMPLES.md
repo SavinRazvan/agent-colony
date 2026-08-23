@@ -46,8 +46,8 @@ Co-authored-by: Cursor <cursoragent@cursor.com>
 
 ```markdown
 ## Summary
-- Shared local-shell.css + site-nav.js for local HTML dashboards
-- Landing index.html, aligned ICC + module-audit stub; docs + folder charter updates
+- Board SSOT and Cursor canvas guidance aligned across docs
+- Local workspace templates keep offline markdown trackers and artifact stubs
 
 ## Test plan
 - [ ] pytest -q

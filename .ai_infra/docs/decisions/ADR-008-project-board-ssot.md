@@ -15,7 +15,7 @@ Related: [ADR-006](ADR-006-agent-integration-model.md), [AGENTS.md](../../../AGE
 2. **`board_only` wins** — dual-mirror (local trackers + board both writable) is rejected; it causes worse agent drift (DRIFT-009).
 3. **Offline fallback:** if enabled is false or `gh`/Projects unavailable, use `fallback: local_trackers` with an explicit warning — then resume board sync; never silent dual-write.
 4. **Rate-limit outbox:** when GraphQL quota blocks writes, `project_ssot.outbox` stores structured ops in a local JSONL (`.local/generated-data/board-outbox.jsonl`). EXIT_QUEUED (6) is soft-success; `outbox flush` restores the board after reset. Outbox is **never** authoritative Status.
-5. **Read-only exports:** optional snapshots (`project export`) may cache board state for audits/ICC later; they **must not** write Status and must never become a competing SSOT.
+5. **Read-only exports:** optional snapshots (`project export`) may cache board state for audits / drift-guard; they **must not** write Status and must never become a competing SSOT.
 6. **Config habit:** board identity and field ids live next to `owner` in `github.collaboration.yaml` (not a separate primary settings file).
 7. **Tooling:** Pattern A CLI (`agent_colony project`) wrapping `gh project`; MCP optional later.
 8. **Item kind / promote:** `item_kind_default: issue|draft` — **issue is the product default** (`gh issue create` + `gh project item-add`) so Assignees + Linked PRs work from claim. `draft` is scratch-only (DraftIssue). CLI `project promote-to-issue` converts leftover Drafts (**same PVTI_**). `mention-pr` auto-promotes Draft when `promote_to_issue_on_pr` (default true). Claim does **not** auto-promote. Do not create shippable work as Draft.

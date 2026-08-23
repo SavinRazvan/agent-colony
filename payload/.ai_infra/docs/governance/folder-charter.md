@@ -57,7 +57,6 @@ Notes:
 | `index-and-planning/current/` | Live trackers: `plan.md`, `work-tracker.md`, `test-plan.md`, `test-index.md`, `coverage-index.md`, `session-pointer.md`, `change-index.md` |
 | `index-and-planning/history/` | Chronological logs (e.g. `updates-log.md`) |
 | `index-and-planning/audits/` | Local governance audit snapshots |
-| `agents-control-center/` | Dashboard config and optional HTML exports |
 | `user_settings/` | GitHub + MCP worksheets (gitignored) |
 | `workflow-artifacts/pr/` | `review.md`, `prep.md`, `merge.md` (PR phase headers) |
 | `workflow-artifacts/alignment/` | `alignment-audit.md`, `alignment-todos.md` |

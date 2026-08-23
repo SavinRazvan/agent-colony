@@ -1,33 +1,17 @@
-<!--
-File: README.md
-Path: .ai_infra/templates/local-workspace/README.md
-Role: Versioned templates copied into gitignored `.local/` at consumer install.
-Used By:
- - .ai_infra/docs/operations/local-workspace-layout.md
-Depends On:
- - .ai_infra/scripts/install/scaffold.py
-Notes:
- - Exemplars → `.local/index-and-planning/current/`; pages.json → agents-control-center config.
--->
-
 # Local workspace templates
 
-**Canonical path:** `.ai_infra/templates/local-workspace/`
+**File:** README.md  
+**Path:** `.ai_infra/templates/local-workspace/README.md`  
+**Role:** Documents exemplar trackers, artifact stubs, and CI fixtures copied into `.local/` at scaffold/activate.
 
-Scaffold copies exemplars into `.local/index-and-planning/current/`, `pages.json` into `.local/agents-control-center/config/`, README stubs into `workflow-artifacts/*`, and optional dashboards.
+## Layout
 
-> **Deprecated (2026-07-19):** HTML dashboards under `agents-control-center/dashboards/` are **maintenance-only**.
-> Prefer the **GitHub Project board** (`project_ssot` / ADR-008) for backlog and status, and **Cursor → Open Canvas**
-> for kit visualizations. Templates still refresh on activate so existing offline browsers keep working.
+| Path | Purpose |
+|------|---------|
+| `exemplars/` | Tracker and audit markdown seeded into `.local/index-and-planning/` when missing |
+| `artifact-stubs/` | README stubs for `.local/workflow-artifacts/*` buckets |
+| `ci/` | Kit-dev CI fixtures only — **not** shipped to consumer installs |
 
-| Template | Target |
-|----------|--------|
-| `exemplars/*.md` | `.local/index-and-planning/current/` |
-| `exemplars/updates-log.md` | `.local/index-and-planning/history/updates-log.md` |
-| `artifact-stubs/<bucket>/README.md` | `.local/workflow-artifacts/<bucket>/README.md` (if missing) |
-| `pages.json` | `.local/agents-control-center/config/pages.json` |
-| `index.html`, `implementation-control-center.html` | `.local/agents-control-center/dashboards/` (refresh every activate) |
-| `site-nav.js`, `local-shell.css`, `local-markdown.js` | `.local/agents-control-center/dashboards/` (refresh every activate) |
-| `audits/module-audit.html` | `.local/agents-control-center/audits/` (refresh every activate) |
+Scaffold copies exemplars into `.local/index-and-planning/current/` (and history/audits as needed), and README stubs into `workflow-artifacts/*`. Prefer **GitHub Project board (ADR-008)** and **Cursor Open Canvas** for live status and visualization. Offline markdown trackers remain under `.local/index-and-planning/`.
 
-> **Maintainer-only:** layout migration helper (`.ai_infra/scripts/dev/migrate_local_workspace_layout.py`) exists in the kit development repo only — not shipped to consumer installs.
+Deprecated browser dashboard files were removed in kit 0.7.3. Activate/update heal deletes leftover dashboard folders if present.

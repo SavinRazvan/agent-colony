@@ -112,7 +112,7 @@ const ARTIFACTS = [
   [
     ".local/generated-data/project-board-snapshot.json",
     "project export",
-    "DRIFT-010 · deprecated HTML ICC (EA-010) offline only",
+    "DRIFT-010 snapshot/export only — no dashboard UI",
   ],
   [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
 ];

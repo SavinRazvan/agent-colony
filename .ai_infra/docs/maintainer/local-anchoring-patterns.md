@@ -20,7 +20,7 @@ The `.local/` directory is **gitignored**. It holds live execution state — not
 
 | Tier | When | Examples |
 |------|------|----------|
-| **1 — Base** | `activate` / `install` scaffold | Neutral trackers, six `workflow-artifacts/*` buckets + README stubs, `pages.json`, `AGENTS.md` |
+| **1 — Base** | `activate` / `install` scaffold | Neutral trackers, six `workflow-artifacts/*` buckets + README stubs, `AGENTS.md` |
 | **2 — Runtime** | Agents and PR scripts during work | Filled `plan.md`, `review.md`, drift/alignment/EA artifacts |
 
 Path SSOT: `.ai_infra/scripts/pr/local_workflow_paths.py`.
@@ -52,7 +52,6 @@ When `.local/user_settings/github.collaboration.yaml` → `project_ssot.enabled:
 | `workflow-artifacts/enterprise-architecture-audit/` | enterprise-architecture-audit.md, enterprise-audit-actions.md |
 | `workflow-artifacts/release/` | Optional RC sign-off |
 | `workflow-artifacts/audit/` | preflight.json, doc-facts-preflight.json |
-| `agents-control-center/` | Dashboard config (`pages.json`) and optional HTML |
 | `generated-data/` | Coverage JSON and machine output — skip unless tasked |
 
 ## Agent efficiency
@@ -63,7 +62,7 @@ When `.local/user_settings/github.collaboration.yaml` → `project_ssot.enabled:
 
 ## Scaffold source
 
-`scaffold.py` copies exemplars from `.ai_infra/templates/local-workspace/exemplars/` into `.local/index-and-planning/current/` (if missing), creates all artifact buckets, README stubs, optional dashboards, and `AGENTS.md` from stub (if missing).
+`scaffold.py` copies exemplars from `.ai_infra/templates/local-workspace/exemplars/` into `.local/index-and-planning/current/` (if missing), creates all artifact buckets, README stubs, and `AGENTS.md` from stub (if missing).
 
 Full contract: [local-workspace-layout.md](../operations/local-workspace-layout.md).
 

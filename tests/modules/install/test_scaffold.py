@@ -13,7 +13,6 @@ Notes:
 from __future__ import annotations
 
 import importlib.util
-import json
 import shutil
 import subprocess
 import sys
@@ -120,44 +119,32 @@ def test_scaffold_creates_agents_md(tmp_path: Path) -> None:
     assert "Artifact tiers" in text or "artifact tiers" in text.lower()
 
 
-def test_scaffold_creates_dashboards(tmp_path: Path) -> None:
+def test_scaffold_does_not_create_agents_control_center(tmp_path: Path) -> None:
     mod = _load_scaffold()
     target = tmp_path / "project"
     mod.scaffold(target, REPO_ROOT)
-    dash = target / ".local" / "agents-control-center" / "dashboards"
-    assert (dash / "index.html").is_file()
-    assert (dash / "implementation-control-center.html").is_file()
-    assert (dash / "site-nav.js").is_file()
-    assert (dash / "local-shell.css").is_file()
-    assert (dash / "local-markdown.js").is_file()
-    assert (dash / "local-board-snapshot.js").is_file()
-    audit_html = target / ".local" / "agents-control-center" / "audits" / "module-audit.html"
-    assert audit_html.is_file()
-    icc = (dash / "implementation-control-center.html").read_text(encoding="utf-8")
-    assert "local-markdown.js" in icc
-    assert "local-board-snapshot.js" in icc
+    assert not (target / ".local" / "agents-control-center").exists()
 
 
-def test_scaffold_refreshes_dashboards_on_repeat(tmp_path: Path) -> None:
+def test_scaffold_removes_preexisting_agents_control_center(tmp_path: Path) -> None:
     mod = _load_scaffold()
     target = tmp_path / "project"
+    acc = target / ".local" / "agents-control-center" / "dashboards"
+    acc.mkdir(parents=True)
+    (acc / "index.html").write_text("<!-- stale -->\n", encoding="utf-8")
     mod.scaffold(target, REPO_ROOT)
-    index = target / ".local" / "agents-control-center" / "dashboards" / "index.html"
-    index.write_text("<!-- stale dashboard -->\n", encoding="utf-8")
-    mod.scaffold(target, REPO_ROOT)
-    assert "local control center" in index.read_text(encoding="utf-8").lower()
+    assert not (target / ".local" / "agents-control-center").exists()
+    assert (target / ".local" / "index-and-planning" / "current" / "plan.md").is_file()
 
 
-def test_refresh_dashboards_updates_pages_json(tmp_path: Path) -> None:
+def test_remove_deprecated_agents_control_center_dry_run(tmp_path: Path) -> None:
     mod = _load_scaffold()
     target = tmp_path / "project"
-    mod.scaffold(target, REPO_ROOT)
-    pages = target / ".local" / "agents-control-center" / "config" / "pages.json"
-    pages.write_text('{"version": 1, "pages": []}\n', encoding="utf-8")
-    mod.refresh_dashboards(REPO_ROOT, target)
-    text = pages.read_text(encoding="utf-8")
-    assert ".ai_infra/docs" in text
-    assert '"pages"' in text
+    acc = target / ".local" / "agents-control-center"
+    acc.mkdir(parents=True)
+    log = mod.remove_deprecated_agents_control_center(target, dry_run=True)
+    assert acc.is_dir()
+    assert any("DRY-RUN rmtree" in line for line in log)
 
 
 def test_scaffold_artifact_tab_placeholders(tmp_path: Path) -> None:
@@ -195,36 +182,6 @@ def test_scaffold_creates_tracker_extras(tmp_path: Path) -> None:
     history = target / ".local" / "index-and-planning" / "history"
     assert (current / "coverage-index.md").is_file()
     assert (history / "updates-log.md").is_file()
-
-
-def test_scaffold_pages_json_includes_artifact_tabs(tmp_path: Path) -> None:
-    mod = _load_scaffold()
-    target = tmp_path / "project"
-    mod.scaffold(target, REPO_ROOT)
-    pages = json.loads(
-        (target / ".local" / "agents-control-center" / "config" / "pages.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    page_ids = {page["id"] for page in pages["pages"]}
-    assert {"pr-review", "drift-audit", "ea-audit", "board"}.issubset(page_ids)
-
-
-def test_scaffold_pages_json_tier1_paths_resolve(tmp_path: Path) -> None:
-    """Tier 1 dashboard tabs must resolve after scaffold; Tier 2 artifact .md files are runtime-only."""
-    mod = _load_scaffold()
-    target = tmp_path / "project"
-    mod.scaffold(target, REPO_ROOT)
-    config = target / ".local" / "agents-control-center" / "config"
-    pages = json.loads((config / "pages.json").read_text(encoding="utf-8"))
-    for page in pages["pages"]:
-        rel = page["file"]
-        if rel.startswith("../../workflow-artifacts/"):
-            continue
-        if rel.startswith("../../generated-data/"):
-            continue
-        resolved = (config / rel).resolve()
-        assert resolved.is_file(), f"{page['id']}: {rel} -> missing at {resolved}"
 
 
 def test_scaffold_reactivate_preserves_user_settings(tmp_path: Path) -> None:
@@ -359,12 +316,12 @@ def test_sync_kit_ui_templates_no_ai_infra_returns_empty(tmp_path: Path) -> None
     assert mod.sync_kit_ui_templates(REPO_ROOT, target) == []
 
 
-def test_sync_kit_ui_templates_dry_run_logs_mkdir(tmp_path: Path) -> None:
+def test_sync_kit_ui_templates_is_noop_after_icc_removal(tmp_path: Path) -> None:
     mod = _load_scaffold()
     target = tmp_path / "project"
     mod.scaffold(target, REPO_ROOT)
-    log = mod.sync_kit_ui_templates(REPO_ROOT, target, dry_run=True)
-    assert any("DRY-RUN mkdir" in line for line in log)
+    assert mod.sync_kit_ui_templates(REPO_ROOT, target) == []
+    assert mod.sync_kit_ui_templates(REPO_ROOT, target, dry_run=True) == []
 
 
 def test_sync_activate_runtime_same_source_target_returns_empty() -> None:
@@ -379,25 +336,3 @@ def test_sync_activate_runtime_no_ai_src_returns_empty(tmp_path: Path) -> None:
     target = tmp_path / "project"
     mod.scaffold(target, REPO_ROOT)
     assert mod.sync_activate_runtime(source, target) == []
-
-
-def test_main_refresh_dashboards_only(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    mod = _load_scaffold()
-    target = tmp_path / "project"
-    mod.scaffold(target, REPO_ROOT)
-    pages = target / ".local" / "agents-control-center" / "config" / "pages.json"
-    pages.write_text('{"version": 1, "pages": []}\n', encoding="utf-8")
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        [
-            "scaffold",
-            "--target",
-            str(target),
-            "--source",
-            str(REPO_ROOT),
-            "--refresh-dashboards-only",
-        ],
-    )
-    assert mod.main() == 0
-    assert ".ai_infra/docs" in pages.read_text(encoding="utf-8")

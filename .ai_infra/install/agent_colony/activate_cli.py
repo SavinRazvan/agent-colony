@@ -316,24 +316,10 @@ def _heal_consumer_runtime(target: Path, *, with_venv: bool) -> None:
             print(line)
 
 
-def _resolve_dashboard_refresh_source(
-    raw: Path | None, target: Path, default_kit_root: Path
-) -> Path | None:
-    try:
-        return resolve_activate_source(raw, target, default_kit_root)
-    except FileNotFoundError:
-        embedded = target / ".ai_infra" / "templates" / "local-workspace" / "index.html"
-        if embedded.is_file():
-            return target
-        return None
-
-
-def _refresh_dashboard_templates(target: Path, source: Path | None, default_kit_root: Path) -> None:
-    refresh_source = source or _resolve_dashboard_refresh_source(None, target, default_kit_root)
-    if refresh_source is None:
-        return
+def _remove_deprecated_agents_control_center(target: Path) -> None:
     scaffold = _import_scaffold_refresh()
-    scaffold.refresh_dashboards(refresh_source, target)
+    for line in scaffold.remove_deprecated_agents_control_center(target):
+        print(line)
 
 
 def cmd_activate(args: argparse.Namespace) -> int:
@@ -346,11 +332,7 @@ def cmd_activate(args: argparse.Namespace) -> int:
 
     if status.all_ready and not args.force:
         print(plane_status.format_plane_report(status))
-        try:
-            ext_source = resolve_activate_source(args.source, target, kit_root())
-            _refresh_dashboard_templates(target, ext_source, kit_root())
-        except FileNotFoundError:
-            _refresh_dashboard_templates(target, None, kit_root())
+        _remove_deprecated_agents_control_center(target)
         _heal_consumer_runtime(target, with_venv=bool(args.with_venv))
         status = plane_status.assess_planes(
             target, profile=args.profile, require_venv=bool(args.with_venv)

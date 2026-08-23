@@ -3,7 +3,7 @@ File: coverage-index.md
 Path: .ai_infra/templates/local-workspace/exemplars/coverage-index.md
 Role: Exemplar for install → .local/index-and-planning/current/coverage-index.md
 Used By:
- - .ai_infra/templates/local-workspace/pages.json
+ - test-runner
 Depends On:
  - pytest --cov (slice closure)
 Notes:
