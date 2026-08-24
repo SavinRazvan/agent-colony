@@ -64,7 +64,14 @@ python3 -m agent_colony activate --directory .
 python3 -m agent_colony activate --directory . --profile consumer_lite
 ```
 
-On **first install** when the module is absent, use the payload path (see below) and add `--profile consumer_lite`. Full spec: [consumer-lite-profile.md](../../.ai_infra/docs/operations/consumer-lite-profile.md). Upgrade lite → full: `python3 -m agent_colony update --force --profile with_mcp --directory .`
+On **first install** when the module is absent, use the payload path (see below) and add `--profile consumer_lite`. Full spec: [consumer-lite-profile.md](../../.ai_infra/docs/operations/consumer-lite-profile.md). Upgrade lite → full:
+
+```bash
+cd ~/Projects/your-app
+source .venv/bin/activate
+python3 -m agent_colony update --force --profile with_mcp --directory .
+python3 -m agent_colony health
+```
 
 **Token-efficient reads after activate:**
 

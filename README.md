@@ -130,7 +130,14 @@ PAYLOAD="$(ls -1dt ~/.cursor/plugins/cache/agent-colony/agent-colony/*/payload 2
 python3 "$PAYLOAD/agent_colony" activate --directory . --source "$PAYLOAD" --profile consumer_lite
 ```
 
-See [consumer-lite-profile.md](.ai_infra/docs/operations/consumer-lite-profile.md). Upgrade to full kit later: `python3 -m agent_colony update --force --profile with_mcp --directory .`
+See [consumer-lite-profile.md](.ai_infra/docs/operations/consumer-lite-profile.md). Upgrade lite → full kit later (copy/paste in **your app**):
+
+```bash
+cd ~/Projects/your-app
+source .venv/bin/activate
+python3 -m agent_colony update --force --profile with_mcp --directory .
+python3 -m agent_colony health
+```
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/04_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
@@ -223,7 +230,7 @@ export WORKFLOW_KIT_PAYLOAD=/path/to/agent-colony/payload
 
 #### Step B — Update your app repo (terminal)
 
-Open **your app folder** (e.g. `~/Projects/module-ai`), not `agent-colony`:
+Open **your app folder** (e.g. `~/Projects/module-ai`), not `agent-colony`. Copy the whole block:
 
 ```bash
 cd ~/Projects/your-app
@@ -231,9 +238,16 @@ source .venv/bin/activate
 
 python3 -m agent_colony update --check --directory .
 python3 -m agent_colony update --directory .
-python3 -m agent_colony update --directory . --clean-only   # optional: runtime + orphan cleanup without upgrade
 python3 -m agent_colony health
 python3 -m agent_colony mcp validate
+```
+
+Optional — cleanup only (no version bump):
+
+```bash
+cd ~/Projects/your-app
+source .venv/bin/activate
+python3 -m agent_colony update --directory . --clean-only
 ```
 
 Read the first lines of `--check`:
@@ -258,6 +272,8 @@ action=heal
 Full refresh when `--check` lists kit-managed deltas you want overwritten:
 
 ```bash
+cd ~/Projects/your-app
+source .venv/bin/activate
 python3 -m agent_colony update --check --directory .
 python3 -m agent_colony update --directory . --force
 ```
@@ -271,6 +287,8 @@ Agent chat equivalent: **`/update-agent-colony`** (same version gate as terminal
 All three must match the [latest release](https://github.com/SavinRazvan/agent-colony/releases):
 
 ```bash
+cd ~/Projects/your-app
+source .venv/bin/activate
 cat .ai_infra/.kit-version
 grep kit_version .ai_infra/manifest.yaml
 python3 -m agent_colony update --check --directory .   # installed == available
@@ -298,14 +316,16 @@ python3 "$PAYLOAD/agent_colony" activate --directory . --source "$PAYLOAD" --pro
 
 See [consumer-lite-profile.md](.ai_infra/docs/operations/consumer-lite-profile.md).
 
-If `.kit-version` and `manifest.yaml` disagree, the upgrade did not finish cleanly — run `update --directory .` once more (same payload source).
+If `.kit-version` and `manifest.yaml` disagree, the upgrade did not finish cleanly — copy Step B again (same payload source).
 
-| Flag / command | Role |
-|----------------|------|
-| `update --check` | Installed vs available + kit-managed diffs — **no writes** |
-| `update --directory .` | **Heal** when current; **full upgrade** when `available` > `installed` |
-| `update --force` | Full refresh from current `source` — run `--check` first |
-| `WORKFLOW_KIT_PAYLOAD` | Use a local `payload/` tree instead of plugin cache |
+Lookup only (always prefix with `cd` + `source .venv/bin/activate` as in Step B):
+
+| Command | Role |
+|---------|------|
+| `python3 -m agent_colony update --check --directory .` | Installed vs available + kit-managed diffs — **no writes** |
+| `python3 -m agent_colony update --directory .` | **Heal** when current; **full upgrade** when `available` > `installed` |
+| `python3 -m agent_colony update --directory . --force` | Full refresh from current `source` — run `--check` first |
+| `export WORKFLOW_KIT_PAYLOAD=/path/to/agent-colony/payload` | Use a local `payload/` tree instead of plugin cache |
 
 **Preserved on upgrade:** `.local/user_settings/`, trackers, `AGENTS.md`, `mcp.user.json`. **Overwritten on full upgrade:** `.cursor/`, `.ai_infra/`, `agent_colony/` kit copy.
 
@@ -321,7 +341,7 @@ Details: [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md) · isolation
 | Board wire + shell | [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md) · [`board-shell`](.cursor/skills/board-shell/SKILL.md) |
 | MCP (DeepWiki, custom servers) | [connect-external-mcp.md](.ai_infra/docs/operations/connect-external-mcp.md) |
 | Research packs | [`research-corpus`](.cursor/skills/research-corpus/SKILL.md) · Guide [use-case matrix](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#6-use-case-matrix) |
-| Upgrade an existing install | Step A: `/add-plugin` (refresh cache) → Step B: `update --check` then `update --directory .` · [§4 Upgrade kit](#4-upgrade-kit-when-a-new-release-ships) · [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md) |
+| Upgrade an existing install | Copy [§4 Upgrade kit](#4-upgrade-kit-when-a-new-release-ships) (plugin `/add-plugin` then the Step B terminal block) · [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md) |
 | Three planes (architecture) | [workflow-architecture.md](.ai_infra/docs/architecture/workflow-architecture.md) |
 
 ---
