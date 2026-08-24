@@ -36,31 +36,66 @@ User ran **`/workflow-activate`** in **their app**, then updated the Agent Colon
    - **same / newer installed** → light heal (`.gitignore`, `STARTER-001`, missing `.venv`, leftover `.local/agents-control-center/` cleanup)
    - **`available > installed`** → one full scaffold refresh (payload `scaffold.py`; no `--force` unless `--check` lists deltas)
    - **`--force`** → full overwrite even when versions match, or when accepting kit-managed delta overwrites
-5. **Verify:** `.kit-version`, `manifest.yaml` `kit_version`, and `update --check` `installed`/`available` all match.
+5. **Verify:** `.kit-version`, `manifest.yaml` `kit_version`, and `python3 -m agent_colony update --check --directory .` `installed`/`available` all match.
 6. After upgrade: `health` + `mcp validate`.
 
-## Commands
+## Commands (copy/paste)
+
+Give the user **full commands**, not flags alone. Run in **their app**, after plugin refresh.
+
+**Happy path:**
 
 ```bash
+cd ~/Projects/your-app
 source .venv/bin/activate
 python3 -m agent_colony update --check --directory .
 python3 -m agent_colony update --directory .
-python3 -m agent_colony update --directory . --clean-only   # optional: cleanup without upgrade
-python3 -m agent_colony update --directory . --force      # only when --check lists deltas to overwrite
-python3 -m agent_colony update --directory . --no-clean     # debug: skip pre/post cleanup
-python3 -m agent_colony update --force --profile with_mcp --directory .   # upgrade consumer_lite → full kit (0.7.0+)
-python3 -m agent_colony update --profile consumer_lite --force --directory .   # stay on lite after kit bump (0.7.1+)
+python3 -m agent_colony health
+python3 -m agent_colony mcp validate
 ```
 
-**Lite profile (0.7.0+):** Re-activate on lite with `activate --directory . --profile consumer_lite`. Upgrade to full kit with `update --force --profile with_mcp --directory .`.
+**Cleanup only** (no version bump):
+
+```bash
+cd ~/Projects/your-app
+source .venv/bin/activate
+python3 -m agent_colony update --directory . --clean-only
+```
+
+**Overwrite kit-managed deltas** (only if `--check` lists files they accept losing):
+
+```bash
+cd ~/Projects/your-app
+source .venv/bin/activate
+python3 -m agent_colony update --check --directory .
+python3 -m agent_colony update --directory . --force
+```
+
+**Lite → full kit:**
+
+```bash
+cd ~/Projects/your-app
+source .venv/bin/activate
+python3 -m agent_colony update --force --profile with_mcp --directory .
+```
+
+**Stay on lite** after a kit bump:
+
+```bash
+cd ~/Projects/your-app
+source .venv/bin/activate
+python3 -m agent_colony update --profile consumer_lite --force --directory .
+```
+
+Debug — skip pre/post cleanup: `python3 -m agent_colony update --directory . --no-clean`.
 
 > **Warning — plain `update` upgrades lite to full.** `update --directory .` (no `--profile`) uses default **`with_mcp`**. On version bump it restores 15 skills and 8 agents. To **preserve lite**, pass `--profile consumer_lite` on update or re-run activate with that profile.
 
-| Command | Profile used | Lite tree after version upgrade |
+| Command (after `cd` + `source .venv/bin/activate`) | Profile used | Lite tree after version upgrade |
 |---------|--------------|--------------------------------|
-| `update --directory .` | `with_mcp` (default) | **Full kit** (15 skills, 8 agents) |
-| `update --profile consumer_lite --force --directory .` | `consumer_lite` | **Lite** (6 skills, 6 agents) |
-| `update --force --profile with_mcp --directory .` | `with_mcp` | **Full kit** (explicit upgrade) |
+| `python3 -m agent_colony update --directory .` | `with_mcp` (default) | **Full kit** (15 skills, 8 agents) |
+| `python3 -m agent_colony update --profile consumer_lite --force --directory .` | `consumer_lite` | **Lite** (6 skills, 6 agents) |
+| `python3 -m agent_colony update --force --profile with_mcp --directory .` | `with_mcp` | **Full kit** (explicit upgrade) |
 
 See [consumer-lite-profile.md](../../.ai_infra/docs/operations/consumer-lite-profile.md).
 
@@ -94,6 +129,8 @@ python3 -m agent_colony drift validate --profile consumer --summary
 ## Post-update
 
 ```bash
+cd ~/Projects/your-app
+source .venv/bin/activate
 cat .ai_infra/.kit-version
 grep kit_version .ai_infra/manifest.yaml
 python3 -m agent_colony update --check --directory .

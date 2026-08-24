@@ -91,15 +91,27 @@ Lite installs copy [AGENTS.stub-lite.md](../../templates/AGENTS.stub-lite.md) wh
 
 ## Upgrade to full kit
 
-> **Plain `update` upgrades lite to full.** `python3 -m agent_colony update --directory .` uses default profile **`with_mcp`** and restores **15 skills / 8 agents** on version bump. To **stay on lite** after a kit refresh, pass `--profile consumer_lite` explicitly:
+> **Plain `update` upgrades lite to full.** Copy this to stay on lite after a kit refresh:
 >
 > ```bash
+> cd ~/Projects/my-app
+> source .venv/bin/activate
 > python3 -m agent_colony update --profile consumer_lite --force --directory .
-> # or re-activate:
+> ```
+>
+> Or re-activate:
+>
+> ```bash
+> cd ~/Projects/my-app
+> source .venv/bin/activate
 > python3 -m agent_colony activate --directory . --profile consumer_lite
 > ```
 
+Upgrade lite → full kit:
+
 ```bash
+cd ~/Projects/my-app
+source .venv/bin/activate
 python3 -m agent_colony update --force --profile with_mcp --directory .
 python3 -m agent_colony health
 python3 -m agent_colony drift validate --profile consumer

@@ -89,7 +89,14 @@ test -n "$PAYLOAD" || { echo "Re-run /add-plugin first"; exit 1; }
 python3 "$PAYLOAD/agent_colony" activate --directory . --source "$PAYLOAD" --profile consumer_lite
 ```
 
-After VERIFY PASS, later commands use `source .venv/bin/activate && python3 -m agent_colony …`. Upgrade lite → full: `python3 -m agent_colony update --force --profile with_mcp --directory .`
+After VERIFY PASS, later commands use `source .venv/bin/activate && python3 -m agent_colony …`. Upgrade lite → full (copy/paste in **your app**):
+
+```bash
+cd ~/Projects/my-app
+source .venv/bin/activate
+python3 -m agent_colony update --force --profile with_mcp --directory .
+python3 -m agent_colony health
+```
 
 ### Install plugin from GitHub (recommended until Marketplace listing)
 
@@ -295,7 +302,15 @@ your-project/
 | `.cursor/agents`, skills, rules | Skipped | **Overwritten** |
 | `.ai_infra/`, `agent_colony/` | Skipped | **Overwritten** |
 
-Run `python3 -m agent_colony update --check` before `--force`. Isolation contract: [multi-consumer-isolation.md](multi-consumer-isolation.md). Details: [upgrade-kit.md](upgrade-kit.md).
+Run this **before** `--force` (copy/paste in **your app**):
+
+```bash
+cd ~/Projects/my-app
+source .venv/bin/activate
+python3 -m agent_colony update --check --directory .
+```
+
+Isolation contract: [multi-consumer-isolation.md](multi-consumer-isolation.md). Details: [upgrade-kit.md](upgrade-kit.md).
 
 ### Verification (multi-consumer isolation)
 
@@ -329,9 +344,22 @@ Run `python3 -m agent_colony update --check` before `--force`. Isolation contrac
 
 ### Terminal commands (project root)
 
+Copy this prefix, then pick a command from the table (or the upgrade block below):
+
 ```bash
 cd ~/Projects/my-app
 source .venv/bin/activate
+```
+
+**Upgrade kit** (after Agent chat `/add-plugin agent-colony@https://github.com/SavinRazvan/agent-colony`):
+
+```bash
+cd ~/Projects/my-app
+source .venv/bin/activate
+python3 -m agent_colony update --check --directory .
+python3 -m agent_colony update --directory .
+python3 -m agent_colony health
+python3 -m agent_colony mcp validate
 ```
 
 | Command | Purpose |
@@ -405,7 +433,7 @@ Skill: `.cursor/skills/canvas-artifacts/SKILL.md`
 | **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` `resolve_gates()` | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
 | **Add agents / skills / MCP** | `/integrator` + `/integrator-protocol` | `integrate validate` | [integrator-protocol skill](../../.cursor/skills/integrator-protocol/SKILL.md) · [mas-infrastructure-integration.md](mas-infrastructure-integration.md) (ops filename kept) |
 | **Connect external MCP** | `/mcp-connect` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
-| **Upgrade / version-gated refresh** | `/update-agent-colony` | Step A: `/add-plugin agent-colony@https://github.com/SavinRazvan/agent-colony` · Step B: `update --check` → `update --directory .` → `health` | [upgrade-kit.md](upgrade-kit.md) · [update-agent-colony skill](../../.cursor/skills/update-agent-colony/SKILL.md) |
+| **Upgrade / version-gated refresh** | `/update-agent-colony` | Copy the **Upgrade kit** terminal block in § Terminal commands | [upgrade-kit.md](upgrade-kit.md) · [update-agent-colony skill](../../.cursor/skills/update-agent-colony/SKILL.md) |
 | **Check install health** | — | `python3 -m agent_colony health` | [gate-matrix.md](gate-matrix.md) |
 | **Dry-run install preview** | — | `python3 -m agent_colony install --target <dir> --dry-run` | [install-dry-run.md](install-dry-run.md) |
 
@@ -517,8 +545,8 @@ Details: [gate-matrix.md](gate-matrix.md). **`make gates`** / **`make verify-all
 | Activate blocked in kit repo | Open your app folder — activate refuses self-install |
 | Broken YAML in collaboration file | Keep `human_coauthors: []` or use a proper list |
 | Canvas does not appear in Open Canvas | Run `python3 -m agent_colony canvas sync --missing`, then use **Ctrl+Shift+P → Open Canvas** |
-| Stale kit files after plugin update | Re-run `/update-agent-colony` or `python3 -m agent_colony update --directory .` — see [upgrade-kit.md](upgrade-kit.md) |
-| `update --check` false FAIL (`__pycache__`, orphans) | Kit **0.6.7+** fixes this; until then `update --clean-only` or manual `find .ai_infra agent_colony -type d -name __pycache__ -prune -exec rm -rf {} +` |
+| Stale kit files after plugin update | Copy the **Upgrade kit** block in § Terminal commands, or Agent chat `/update-agent-colony` — [upgrade-kit.md](upgrade-kit.md) |
+| `update --check` false FAIL (`__pycache__`, orphans) | Kit **0.6.7+** fixes this. Until then, copy: `cd ~/Projects/my-app && source .venv/bin/activate && python3 -m agent_colony update --directory . --clean-only` |
 | `DRIFT-005 FAIL` on consumer drift | **Kit bug (not your app)** — upgrade kit or ignore until skip-if-absent fix ships. Details: [consumer-quickstart](consumer-quickstart.md#drift-005-fail--kit-bug-not-your-app) |
 | `mcp validate` → typer required | Use `python3 -m agent_colony mcp validate` — not bare `mcp validate` |
 
