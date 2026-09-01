@@ -4,7 +4,7 @@
 
 # Agent Colony
 
-**Stop losing Status in chat.** Agent Colony installs a full multi-agent kit into *your* [Cursor](https://cursor.com) app repo — **8** agents, PR gates, and optional GitHub Project coordination so backlog and Status live on the board when you enable it.
+**Stop losing Status in chat.** Agent Colony is a discipline-enforcing multi-agent workflow for [Cursor](https://cursor.com) that uses GitHub Projects as the coordination state engine — featuring **8** specialized agents with strict role boundaries, falsification-first verification, local evidence artifacts, and automated PR quality gates.
 
 <p align="center">
   <video src="https://github.com/user-attachments/assets/f9015ab5-28bf-47f7-a065-2127c098b80e" width="720" controls></video>
@@ -21,11 +21,16 @@
 
 ## The problem
 
-Agent chats lose Status. Trackers and docs drift. Teams re-explain the same slice every session.
+Agent chats lose Status. Trackers and docs drift across sessions. Agents rubber-stamp each other's work without proof, and developers constantly re-explain context in fresh chats.
 
 ## The solution
 
-**Agent Colony** installs a full Cursor kit into *your* app repo (not this kit repo). When Project SSOT is on, the **GitHub Project** is the only writable place for backlog and Status — agents **enter** by reading the board and **exit** by updating Status and Notes. Local `.local/` holds gates, audits, and evidence — not a second Status writer.
+**Agent Colony** transforms multi-agent coding from chaotic prompt loops into a coordinated, evidence-driven development pipeline inside [Cursor](https://cursor.com):
+
+1. **GitHub Projects as State Engine (SSOT):** When enabled, the board is the single writable source of truth for backlog, priority, and progress. Agents **enter** by reading active cards and **exit** by updating Status and timestamped Notes.
+2. **Strict Role Boundaries:** Each agent has explicit operational constraints (e.g., the `researcher` never tampers with product code; the `verifier` is designed to actively disprove "done" claims rather than rubber-stamp them).
+3. **Evidence-First Handoffs:** Agents generate verifiable artifacts in `.local/` (audits, test logs, coverage, drift reports). No agent trusts another without fresh proof.
+4. **Enforced PR Quality Gates:** Automated testing, governance consistency, doc-facts, and drift validation before merging.
 
 **Proof:** 1544 tests · 8 agents (optional **`consumer_lite`**: 6 agents, 6 skills) · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
 
@@ -206,7 +211,7 @@ Upgrading is **two steps**: refresh the **plugin payload** in Cursor, then run *
 
 #### Step A — Refresh the plugin (Cursor)
 
-Distribution is **GitHub `/add-plugin`**, not an auto-updating Marketplace listing. A new git tag (e.g. [`v0.7.0`](https://github.com/SavinRazvan/agent-colony/releases)) does **not** change your local plugin cache until you re-add the plugin.
+Distribution is **GitHub `/add-plugin`** (Marketplace listing pending review). A new git tag (e.g. [`v0.7.3`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.7.3)) does **not** change your local plugin cache until you re-add the plugin.
 
 In **Agent chat** (your app project open):
 
@@ -253,8 +258,8 @@ python3 -m agent_colony update --directory . --clean-only
 Read the first lines of `--check`:
 
 ```text
-installed=0.7.0
-available=0.7.0
+installed=0.7.3
+available=0.7.3
 source=…/payload
 action=heal
 ```
@@ -296,13 +301,13 @@ test -f .ai_infra/docs/operations/multi-consumer-isolation.md && echo OK   # 0.6
 python3 -m agent_colony drift validate --profile consumer
 ```
 
-Example on **0.7.0** (token efficiency program + `consumer_lite`):
+Example on **0.7.3** (token efficiency program + `consumer_lite`):
 
 ```text
-0.7.0
-kit_version: "0.7.0"
-installed=0.7.0
-available=0.7.0
+0.7.3
+kit_version: "0.7.3"
+installed=0.7.3
+available=0.7.3
 action=heal
 check: PASS — kit version current
 ```

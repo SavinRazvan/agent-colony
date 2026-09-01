@@ -193,14 +193,26 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 | Field | Value |
 |-------|--------|
-| Organization name | Savin Ionuț Răzvan |
-| Organization handle | `savin-razvan` (or `agent-colony`) |
+| Organization name | Razvan Savin Labs |
+| Organization handle | `razvan-savin-labs` |
 | Contact email | razvan.i.savin@gmail.com |
 | Logotype URL | `https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/agent-colony-logo.png` |
-| Description | Stop losing Status in chat — install Agent Colony into your Cursor app: 8 agents, optional GitHub Project coordination, PR gates, local evidence. `/add-plugin` → `/workflow-activate`; enable Project SSOT then `/board` + shell until `board-bootstrap --check` exits 0. |
+| Description | See [Submitted listing copy](#submitted-listing-copy-2026-09-01) below |
 | GitHub repository | https://github.com/SavinRazvan/agent-colony |
 | Owner | Individual · razvan.i.savin@gmail.com |
 | Website URL | https://razvansavin.com/ |
+
+### Submitted listing copy (2026-09-01)
+
+Submitted to Cursor Marketplace publisher application (status: pending review).
+
+> Agent Colony is a discipline-enforcing, multi-agent development workflow for Cursor that uses GitHub Projects as the state engine and single source of truth for coordination.
+>
+> It provides 8 specialized agents (implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard, board)—each with strict role boundaries. The researcher never writes product code, and the verifier is explicitly designed to try to break the implementer's work (falsification-first), rather than just confirming it works. Agents operate from structured board tasks, produce physical evidence for every handoff, and update status through strict workflow contracts—ensuring no agent trusts another's word without proof.
+>
+> The plugin bundles 15 reusable skills, 7 rules, mandatory PR gates, governance checks, architecture validation, drift detection, health checks, local audit artifacts (stored in `.local/`), and optional MCP integration with DeepWiki.
+>
+> Agent Colony transforms AI-assisted development from chaotic assistance into a coordinated, traceable, and production-oriented pipeline—connecting Cursor agents with GitHub Projects, repository workflows, and pull-request quality gates to ship with real accountability.
 
 **Manifest:** `.cursor-plugin/plugin.json` — `author`, `homepage`, `repository`, `logo` aligned with the table above.
 
@@ -239,6 +251,8 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 **Listing copy refresh (2026-08-09 board End date on Done):** Agents set End date (UTC) on Status→Done; validate/heal/board-shell Tier-1; `set_end_date_on_done`; **1510** tests; **8** / **14** / **7**; kit version **0.6.3**.
 
 **Listing copy refresh (2026-08-21 ASD-STE100 + board Entry reliability):** ASD-STE100 banners + governance; Entry false-offline fix; `--last` PVTI_ validation; heal Day-N playbook; **1514** tests; **8** / **14** / **7**; kit version **0.6.4**.
+
+**Listing copy refresh (2026-09-01 Marketplace submit):** Publisher application submitted with coordination-layer positioning (state engine SSOT, strict role boundaries, falsification-first verifier, evidence-first handoffs, production-oriented pipeline). Org **Razvan Savin Labs** / `razvan-savin-labs`. README tagline + problem/solution aligned; **1544** tests; **8** / **15** / **7** (lite: **6** / **6**); kit version **0.7.3**.
 
 **Listing copy refresh (2026-08-23 ICC dashboard removal):** Deprecated ICC HTML / `.local/agents-control-center/` removed; activate/update deletes leftovers; module-audit → `workflow-artifacts/audit/`; **1544** tests; **8** / **15** / **7** (lite: **6** / **6**); kit version **0.7.3**.
 
