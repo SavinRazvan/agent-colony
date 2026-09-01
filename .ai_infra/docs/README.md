@@ -2,6 +2,19 @@
 
 **Audience:** Kit maintainers browse from the git repo. After `activate`, consumers receive a **slim subset** — see [folder-charter](governance/folder-charter.md).
 
+## Architecture & value promise
+
+Agent Colony is a **coordination and governance layer** for multi-agent Cursor development — not a prompt pack.
+
+| Pillar | What it means |
+|--------|----------------|
+| **State engine** | Optional GitHub Project SSOT: backlog, priority, and Status live on the board; chat is execution, not the source of truth |
+| **Strict role boundaries** | Eight agents with explicit contracts (e.g. `researcher` — no product code; `verifier` — falsification-first, evidence only) |
+| **Evidence-first handoffs** | Fresh command output and artifacts in `.local/`; no agent trusts another's claim without proof |
+| **PR & drift gates** | `prepare.py` merge gates, governance consistency, doc-facts, and drift validation before ship |
+
+**Onboard:** [consumer-quickstart](operations/consumer-quickstart.md) → [PLUGIN-USER-GUIDE](operations/PLUGIN-USER-GUIDE.md) · **Marketplace copy:** [marketplace-publish.md](handoff/marketplace-publish.md)
+
 ## Start here
 
 | You are | Read first |
