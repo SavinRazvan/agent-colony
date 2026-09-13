@@ -97,13 +97,18 @@ Test fixture.
 ### AA-001
 - severity: P1
 - status: fixed
+- category: workflow_gate_drift
+- source_path: path/a.md
+- target_path: path/b.py
 - owner: alice
 - due_slice: slice-a
 - consequence_if_ignored: blocked
+- evidence: short
+- recommendation: add more evidence detail
 """
     _skip, errors, warnings = schema.validate_audit_text(text)
     assert errors == []
-    assert any("caps Assurance-Level" in w for w in warnings)
+    assert any("thin evidence caps Assurance-Level" in w for w in warnings)
 
 
 def test_p0_open_status_fails() -> None:
@@ -132,13 +137,103 @@ Missing status.
 - fixture
 ### AA-missing-status
 - severity: P1
+- category: workflow_gate_drift
+- source_path: a.md
+- target_path: b.py
 - owner: alice
 - due_slice: slice-a
 - consequence_if_ignored: blocked
+- evidence: missing status field
+- recommendation: add status
 """
     skip, errors, _warnings = schema.validate_audit_text(text)
     assert skip is False
     assert any("requires status" in e for e in errors)
+
+
+def test_p1_missing_category_fails() -> None:
+    text = """---
+Audit-Schema: 1
+Audit-Scope: kit
+Named-Target: missing category
+Commissioned-By: maintainer
+Audited-By: auditor
+---
+## Accountability summary
+Missing category.
+## Audit limits
+- fixture
+### AA-missing-cat
+- severity: P1
+- status: fixed
+- source_path: a.md
+- target_path: b.py
+- owner: alice
+- due_slice: slice-a
+- consequence_if_ignored: blocked
+- evidence: category absent
+- recommendation: add category
+"""
+    skip, errors, _warnings = schema.validate_audit_text(text)
+    assert skip is False
+    assert any("requires category" in e for e in errors)
+
+
+def test_p1_unknown_category_fails() -> None:
+    text = """---
+Audit-Schema: 1
+Audit-Scope: kit
+Named-Target: bad category
+Commissioned-By: maintainer
+Audited-By: auditor
+---
+## Accountability summary
+Bad category.
+## Audit limits
+- fixture
+### AA-bad-cat
+- severity: P1
+- status: fixed
+- category: not_a_real_category
+- source_path: a.md
+- target_path: b.py
+- owner: alice
+- due_slice: slice-a
+- consequence_if_ignored: blocked
+- evidence: bad category value
+- recommendation: use allowlist
+"""
+    skip, errors, _warnings = schema.validate_audit_text(text)
+    assert skip is False
+    assert any("unknown category" in e for e in errors)
+
+
+def test_p1_missing_evidence_hard_fails() -> None:
+    text = """---
+Audit-Schema: 1
+Audit-Scope: kit
+Named-Target: missing evidence
+Commissioned-By: maintainer
+Audited-By: auditor
+---
+## Accountability summary
+Missing evidence.
+## Audit limits
+- fixture
+### AA-no-evidence
+- severity: P1
+- status: fixed
+- category: workflow_gate_drift
+- source_path: a.md
+- target_path: b.py
+- owner: alice
+- due_slice: slice-a
+- consequence_if_ignored: blocked
+- recommendation: add evidence
+"""
+    skip, errors, _warnings = schema.validate_audit_text(text)
+    assert skip is False
+    assert any("requires evidence" in e for e in errors)
 
 
 def test_independence_warning_when_audited_equals_commissioned() -> None:

@@ -22,8 +22,30 @@ ASSURANCE_LEVELS = frozenset({"high", "reasonable", "limited", "very_limited"})
 ALLOWED_FINDING_STATUSES = frozenset(
     {"open", "accepted_divergence", "fixed", "deferred"}
 )
+ALLOWED_FINDING_CATEGORIES = frozenset(
+    {
+        "stale_doc_reference",
+        "policy_conflict",
+        "workflow_gate_drift",
+        "artifact_requirement_gap",
+        "module_traceability_gap",
+        "ci_path_drift",
+        "naming_or_precedence_drift",
+        "strategy_product_boundary_drift",
+        "test_coverage_mapping_gap",
+        "rule_parser_or_format_risk",
+        "token_contract",
+    }
+)
 
 _PLACEHOLDER_VALUES = frozenset({"", "-", "tbd", "(tbd)"})
+_P0_P1_REQUIRED_PATH_FIELDS = (
+    "category",
+    "source_path",
+    "target_path",
+    "recommendation",
+    "evidence",
+)
 _FINDING_ID_RE = re.compile(
     r"^(AA|EA|DRIFT)-[A-Za-z0-9][A-Za-z0-9_-]*$",
     re.IGNORECASE,
@@ -284,11 +306,24 @@ def validate_audit_text(text: str) -> tuple[bool, list[str], list[str]]:
                     "(use accepted_divergence|fixed|deferred)"
                 )
 
+            for field in _P0_P1_REQUIRED_PATH_FIELDS:
+                value = str(finding.get(field, "")).strip()
+                if _is_placeholder(value):
+                    errors.append(f"{finding['id']}: P0/P1 requires {field}")
+                elif field == "category" and value not in ALLOWED_FINDING_CATEGORIES:
+                    errors.append(
+                        f"{finding['id']}: unknown category '{value}' — allowed: "
+                        f"{', '.join(sorted(ALLOWED_FINDING_CATEGORIES))}"
+                    )
+
             evidence = str(finding.get("evidence", "")).strip()
-            if _is_placeholder(evidence) and assurance in {"high", "reasonable"}:
+            if (
+                not _is_placeholder(evidence)
+                and assurance in {"high", "reasonable"}
+                and len(evidence) < 8
+            ):
                 warnings.append(
-                    f"{finding['id']}: empty evidence caps Assurance-Level to limited "
+                    f"{finding['id']}: thin evidence caps Assurance-Level to limited "
                     f"(declared {assurance})"
                 )
-
     return False, errors, warnings
