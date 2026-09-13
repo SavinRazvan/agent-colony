@@ -1224,11 +1224,20 @@ def check_drift017(paths: DriftPaths) -> CheckResult:
         )
     issues: list[str] = []
     for path in collect_audit_paths(paths.root):
-        skip, errors, _warnings = validate_file(path)
-        if skip or not errors:
+        skip, errors, warnings = validate_file(path)
+        if skip:
             continue
         rel = path.relative_to(paths.root).as_posix()
-        issues.append(f"{rel}: {errors[0]}")
+        if errors:
+            issues.append(f"{rel}: {errors[0]}")
+            continue
+        independence = [
+            w
+            for w in warnings
+            if "independence" in w.lower() or "Audited-By equals" in w
+        ]
+        if independence:
+            issues.append(f"{rel}: {independence[0]}")
     if issues:
         return CheckResult(
             check_id="DRIFT-017",

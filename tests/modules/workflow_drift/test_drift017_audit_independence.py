@@ -39,6 +39,24 @@ def test_drift017_warns_on_incomplete_schema(tmp_path: Path) -> None:
     assert "WARN" in result.detail
 
 
+def test_drift017_warns_when_audited_by_equals_commissioned_by(tmp_path: Path) -> None:
+    impl = tmp_path / ".ai_infra" / "docs" / "handoff" / "IMPLEMENTATION-STATUS.md"
+    impl.parent.mkdir(parents=True, exist_ok=True)
+    impl.write_text("# status\n", encoding="utf-8")
+    audit = tmp_path / ".local" / "workflow-artifacts" / "alignment" / "alignment-audit.md"
+    audit.parent.mkdir(parents=True, exist_ok=True)
+    body = (FIXTURES / "complete_ok.md").read_text(encoding="utf-8")
+    # Same actor on both fields → independence WARN (ADR-013 §5).
+    body = body.replace("Commissioned-By: maintainer", "Commissioned-By: auditor\nAudited-By: auditor")
+    audit.write_text(body, encoding="utf-8")
+
+    result = check_drift017(drift_paths(tmp_path))
+    assert result.check_id == "DRIFT-017"
+    assert result.passed is True
+    assert "WARN" in result.detail
+    assert "independence" in result.detail.lower() or "Audited-By" in result.detail
+
+
 def test_drift017_skips_non_kit_dev(tmp_path: Path) -> None:
     result = check_drift017(drift_paths(tmp_path))
     assert result.passed is True

@@ -101,6 +101,22 @@ Assurance-Level: high
     assert any("caps Assurance-Level" in w for w in warnings)
 
 
+def test_independence_warning_when_audited_equals_commissioned() -> None:
+    text = """---
+Audit-Schema: 1
+Audit-Scope: kit
+Named-Target: independence check
+Commissioned-By: same-actor
+Audited-By: Same-Actor
+---
+## Audit limits
+- kit-process only
+"""
+    _skip, errors, warnings = schema.validate_audit_text(text)
+    assert errors == []
+    assert any("independence" in w.lower() for w in warnings)
+
+
 @pytest.mark.parametrize(
     "value",
     ["", "-", "(TBD)", "tbd", "TBD"],

@@ -30,6 +30,7 @@ _FRONTMATTER_KEY_ALIASES = {
     "assurance-level": "Assurance-Level",
     "assurance_level": "Assurance-Level",
     "commissioned-by": "Commissioned-By",
+    "audited-by": "Audited-By",
 }
 
 
@@ -205,6 +206,18 @@ def validate_audit_text(text: str) -> tuple[bool, list[str], list[str]]:
         errors.append(
             f"Assurance-Level '{assurance}' not in "
             f"{', '.join(sorted(ASSURANCE_LEVELS))}"
+        )
+
+    audited_by = frontmatter.get("Audited-By", "").strip()
+    commissioned_by = frontmatter.get("Commissioned-By", "").strip()
+    if (
+        audited_by
+        and commissioned_by
+        and audited_by.casefold() == commissioned_by.casefold()
+    ):
+        warnings.append(
+            "independence: Audited-By equals Commissioned-By "
+            f"('{audited_by}') — internal audit risk (ADR-013)"
         )
 
     for finding in iter_findings(text):
