@@ -421,7 +421,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     heal_cmd.add_argument(
         "--fill-tier1",
         action="store_true",
-        help="With --apply: fill missing Priority=p2 / Size=s / Estimate=1 when configured",
+        help="With --apply and --id/--last: fill missing Priority=p2 / Size=s / Estimate=1",
     )
     heal_cmd.add_argument(
         "--dry-run",
@@ -435,7 +435,41 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         default="heal-cards",
         help="Agent id for outbox attribution",
     )
+    _add_id_or_last(heal_cmd)
     heal_cmd.set_defaults(func=pc.cmd_heal_cards)
+
+    api_ready_cmd = project_sub.add_parser(
+        "api-ready",
+        help="Exit 0 if board API may proceed; EXIT_QUEUED(6) if cooldown/low quota",
+    )
+    api_ready_cmd.add_argument("--directory", type=Path, default=".")
+    api_ready_cmd.add_argument(
+        "--force-probe",
+        action="store_true",
+        help="Bypass quota cache TTL and refresh REST rate_limit",
+    )
+    api_ready_cmd.set_defaults(func=pc.cmd_api_ready)
+
+    cooldown_cmd = project_sub.add_parser(
+        "cooldown",
+        help="Inspect or clear board-api-cooldown.json circuit-breaker",
+    )
+    cooldown_sub = cooldown_cmd.add_subparsers(dest="cooldown_command", required=True)
+    cd_status = cooldown_sub.add_parser("status", help="Print cooldown artifact state")
+    cd_status.add_argument("--directory", type=Path, default=".")
+    cd_status.set_defaults(func=pc.cmd_cooldown_status)
+    cd_clear = cooldown_sub.add_parser(
+        "clear",
+        help="Force-close cooldown (maintainer escape; use after confirmed recovery)",
+    )
+    cd_clear.add_argument("--directory", type=Path, default=".")
+    cd_clear.add_argument(
+        "--force",
+        action="store_true",
+        required=True,
+        help="Required to clear open cooldown",
+    )
+    cd_clear.set_defaults(func=pc.cmd_cooldown_clear)
 
     find_cmd = project_sub.add_parser(
         "find-by-pr", help="Resolve project item id from PR (Board-Item or body scan)"
@@ -491,6 +525,8 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
             "handoff",
             "claim",
             "set-assignee",
+            "set-field",
+            "promote-to-issue",
         ),
     )
     queue_cmd.add_argument("--agent", required=True)
@@ -508,6 +544,29 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     ob_status = outbox_sub.add_parser("status", help="Counts + GraphQL remaining")
     ob_status.add_argument("--directory", type=Path, default=".")
     ob_status.set_defaults(func=pc.cmd_outbox_status)
+    ob_list = outbox_sub.add_parser("list", help="List outbox rows (default: pending)")
+    ob_list.add_argument("--directory", type=Path, default=".")
+    ob_list.add_argument(
+        "--status",
+        default="pending",
+        choices=("pending", "failed", "done", "all"),
+        help="Filter by status (default pending)",
+    )
+    ob_list.add_argument("--json", action="store_true")
+    ob_list.set_defaults(func=pc.cmd_outbox_list)
+    ob_drop = outbox_sub.add_parser(
+        "drop",
+        help="Mark a pending/failed outbox row cancelled (triage fake/smoke ops)",
+    )
+    ob_drop.add_argument("--directory", type=Path, default=".")
+    ob_drop.add_argument("--id", required=True, help="Outbox entry UUID")
+    ob_drop.add_argument(
+        "--force",
+        action="store_true",
+        required=True,
+        help="Required to drop an outbox row",
+    )
+    ob_drop.set_defaults(func=pc.cmd_outbox_drop)
     ob_flush = outbox_sub.add_parser(
         "flush",
         help="Apply pending outbox ops (refuses if GraphQL remaining too low)",

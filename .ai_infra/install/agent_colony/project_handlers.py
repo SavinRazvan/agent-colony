@@ -505,12 +505,39 @@ def run_doctor(args: argparse.Namespace) -> int:
         if proc.returncode != 0:
             detail = (proc.stderr or proc.stdout or 'gh project not readable').strip()
             if _outbox.is_rate_limit_error(detail):
-                if not digest:
-                    print('doctor: WARN — gh project item-list rate-limited; config still ok', file=sys.stderr)
+                print(
+                    'doctor: WARN — gh project item-list rate-limited; config still ok — use api-ready / outbox',
+                    file=sys.stderr,
+                )
             else:
                 if digest:
                     print(f'doctor: FAIL · gh · {detail[:120]}')
                 return pc.fail('doctor', pc.EXIT_GH, detail)
+    # Owner hygiene: bare login required for gh --owner.
+    # Peek YAML raw owner — load_project_ssot already strips users/|orgs/ prefixes.
+    raw_owner_yaml = ''
+    try:
+        us = pc._import_user_settings(root)
+        cfg = us.load_github_collaboration(root) or {}
+        block = cfg.get('project_ssot') if isinstance(cfg.get('project_ssot'), dict) else {}
+        raw_owner_yaml = str(block.get('owner') or '')
+    except Exception:
+        raw_owner_yaml = ''
+    owner_s = str(ssot.get('owner') or '')
+    _, owner_err = pc.normalize_project_owner(owner_s)
+    if owner_err:
+        print(f'doctor: WARN — {owner_err}', file=sys.stderr)
+    elif pc.owner_yaml_looks_url_shaped(raw_owner_yaml):
+        print(
+            f'doctor: WARN — project_ssot.owner was {raw_owner_yaml!r}; '
+            f'normalized to {owner_s!r} for gh --owner (prefer bare login in YAML)',
+            file=sys.stderr,
+        )
+    elif '/' in owner_s:
+        print(
+            f'doctor: WARN — project_ssot.owner={owner_s!r} looks URL-shaped; prefer bare login',
+            file=sys.stderr,
+        )
     if digest:
         import project_outbox as _outbox_digest
         cfg_d = _outbox_digest.load_outbox_config(ssot)
@@ -594,6 +621,7 @@ def run_doctor(args: argparse.Namespace) -> int:
 def run_heal_cards(args: argparse.Namespace) -> int:
     """Inventory incomplete cards; optionally set Status=Done on CLOSED Issue items."""
     import project_cli as pc
+    import project_outbox as _outbox
 
     root = Path(args.directory).resolve()
     ssot, code = pc._load_enabled_ssot(root, 'heal-cards')
@@ -605,10 +633,27 @@ def run_heal_cards(args: argparse.Namespace) -> int:
     limit = int(getattr(args, 'limit', 200) or 200)
     as_json = bool(getattr(args, 'json', False))
     agent = str(getattr(args, 'agent', None) or 'heal-cards').strip() or 'heal-cards'
+    use_last = bool(getattr(args, 'last', False))
+    raw_id = str(getattr(args, 'id', None) or '').strip()
+    scope_id = ''
+    if use_last or raw_id:
+        scope_id, id_code = pc.resolve_item_id_arg(root, args, 'heal-cards')
+        if scope_id is None:
+            return id_code
+    if fill_tier1 and apply and not scope_id:
+        print(
+            'heal-cards: WARN — --fill-tier1 without --id/--last is scoped to Done hygiene only '
+            '(no Ready/In progress Tier-1 sweep)',
+            file=sys.stderr,
+        )
 
     items, err = pc.fetch_project_items(ssot, limit=limit)
     if err:
         return pc.fail('heal-cards', pc.EXIT_GH, err)
+    if scope_id:
+        items = [it for it in items if str((it or {}).get('id') or '') == scope_id]
+        if not items:
+            return pc.fail('heal-cards', pc.EXIT_NOT_FOUND, f'item not found: {scope_id}')
     summary = pc.summarize_card_completeness(ssot, items)
     if as_json and not apply:
         print(json.dumps(summary, indent=2))
@@ -637,6 +682,16 @@ def run_heal_cards(args: argparse.Namespace) -> int:
     applied = 0
     queued = 0
     skipped = 0
+    # Card-touch / rate-limit: refuse apply sweep while cooldown / low quota.
+    ready, ready_code, ready_msg = _outbox.api_ready(root, ssot)
+    if not ready:
+        print(ready_msg, file=sys.stderr)
+        print(
+            'heal-cards: QUEUED — CODE=6 · do not apply while api-ready=no; '
+            'later: project api-ready && project heal-cards --apply …',
+            file=sys.stderr,
+        )
+        return ready_code
     for row in summary['rows']:
         item_id = str(row.get('id') or '').strip()
         if not item_id:
@@ -646,7 +701,8 @@ def run_heal_cards(args: argparse.Namespace) -> int:
             actions.append(f'set-status→{done_logical}')
         if row.get('missing_end_date') and pc.ssot_field_configured(ssot, 'end_date'):
             actions.append('end_date→today')
-        if fill_tier1:
+        # Tier-1 fill only on scoped --id/--last (card-touch budget).
+        if fill_tier1 and scope_id:
             if row.get('missing_priority') and pc.ssot_field_configured(ssot, 'priority'):
                 actions.append('priority→p2')
             if row.get('missing_size') and pc.ssot_field_configured(ssot, 'size'):
@@ -710,66 +766,156 @@ def run_heal_cards(args: argparse.Namespace) -> int:
                 applied += 1
             elif e_detail and 'skipped' not in e_detail:
                 print(f'heal-cards: end_date {item_id} already={e_detail}')
-        if fill_tier1:
+        if fill_tier1 and scope_id:
             if row.get('missing_priority') and pc.ssot_field_configured(ssot, 'priority'):
-                try:
-                    field_id, option_id = pc.resolve_field_option_id(ssot, 'priority', 'p2')
-                except KeyError as exc:
-                    print(f'heal-cards: WARN — priority skip {item_id}: {exc}', file=sys.stderr)
+                pre = pc.guard_write_or_queue(
+                    root,
+                    ssot,
+                    cmd='heal-cards',
+                    op='set-field',
+                    item_id=item_id,
+                    agent=agent,
+                    payload={'field': 'priority', 'to': 'p2'},
+                )
+                if pre is not None:
+                    queued += 1
+                    print(f'heal-cards: QUEUED priority {item_id} → p2')
                 else:
-                    proc = pc.run_gh(
-                        [
-                            'project',
-                            'item-edit',
-                            '--project-id',
-                            str(ssot['project_id']),
-                            '--id',
-                            item_id,
-                            '--field-id',
-                            field_id,
-                            '--single-select-option-id',
-                            option_id,
-                        ]
-                    )
-                    if proc.returncode != 0:
-                        detail = (proc.stderr or proc.stdout or 'item-edit failed').strip()
-                        print(f'heal-cards: WARN — priority fail {item_id}: {detail}', file=sys.stderr)
+                    try:
+                        field_id, option_id = pc.resolve_field_option_id(ssot, 'priority', 'p2')
+                    except KeyError as exc:
+                        print(f'heal-cards: WARN — priority skip {item_id}: {exc}', file=sys.stderr)
                     else:
-                        print(f'heal-cards: priority {item_id} → p2')
-                        applied += 1
+                        proc = pc.run_gh(
+                            [
+                                'project',
+                                'item-edit',
+                                '--project-id',
+                                str(ssot['project_id']),
+                                '--id',
+                                item_id,
+                                '--field-id',
+                                field_id,
+                                '--single-select-option-id',
+                                option_id,
+                            ]
+                        )
+                        if proc.returncode != 0:
+                            detail = (proc.stderr or proc.stdout or 'item-edit failed').strip()
+                            q = pc._try_queue_rate_limit(
+                                root,
+                                ssot,
+                                cmd='heal-cards',
+                                err_detail=detail,
+                                op='set-field',
+                                item_id=item_id,
+                                agent=agent,
+                                payload={'field': 'priority', 'to': 'p2'},
+                            )
+                            if q is not None:
+                                queued += 1
+                                print(f'heal-cards: QUEUED priority {item_id} ({detail})')
+                            else:
+                                print(
+                                    f'heal-cards: WARN — priority fail {item_id}: {detail}',
+                                    file=sys.stderr,
+                                )
+                        else:
+                            print(f'heal-cards: priority {item_id} → p2')
+                            applied += 1
             if row.get('missing_size') and pc.ssot_field_configured(ssot, 'size'):
-                try:
-                    field_id, option_id = pc.resolve_field_option_id(ssot, 'size', 's')
-                except KeyError as exc:
-                    print(f'heal-cards: WARN — size skip {item_id}: {exc}', file=sys.stderr)
+                pre = pc.guard_write_or_queue(
+                    root,
+                    ssot,
+                    cmd='heal-cards',
+                    op='set-field',
+                    item_id=item_id,
+                    agent=agent,
+                    payload={'field': 'size', 'to': 's'},
+                )
+                if pre is not None:
+                    queued += 1
+                    print(f'heal-cards: QUEUED size {item_id} → s')
                 else:
-                    proc = pc.run_gh(
-                        [
-                            'project',
-                            'item-edit',
-                            '--project-id',
-                            str(ssot['project_id']),
-                            '--id',
-                            item_id,
-                            '--field-id',
-                            field_id,
-                            '--single-select-option-id',
-                            option_id,
-                        ]
-                    )
-                    if proc.returncode != 0:
-                        detail = (proc.stderr or proc.stdout or 'item-edit failed').strip()
-                        print(f'heal-cards: WARN — size fail {item_id}: {detail}', file=sys.stderr)
+                    try:
+                        field_id, option_id = pc.resolve_field_option_id(ssot, 'size', 's')
+                    except KeyError as exc:
+                        print(f'heal-cards: WARN — size skip {item_id}: {exc}', file=sys.stderr)
                     else:
-                        print(f'heal-cards: size {item_id} → s')
-                        applied += 1
+                        proc = pc.run_gh(
+                            [
+                                'project',
+                                'item-edit',
+                                '--project-id',
+                                str(ssot['project_id']),
+                                '--id',
+                                item_id,
+                                '--field-id',
+                                field_id,
+                                '--single-select-option-id',
+                                option_id,
+                            ]
+                        )
+                        if proc.returncode != 0:
+                            detail = (proc.stderr or proc.stdout or 'item-edit failed').strip()
+                            q = pc._try_queue_rate_limit(
+                                root,
+                                ssot,
+                                cmd='heal-cards',
+                                err_detail=detail,
+                                op='set-field',
+                                item_id=item_id,
+                                agent=agent,
+                                payload={'field': 'size', 'to': 's'},
+                            )
+                            if q is not None:
+                                queued += 1
+                                print(f'heal-cards: QUEUED size {item_id} ({detail})')
+                            else:
+                                print(
+                                    f'heal-cards: WARN — size fail {item_id}: {detail}',
+                                    file=sys.stderr,
+                                )
+                        else:
+                            print(f'heal-cards: size {item_id} → s')
+                            applied += 1
             if row.get('missing_estimate') and pc.ssot_field_configured(ssot, 'estimate'):
-                ok, detail = pc.set_item_number(ssot, item_id, 'estimate', 1.0)
-                if not ok:
-                    print(f'heal-cards: WARN — estimate fail {item_id}: {detail}', file=sys.stderr)
+                pre = pc.guard_write_or_queue(
+                    root,
+                    ssot,
+                    cmd='heal-cards',
+                    op='set-field',
+                    item_id=item_id,
+                    agent=agent,
+                    payload={'field': 'estimate', 'to': '1'},
+                )
+                if pre is not None:
+                    queued += 1
+                    print(f'heal-cards: QUEUED estimate {item_id} → 1')
                 else:
-                    print(f'heal-cards: estimate {item_id} → 1')
-                    applied += 1
+                    ok, detail = pc.set_item_number(ssot, item_id, 'estimate', 1.0)
+                    if not ok:
+                        q = pc._try_queue_rate_limit(
+                            root,
+                            ssot,
+                            cmd='heal-cards',
+                            err_detail=detail,
+                            op='set-field',
+                            item_id=item_id,
+                            agent=agent,
+                            payload={'field': 'estimate', 'to': '1'},
+                        )
+                        if q is not None:
+                            queued += 1
+                            print(f'heal-cards: QUEUED estimate {item_id} ({detail})')
+                        else:
+                            print(
+                                f'heal-cards: WARN — estimate fail {item_id}: {detail}',
+                                file=sys.stderr,
+                            )
+                    else:
+                        print(f'heal-cards: estimate {item_id} → 1')
+                        applied += 1
 
     print(f'heal-cards: apply done applied={applied} queued={queued} skipped={skipped} dry_run={dry_run}')
     if queued:
@@ -1004,8 +1150,29 @@ def run_queue(args: argparse.Namespace) -> int:
             except Exception as exc:
                 return pc.fail('queue', pc.EXIT_USAGE, str(exc))
         payload = {'login': login.lstrip('@')}
+    elif op == 'set-section':
+        section = (getattr(args, 'section', None) or getattr(args, 'text', None) or '').strip()
+        # Prefer --text as body; section name via --to when present
+        section_name = (getattr(args, 'to', None) or 'acceptance').strip() or 'acceptance'
+        body = (getattr(args, 'text', None) or '').strip()
+        if not body:
+            return pc.fail('queue', pc.EXIT_USAGE, '--text required for set-section')
+        payload = {'section': section_name, 'text': body}
+    elif op == 'set-field':
+        field = (getattr(args, 'to', None) or '').strip()
+        # --to holds field name; --text holds value (legacy queue args)
+        value = (getattr(args, 'text', None) or '').strip()
+        if not field or not value:
+            return pc.fail('queue', pc.EXIT_USAGE, 'set-field needs --to FIELD and --text VALUE')
+        payload = {'field': field, 'to': value}
+    elif op == 'promote-to-issue':
+        payload = {'repo': (getattr(args, 'text', None) or '').strip()}
     else:
-        return pc.fail('queue', pc.EXIT_USAGE, 'op must be append-notes|set-status|handoff|claim|set-assignee')
+        return pc.fail(
+            'queue',
+            pc.EXIT_USAGE,
+            'op must be append-notes|set-status|set-section|handoff|claim|set-assignee|set-field|promote-to-issue',
+        )
     entry, err = _outbox.enqueue_op(root, ssot, op=op, item_id=item_id, agent=agent, payload=payload)
     if entry is None:
         return pc.fail('queue', pc.EXIT_VALIDATION, err)
@@ -1022,15 +1189,31 @@ def run_outbox_status(args: argparse.Namespace) -> int:
     cfg = _outbox.load_outbox_config(ssot)
     path = _outbox.outbox_path(root, cfg)
     counts = _outbox.count_outbox(path)
-    rl = _outbox.graphql_rate_limit()
-    print(f'outbox.enabled: {cfg['enabled']}')
+    rl = _outbox.get_cached_graphql_remaining(root, ssot, force_refresh=False)
+    print(f'outbox.enabled: {cfg["enabled"]}')
     print(f'outbox.path: {path}')
-    print(f'counts: pending={counts['pending']} failed={counts['failed']} done={counts['done']} total={counts['total']}')
+    print(
+        f'counts: pending={counts["pending"]} failed={counts["failed"]} '
+        f'done={counts["done"]} total={counts["total"]}'
+    )
     if rl.get('error'):
-        print(f'graphql: error — {rl['error']}')
+        print(f'graphql: error — {rl["error"]}')
     else:
         reset = _outbox.format_reset_iso(rl.get('reset_epoch'))
-        print(f'graphql: remaining={rl.get('remaining')}/{rl.get('limit')} reset={reset} min_flush={cfg['min_graphql_remaining']}')
+        print(
+            f'graphql: remaining={rl.get("remaining")}/{rl.get("limit")} '
+            f'reset={reset} min_flush={cfg["min_graphql_remaining"]}'
+        )
+    cd_path = _outbox.cooldown_path(root, cfg)
+    active, cd = _outbox.cooldown_active(root, ssot)
+    if cd is None:
+        print(f'cooldown: none ({cd_path})')
+    else:
+        print(
+            f'cooldown: state={cd.get("state")} active={active} '
+            f'until={cd.get("limited_until")} reason={cd.get("reason")} '
+            f'path={cd_path}'
+        )
     return pc.EXIT_OK
 
 def run_outbox_flush(args: argparse.Namespace) -> int:
@@ -1045,4 +1228,112 @@ def run_outbox_flush(args: argparse.Namespace) -> int:
     if code_out != pc.EXIT_OK:
         return pc.fail('outbox flush', code_out, summary)
     print(f'outbox flush: {summary}')
+    return pc.EXIT_OK
+
+
+def run_outbox_list(args: argparse.Namespace) -> int:
+    import project_cli as pc
+    import project_outbox as _outbox
+    root = Path(args.directory).resolve()
+    ssot, code = pc._load_enabled_ssot(root, 'outbox')
+    if ssot is None:
+        return code
+    cfg = _outbox.load_outbox_config(ssot)
+    path = _outbox.outbox_path(root, cfg)
+    want = str(getattr(args, 'status', 'pending') or 'pending')
+    rows = _outbox.read_outbox_entries(path)
+    if want != 'all':
+        rows = [e for e in rows if str(e.get('status') or '') == want]
+    if getattr(args, 'json', False):
+        print(json.dumps(rows, indent=2))
+        return pc.EXIT_OK
+    print(f'outbox.list: status={want} count={len(rows)} path={path}')
+    for e in rows:
+        print(
+            f"{e.get('id')}\t{e.get('status')}\t{e.get('op')}\t{e.get('item_id')}\t"
+            f"agent={e.get('agent')}\tattempts={e.get('attempts')}\tts={e.get('ts')}"
+        )
+    if want == 'pending':
+        print(
+            'triage: drop fake/smoke with `project outbox drop --id UUID --force`; '
+            'then `project api-ready` && `project outbox flush`'
+        )
+    return pc.EXIT_OK
+
+
+def run_outbox_drop(args: argparse.Namespace) -> int:
+    import project_cli as pc
+    import project_outbox as _outbox
+    root = Path(args.directory).resolve()
+    ssot, code = pc._load_enabled_ssot(root, 'outbox')
+    if ssot is None:
+        return code
+    if not bool(getattr(args, 'force', False)):
+        return pc.fail('outbox drop', pc.EXIT_USAGE, '--force required')
+    entry_id = str(getattr(args, 'id', '') or '').strip()
+    if not entry_id:
+        return pc.fail('outbox drop', pc.EXIT_USAGE, '--id required')
+    cfg = _outbox.load_outbox_config(ssot)
+    path = _outbox.outbox_path(root, cfg)
+    entries = _outbox.read_outbox_entries(path)
+    found = False
+    for e in entries:
+        if str(e.get('id') or '') == entry_id:
+            e['status'] = 'failed'
+            e['last_error'] = 'dropped by outbox drop --force (triage)'
+            found = True
+            break
+    if not found:
+        return pc.fail('outbox drop', pc.EXIT_NOT_FOUND, f'no entry id={entry_id}')
+    _outbox.write_outbox_entries(path, entries)
+    print(f'outbox drop: id={entry_id} → failed (triage)')
+    return pc.EXIT_OK
+
+
+def run_api_ready(args: argparse.Namespace) -> int:
+    import project_cli as pc
+    import project_outbox as _outbox
+    root = Path(args.directory).resolve()
+    ssot, code = pc._load_enabled_ssot(root, 'api-ready')
+    if ssot is None:
+        return code
+    ready, exit_code, msg = _outbox.api_ready(
+        root,
+        ssot,
+        force_probe=bool(getattr(args, 'force_probe', False)),
+    )
+    print(msg)
+    return exit_code if not ready else pc.EXIT_OK
+
+def run_cooldown_status(args: argparse.Namespace) -> int:
+    import project_cli as pc
+    import project_outbox as _outbox
+    root = Path(args.directory).resolve()
+    ssot, code = pc._load_enabled_ssot(root, 'cooldown')
+    if ssot is None:
+        return code
+    cfg = _outbox.load_outbox_config(ssot)
+    path = _outbox.cooldown_path(root, cfg)
+    active, data = _outbox.cooldown_active(root, ssot)
+    if data is None:
+        print(f'cooldown: none · path={path}')
+        return pc.EXIT_OK
+    print(
+        f'cooldown: state={data.get("state")} active={active} '
+        f'until={data.get("limited_until")} reason={data.get("reason")} '
+        f'source={data.get("source_cmd")} path={path}'
+    )
+    return pc.EXIT_QUEUED if active else pc.EXIT_OK
+
+def run_cooldown_clear(args: argparse.Namespace) -> int:
+    import project_cli as pc
+    import project_outbox as _outbox
+    root = Path(args.directory).resolve()
+    ssot, code = pc._load_enabled_ssot(root, 'cooldown')
+    if ssot is None:
+        return code
+    if not bool(getattr(args, 'force', False)):
+        return pc.fail('cooldown clear', pc.EXIT_USAGE, '--force required')
+    path = _outbox.clear_cooldown(root, ssot)
+    print(f'cooldown: cleared · path={path}')
     return pc.EXIT_OK

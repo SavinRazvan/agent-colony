@@ -1,15 +1,17 @@
 """
 File: project_outbox.py
 Path: .ai_infra/install/agent_colony/project_outbox.py
-Role: Rate-limit-safe board outbox — enqueue/flush JSONL ops from project_ssot.outbox.
+Role: Rate-limit-safe board outbox — enqueue/flush JSONL ops + API cooldown circuit-breaker.
 Used By:
  - .ai_infra/install/agent_colony/project_cli.py
+ - .ai_infra/install/agent_colony/project_handlers.py
 Depends On:
  - project_cli helpers (attribution, set_item_*, append_notes_helper) via late imports
 Notes:
  - Outbox is a local buffer, never a second Status SSOT (ADR-008).
  - Flush is pull-based; refuses when GraphQL remaining < min_graphql_remaining.
  - Cached REST rate_limit precheck (TTL) before Pattern A writes; pending-op dedupe.
+ - board-api-cooldown.json hard-skips live API while limited_until is in the future (EXIT_QUEUED=6).
 """
 
 from __future__ import annotations
@@ -45,12 +47,26 @@ _OUTBOX_OPS = frozenset(
 )
 _DEFAULT_PATH = ".local/generated-data/board-outbox.jsonl"
 _DEFAULT_QUOTA_CACHE = ".local/generated-data/graphql-quota-cache.json"
+_DEFAULT_COOLDOWN = ".local/generated-data/board-api-cooldown.json"
 _RATE_LIMIT_RE = re.compile(
     r"rate\s*limit|API rate limit exceeded|secondary rate limit|"
     r"\b429\b|retry\s*later|wait a few minutes|too many requests",
     re.IGNORECASE,
 )
+_SECONDARY_LIMIT_RE = re.compile(
+    r"secondary\s*rate\s*limit|abuse.?detection|too many requests",
+    re.IGNORECASE,
+)
+_RETRY_AFTER_RE = re.compile(
+    r"(?:retry[_-]?after|wait)\s*[:=]?\s*(\d+)\s*(?:s|sec|seconds)?",
+    re.IGNORECASE,
+)
 _FORBIDDEN_RE = re.compile(r"\b403\b|\bForbidden\b", re.IGNORECASE)
+_PERM_FORBIDDEN_RE = re.compile(
+    r"resource not accessible|not authorized|permission|access denied|"
+    r"must have .+ permission|insufficient",
+    re.IGNORECASE,
+)
 _SCOPE_MISS_RE = re.compile(
     r"missing required scopes|required scopes|authentication token is missing",
     re.IGNORECASE,
@@ -81,6 +97,14 @@ def load_outbox_config(ssot: dict[str, Any]) -> dict[str, Any]:
         "quota_cache_path": str(raw.get("quota_cache_path") or _DEFAULT_QUOTA_CACHE).strip()
         or _DEFAULT_QUOTA_CACHE,
         "dedupe_pending": bool(raw.get("dedupe_pending", True)),
+        "cooldown_path": str(raw.get("cooldown_path") or _DEFAULT_COOLDOWN).strip()
+        or _DEFAULT_COOLDOWN,
+        "cooldown_floor_seconds": int(raw.get("cooldown_floor_seconds") or 60),
+        "secondary_limit_floor_seconds": int(
+            raw.get("secondary_limit_floor_seconds") or 120
+        ),
+        "coalesce_pending_notes": bool(raw.get("coalesce_pending_notes", True)),
+        "max_pending_notes_per_item": int(raw.get("max_pending_notes_per_item") or 3),
     }
 
 
@@ -94,10 +118,55 @@ def quota_cache_path(root: Path, cfg: dict[str, Any]) -> Path:
     return (root / rel).resolve() if not rel.is_absolute() else rel
 
 
+def cooldown_path(root: Path, cfg: dict[str, Any]) -> Path:
+    rel = Path(str(cfg.get("cooldown_path") or _DEFAULT_COOLDOWN))
+    return (root / rel).resolve() if not rel.is_absolute() else rel
+
+
+def is_secondary_rate_limit(text: str) -> bool:
+    """True when stderr suggests GitHub secondary / abuse throttle."""
+    return bool(_SECONDARY_LIMIT_RE.search(text or ""))
+
+
+def is_rate_limit_probe_throttle(text: str) -> bool:
+    """
+    Throttle for REST rate_limit *probe* errors only.
+    Bare Forbidden/403 alone is fail-open (scope/network); real rate-limit text fails closed.
+    """
+    blob = text or ""
+    if _SCOPE_MISS_RE.search(blob):
+        return False
+    if _RATE_LIMIT_RE.search(blob) or _SECONDARY_LIMIT_RE.search(blob):
+        return True
+    return False
+
+
+def parse_retry_after_seconds(text: str) -> int | None:
+    """
+    Extract Retry-After / wait-N-seconds from gh stderr or JSON snippets when present.
+    Returns seconds to wait, or None when not found.
+    """
+    blob = text or ""
+    # Explicit HTTP-style header fragments gh sometimes echoes.
+    m = re.search(r"retry[_-]?after[\"'\s:=]+(\d+)", blob, re.IGNORECASE)
+    if m:
+        try:
+            return max(0, int(m.group(1)))
+        except (TypeError, ValueError):
+            pass
+    m2 = _RETRY_AFTER_RE.search(blob)
+    if m2:
+        try:
+            return max(0, int(m2.group(1)))
+        except (TypeError, ValueError):
+            return None
+    return None
+
+
 def is_queueable_gh_throttle(text: str) -> bool:
     """
     True when stderr suggests transient GitHub throttle (queue to outbox).
-    Excludes permanent auth/scope failures.
+    Excludes permanent auth/scope failures and permanent permission Forbidden.
     """
     blob = text or ""
     if _SCOPE_MISS_RE.search(blob):
@@ -105,6 +174,9 @@ def is_queueable_gh_throttle(text: str) -> bool:
     if _RATE_LIMIT_RE.search(blob):
         return True
     if _FORBIDDEN_RE.search(blob):
+        # Bare Forbidden/403 may be transient; permanent permission text is not.
+        if _PERM_FORBIDDEN_RE.search(blob) and not is_secondary_rate_limit(blob):
+            return False
         return True
     return False
 
@@ -112,6 +184,216 @@ def is_queueable_gh_throttle(text: str) -> bool:
 def is_rate_limit_error(text: str) -> bool:
     """Alias for is_queueable_gh_throttle (back-compat)."""
     return is_queueable_gh_throttle(text)
+
+
+def read_cooldown(path: Path) -> dict[str, Any] | None:
+    if not path.is_file():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def write_cooldown(path: Path, data: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def clear_cooldown(root: Path, ssot: dict[str, Any]) -> Path:
+    """Write state=closed cooldown artifact (maintainer escape / recovered)."""
+    cfg = load_outbox_config(ssot)
+    path = cooldown_path(root, cfg)
+    write_cooldown(
+        path,
+        {
+            "state": "closed",
+            "limited_at": None,
+            "limited_until": None,
+            "limited_until_epoch": None,
+            "reason": None,
+            "source_cmd": None,
+            "reset_epoch": None,
+            "cleared_at": _utc_now(),
+        },
+    )
+    return path
+
+
+def open_cooldown(
+    root: Path,
+    ssot: dict[str, Any],
+    *,
+    reason: str,
+    source_cmd: str,
+    reset_epoch: Any = None,
+    secondary: bool = False,
+    retry_after_seconds: int | None = None,
+) -> dict[str, Any]:
+    """
+    Open circuit-breaker until max(reset_epoch, now+floor, now+Retry-After).
+    Reuses EXIT_QUEUED(6) semantics for agents — do not retry until limited_until.
+    """
+    cfg = load_outbox_config(ssot)
+    now = _utc_now_epoch()
+    floor = int(
+        cfg["secondary_limit_floor_seconds"]
+        if secondary
+        else cfg["cooldown_floor_seconds"]
+    )
+    until_epoch = now + max(floor, 1)
+    if retry_after_seconds is not None:
+        try:
+            ra = int(retry_after_seconds)
+        except (TypeError, ValueError):
+            ra = 0
+        if ra > 0:
+            until_epoch = max(until_epoch, now + ra)
+    try:
+        reset_i = int(reset_epoch) if reset_epoch is not None else None
+    except (TypeError, ValueError):
+        reset_i = None
+    if reset_i is None:
+        cached = read_quota_cache(quota_cache_path(root, cfg))
+        if cached:
+            try:
+                reset_i = int(cached["reset_epoch"]) if cached.get("reset_epoch") is not None else None
+            except (TypeError, ValueError):
+                reset_i = None
+    if reset_i is not None and reset_i > until_epoch:
+        until_epoch = float(reset_i)
+    payload = {
+        "state": "open",
+        "limited_at": _utc_now(),
+        "limited_until": format_reset_iso(until_epoch),
+        "limited_until_epoch": until_epoch,
+        "reason": reason,
+        "source_cmd": source_cmd,
+        "reset_epoch": reset_i,
+        "retry_after_seconds": retry_after_seconds,
+    }
+    write_cooldown(cooldown_path(root, cfg), payload)
+    return payload
+
+
+def cooldown_active(
+    root: Path,
+    ssot: dict[str, Any],
+) -> tuple[bool, dict[str, Any] | None]:
+    """
+    Return (active, cooldown_dict).
+    Active when state=open and now < limited_until_epoch.
+    """
+    cfg = load_outbox_config(ssot)
+    data = read_cooldown(cooldown_path(root, cfg))
+    if not data or str(data.get("state") or "") != "open":
+        return False, data
+    try:
+        until = float(data.get("limited_until_epoch") or 0)
+    except (TypeError, ValueError):
+        until = 0.0
+    if until <= 0:
+        return False, data
+    if _utc_now_epoch() < until:
+        return True, data
+    return False, data
+
+
+def maybe_close_expired_cooldown(
+    root: Path,
+    ssot: dict[str, Any],
+    *,
+    probe: bool = True,
+) -> tuple[bool, str]:
+    """
+    If cooldown expired, optionally probe quota and close or extend.
+    Returns (may_proceed, message).
+    """
+    active, data = cooldown_active(root, ssot)
+    if active and data is not None:
+        until = data.get("limited_until") or format_reset_iso(data.get("limited_until_epoch"))
+        return False, f"cooldown open until {until} reason={data.get('reason')}"
+    if data is None or str(data.get("state") or "") != "open":
+        return True, "cooldown closed"
+    # Expired open → probe once
+    if not probe:
+        clear_cooldown(root, ssot)
+        return True, "cooldown expired (no probe)"
+    below, info = remaining_below_min(root, ssot, force_refresh=True)
+    if below:
+        open_cooldown(
+            root,
+            ssot,
+            reason=f"precheck remaining={info.get('remaining')}",
+            source_cmd="cooldown-probe",
+            reset_epoch=info.get("reset_epoch"),
+            secondary=False,
+        )
+        return False, "cooldown extended after probe (still low remaining)"
+    clear_cooldown(root, ssot)
+    return True, "cooldown cleared after probe"
+
+
+def api_ready(
+    root: Path,
+    ssot: dict[str, Any],
+    *,
+    force_probe: bool = False,
+) -> tuple[bool, int, str]:
+    """
+    Agent gate: True/EXIT_OK when board writes may proceed.
+    False/EXIT_QUEUED when cooldown open or GraphQL remaining below min.
+    Probe errors that look like throttle → open cooldown (fail closed).
+    Other probe errors → fail open (allow live write; live path still queues).
+    """
+    cfg = load_outbox_config(ssot)
+    if not cfg["enabled"]:
+        return True, EXIT_OK, "outbox disabled — api-ready N/A (live allowed)"
+    ok, msg = maybe_close_expired_cooldown(root, ssot, probe=True)
+    if not ok:
+        return False, EXIT_QUEUED, f"api-ready=no · {msg} · do not retry; later: project outbox status"
+    info = get_cached_graphql_remaining(root, ssot, force_refresh=force_probe)
+    err = str(info.get("error") or "")
+    # Probe path: bare Forbidden fail-open; only explicit rate-limit text opens cooldown.
+    if err and is_rate_limit_probe_throttle(err):
+        open_cooldown(
+            root,
+            ssot,
+            reason=f"rate_limit_probe:{err[:80]}",
+            source_cmd="api-ready",
+            reset_epoch=info.get("reset_epoch"),
+            secondary=is_secondary_rate_limit(err),
+            retry_after_seconds=parse_retry_after_seconds(err),
+        )
+        return (
+            False,
+            EXIT_QUEUED,
+            f"api-ready=no · rate_limit probe throttled · do not retry; later: project outbox status",
+        )
+    below, info = remaining_below_min(root, ssot, force_refresh=False)
+    if below:
+        open_cooldown(
+            root,
+            ssot,
+            reason=f"graphql_remaining={info.get('remaining')}",
+            source_cmd="api-ready",
+            reset_epoch=info.get("reset_epoch"),
+        )
+        return (
+            False,
+            EXIT_QUEUED,
+            f"api-ready=no · remaining={info.get('remaining')}<{cfg['min_graphql_remaining']} "
+            f"reset={format_reset_iso(info.get('reset_epoch'))} · do not retry",
+        )
+    rem = info.get("remaining")
+    rem_disp = "?" if rem is None and info.get("error") else rem
+    return (
+        True,
+        EXIT_OK,
+        f"api-ready=yes · remaining={rem_disp} "
+        f"reset={format_reset_iso(info.get('reset_epoch'))}",
+    )
 
 def graphql_rate_limit() -> dict[str, Any]:
     """
@@ -414,6 +696,29 @@ def enqueue_op(
         )
         if dup is not None:
             return dup, ""
+    # Coalesce pending append-notes for the same item (newest wins; cap count).
+    if (
+        op_key == "append-notes"
+        and cfg.get("coalesce_pending_notes", True)
+        and isinstance(payload, dict)
+    ):
+        item_key = item_id.strip()
+        pending_notes = [
+            e
+            for e in entries
+            if str(e.get("status") or "") == "pending"
+            and str(e.get("op") or "") == "append-notes"
+            and str(e.get("item_id") or "") == item_key
+        ]
+        max_n = max(1, int(cfg.get("max_pending_notes_per_item") or 3))
+        if pending_notes:
+            # Replace oldest pending notes beyond max-1 slots so new note fits.
+            drop = pending_notes[:- (max_n - 1)] if max_n > 1 else pending_notes
+            if max_n == 1:
+                drop = pending_notes
+            drop_ids = {str(e.get("id")) for e in drop}
+            if drop_ids:
+                entries = [e for e in entries if str(e.get("id")) not in drop_ids]
     entries.append(entry)
     write_outbox_entries(path, entries)
     return entry, ""
@@ -447,6 +752,15 @@ def maybe_enqueue_on_gh_fail(
         return None
     if not is_queueable_gh_throttle(err_detail):
         return None
+    secondary = is_secondary_rate_limit(err_detail)
+    open_cooldown(
+        root,
+        ssot,
+        reason="secondary_throttle" if secondary else "stderr_throttle",
+        source_cmd=cmd,
+        secondary=secondary,
+        retry_after_seconds=parse_retry_after_seconds(err_detail),
+    )
     entry, err = enqueue_op(
         root,
         ssot,
@@ -485,6 +799,13 @@ def maybe_enqueue_on_low_quota(
     below, info = remaining_below_min(root, ssot)
     if not below:
         return None
+    open_cooldown(
+        root,
+        ssot,
+        reason=f"graphql_remaining={info.get('remaining')}",
+        source_cmd=cmd,
+        reset_epoch=info.get("reset_epoch"),
+    )
     entry, err = enqueue_op(
         root,
         ssot,
@@ -521,7 +842,32 @@ def guard_write_or_queue(
     """
     Call before Pattern A GraphQL writes.
     Returns EXIT_QUEUED to skip the live write; None to proceed.
+    Hard-skips while board-api-cooldown.json is open (no REST/GraphQL).
     """
+    cfg = load_outbox_config(ssot)
+    if cfg["enabled"]:
+        ok, msg = maybe_close_expired_cooldown(root, ssot, probe=False)
+        if not ok:
+            # Still within limited_until — enqueue without probing API.
+            entry, err = enqueue_op(
+                root,
+                ssot,
+                op=op,
+                item_id=item_id,
+                agent=agent,
+                payload=payload,
+            )
+            if entry is None:
+                print(
+                    f"project {cmd}: FAIL — CODE={EXIT_GH} · cooldown enqueue failed: {err}",
+                    file=sys.stderr,
+                )
+                return EXIT_GH
+            print(
+                queued_message(cmd, entry, reason=f"cooldown · {msg}"),
+                file=sys.stderr,
+            )
+            return EXIT_QUEUED
     return maybe_enqueue_on_low_quota(
         root,
         ssot,
@@ -813,21 +1159,42 @@ def flush_outbox(
     cfg = load_outbox_config(ssot)
     if not cfg["enabled"]:
         return EXIT_USAGE, "outbox.enabled is false"
+    ok_cd, cd_msg = maybe_close_expired_cooldown(root, ssot, probe=True)
+    if not ok_cd:
+        return EXIT_QUEUED, f"refuse flush · {cd_msg}"
     path = outbox_path(root, cfg)
     # Prefer TTL cache; force refresh at flush start for accurate gate
     rl = get_cached_graphql_remaining(root, ssot, force_refresh=True)
     remaining = rl.get("remaining")
     min_rem = int(cfg["min_graphql_remaining"])
     if rl.get("error"):
-        return EXIT_GH, f"cannot read rate_limit: {rl['error']}"
+        err = str(rl["error"])
+        if is_rate_limit_probe_throttle(err):
+            open_cooldown(
+                root,
+                ssot,
+                reason=f"rate_limit_probe:{err[:80]}",
+                source_cmd="outbox flush",
+                secondary=is_secondary_rate_limit(err),
+                retry_after_seconds=parse_retry_after_seconds(err),
+            )
+            return EXIT_QUEUED, f"refuse flush · rate_limit probe throttled: {err}"
+        return EXIT_GH, f"cannot read rate_limit: {err}"
     try:
         rem_i = int(remaining) if remaining is not None else -1
     except (TypeError, ValueError):
         rem_i = -1
     if rem_i < min_rem:
         reset = format_reset_iso(rl.get("reset_epoch"))
+        open_cooldown(
+            root,
+            ssot,
+            reason=f"graphql_remaining={rem_i}",
+            source_cmd="outbox flush",
+            reset_epoch=rl.get("reset_epoch"),
+        )
         return (
-            EXIT_GH,
+            EXIT_QUEUED,
             f"GraphQL remaining={rem_i} < min={min_rem}; refuse flush until {reset}",
         )
 
@@ -852,6 +1219,13 @@ def flush_outbox(
             rem2 = rem_i
         if rem2 < min_rem:
             stopped_early = True
+            open_cooldown(
+                root,
+                ssot,
+                reason=f"graphql_remaining={rem2}",
+                source_cmd="outbox flush",
+                reset_epoch=rl2.get("reset_epoch"),
+            )
             break
 
         entry = entries[idx]
@@ -874,9 +1248,19 @@ def flush_outbox(
             if is_queueable_gh_throttle(detail):
                 entry["status"] = "pending"
                 stopped_early = True
+                open_cooldown(
+                    root,
+                    ssot,
+                    reason="secondary_throttle"
+                    if is_secondary_rate_limit(detail)
+                    else "stderr_throttle",
+                    source_cmd="outbox flush",
+                    secondary=is_secondary_rate_limit(detail),
+                    retry_after_seconds=parse_retry_after_seconds(detail),
+                )
                 write_outbox_entries(path, entries)
                 return (
-                    EXIT_GH,
+                    EXIT_QUEUED,
                     f"flush stopped on rate-limit/throttle after done={done_n}; detail={detail}",
                 )
             entry["status"] = "failed"
@@ -889,6 +1273,8 @@ def flush_outbox(
 
     write_outbox_entries(path, entries)
     left = sum(1 for e in entries if str(e.get("status")) == "pending")
+    if done_n > 0 and left == 0 and not stopped_early:
+        clear_cooldown(root, ssot)
     summary = (
         f"flushed done={done_n} failed={fail_n} pending_left={left}"
         + (" (stopped early: low quota)" if stopped_early else "")

@@ -1417,6 +1417,10 @@ def test_cmd_claim_fetch_queued_and_status_gh_fail(
         lambda *a, **k: ([], "API rate limit exceeded"),
     )
     assert project_cli.cmd_claim(args) == project_cli.EXIT_QUEUED
+    # First claim opened cooldown; clear so the next assert exercises non-throttle GH fail.
+    import project_outbox as _outbox
+
+    _outbox.clear_cooldown(tmp_path, ssot_out)
     monkeypatch.setattr(
         project_cli,
         "fetch_project_items",

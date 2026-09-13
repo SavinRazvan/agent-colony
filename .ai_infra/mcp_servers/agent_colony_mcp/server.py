@@ -23,6 +23,7 @@ from mcp.server.mcpserver import MCPServer
 from agent_colony_mcp.gates import load_gates
 from agent_colony_mcp.project_tools import (
     run_doc_skill_section,
+    run_project_api_ready,
     run_project_claim,
     run_project_entry,
     run_project_handoff,
@@ -400,6 +401,12 @@ def workflow_project_handoff(
 def workflow_project_outbox_status() -> str:
     """Board Pattern A: `project outbox status` after EXIT_QUEUED. JSON envelope."""
     return run_project_outbox_status(workspace_root())
+
+
+@mcp.tool()
+def workflow_project_api_ready(force_probe: bool = False) -> str:
+    """Board Pattern A: `project api-ready` gate before writes. JSON envelope."""
+    return run_project_api_ready(workspace_root(), force_probe=force_probe)
 
 
 @mcp.tool()

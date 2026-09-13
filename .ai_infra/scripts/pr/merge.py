@@ -182,6 +182,41 @@ def sync_board_after_merge(
             file=sys.stderr,
         )
         return f"board sync: error — body gate failed ({body_detail})"
+    # Precheck cooldown / low GraphQL remaining before live Projects write.
+    pre = project_cli.guard_write_or_queue(
+        root,
+        ssot,
+        cmd="merge.py",
+        op="set-status",
+        item_id=resolved,
+        agent="merge.py",
+        payload={"to": done_logical},
+    )
+    if pre is not None:
+        pr_url_q = _pr_url(root, pr, str(ssot.get("default_repo") or ""))
+        note_q = f"Merged: {pr_url_q} @ {merge_sha}"
+        try:
+            note_q = project_cli.format_note_line(root, "merge.py", note_q)
+        except Exception:  # noqa: BLE001 — never block merge on attribution
+            pass
+        project_cli.guard_write_or_queue(
+            root,
+            ssot,
+            cmd="merge.py",
+            op="append-notes",
+            item_id=resolved,
+            agent="merge.py",
+            payload={"text": note_q},
+        )
+        print(
+            f"[WARN] board sync QUEUED set-status → {done_logical} on {resolved} "
+            "(precheck/cooldown); later: project outbox flush",
+            file=sys.stderr,
+        )
+        return (
+            f"board sync: queued — set-status → {done_logical} on {resolved} "
+            "(precheck/cooldown)"
+        )
     ok, detail = project_cli.set_item_status(ssot, resolved, done_logical)
     if not ok:
         print(f"[WARN] board sync set-status failed: {detail}", file=sys.stderr)

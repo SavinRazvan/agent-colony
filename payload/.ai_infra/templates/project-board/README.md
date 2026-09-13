@@ -66,4 +66,4 @@ python3 -m agent_colony project queue --op append-notes --last --agent implement
 python3 -m agent_colony project outbox flush
 ```
 
-When a write returns `EXIT_QUEUED` (6) — including precheck low quota, rate-limit / 429 / Forbidden throttle — continue local evidence (`change-index` / handoff line); do **not** retry-loop; flush after `gh api rate_limit` recovers. Outbox is **not** a second Status SSOT. See `project_ssot.outbox` (`precheck_writes`, `dedupe_pending`) in the collaboration exemplar.
+When a write returns `EXIT_QUEUED` (6) — including precheck low quota, rate-limit / 429 / Forbidden throttle — continue local evidence (`change-index` / handoff line); do **not** retry-loop. Gate: `project api-ready` → (if yes) `outbox flush`; on CODE=6 check `cooldown status` / `outbox status`. Outbox is **not** a second Status SSOT. See `project_ssot.outbox` (`precheck_writes`, `dedupe_pending`) in the collaboration exemplar.

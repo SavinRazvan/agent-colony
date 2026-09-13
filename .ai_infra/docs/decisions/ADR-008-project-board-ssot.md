@@ -14,7 +14,7 @@ Related: [ADR-006](ADR-006-agent-integration-model.md), [AGENTS.md](../../../AGE
 1. **Only writable SSOT:** when `project_ssot.enabled: true` and `sync_policy: board_only`, the GitHub Project is the **only writable** coordination SSOT for backlog, Status, and multi-agent continuation. Agents must not dual-write competing slice status to `work-tracker.md` / `session-pointer.md`.
 2. **`board_only` wins** — dual-mirror (local trackers + board both writable) is rejected; it causes worse agent drift (DRIFT-009).
 3. **Offline fallback:** if enabled is false or `gh`/Projects unavailable, use `fallback: local_trackers` with an explicit warning — then resume board sync; never silent dual-write.
-4. **Rate-limit outbox:** when GraphQL quota blocks writes, `project_ssot.outbox` stores structured ops in a local JSONL (`.local/generated-data/board-outbox.jsonl`). EXIT_QUEUED (6) is soft-success; `outbox flush` restores the board after reset. Outbox is **never** authoritative Status.
+4. **Rate-limit outbox:** when GraphQL quota blocks writes, `project_ssot.outbox` stores structured ops in a local JSONL (`.local/generated-data/board-outbox.jsonl`). EXIT_QUEUED (6) is soft-success — gate with `project api-ready` before writes/`outbox flush`. Outbox is **never** authoritative Status.
 5. **Read-only exports:** optional snapshots (`project export`) may cache board state for audits / drift-guard; they **must not** write Status and must never become a competing SSOT.
 6. **Config habit:** board identity and field ids live next to `owner` in `github.collaboration.yaml` (not a separate primary settings file).
 7. **Tooling:** Pattern A CLI (`agent_colony project`) wrapping `gh project`; MCP optional later.

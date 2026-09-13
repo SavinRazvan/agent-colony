@@ -48,7 +48,7 @@ def format_envelope(
     """JSON envelope: exit_code, summary, next_recommended_tool, detail."""
     summary_text = summary.strip() if summary else ""
     if exit_code == EXIT_QUEUED:
-        next_recommended_tool = "workflow_project_outbox_status"
+        next_recommended_tool = "workflow_project_api_ready"
         # Always include do-not-retry guidance (agents must not hammer GraphQL).
         base = summary_text or "EXIT_QUEUED"
         if "do not retry" not in base.lower():
@@ -112,6 +112,12 @@ def run_project_claim(root: Path, *, agent: str, text: str = "claimed") -> str:
     _ensure_install_path(root)
     import project_cli as pc
 
+    pre = argparse.Namespace(directory=root, force_probe=False)
+    preflight = _run_cmd(root, pc.cmd_api_ready, pre, next_ok="workflow_project_claim")
+    pre_data = json.loads(preflight)
+    if int(pre_data.get("exit_code") or 0) == EXIT_QUEUED:
+        return preflight
+
     args = argparse.Namespace(
         directory=root,
         last=True,
@@ -134,6 +140,12 @@ def run_project_handoff(
     _ensure_install_path(root)
     import project_cli as pc
 
+    pre = argparse.Namespace(directory=root, force_probe=False)
+    preflight = _run_cmd(root, pc.cmd_api_ready, pre, next_ok="workflow_project_handoff")
+    pre_data = json.loads(preflight)
+    if int(pre_data.get("exit_code") or 0) == EXIT_QUEUED:
+        return preflight
+
     args = argparse.Namespace(
         directory=root,
         last=True,
@@ -155,6 +167,19 @@ def run_project_outbox_status(root: Path) -> str:
     return _run_cmd(
         root,
         pc.cmd_outbox_status,
+        args,
+        next_ok="workflow_project_api_ready",
+    )
+
+
+def run_project_api_ready(root: Path, *, force_probe: bool = False) -> str:
+    _ensure_install_path(root)
+    import project_cli as pc
+
+    args = argparse.Namespace(directory=root, force_probe=force_probe)
+    return _run_cmd(
+        root,
+        pc.cmd_api_ready,
         args,
         next_ok="workflow_project_entry",
     )

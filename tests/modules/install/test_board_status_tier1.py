@@ -27,6 +27,7 @@ if str(_CW) not in sys.path:
 import project_atomics as pa  # noqa: E402
 import project_cli  # noqa: E402
 import project_handlers  # noqa: E402
+import project_outbox  # noqa: E402
 
 SAMPLE_SSOT = {
     "enabled": True,
@@ -223,6 +224,63 @@ def test_heal_cards_json_check(
     assert project_handlers.run_heal_cards(args) == project_cli.EXIT_OK
     payload = json.loads(capsys.readouterr().out)
     assert payload["total"] == 0
+
+
+def test_heal_cards_fill_tier1_queues_on_throttle(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """fill-tier1 priority write must enqueue via guard_write_or_queue (not silent WARN)."""
+    items = [
+        {
+            "id": "PVTI_tier1",
+            "title": "needs priority",
+            "status": "Ready",
+            "priority": "",
+            "size": "s",
+            "estimate": "1",
+            "content": {
+                "body": "## Acceptance\n\nx\n\n## Rollback\n\ny\n\n## Notes\n\n",
+                "state": "OPEN",
+            },
+        }
+    ]
+    monkeypatch.setattr(
+        project_cli,
+        "_load_enabled_ssot",
+        lambda root, cmd: (SAMPLE_SSOT, project_cli.EXIT_OK),
+    )
+    monkeypatch.setattr(project_cli, "fetch_project_items", lambda ssot, limit=200: (items, None))
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_item_id_arg",
+        lambda root, args, cmd: ("PVTI_tier1", project_cli.EXIT_OK),
+    )
+    monkeypatch.setattr(
+        project_outbox,
+        "api_ready",
+        lambda *a, **k: (True, project_outbox.EXIT_OK, "api-ready=yes"),
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "guard_write_or_queue",
+        lambda *a, **k: project_cli.EXIT_QUEUED,
+    )
+
+    args = argparse.Namespace(
+        directory=tmp_path,
+        apply=True,
+        fill_tier1=True,
+        dry_run=False,
+        limit=50,
+        json=False,
+        agent="heal-cards",
+        last=True,
+        id=None,
+    )
+    assert project_handlers.run_heal_cards(args) == project_cli.EXIT_OK
+    out = capsys.readouterr().out
+    assert "QUEUED priority" in out
+    assert "PVTI_tier1" in out
 
 
 def test_cmd_heal_cards_delegates(monkeypatch: pytest.MonkeyPatch) -> None:

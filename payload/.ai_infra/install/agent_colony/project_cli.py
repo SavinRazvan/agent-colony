@@ -90,6 +90,8 @@ from project_atomics import (
     load_last_item_id,
     load_project_ssot,
     normalize_github_handle,
+    normalize_project_owner,
+    owner_yaml_looks_url_shaped,
     notes_line_attributed,
     parse_board_item_from_text,
     project_templates_dir,
@@ -283,6 +285,16 @@ def cmd_create_from_template(args: argparse.Namespace) -> int:
     ssot, code = _load_enabled_ssot(root, "create-from-template")
     if ssot is None:
         return code
+    # Cooldown / low-quota gate before live create (no item_id yet — api-ready only).
+    ready, ready_code, ready_msg = _outbox.api_ready(root, ssot)
+    if not ready:
+        print(ready_msg, file=sys.stderr)
+        print(
+            "create-from-template: QUEUED — CODE=6 · do not retry; "
+            "later: project api-ready && project create-from-template …",
+            file=sys.stderr,
+        )
+        return ready_code
     priority = str(getattr(args, "priority", None) or "").strip().lower()
     if not priority:
         return fail(
@@ -1406,7 +1418,9 @@ def cmd_guide(args: argparse.Namespace) -> int:
         "python3 -m agent_colony project heal-cards --check  "
         "# incomplete Status/Tier-1 inventory; --apply for CLOSED+empty→Done"
     )
-    print("# If EXIT_QUEUED (6): python3 -m agent_colony project outbox flush")
+    print("# Gate: python3 -m agent_colony project api-ready")
+    print("# If EXIT_QUEUED (6): python3 -m agent_colony project outbox status")
+    print("# After recover: python3 -m agent_colony project outbox flush")
     return EXIT_OK
 def cmd_heal_cards(args: argparse.Namespace) -> int:
     from project_handlers import run_heal_cards
@@ -1420,6 +1434,33 @@ def cmd_outbox_status(args: argparse.Namespace) -> int:
 def cmd_outbox_flush(args: argparse.Namespace) -> int:
     from project_handlers import run_outbox_flush
     return run_outbox_flush(args)
+
+
+def cmd_outbox_list(args: argparse.Namespace) -> int:
+    from project_handlers import run_outbox_list
+    return run_outbox_list(args)
+
+
+def cmd_outbox_drop(args: argparse.Namespace) -> int:
+    from project_handlers import run_outbox_drop
+    return run_outbox_drop(args)
+
+
+def cmd_api_ready(args: argparse.Namespace) -> int:
+    from project_handlers import run_api_ready
+    return run_api_ready(args)
+
+
+def cmd_cooldown_status(args: argparse.Namespace) -> int:
+    from project_handlers import run_cooldown_status
+    return run_cooldown_status(args)
+
+
+def cmd_cooldown_clear(args: argparse.Namespace) -> int:
+    from project_handlers import run_cooldown_clear
+    return run_cooldown_clear(args)
+
+
 def cmd_doctor(args: argparse.Namespace) -> int:
     from project_handlers import run_doctor
     return run_doctor(args)
@@ -1623,6 +1664,42 @@ def cmd_entry(args: argparse.Namespace) -> int:
     want = {"in_progress"}
     if also_ready:
         want.add("ready")
+
+    # Hard skip live GraphQL while cooldown circuit-breaker is open.
+    cd_ok, cd_msg = _outbox.maybe_close_expired_cooldown(root, ssot, probe=False)
+    if not cd_ok and not force_live:
+        mode = "offline_artifacts"
+        rem_disp = "cooldown"
+        matched: list[dict[str, Any]] = []
+        if not compact:
+            print(f"cooldown: {cd_msg}")
+            print("advise: project api-ready · project outbox status · do not hammer API")
+        if snap.is_file():
+            try:
+                data = json.loads(snap.read_text(encoding="utf-8"))
+                items = data.get("items") if isinstance(data, dict) else []
+                if isinstance(items, list):
+                    matched = _filter_entry_items(items, statuses=want)
+                    if not compact:
+                        _print_entry_rows(items, statuses=want)
+            except (OSError, json.JSONDecodeError, TypeError):
+                if not compact:
+                    print("(snapshot unreadable)")
+        if compact:
+            _emit_entry_digest(
+                mode=mode,
+                rem_disp=rem_disp,
+                next_cmd="api-ready|queue|outbox",
+                matched=matched,
+                as_json=as_json,
+                digest=digest or True,
+            )
+        else:
+            print(
+                f"mode={mode} · graphql_remaining={rem_disp} · "
+                f"items={len(matched)} · next=api-ready|queue|outbox"
+            )
+        return EXIT_OK
 
     rl = _outbox.graphql_rate_limit()
     rem_raw = rl.get("remaining")

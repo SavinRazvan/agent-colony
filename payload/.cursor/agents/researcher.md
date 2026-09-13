@@ -18,7 +18,7 @@ description: researcher Agent Colony — Brief-driven multi-round research (GitH
 
 **Exit:** Packs under `_research_results/sources/<slug>/`. Research card → `done` + paths in Notes. No dual-write under `board_only`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent researcher`. Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): outbox; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent researcher`. Use `mention-pr` and `promote-to-issue` before shippable PR. Gate: `workflow_project_api_ready` / `project api-ready` before board writes. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 
 **Tier-1:** Fill Status, Priority, Size, Estimate, dates, Assignee, Linked PR. Canon: `board-ssot` § Tier-1.
 

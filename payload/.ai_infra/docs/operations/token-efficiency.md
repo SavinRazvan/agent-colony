@@ -123,7 +123,7 @@ Load the section you need. Do not load whole skills by default. Machine-backed v
 
 ## One command rule (Pattern A)
 
-Prefer **CLI or MCP** (kit 0.7.2+). Do **not** invent raw `gh api graphql` for Project when Pattern A exists. MCP tools return JSON envelope: `exit_code`, `summary`, `next_recommended_tool`, `detail`. On EXIT_QUEUED (6): use outbox status — never retry.
+Prefer **CLI or MCP** (kit 0.7.2+). Do **not** invent raw `gh api graphql` for Project when Pattern A exists. MCP tools return JSON envelope: `exit_code`, `summary`, `next_recommended_tool`, `detail`. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status` — never retry.
 
 ### PR lane
 
@@ -155,7 +155,7 @@ Do **not** run individual gates in chat when `prepare.py` exists unless `verifie
 | Skill section | `python -m agent_colony doc skill-section --skill … --section …` | `workflow_doc_skill_section` |
 | Safe recipes | `python -m agent_colony project guide` | — |
 
-Prefer `--last` after `create-from-template`. Never paste docs placeholder ids. Never paste Project settings UI into the shell. On EXIT_QUEUED (6), do not retry — flush after GraphQL quota recovers.
+Prefer `--last` after `create-from-template`. Never paste docs placeholder ids. Never paste Project settings UI into the shell. On EXIT_QUEUED (6), do not retry — `project api-ready` then `outbox flush` after GraphQL quota recovers.
 
 ## Maintainer lane
 

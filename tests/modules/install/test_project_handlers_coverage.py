@@ -390,6 +390,38 @@ def test_run_doctor_warns_missing_tier1_fields(
     assert "fields.estimate.field_id missing" in err
 
 
+def test_run_doctor_warns_url_shaped_owner_yaml(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Doctor peeks raw YAML owner and WARNs when users/ prefix was stripped at load."""
+    ssot = _ssot(owner="SavinRazvan")
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    monkeypatch.setattr(
+        project_cli,
+        "run_gh",
+        lambda *a, **k: SimpleNamespace(returncode=0, stdout='{"items":[]}', stderr=""),
+    )
+    monkeypatch.setattr(
+        project_outbox,
+        "graphql_rate_limit",
+        lambda: {"remaining": 5000, "limit": 5000, "reset_epoch": 0, "error": None},
+    )
+
+    class _Us:
+        @staticmethod
+        def load_github_collaboration(root: Path) -> dict:
+            return {"project_ssot": {"owner": "users/SavinRazvan"}}
+
+    monkeypatch.setattr(project_cli, "_import_user_settings", lambda root: _Us)
+    args = argparse.Namespace(directory=REPO_ROOT, digest=False)
+    assert project_handlers.run_doctor(args) == project_cli.EXIT_OK
+    err = capsys.readouterr().err
+    assert "users/SavinRazvan" in err
+    assert "normalized to" in err
+    assert "SavinRazvan" in err
+
+
 def test_run_mention_pr_promote_queued(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
