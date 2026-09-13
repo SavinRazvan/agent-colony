@@ -1,4 +1,13 @@
-"""Tests for project_ssot.owner normalization (gh --owner hygiene)."""
+"""
+File: test_project_owner_normalize.py
+Path: tests/modules/install/test_project_owner_normalize.py
+Role: Unit tests for project_ssot.owner normalize and load_project_ssot strip/reject.
+Used By:
+ - pytest
+Depends On:
+ - .ai_infra/install/agent_colony/project_atomics.py
+"""
+
 from __future__ import annotations
 
 import sys
