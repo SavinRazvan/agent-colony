@@ -38,6 +38,8 @@ Mandatory sections: **`## Accountability summary`** and **`## Audit limits`** �
 
 Validator: `.ai_infra/scripts/workflow/audit_artifact_schema.py` · gate: `check_audit_artifacts.py`. Architecture-impacting merges use `--arch-impacting` (both alignment files must exist, carry `Audit-Schema: 1`, and pass — no skip).
 
+**Machine-enforced subset (P0/P1):** `status` (not `open`), `category` (allowlist), `source_path`, `target_path`, `recommendation`, `evidence`, plus owner / due_slice / consequence_if_ignored. P2: those path fields optional.
+
 ## Finding Object (Required Fields)
 
 | Field | Type | Required | Description |

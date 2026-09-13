@@ -17,6 +17,9 @@ Accepted divergence P0 must pass Schema-1 validation.
 ### AA-accepted-p0-001
 - severity: P0
 - status: accepted_divergence
+- category: policy_conflict
+- source_path: tests/modules/workflow/fixtures/audit_artifacts/p0_accepted_divergence.md
+- target_path: .ai_infra/docs/roadmap/alignment-audit-schema.md
 - owner: platform-architecture
 - due_slice: next-slice
 - consequence_if_ignored: documented acceptance of divergence
