@@ -16,28 +16,28 @@ Notes:
 **Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
 
 
-## 1) Architecture-impacting advisory audit (alignment artifacts)
+## 1) Architecture-impacting alignment audit (merge-mandatory)
 
 **When:** Module boundaries, workflow policy, test layout, or maintainer calls for alignment before prepare/merge. **Not** consumer day-0 onboarding — complete board shell (`/board` + `board-bootstrap --check`) first; use this for architecture-impacting / pre-merge work.
 
 **Canonical agent:** **`auditor`** with **`.cursor/skills/auditor-protocol/SKILL.md`**.
 
-**Procedure (advisory-only):**
+**Procedure (merge-mandatory for architecture-impacting PRs):**
 
 1. Run a **focused alignment pass** unless a full enterprise audit is in scope.
 2. Use **`.ai_infra/docs/roadmap/alignment-audit-schema.md`** for severity and finding shape.
-3. Write outputs to `.local/workflow-artifacts/alignment/alignment-audit.md` and `alignment-todos.md`.
-4. Block **`/prepare-pr`** on open **P0** unless accepted with rationale.
+3. Write outputs to `.local/workflow-artifacts/alignment/alignment-audit.md` and `alignment-todos.md` with `Audit-Schema: 1` (even with zero findings).
+4. Block **`/prepare-pr`** on open **P0/P1** (`status: open` fails Schema-1). Do not auto-fix product code during the audit pass.
 
-**Rule of law:** `.cursor/rules/advisory-audit-alignment-enforcement.mdc` + **`python .ai_infra/scripts/pr/merge.py --arch-impacting`**.
+**Rule of law:** `.cursor/rules/advisory-audit-alignment-enforcement.mdc` + **`python .ai_infra/scripts/pr/merge.py --pipeline architecture_impacting`** (or `--arch-impacting`). Pipeline / path-trigger enforces Schema-1 at merge — not advisory-only for the merge gate.
 
 ---
 
 ## 2) Maintainer PR workflow (phases)
 
-**Order (staged):** `review-pr` → `prepare-pr` → `merge-pr`.
+**Order (staged):** `review-pr` → verifier hop (shippable) → `prepare-pr` → `merge-pr`.
 
-**Order (full):** `review-pr` → `prepare-pr` → `merge-pr` → **`finalize.py`** (via `full-pr-workflow`).
+**Order (full):** `review-pr` → verifier hop → `prepare-pr` → `merge-pr` → **`finalize.py`** (via `full-pr-workflow`).
 
 **Canonical narrative:** **`.agents/skills/pr-workflow/SKILL.md`** (staged; redirect stub: `PR_WORKFLOW.md`) + **`full-pr-workflow`** (full cleanup).
 **Executable stubs:** **`.ai_infra/scripts/pr/`** (`prepare.py`, `merge.py`, `review.py`, `finalize.py`, `verify_publish.py`)

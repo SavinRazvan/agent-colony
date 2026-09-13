@@ -20,7 +20,7 @@ Evidence-only architecture audit (CHK-*). Not continuous plan pulse — that is 
 
 **Entry:** If SSOT on: `project status`. If no audit card: `create-from-template --template audit` → `claim --last --agent auditor`. Else `session-pointer.md`.
 
-**Exit:** Write audit artifacts with `Audit-Schema: 1` frontmatter, `## Accountability summary`, and `## Audit limits` when findings are recorded. Status → `in_review`/`done`. Put artifact paths in Notes. No dual-write under `board_only`.
+**Exit:** Always write Schema-1 alignment pair (or enterprise audit) with `Audit-Schema: 1`, `## Accountability summary`, and `## Audit limits` — **even with zero findings** on architecture-impacting passes. Status → `in_review`/`done`. Put artifact paths in Notes. No dual-write under `board_only`.
 
 **Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent auditor`. Use `mention-pr` and `promote-to-issue` before shippable PR. Gate: `workflow_project_api_ready` / `project api-ready` before board writes. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 

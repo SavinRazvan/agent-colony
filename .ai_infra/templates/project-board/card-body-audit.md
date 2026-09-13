@@ -5,8 +5,9 @@
 ## Acceptance
 
 - Audit artifacts written under `.local/workflow-artifacts/` with `Audit-Schema: 1` when findings are recorded
-- `## Audit limits` and accountability fields on P0/P1 findings (owner, due_slice, consequence_if_ignored)
+- `## Audit limits` and accountability fields on P0/P1 findings (owner, due_slice, consequence_if_ignored, status, category, paths, evidence)
 - `check_audit_artifacts.py` PASS when schema-1 artifacts exist
+- Merge check: `merge.py --arch-impacting` or `--pipeline architecture_impacting` PASS (alignment pair required)
 - {{acceptance}}
 
 ## Rollback
