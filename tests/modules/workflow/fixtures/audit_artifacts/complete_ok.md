@@ -4,6 +4,7 @@ Audit-Scope: kit
 Named-Target: agent-colony prepare gates
 Assurance-Level: reasonable
 Commissioned-By: maintainer
+Audited-By: auditor
 ---
 
 # Alignment Audit

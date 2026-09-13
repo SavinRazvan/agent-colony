@@ -16,7 +16,7 @@ disable-model-invocation: true
 
 1. `review-pr` — findings only; optional **`make drift-validate`** before review when trackers/board status changed. When scope is architecture-impacting, run **`auditor`** and write alignment artifacts per `.cursor/rules/advisory-audit-alignment-enforcement.mdc`.
 2. `prepare-pr` — board Status (or tracker sync only if offline fallback) + `prepare.py` (`resolve_gates()` — **6** steps on kit-dev: testing artifacts, pytest, drift, doc facts, check-plugin, check_audit_artifacts).
-3. `merge-pr` — `merge.py` check, `gh pr merge`, `merge.py --merge-sha` (sets board card → Done when SSOT on), writes `merge.md`.
+3. `merge-pr` — `merge.py` check (add `--arch-impacting` when the PR is architecture-impacting), `gh pr merge`, `merge.py --merge-sha` (sets board card → Done when SSOT on), writes `merge.md`.
 
 Per-step detail: `.agents/skills/review-pr/`, `prepare-pr/`, `merge-pr/`.
 

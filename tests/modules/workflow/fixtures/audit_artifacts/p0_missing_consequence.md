@@ -2,9 +2,15 @@
 Audit-Schema: 1
 Audit-Scope: product
 Named-Target: consumer overlay
+Commissioned-By: maintainer
+Audited-By: auditor
 ---
 
 # Drift Audit
+
+## Accountability summary
+
+Sample P0 missing consequence fixture.
 
 ## Audit limits
 

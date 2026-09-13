@@ -48,7 +48,7 @@ Follow **`agent-workflow-procedures.md` §3b**. Includes **`AGENTS.md`**, **`rul
 
 Script-first checks for plan ↔ tracker ↔ session-pointer coherence, handoff doc parity, and **falsifiable goal/doctrine pulse** (DRIFT-011 roster ids). Prose goal pulse (board Acceptance vs plan vs `AGENTS.md`) lives in drift artifacts — not in `auditor`. See [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) § Goal pulse vs EA audit.
 
-**Kit-dev PR prep:** `prepare.py` `resolve_gates()` auto-runs `drift validate` before merge (with doc facts, check-plugin, and `check_audit_artifacts.py`). **DRIFT-017** (kit-dev WARN) flags incomplete schema-1 audit artifacts. Optional: Task **`drift-guard`** after pass to refresh `.local/workflow-artifacts/drift/` artifacts.
+**Kit-dev PR prep:** `prepare.py` `resolve_gates()` auto-runs `drift validate` before merge (with doc facts, check-plugin, and `check_audit_artifacts.py`). **DRIFT-017** (kit-dev WARN) flags Schema-1 independence hygiene (`Commissioned-By` missing/placeholder or equals `Audited-By`). Optional: Task **`drift-guard`** after pass to refresh `.local/workflow-artifacts/drift/` artifacts.
 
 | Concern | Owner | Do NOT duplicate in drift |
 |---------|-------|---------------------------|

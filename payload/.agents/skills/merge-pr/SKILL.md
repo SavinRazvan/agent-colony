@@ -14,8 +14,8 @@ disable-model-invocation: true
 
 1. **Check** (pipeline from user settings when omitted; add `--arch-impacting` for alignment enforcement):  
    `python .ai_infra/scripts/pr/merge.py --pr <id|url> --pipeline default --check-only`  
-   Add `--arch-impacting` if alignment artifacts are required (enforces both alignment files; produced by **`auditor`** per `auditor-protocol` skill).
-2. No unresolved BLOCKER/IMPORTANT or alignment **P0** without documented acceptance. `prep.md` must not contain `NOT READY`; externally verified gates require `Skip-Gates-Rationale`. Architecture-impacting merges run `check_audit_artifacts.py --arch-impacting`.
+   Add `--arch-impacting` if alignment artifacts are required (enforces both alignment files with **Audit-Schema: 1** — not presence-only; produced by **`auditor`** per `auditor-protocol` skill).
+2. No unresolved BLOCKER/IMPORTANT or alignment **P0** without documented acceptance. `prep.md` must not contain `NOT READY`; externally verified gates require `Skip-Gates-Rationale`. Architecture-impacting merges run `check_audit_artifacts.py --arch-impacting` (Schema-1 required).
 3. `python .ai_infra/scripts/pr/verify_publish.py --branch <branch>` and `gh pr view --json headRefName,state`.
 4. **PR body:** `python -m agent_colony contributors pr-body --summary "…" --pipeline default` → paste into `gh pr create --body-file -`.
 5. `gh pr merge <n> --merge` (or repo policy).

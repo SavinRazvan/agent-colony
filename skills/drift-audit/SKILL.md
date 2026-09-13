@@ -37,7 +37,7 @@ Detect **operational workflow drift** and a **falsifiable goal/doctrine pulse**:
 - **DRIFT-014** token-efficiency anchor in agent cards (profile-aware)
 - **DRIFT-015** (kit-dev) plugin+workspace rule basename dup — WARN
 - **DRIFT-016** thin-index § headings for skills on disk (profile-aware skip)
-- **DRIFT-017** (kit-dev) audit artifact accountability WARN when schema-1 gaps exist
+- **DRIFT-017** (kit-dev) audit independence WARN when Schema-1 `Commissioned-By` is missing/placeholder or equals `Audited-By`
 - Prose goal pulse: board Acceptance/Notes vs plan pointers vs `AGENTS.md` / agent cards (flag gaps; hand off — do not rewrite architecture)
 
 Does **not** replace `auditor` (CHK-* scorecard) or `verifier`.

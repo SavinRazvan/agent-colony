@@ -21,6 +21,10 @@ ALLOWED_SCOPES = frozenset({"kit", "product", "model", "dataset", "ecosystem", "
 ASSURANCE_LEVELS = frozenset({"high", "reasonable", "limited", "very_limited"})
 
 _PLACEHOLDER_VALUES = frozenset({"", "-", "tbd", "(tbd)"})
+_FINDING_ID_RE = re.compile(
+    r"^(AA|EA|DRIFT)-[A-Za-z0-9][A-Za-z0-9_-]*$",
+    re.IGNORECASE,
+)
 _FRONTMATTER_KEY_ALIASES = {
     "audit-schema": "Audit-Schema",
     "audit_scope": "Audit-Scope",
@@ -135,6 +139,14 @@ def _parse_table_findings(text: str) -> list[dict[str, Any]]:
     return findings
 
 
+def _is_finding_heading(heading: str) -> bool:
+    """True when ### heading is an AA/EA/DRIFT finding id (not protocol PHASE/CHK)."""
+    cleaned = heading.strip().rstrip(".:")
+    if cleaned.lower() in {"findings", "summary", "audit limits"}:
+        return False
+    return bool(_FINDING_ID_RE.match(cleaned))
+
+
 def iter_findings(text: str) -> list[dict[str, Any]]:
     """Yield finding dicts from ### id sections or markdown tables."""
     findings: list[dict[str, Any]] = []
@@ -144,8 +156,8 @@ def iter_findings(text: str) -> list[dict[str, Any]]:
         re.MULTILINE | re.DOTALL,
     )
     for match in section_pattern.finditer(text):
-        finding_id = match.group(1).strip()
-        if finding_id.lower() in {"findings", "summary", "audit limits"}:
+        finding_id = match.group(1).strip().rstrip(".:")
+        if not _is_finding_heading(finding_id):
             continue
         fields = _parse_section_fields(match.group(2))
         severity = fields.get("severity", "")
@@ -198,8 +210,11 @@ def validate_audit_text(text: str) -> tuple[bool, list[str], list[str]]:
     if _is_placeholder(named_target):
         errors.append("Audit-Schema: 1 requires non-empty Named-Target")
 
-    if "## Audit limits" not in text and "## audit limits" not in text.lower():
+    lower_text = text.lower()
+    if "## audit limits" not in lower_text:
         errors.append("Audit-Schema: 1 requires ## Audit limits heading")
+    if "## accountability summary" not in lower_text:
+        errors.append("Audit-Schema: 1 requires ## Accountability summary heading")
 
     assurance = frontmatter.get("Assurance-Level", "").strip().lower()
     if assurance and assurance not in ASSURANCE_LEVELS:
@@ -210,9 +225,13 @@ def validate_audit_text(text: str) -> tuple[bool, list[str], list[str]]:
 
     audited_by = frontmatter.get("Audited-By", "").strip()
     commissioned_by = frontmatter.get("Commissioned-By", "").strip()
-    if (
+    if _is_placeholder(commissioned_by):
+        warnings.append(
+            "independence: Commissioned-By missing or placeholder — "
+            "internal audit risk (ADR-013)"
+        )
+    elif (
         audited_by
-        and commissioned_by
         and audited_by.casefold() == commissioned_by.casefold()
     ):
         warnings.append(
@@ -225,6 +244,8 @@ def validate_audit_text(text: str) -> tuple[bool, list[str], list[str]]:
         if severity not in {"P0", "P1", "P2"}:
             if severity:
                 errors.append(f"{finding['id']}: unknown severity '{severity}'")
+            else:
+                errors.append(f"{finding['id']}: requires severity P0|P1|P2")
             continue
 
         if severity in {"P0", "P1"}:
