@@ -18,9 +18,9 @@ Evidence-only architecture audit (CHK-*). Not continuous plan pulse — that is 
 
 **Token-efficiency:** CHK-TOKEN on governance PRs; category `token_contract`. Alignment: [alignment-audit-schema.md](.ai_infra/docs/roadmap/alignment-audit-schema.md).
 
-**Entry:** If SSOT on: `project status`. If no audit card: `create-from-template` `[AUDIT]` → `claim --last --agent auditor`. Else `session-pointer.md`.
+**Entry:** If SSOT on: `project status`. If no audit card: `create-from-template --template audit` → `claim --last --agent auditor`. Else `session-pointer.md`.
 
-**Exit:** Write audit artifacts. Status → `in_review`/`done`. Put paths in Notes. No dual-write under `board_only`.
+**Exit:** Write audit artifacts with `Audit-Schema: 1` frontmatter, `## Accountability summary`, and `## Audit limits` when findings are recorded. Status → `in_review`/`done`. Put artifact paths in Notes. No dual-write under `board_only`.
 
 **Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent auditor`. Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): outbox; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 

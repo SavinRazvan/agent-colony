@@ -16,7 +16,7 @@ description: verifier Agent Colony — Check “done” claims against fresh evi
 
 **Entry:** If SSOT on: `workflow_session_entry` or `project entry` + card Acceptance/Rollback/Notes. Else `session-pointer.md`.
 
-**Exit:** `validate-item --last` before `done`. Refuse placeholder Acceptance/Rollback. Status → `done` or leave `in_review` with failure Notes. No dual-write under `board_only`.
+**Exit:** `validate-item --last` before `done`. Refuse placeholder Acceptance/Rollback. When Notes cite audit artifact paths, run `check_audit_artifacts.py` on those files; refuse `done` on incomplete P0 findings in schema-1 artifacts. Status → `done` or leave `in_review` with failure Notes. No dual-write under `board_only`.
 
 **Board rights:** Status + Notes on the card you touch. Prefer MCP/CLI Pattern A. Only this role should call `workflow_run_gate` for targeted disproof. Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 

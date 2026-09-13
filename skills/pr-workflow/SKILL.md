@@ -15,7 +15,7 @@ disable-model-invocation: true
 ## Order
 
 1. `review-pr` — findings only; optional **`make drift-validate`** before review when trackers/board status changed. When scope is architecture-impacting, run **`auditor`** and write alignment artifacts per `.cursor/rules/advisory-audit-alignment-enforcement.mdc`.
-2. `prepare-pr` — board Status (or tracker sync only if offline fallback) + `prepare.py` (`resolve_gates()` — **5** steps on kit-dev: testing artifacts, pytest, drift, doc facts, check-plugin).
+2. `prepare-pr` — board Status (or tracker sync only if offline fallback) + `prepare.py` (`resolve_gates()` — **6** steps on kit-dev: testing artifacts, pytest, drift, doc facts, check-plugin, check_audit_artifacts).
 3. `merge-pr` — `merge.py` check, `gh pr merge`, `merge.py --merge-sha` (sets board card → Done when SSOT on), writes `merge.md`.
 
 Per-step detail: `.agents/skills/review-pr/`, `prepare-pr/`, `merge-pr/`.
@@ -27,7 +27,7 @@ Per-step detail: `.agents/skills/review-pr/`, `prepare-pr/`, `merge-pr/`.
 
 ## Gates
 
-Authoritative list: **`resolve_gates()` in `.ai_infra/scripts/pr/prepare.py`** (universal **two** gates; kit-dev auto-appends drift + doc facts → **four**). Add **`check_governance_consistency.py`** when changing governance or `.cursor/` policy.
+Authoritative list: **`resolve_gates()` in `.ai_infra/scripts/pr/prepare.py`** (universal **two** gates; kit-dev auto-appends drift + doc facts + check-plugin + audit artifacts → **six**). Add **`check_governance_consistency.py`** when changing governance or `.cursor/` policy.
 
 ## Artifacts (under `.local/`)
 

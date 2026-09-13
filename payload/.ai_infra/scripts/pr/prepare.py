@@ -12,9 +12,9 @@ Depends On:
 Notes:
  - Gate subprocesses use `sys.executable` (same interpreter as this script), not a bare `python` on PATH.
  - By default runs `resolve_gates()` (universal: check_testing_artifacts, pytest).
- - Kit-dev repos auto-append drift validate + doc facts + plugin bundle `--check` when
-   `.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md` exists (see `GATES_KIT_DEV_APPEND`) —
-   five gates total on kit-dev.
+ - Kit-dev repos auto-append drift validate + doc facts + plugin bundle `--check` +
+   audit artifact validation when `.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md` exists
+   (see `GATES_KIT_DEV_APPEND`) — six gates total on kit-dev.
  - Consumer projects keep universal gates only; append more at install time if needed.
  - Pass --skip-gates when the agent has already run and verified gates independently; the script
    then only writes the attribution/stamp block and marks gates as externally verified.
@@ -48,6 +48,7 @@ GATES_KIT_DEV_APPEND = [
     ["python", "-m", "agent_colony", "drift", "validate", "--directory", "."],
     ["python", ".ai_infra/scripts/architecture/check_doc_facts.py"],
     ["python", ".ai_infra/scripts/release/sync_plugin_bundle.py", "--check"],
+    ["python", ".ai_infra/scripts/workflow/check_audit_artifacts.py", "--summary"],
 ]
 
 # Back-compat alias for doc parsers and overlays that reference `GATES`.
@@ -103,9 +104,14 @@ def main() -> int:
         action="store_true",
         default=False,
         help=(
-            "Skip running gates inside the script. Use when the agent already ran and "
-            "verified all gates; the artifact will record gates as externally verified."
+            "Skip running gates inside the script. Requires --skip-gates-rationale; "
+            "the artifact records gates as externally verified with rationale."
         ),
+    )
+    parser.add_argument(
+        "--skip-gates-rationale",
+        default="",
+        help="Required text when --skip-gates is set; written into prep.md.",
     )
     parser.add_argument(
         "--summary",
@@ -113,6 +119,13 @@ def main() -> int:
         help="Print one-line PASS/FAIL per gate (token-efficient); still writes prep.md",
     )
     args = parser.parse_args()
+
+    if args.skip_gates and not str(args.skip_gates_rationale or "").strip():
+        print(
+            "--skip-gates requires --skip-gates-rationale TEXT",
+            file=sys.stderr,
+        )
+        return 2
 
     try:
         actor, agents, github_user = resolve_pr_attribution(
@@ -150,6 +163,8 @@ def main() -> int:
     summary_rows: list[str] = []
     if args.skip_gates:
         lines.append("- gates: externally verified by agent before this script call")
+        lines.append(f"- Externally-Verified-By: {actor}")
+        lines.append(f"- Skip-Gates-Rationale: {args.skip_gates_rationale.strip()}")
         summary_rows.append("gates: externally verified")
     else:
         for gate in resolve_gates(Path.cwd()):

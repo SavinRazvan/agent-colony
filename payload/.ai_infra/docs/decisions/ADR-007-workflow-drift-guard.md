@@ -64,6 +64,7 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 | DRIFT-014 | P1 | kit-dev, consumer, consumer-board | Token-efficiency anchor in installed agent cards (profile-aware count) |
 | DRIFT-015 | P2 | kit-dev only | Plugin+workspace rule basename duplication (WARN) |
 | DRIFT-016 | P1 | kit-dev, consumer, consumer-board | Thin-index § headings exist for skills on disk (profile-aware skip) |
+| DRIFT-017 | P2 | kit-dev only | Audit artifact accountability (Audit-Schema: 1) — WARN when gaps exist; `passed=True` |
 
 **Exit policy:** exit code 1 on any P0 failure; P1/P2 advisory in output (same as `integrate validate`). Pending `project_ssot.outbox` ops are **not** a drift failure — cite `project outbox status` in artifacts when relevant.
 
@@ -71,7 +72,7 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 
 | Surface | Includes drift? |
 |---------|-----------------|
-| `prepare.py` `resolve_gates()` | **Kit-dev only** — appends drift + doc facts when `IMPLEMENTATION-STATUS.md` exists |
+| `prepare.py` `resolve_gates()` | **Kit-dev only** — appends drift + doc facts + check-plugin + `check_audit_artifacts.py` when `IMPLEMENTATION-STATUS.md` exists |
 | `prepare.py` `resolve_gates()` (consumer) | **No** — universal 2-gate consumer contract |
 | `make gates` | **No** — use `make drift-validate` |
 | `agent_colony health` | Optional P0 warn (diagnostic, non-blocking) |

@@ -29,7 +29,7 @@ Do not tell the user a task is complete, a version is bumped everywhere, or a fi
 |------|--------|---------|
 | 1. **Facts** | Restate the claim in testable terms. List surfaces that must be true (repo paths, tags, releases, consumer cache, CLI output). | Claim is vague or untestable |
 | 2. **Evidence** | Run commands or open files **now** (not from chat memory). Record path, command, and outcome. | No command output or path cited |
-| 3. **Responsible action** | Act on evidence: fix gaps, downgrade the claim, or document deferrals with owner. | Action contradicts evidence or hides known gaps |
+| 3. **Responsible action** | Act on evidence: fix gaps, downgrade the claim, or document deferrals with **owner** and **consequence_if_ignored** on P0/P1 audit findings. | Action contradicts evidence or hides known gaps |
 
 ## What counts as evidence
 
@@ -37,6 +37,24 @@ Do not tell the user a task is complete, a version is bumped everywhere, or a fi
 2. **Command output** — exact command + outcome (exit code, key lines)
 3. **External surfaces** — GitHub release/tag, plugin cache manifest, board CLI JSON (when relevant)
 4. **User context** — label **`Context:`**; never treat as **Confirmed** for repo or shipped state
+
+## Audit scope boundary
+
+Schema-1 audit artifacts (`Audit-Schema: 1`) cover **repository workflow and kit-process accountability** only. They do **not** certify societal harm, legal compliance, production SLOs, or third-party LLM behavior. Every schema-1 artifact must include `## Audit limits` listing exclusions.
+
+## Assurance stages (schema-1)
+
+Paper §II names **four** audit process stages (Birhane et al., arXiv:2401.14462). Agent Colony adds a fifth **Action** stage for accountability outcomes the paper argues audits must drive.
+
+| Stage | Paper name | Kit owner | Evidence surface |
+|-------|------------|-----------|------------------|
+| Discovery | Harms Discovery | board / drift-guard | Board cards, drift validate, goal pulse |
+| Standards | Standards Identification | Acceptance, CHK-*, DRIFT-* | Criteria in card Acceptance and audit schemas |
+| Evaluation | Performance Analysis | auditor / verifier | CHK-* tables, disproof checks, validator output |
+| Communication | Audit Communication and Advocacy | Notes + `.local` artifacts | Artifact paths in board Notes; alignment/drift/EA files |
+| Action | *(kit extension — accountability outcome)* | owner + `due_slice` + `consequence_if_ignored` + prepare gate | P0/P1 rows in todos; `check_audit_artifacts.py` on schema-1 files |
+
+Do not claim the paper defined five process stages — **Action** is kit-process accountability only.
 
 ## Labels (shared vocabulary)
 

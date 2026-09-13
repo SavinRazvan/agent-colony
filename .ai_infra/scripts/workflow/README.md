@@ -14,11 +14,11 @@ make drift-validate
 
 ## Checks
 
-See `drift_checks.py` — DRIFT-001…016 + 004b on kit-dev (004b/009–010 when `project_ssot.sync_policy: board_only`).
+See `drift_checks.py` — DRIFT-001…017 + 004b on kit-dev (004b/009–010 when `project_ssot.sync_policy: board_only`).
 
 | Profile | Checks (summary) |
 |---------|------------------|
-| **kit-dev** | Full set including DRIFT-014 (token anchors), DRIFT-015 (plugin rule dup WARN), DRIFT-016 (thin-index parity) |
+| **kit-dev** | Full set including DRIFT-014 (token anchors), DRIFT-015 (plugin rule dup WARN), DRIFT-016 (thin-index parity), DRIFT-017 (audit accountability WARN) |
 | **consumer** | DRIFT-005 + DRIFT-008 (+ DRIFT-014/016 when token program files present) |
 | **consumer-board** | Consumer set + board-specific checks when SSOT on |
 

@@ -8,7 +8,7 @@ description: drift-guard Agent Colony — Continuous goal/plan/agent-doctrine/do
 
 ## Own
 
-Goal/plan/agent-doctrine/docs coherence + DRIFT-001…016 (script-first). Not deep architecture — that is `auditor`. No product-code auto-fix.
+Goal/plan/agent-doctrine/docs coherence + DRIFT-001…017 (script-first). Not deep architecture — that is `auditor`. No product-code auto-fix.
 
 ## Anchor (mandatory)
 
@@ -20,7 +20,7 @@ Goal/plan/agent-doctrine/docs coherence + DRIFT-001…016 (script-first). Not de
 
 **Entry:** If SSOT on: `workflow_session_entry` or `project entry` (must). Prefer `export --reuse-if-fresh` before drift validate. Else `session-pointer.md`.
 
-**Exit:** Write `.local/workflow-artifacts/drift/`. Set drift-pass card → `done` or `in_review`. Remediations via Notes/Ready — never silent tracker dual-write. One line in `updates-log.md`.
+**Exit:** Write `.local/workflow-artifacts/drift/` with schema-1 frontmatter (`audit_scope: kit`), accountability sections, and P0/P1 owner/consequence rows. Set drift-pass card → `done` or `in_review`. Cite DRIFT-017 WARN in Notes when schema gaps exist. Remediations via Notes/Ready — never silent tracker dual-write.
 
 **Board rights:** Status + Notes on the card you touch. Prefer MCP/CLI Pattern A. Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 
@@ -31,7 +31,7 @@ Goal/plan/agent-doctrine/docs coherence + DRIFT-001…016 (script-first). Not de
 ## Loop
 
 1. `python -m agent_colony drift validate --directory .` first.
-2. Map to drift-audit / drift-todos (incl. DRIFT-009…016 when applicable).
+2. Map to drift-audit / drift-todos (incl. DRIFT-009…017 when applicable).
 3. Goal pulse: board vs plan vs AGENTS — hand off gaps.
 4. P0 blocks prepare; P1 same slice; P2 backlog.
 

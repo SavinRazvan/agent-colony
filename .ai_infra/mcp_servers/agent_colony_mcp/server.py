@@ -68,13 +68,21 @@ def _tracker_path(name: str, root: Path) -> Path:
 
 @mcp.tool()
 def workflow_run_prepare(
-    pr: str, actor: str, agents: str, skip_gates: bool = False, summary: bool = False
+    pr: str,
+    actor: str,
+    agents: str,
+    skip_gates: bool = False,
+    skip_gates_rationale: str = "",
+    summary: bool = False,
 ) -> str:
     """Run `.ai_infra/scripts/pr/prepare.py` (all GATES unless skip_gates)."""
     root = workspace_root()
+    if skip_gates and not str(skip_gates_rationale or "").strip():
+        return "exit=2\n--skip-gates requires skip_gates_rationale"
     args = ["--pr", pr, "--actor", actor, "--agents", agents]
     if skip_gates:
         args.append("--skip-gates")
+        args.extend(["--skip-gates-rationale", skip_gates_rationale.strip()])
     if summary:
         args.append("--summary")
     code, out = run_script("scripts/pr/prepare.py", args, root)

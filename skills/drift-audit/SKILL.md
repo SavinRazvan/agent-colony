@@ -1,6 +1,10 @@
 ---
 name: drift-audit
 description: Run drift validate first; write drift-audit.md and drift-todos.md with evidence contract; goal/plan/agent-doctrine pulse.
+Audit-Schema: 1
+Audit-Scope: kit
+Named-Target: operational workflow drift
+Commissioned-By: drift-guard pass
 ---
 <!--
 File: SKILL.md
@@ -33,6 +37,7 @@ Detect **operational workflow drift** and a **falsifiable goal/doctrine pulse**:
 - **DRIFT-014** token-efficiency anchor in agent cards (profile-aware)
 - **DRIFT-015** (kit-dev) plugin+workspace rule basename dup — WARN
 - **DRIFT-016** thin-index § headings for skills on disk (profile-aware skip)
+- **DRIFT-017** (kit-dev) audit artifact accountability WARN when schema-1 gaps exist
 - Prose goal pulse: board Acceptance/Notes vs plan pointers vs `AGENTS.md` / agent cards (flag gaps; hand off — do not rewrite architecture)
 
 Does **not** replace `auditor` (CHK-* scorecard) or `verifier`.
@@ -74,6 +79,10 @@ Does **not** replace `auditor` (CHK-* scorecard) or `verifier`.
 ## Artifact frontmatter (both files)
 
 ```text
+Audit-Schema: 1
+Audit-Scope: kit
+Named-Target: <repo or profile under review>
+Commissioned-By: drift-guard
 Audit-Type: workflow-drift-pass
 Audited-By: drift-guard
 Action-By: <name>
@@ -82,6 +91,8 @@ Date: <ISO-8601>
 Profile: kit-dev | consumer
 Command: python -m agent_colony drift validate --directory . [--profile consumer]
 ```
+
+Include **`## Accountability summary`** and mandatory **`## Audit limits`**. P0/P1 script findings mirrored in `drift-todos.md` need `owner`, `due_slice`, and `consequence_if_ignored`.
 
 **Consumer DRIFT-005:** When `IMPLEMENTATION-STATUS.md` is absent (normal on plugin installs), DRIFT-005 **PASSes (skip)**. A FAIL on the missing file is a **kit false positive** on older payloads — not a consumer app defect. See `consumer-quickstart.md` § Drift on consumer apps.
 

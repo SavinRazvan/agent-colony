@@ -173,7 +173,7 @@ const ARTIFACT_LANES: string[][] = [
     "Drift",
     ".local/workflow-artifacts/drift/",
     "drift-guard",
-    "Goal pulse + DRIFT-009…012 board subset (011 roster; 012 plan snapshots; full DRIFT-001…016)",
+    "Goal pulse + DRIFT-009…012 board subset (011 roster; 012 plan snapshots; full DRIFT-001…017)",
   ],
   [
     "Release / smoke",
@@ -586,7 +586,7 @@ export default function AgentsArtifactsBoardCanvas() {
           </Text>
           <Text size="small">
             implementer makes drift-validate → P0/P1 or goal-pulse gaps →
-            drift-guard writes drift artifacts (DRIFT-001…016 kit-dev) →
+            drift-guard writes drift artifacts (DRIFT-001…017 kit-dev) →
             remediation via Notes/Ready (never silent tracker Status).
           </Text>
           <Text size="small">

@@ -32,7 +32,7 @@ def test_load_gates_matches_prepare() -> None:
     from agent_colony_mcp.gates import load_gates
 
     gates = load_gates(REPO_ROOT)
-    assert len(gates) == 5
+    assert len(gates) == 6
     assert gates[0][-1].endswith("check_testing_artifacts.py")
     assert gates[1][-2:] == ["pytest", "-q"]
     joined = " ".join(" ".join(cmd) for cmd in gates)
@@ -60,7 +60,7 @@ def test_gate_count() -> None:
     os.environ["AGENT_COLONY_ROOT"] = str(REPO_ROOT)
     from agent_colony_mcp.server import workflow_gate_count
 
-    assert workflow_gate_count() == "5"
+    assert workflow_gate_count() == "6"
 
 
 def test_build_inventory() -> None:
@@ -68,7 +68,7 @@ def test_build_inventory() -> None:
 
     raw = build_inventory(REPO_ROOT)
     assert "implementer" in raw
-    assert '"gate_count": 5' in raw or '"gate_count": 5,' in raw
+    assert '"gate_count": 6' in raw or '"gate_count": 6,' in raw
 
 
 def test_read_agent() -> None:
@@ -183,6 +183,20 @@ def test_workflow_check_governance() -> None:
     assert "exit=0" in text
 
 
+def test_workflow_run_prepare_skip_gates_requires_rationale() -> None:
+    _env_root()
+    from agent_colony_mcp.server import workflow_run_prepare
+
+    text = workflow_run_prepare(
+        pr="1",
+        actor="Test User",
+        agents="review-pr",
+        skip_gates=True,
+        skip_gates_rationale="",
+    )
+    assert text == "exit=2\n--skip-gates requires skip_gates_rationale"
+
+
 def test_workflow_run_prepare_skip_gates_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
     _env_root()
     _mock_run_script(monkeypatch)
@@ -193,6 +207,7 @@ def test_workflow_run_prepare_skip_gates_smoke(monkeypatch: pytest.MonkeyPatch) 
         actor="Test User",
         agents="review-pr",
         skip_gates=True,
+        skip_gates_rationale="verified in prior step",
     )
     assert text == "exit=0\nok"
 

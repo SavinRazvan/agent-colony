@@ -8,9 +8,10 @@ Used By:
  - .cursor/rules/advisory-audit-alignment-enforcement.mdc
 Depends On:
  - docs/governance/workflow-source-owners.md
+ - .ai_infra/scripts/workflow/audit_artifact_schema.py
 Notes:
  - Universal Agent Colony schema; product-specific vocabulary belongs in project overlays.
- - Last reviewed: 2026-06-14
+ - Last reviewed: 2026-09-13
 -->
 
 # Alignment Audit Schema
@@ -20,6 +21,22 @@ Notes:
 Standardize advisory audit findings so outputs from skills, rules checks, and manual review merge into one deterministic report.
 
 **Product vocabulary:** When findings involve domain boundaries, cite your project's strategy/architecture docs as `target_path` (e.g. `docs/architecture/*`, overlay rules in `overlays/rules/`).
+
+## Artifact-level frontmatter (Audit-Schema: 1)
+
+When an artifact opts in with `Audit-Schema: 1`, these fields apply at the document level:
+
+| Field | Required | Description |
+|---|---|---|
+| `Audit-Schema` | yes (opt-in) | Set to `1` to enable machine validation |
+| `Audit-Scope` / `audit_scope` | yes when schema 1 | `kit` \| `product` \| `model` \| `dataset` \| `ecosystem` \| `meta` |
+| `Named-Target` | yes when schema 1 | Non-empty subject of the audit (repo, module, release, etc.) |
+| `Assurance-Level` | reserved | `high` \| `reasonable` \| `limited` \| `very_limited` — caps when P0/P1 evidence is thin |
+| `Commissioned-By` | recommended | Human or role that requested the pass |
+
+Mandatory section: **`## Audit limits`** — states what the audit does **not** cover (see evidence-first audit scope boundary).
+
+Validator: `.ai_infra/scripts/workflow/audit_artifact_schema.py` · gate: `check_audit_artifacts.py`.
 
 ## Finding Object (Required Fields)
 
@@ -33,8 +50,12 @@ Standardize advisory audit findings so outputs from skills, rules checks, and ma
 | `evidence` | `string` | yes | Concise quote or factual mismatch proof. |
 | `recommendation` | `string` | yes | Concrete remediation guidance. |
 | `status` | `open \| accepted_divergence \| fixed \| deferred` | yes | Lifecycle state. |
-| `owner` | `string` | no | Responsible person or role. |
-| `due_slice` | `string` | no | Planned implementation slice. |
+| `owner` | `string` | P0/P1 | Responsible person or role (non-placeholder). |
+| `due_slice` | `string` | P0/P1 | Planned implementation slice (or `deadline`). |
+| `consequence_if_ignored` | `string` | P0/P1 | What happens if the finding is not addressed. |
+| `expectation` | `string` | optional | Desired end state when helpful. |
+
+**P2:** `owner`, `due_slice`, and `consequence_if_ignored` are optional.
 
 ## Severity Taxonomy
 
@@ -81,10 +102,11 @@ Standardize advisory audit findings so outputs from skills, rules checks, and ma
   "category": "workflow_gate_drift",
   "source_path": "docs/operations/agent-workflow-procedures.md",
   "target_path": ".ai_infra/scripts/pr/prepare.py",
-  "evidence": "Prose lists four gates; prepare.py resolve_gates() returns 2 universal (or 4 on kit-dev).",
+  "evidence": "Prose gate count stale; see resolve_gates() in prepare.py for authoritative kit-dev append list.",
   "recommendation": "Point prose to prepare.py resolve_gates() only; remove duplicated gate list.",
   "status": "open",
   "owner": "platform-architecture",
-  "due_slice": "feature/starter-phase-2"
+  "due_slice": "feature/starter-phase-2",
+  "consequence_if_ignored": "merge prep may pass with outdated gate documentation"
 }
 ```

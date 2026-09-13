@@ -87,7 +87,7 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     create_cmd.add_argument(
         "--template",
         default="",
-        help="slice|bug — use card body template (same as create-from-template)",
+        help="slice|bug|research|audit — use card body template (same as create-from-template)",
     )
     create_cmd.add_argument("--acceptance", default="")
     create_cmd.add_argument("--rollback", default="")

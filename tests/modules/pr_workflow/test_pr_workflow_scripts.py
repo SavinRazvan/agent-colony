@@ -180,12 +180,13 @@ def test_finalize_dry_run_exits_zero(monkeypatch) -> None:
 def test_resolve_gates_kit_dev_includes_drift_and_doc_facts() -> None:
     module = _load_module("prepare_gates", SCRIPTS_DIR / "prepare.py")
     gates = module.resolve_gates(REPO_ROOT)
-    assert len(gates) == 5
+    assert len(gates) == 6
     joined = " ".join(" ".join(cmd) for cmd in gates)
     assert "drift" in joined
     assert "check_doc_facts" in joined
     assert "sync_plugin_bundle" in joined
     assert "--check" in joined
+    assert "check_audit_artifacts" in joined
 
 
 def test_resolve_gates_consumer_universal_only(tmp_path: Path) -> None:

@@ -263,7 +263,7 @@ def cmd_create(args: argparse.Namespace) -> int:
             "create",
             EXIT_USAGE,
             "board_only requires create-from-template "
-            "(use: project create --template slice|bug|research --priority p0|p1|p2 …)",
+            "(use: project create --template slice|bug|research|audit --priority p0|p1|p2 …)",
         )
     body = args.body or ""
     sections = (ssot.get("conventions") or {}).get("body_sections") or []

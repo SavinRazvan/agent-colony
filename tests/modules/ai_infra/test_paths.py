@@ -43,7 +43,7 @@ def test_agent_colony_mcp_import() -> None:
     from agent_colony_mcp.gates import load_gates
 
     gates = load_gates(REPO_ROOT)
-    assert len(gates) == 5
+    assert len(gates) == 6
 
 
 def test_user_settings_templates_canonical() -> None:

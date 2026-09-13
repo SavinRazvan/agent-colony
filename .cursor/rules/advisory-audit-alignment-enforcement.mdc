@@ -14,4 +14,5 @@ alwaysApply: false
 - **Outputs:** `.local/workflow-artifacts/alignment/alignment-audit.md`, `.local/workflow-artifacts/alignment/alignment-todos.md`.
 - **Schema:** `.ai_infra/docs/roadmap/alignment-audit-schema.md`.
 - Each finding: evidence path, mismatch category, recommended fix, status (`open` | `accepted_divergence` | `fixed` | `deferred`).
+- **Schema-1:** artifacts with `Audit-Schema: 1` require `Audit-Scope`, `Named-Target`, `## Audit limits`; P0/P1 need owner, due_slice, consequence_if_ignored (validator: `check_audit_artifacts.py`).
 - **P0:** block merge prep until fixed or accepted with rationale. **P1:** fix in-slice or defer with owner. **P2:** batch; track in reconciliation TODOs.

@@ -14,7 +14,7 @@
 
 | | |
 |--|--|
-| **Version** | [`0.7.3`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.7.3) · **Tests** · 1544 · **Agents** · 8 (6 on `consumer_lite`) · **Skills** · 15 (6 on lite) · **Rules** · 7 (4 always-on + 3 requestable) · **License** · [Apache-2.0](LICENSE) |
+| **Version** | [`0.7.3`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.7.3) · **Tests** · 1571 · **Agents** · 8 (6 on `consumer_lite`) · **Skills** · 15 (6 on lite) · **Rules** · 7 (4 always-on + 3 requestable) · **License** · [Apache-2.0](LICENSE) |
 | **Reference board** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
 
 ---
@@ -32,7 +32,7 @@ Agent chats lose Status. Trackers and docs drift across sessions. Agents rubber-
 3. **Evidence-First Handoffs:** Agents generate verifiable artifacts in `.local/` (audits, test logs, coverage, drift reports). No agent trusts another without fresh proof.
 4. **Enforced PR Quality Gates:** Automated testing, governance consistency, doc-facts, and drift validation before merging.
 
-**Proof:** 1544 tests · 8 agents (optional **`consumer_lite`**: 6 agents, 6 skills) · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
+**Proof:** 1571 tests · 8 agents (optional **`consumer_lite`**: 6 agents, 6 skills) · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
 
 ---
 

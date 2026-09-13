@@ -1,7 +1,7 @@
 """
 File: drift_checks.py
 Path: .ai_infra/scripts/workflow/drift_checks.py
-Role: Individual DRIFT-001…013 (+004b) check functions for workflow drift validation.
+Role: Individual DRIFT-001…017 (+004b) check functions for workflow drift validation.
 Used By:
  - .ai_infra/scripts/workflow/check_drift.py
 Depends On:
@@ -1201,6 +1201,58 @@ def check_drift016(paths: DriftPaths) -> CheckResult:
     )
 
 
+def check_drift017(paths: DriftPaths) -> CheckResult:
+    """Audit artifact accountability (Audit-Schema: 1) — kit-dev WARN only."""
+    if not paths.implementation_status.is_file():
+        return CheckResult(
+            check_id="DRIFT-017",
+            severity=Severity.P2,
+            passed=True,
+            detail="skipped — not kit-dev root",
+        )
+    workflow_dir = paths.root / ".ai_infra" / "scripts" / "workflow"
+    if str(workflow_dir) not in sys.path:
+        sys.path.insert(0, str(workflow_dir))
+    try:
+        from check_audit_artifacts import collect_audit_paths, validate_file  # noqa: E402
+    except ImportError as exc:
+        return CheckResult(
+            check_id="DRIFT-017",
+            severity=Severity.P2,
+            passed=True,
+            detail=f"WARN audit validator unavailable: {exc}",
+        )
+    issues: list[str] = []
+    for path in collect_audit_paths(paths.root):
+        skip, errors, warnings = validate_file(path)
+        if skip:
+            continue
+        rel = path.relative_to(paths.root).as_posix()
+        if errors:
+            issues.append(f"{rel}: {errors[0]}")
+            continue
+        independence = [
+            w
+            for w in warnings
+            if "independence" in w.lower() or "Audited-By equals" in w
+        ]
+        if independence:
+            issues.append(f"{rel}: {independence[0]}")
+    if issues:
+        return CheckResult(
+            check_id="DRIFT-017",
+            severity=Severity.P2,
+            passed=True,
+            detail=f"WARN audit accountability gaps ({len(issues)}): {issues[0]}",
+        )
+    return CheckResult(
+        check_id="DRIFT-017",
+        severity=Severity.P2,
+        passed=True,
+        detail="audit artifacts schema-1 accountability ok (or none present)",
+    )
+
+
 KIT_DEV_CHECKS = (
     check_drift001,
     check_drift002,
@@ -1219,6 +1271,7 @@ KIT_DEV_CHECKS = (
     check_drift014,
     check_drift015,
     check_drift016,
+    check_drift017,
 )
 
 CONSUMER_CHECKS = (

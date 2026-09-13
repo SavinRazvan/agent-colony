@@ -56,6 +56,27 @@ def _current_branch() -> str:
     return proc.stdout.strip() or "unknown"
 
 
+def _prep_status_blocks_merge(prep_file: Path) -> tuple[bool, str]:
+    if not prep_file.is_file():
+        return True, "ok"
+    try:
+        content = prep_file.read_text(encoding="utf-8")
+    except OSError as exc:
+        return False, f"unable to read {prep_file}: {exc}"
+    for line in content.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("## Status"):
+            continue
+        if "NOT READY" in stripped:
+            return False, f"prep artifact status is NOT READY ({prep_file})"
+    if "externally verified" in content.lower():
+        if "Skip-Gates-Rationale:" not in content:
+            return False, (
+                "prep artifact records externally verified gates without Skip-Gates-Rationale"
+            )
+    return True, "ok"
+
+
 def _artifact_matches_pr(file_path: Path, pr_ref: str) -> tuple[bool, str]:
     if not file_path.exists():
         return False, f"missing {file_path}"
@@ -344,6 +365,10 @@ def main() -> int:
     if not prep_ok:
         errors.append(prep_detail)
 
+    prep_ready, prep_ready_detail = _prep_status_blocks_merge(prep_file)
+    if not prep_ready:
+        errors.append(prep_ready_detail)
+
     if args.arch_impacting:
         if not alignment_audit_file.exists():
             errors.append(
@@ -354,6 +379,23 @@ def main() -> int:
             errors.append(
                 "missing .local/workflow-artifacts/alignment/alignment-todos.md "
                 "(required for architecture-impacting PRs)"
+            )
+        import subprocess as _sp
+
+        audit_cmd = [
+            sys.executable,
+            ".ai_infra/scripts/workflow/check_audit_artifacts.py",
+            "--directory",
+            ".",
+            "--arch-impacting",
+            "--summary",
+        ]
+        proc = _sp.run(audit_cmd, capture_output=True, text=True, cwd=Path.cwd())
+        if proc.returncode != 0:
+            detail = (proc.stdout or proc.stderr or "").strip()
+            errors.append(
+                "check_audit_artifacts --arch-impacting failed"
+                + (f": {detail}" if detail else "")
             )
 
     if errors:

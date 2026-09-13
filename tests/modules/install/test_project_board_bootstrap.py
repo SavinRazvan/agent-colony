@@ -41,7 +41,7 @@ def _ssot() -> dict:
 def _template_root(tmp_path: Path) -> Path:
     root = tmp_path / ".ai_infra" / "templates" / "project-board"
     root.mkdir(parents=True, exist_ok=True)
-    for name in ("slice", "bug", "research"):
+    for name in project_cli._TEMPLATE_NAMES:
         (root / f"card-body-{name}.md").write_text("ok\n", encoding="utf-8")
     (root / "project-readme.md").write_text("# README\nok\n", encoding="utf-8")
     (root / "views-setup.md").write_text("ok\n", encoding="utf-8")
