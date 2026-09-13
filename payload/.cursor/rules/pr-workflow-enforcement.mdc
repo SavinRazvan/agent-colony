@@ -11,7 +11,7 @@ alwaysApply: true
 - Never merge local to `main`. No destructive git unless user asks.
 - **Artifacts:** `.local/workflow-artifacts/pr/review.md`, `prep.md`, `merge.md` with `Action-By`, `GitHub-User`, `Agent/s` from `github.collaboration.yaml` (`--pipeline`) or `--actor` / `--agents`. Full workflow adds `finalize.md`.
 - **Commits:** trailers per [commit-trailer-format.mdc](commit-trailer-format.mdc); summary in AGENTS.md § Commits.
-- **Architecture-impacting:** before prepare/merge, run **`auditor`** → alignment files (see [advisory-audit-alignment-enforcement.mdc](advisory-audit-alignment-enforcement.mdc)).
+- **Architecture-impacting:** before prepare/merge, run **`auditor`** → alignment files (see [advisory-audit-alignment-enforcement.mdc](advisory-audit-alignment-enforcement.mdc)). `architecture_impacting` pipeline / `requires_alignment_artifacts` and kit-dev path-triggers (rules/skills/agents/ADRs/arch docs/PR+audit scripts) force `merge.py` Schema-1 check. Prepare refuses `--skip-gates` on that pipeline.
 - **Gates:** `resolve_gates()` in `.ai_infra/scripts/pr/prepare.py` only — via `prepare.py` (`GATES` = 2-gate alias). Governance changes: also `check_governance_consistency.py`.
 - **Branch health:** tracks `origin/<branch>`; `gh pr view --json headRefName` matches branch.
 - **Tracking docs** when scope shifts: `plan.md`, architecture stub.

@@ -307,6 +307,103 @@ def test_prepare_main_skip_gates(monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     assert "externally verified" in content
 
 
+def test_prepare_skip_gates_refused_for_arch_pipeline(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    module = _load_module("prepare_full_4b", "prepare.py")
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "prepare.py",
+            "--pr",
+            "123",
+            "--actor",
+            "A",
+            "--agents",
+            "review-pr",
+            "--pipeline",
+            "architecture_impacting",
+            "--skip-gates",
+            "--skip-gates-rationale",
+            "should fail",
+        ],
+    )
+    assert module.main() == 2
+
+
+def test_merge_pipeline_architecture_impacting_forces_alignment(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    module = _load_module("merge_full_pipe_arch", "merge.py")
+    wf = tmp_path / ".local" / "workflow-artifacts" / "pr"
+    wf.mkdir(parents=True)
+    (wf / "review.md").write_text("# Review Artifact (123)\n", encoding="utf-8")
+    (wf / "prep.md").write_text("# Prepare Artifact (123)\n", encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "merge.py",
+            "--pr",
+            "123",
+            "--actor",
+            "A",
+            "--agents",
+            "review-pr",
+            "--pipeline",
+            "architecture_impacting",
+            "--check-only",
+        ],
+    )
+    assert module.main() == 1
+
+
+def test_path_triggers_arch_impacting() -> None:
+    paths_mod = _load_module("arch_paths_1", "arch_impacting_paths.py")
+    assert paths_mod.path_triggers_arch_impacting([".cursor/rules/foo.mdc"]) is True
+    assert paths_mod.path_triggers_arch_impacting(["README.md"]) is False
+    assert (
+        paths_mod.path_triggers_arch_impacting(
+            [".ai_infra/scripts/workflow/audit_artifact_schema.py"]
+        )
+        is True
+    )
+
+
+def test_merge_path_trigger_forces_alignment(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    module = _load_module("merge_full_path_trig", "merge.py")
+    wf = tmp_path / ".local" / "workflow-artifacts" / "pr"
+    wf.mkdir(parents=True)
+    (wf / "review.md").write_text("# Review Artifact (123)\n", encoding="utf-8")
+    (wf / "prep.md").write_text("# Prepare Artifact (123)\n", encoding="utf-8")
+    status = (
+        tmp_path
+        / ".ai_infra"
+        / "docs"
+        / "handoff"
+        / "IMPLEMENTATION-STATUS.md"
+    )
+    status.parent.mkdir(parents=True)
+    status.write_text("# kit-dev\n", encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        module,
+        "branch_triggers_arch_impacting",
+        lambda _root, **_kw: True,
+    )
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["merge.py", "--pr", "123", "--actor", "A", "--agents", "review-pr", "--check-only"],
+    )
+    assert module.main() == 1
+
+
 def test_prepare_main_gate_failure(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     module = _load_module("prepare_full_5", "prepare.py")
     monkeypatch.chdir(tmp_path)

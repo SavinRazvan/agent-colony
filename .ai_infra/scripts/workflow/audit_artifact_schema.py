@@ -19,6 +19,9 @@ from typing import Any
 
 ALLOWED_SCOPES = frozenset({"kit", "product", "model", "dataset", "ecosystem", "meta"})
 ASSURANCE_LEVELS = frozenset({"high", "reasonable", "limited", "very_limited"})
+ALLOWED_FINDING_STATUSES = frozenset(
+    {"open", "accepted_divergence", "fixed", "deferred"}
+)
 
 _PLACEHOLDER_VALUES = frozenset({"", "-", "tbd", "(tbd)"})
 _FINDING_ID_RE = re.compile(
@@ -128,6 +131,11 @@ def _parse_table_findings(text: str) -> list[dict[str, Any]]:
                 {
                     "id": finding_id,
                     "severity": record.get("severity", ""),
+                    "status": record.get("status", ""),
+                    "category": record.get("category", ""),
+                    "source_path": record.get("source_path", ""),
+                    "target_path": record.get("target_path", ""),
+                    "recommendation": record.get("recommendation", ""),
                     "owner": record.get("owner", ""),
                     "due_slice": record.get("due_slice", "") or record.get("deadline", ""),
                     "deadline": record.get("deadline", ""),
@@ -165,6 +173,11 @@ def iter_findings(text: str) -> list[dict[str, Any]]:
             {
                 "id": finding_id,
                 "severity": severity,
+                "status": fields.get("status", ""),
+                "category": fields.get("category", ""),
+                "source_path": fields.get("source_path", ""),
+                "target_path": fields.get("target_path", ""),
+                "recommendation": fields.get("recommendation", ""),
                 "owner": fields.get("owner", ""),
                 "due_slice": fields.get("due_slice", "") or fields.get("deadline", ""),
                 "deadline": fields.get("deadline", ""),
@@ -256,6 +269,20 @@ def validate_audit_text(text: str) -> tuple[bool, list[str], list[str]]:
                 errors.append(f"{finding['id']}: P0/P1 requires due_slice or deadline")
             if _is_placeholder(str(finding.get("consequence_if_ignored", ""))):
                 errors.append(f"{finding['id']}: P0/P1 requires consequence_if_ignored")
+
+            status_raw = str(finding.get("status", "")).strip().lower()
+            if _is_placeholder(status_raw):
+                errors.append(f"{finding['id']}: P0/P1 requires status")
+            elif status_raw not in ALLOWED_FINDING_STATUSES:
+                errors.append(
+                    f"{finding['id']}: unknown status '{status_raw}' — allowed: "
+                    f"{', '.join(sorted(ALLOWED_FINDING_STATUSES))}"
+                )
+            elif status_raw == "open":
+                errors.append(
+                    f"{finding['id']}: open P0/P1 status blocks merge "
+                    "(use accepted_divergence|fixed|deferred)"
+                )
 
             evidence = str(finding.get("evidence", "")).strip()
             if _is_placeholder(evidence) and assurance in {"high", "reasonable"}:

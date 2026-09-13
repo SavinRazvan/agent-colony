@@ -108,11 +108,35 @@ def workflow_run_merge_check(
     actor: str,
     agents: str = "review-pr | prepare-pr | merge-pr",
     arch_impacting: bool = False,
+    pipeline: str = "",
 ) -> str:
-    """Run `.ai_infra/scripts/pr/merge.py` --check-only."""
+    """Run `.ai_infra/scripts/pr/merge.py` --check-only.
+
+    Pipeline ``architecture_impacting`` (or requires_alignment_artifacts) forces
+    ``--arch-impacting`` even when ``arch_impacting`` is False.
+    """
     root = workspace_root()
+    effective_arch = bool(arch_impacting)
+    pipe = pipeline.strip() or None
+    if not effective_arch:
+        try:
+            import sys
+            from pathlib import Path
+
+            pr_dir = Path(root) / ".ai_infra" / "scripts" / "pr"
+            if str(pr_dir) not in sys.path:
+                sys.path.insert(0, str(pr_dir))
+            from user_settings_resolve import pipeline_requires_arch_impacting
+
+            effective_arch = pipeline_requires_arch_impacting(
+                Path(root), pipe, arch_impacting_flag=False
+            )
+        except Exception:
+            effective_arch = pipe == "architecture_impacting"
     args = ["--pr", pr, "--actor", actor, "--agents", agents, "--check-only"]
-    if arch_impacting:
+    if pipe:
+        args.extend(["--pipeline", pipe])
+    if effective_arch:
         args.append("--arch-impacting")
     code, out = run_script("scripts/pr/merge.py", args, root)
     return f"exit={code}\n{out}"

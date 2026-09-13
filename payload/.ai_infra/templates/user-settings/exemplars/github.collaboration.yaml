@@ -183,7 +183,7 @@ pr_collaboration:
         - review-pr
         - prepare-pr
         - merge-pr
-      requires_alignment_artifacts: true
+      requires_alignment_artifacts: true  # merge.py forces Schema-1 --arch-impacting (not PR-body hint only)
     infrastructure_integration:
       agents:
         - integrator

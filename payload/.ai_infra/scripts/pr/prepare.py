@@ -18,6 +18,8 @@ Notes:
  - Consumer projects keep universal gates only; append more at install time if needed.
  - Pass --skip-gates when the agent has already run and verified gates independently; the script
    then only writes the attribution/stamp block and marks gates as externally verified.
+ - Refuse --skip-gates when --pipeline architecture_impacting (or requires_alignment_artifacts):
+   exit 2 — architecture-impacting prepares must run gates (ADR-013 residual).
  - The script is the canonical source of the prep artifact; agent writes resolved findings,
    HEAD SHA, and residual risks into the file after the script creates the header.
 """
@@ -34,7 +36,12 @@ if str(_PR_DIR) not in sys.path:
     sys.path.insert(0, str(_PR_DIR))
 
 from local_workflow_paths import PREP_MD, ensure_workflow_artifacts_dir
-from user_settings import add_pr_attribution_arguments, resolve_pr_attribution
+from user_settings import (
+    add_pr_attribution_arguments,
+    pipeline_requires_arch_impacting,
+    resolve_pipeline_name,
+    resolve_pr_attribution,
+)
 
 
 GATES_UNIVERSAL = [
@@ -127,9 +134,21 @@ def main() -> int:
         )
         return 2
 
+    root = Path.cwd()
+    if args.skip_gates and pipeline_requires_arch_impacting(
+        root, args.pipeline, arch_impacting_flag=False
+    ):
+        pipe = resolve_pipeline_name(pipeline=args.pipeline, arch_impacting=False)
+        print(
+            f"--skip-gates refused for architecture-impacting pipeline '{pipe}' "
+            "(run gates or omit --skip-gates; merge still enforces Schema-1)",
+            file=sys.stderr,
+        )
+        return 2
+
     try:
         actor, agents, github_user = resolve_pr_attribution(
-            root=Path.cwd(),
+            root=root,
             actor=args.actor,
             agents=args.agents,
             pipeline=args.pipeline,

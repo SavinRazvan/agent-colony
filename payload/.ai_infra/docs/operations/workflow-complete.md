@@ -58,11 +58,12 @@ Use this when you want branch deletion + deterministic cleanup evidence.
 Before `/prepare-pr` / final merge:
 
 1. Run **`auditor`** with a **focused alignment pass** (`.cursor/skills/auditor-protocol/SKILL.md`; merge path in `.agents/skills/pr-workflow/SKILL.md`).
-2. Ensure **both** exist (merge script enforces with `--arch-impacting`):
+2. Ensure **both** exist (merge enforces via `--arch-impacting`, pipeline `architecture_impacting` / `requires_alignment_artifacts`, or kit-dev path-trigger):
    - `.local/workflow-artifacts/alignment/alignment-audit.md`
    - `.local/workflow-artifacts/alignment/alignment-todos.md`
-   Both must carry `Audit-Schema: 1` frontmatter and pass `check_audit_artifacts.py --arch-impacting`.
-3. Use `python .ai_infra/scripts/pr/merge.py --pr ... --actor "..." --agents "..." --arch-impacting` when recording merge readiness.
+   Both must carry `Audit-Schema: 1` frontmatter and pass `check_audit_artifacts.py --arch-impacting`. Open P0/P1 `status` fails.
+3. Path-trigger list (kit-dev): `.cursor/rules|skills|agents/`, `.agents/skills/`, `.ai_infra/docs/decisions|architecture/`, `alignment-audit-schema.md`, `.ai_infra/scripts/pr/`, `audit_artifact_schema.py`, `check_audit_artifacts.py`, `drift_checks.py` — see `arch_impacting_paths.py`.
+4. Use `python .ai_infra/scripts/pr/merge.py --pr ... --pipeline architecture_impacting --check-only` (or explicit `--arch-impacting`) when recording merge readiness. Prepare refuses `--skip-gates` on that pipeline.
 
 ## C) Testing + planning index sync (medium/high risk)
 
