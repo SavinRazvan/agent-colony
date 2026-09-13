@@ -56,6 +56,10 @@ Paper §II names **four** audit process stages (Birhane et al., arXiv:2401.14462
 
 Do not claim the paper defined five process stages — **Action** is kit-process accountability only.
 
+## Assurance-Level labels (validator)
+
+Schema-1 frontmatter may declare `Assurance-Level: high | reasonable | limited | very_limited`. These are **labels only** — they do not fail merge by themselves. The validator may WARN when P0/P1 evidence is thin under `high`/`reasonable`; empty evidence on P0/P1 is a **hard error**. See `audit_artifact_schema.py` and [alignment-audit-schema.md](../roadmap/alignment-audit-schema.md).
+
 ## Labels (shared vocabulary)
 
 | Label | Meaning |

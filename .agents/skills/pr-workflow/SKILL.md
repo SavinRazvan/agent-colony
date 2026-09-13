@@ -10,13 +10,14 @@ disable-model-invocation: true
 
 **Implementer work:** board SSOT when `project_ssot.enabled` + `board_only`; local trackers are offline fallback (ADR-008). Slice closure: `workflow-complete.md` §F.
 
-**Merge path only:** review → prepare → merge (`review-pr`, `prepare-pr`, `merge-pr`).
+**Merge path only:** review → (verifier hop when shippable) → prepare → merge (`review-pr`, `prepare-pr`, `merge-pr`).
 
 ## Order
 
-1. `review-pr` — findings only; optional **`make drift-validate`** before review when trackers/board status changed. When scope is architecture-impacting, run **`auditor`** and write alignment artifacts per `.cursor/rules/advisory-audit-alignment-enforcement.mdc`.
-2. `prepare-pr` — board Status (or tracker sync only if offline fallback) + `prepare.py` (`resolve_gates()` — **6** steps on kit-dev: testing artifacts, pytest, drift, doc facts, check-plugin, check_audit_artifacts).
-3. `merge-pr` — `merge.py` check (add `--arch-impacting` when the PR is architecture-impacting), `gh pr merge`, `merge.py --merge-sha` (sets board card → Done when SSOT on), writes `merge.md`.
+1. `review-pr` — findings only; optional **`make drift-validate`** before review when trackers/board status changed. When scope is architecture-impacting, run **`auditor`** (Schema-1 alignment) **before** review/prepare per `.cursor/rules/advisory-audit-alignment-enforcement.mdc`.
+2. **Verifier hop (shippable work):** hand off to **`verifier`** (`handoff --next verifier --to in_review`) before prepare when the slice claims done/shippable; verifier disproves Acceptance against fresh evidence.
+3. `prepare-pr` — board Status (or tracker sync only if offline fallback) + `prepare.py` (`resolve_gates()` — **6** steps on kit-dev: testing artifacts, pytest, drift, doc facts, check-plugin, check_audit_artifacts).
+4. `merge-pr` — `merge.py` check (pipeline `architecture_impacting` / path-trigger / `--arch-impacting` enforces Schema-1), `gh pr merge`, `merge.py --merge-sha` (sets board card → Done when SSOT on), writes `merge.md`.
 
 Per-step detail: `.agents/skills/review-pr/`, `prepare-pr/`, `merge-pr/`.
 
