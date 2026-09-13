@@ -184,7 +184,7 @@ Never paste placeholder `--id`. After create, use `--last`. `project guide --age
 4. **Claim:** `project claim --last --agent <this-agent>`
 5. **Body:** `set-section --section acceptance|rollback --text '…' --last --agent <agent>`
 6. **Handoff:** `handoff --last --agent <this-agent> --next <agent> [--to in_review|done]` — **EXIT_VALIDATION (5)** when Acceptance/Rollback are `(TBD)` (also on `set-status --to in_review|done`)
-7. **Validate:** `validate-item --last`
+7. **Validate:** `validate-item --last` — Tier-1 + body. **Audit cards:** WARN if Notes lack a `.local/workflow-artifacts/` path; **exit 5** if Notes cite a path that fails Schema-1 (`check_audit_artifacts` / MCP `workflow_check_audit_artifacts`).
 8. **Atomics:** `set-status` · `set-field` · `set-section` · `promote-to-issue` · `mention-pr` · `append-notes --agent` · `get --last` · `export`
 
 Exit codes: `0` ok · `2` usage/config · `3` gh · `4` not found · **`5` validation** · **`6` queued** (outbox/cooldown; flush later).

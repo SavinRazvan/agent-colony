@@ -35,3 +35,5 @@ Three gate surfaces exist by design (Pattern A).
 | **`merge.py` arch-impacting** | Architecture-impacting PR merge check | Schema-1 alignment pair + open P0/P1 status fail; forced by `--arch-impacting`, pipeline `architecture_impacting` / `requires_alignment_artifacts`, or kit-dev path-trigger (`arch_impacting_paths.py`) | `.ai_infra/scripts/pr/merge.py` + `check_audit_artifacts.py --arch-impacting` |
 | **`prepare.py` skip-gates** | Stamp-only prepare | Refused (exit 2) when pipeline is architecture_impacting / requires_alignment_artifacts | `.ai_infra/scripts/pr/prepare.py` |
 | **DRIFT-017** | Kit-dev drift validate | Independence WARN when `Commissioned-By` missing/placeholder or equals `Audited-By` (does not block merge alone) | `drift_checks.py` + ADR-013 |
+| **`validate-item` audit teeth** | Board card check | WARN if audit Notes lack `.local/workflow-artifacts/` path; exit 5 if cited path fails Schema-1 | `project_atomics.collect_validate_item_problems` |
+| **MCP audit / merge check** | Agent Pattern A | `workflow_check_audit_artifacts`; `workflow_run_merge_check` appends `--arch-impacting` from pipeline (28 kit tools) | `agent_colony_mcp/server.py` |

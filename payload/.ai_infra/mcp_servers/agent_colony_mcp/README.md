@@ -2,7 +2,7 @@
 
 **Canonical path:** `.ai_infra/mcp_servers/agent_colony_mcp/`
 
-Stdio MCP server that **wraps existing scripts/CLI** — it does not duplicate `resolve_gates()` or Project GraphQL (ADR-012).
+Stdio MCP server that **wraps existing scripts/CLI** — it does not duplicate `resolve_gates()` or Project GraphQL (ADR-012). **28 tools** + 6 resources (kit inventory), including board Pattern A and `workflow_check_audit_artifacts`.
 
 ## Run locally
 
@@ -37,7 +37,7 @@ JSON envelope: `exit_code`, `summary`, `next_recommended_tool`, `detail`. EXIT_Q
 |------|--------|
 | `workflow_run_prepare` | `.ai_infra/scripts/pr/prepare.py` — pass `summary=True` for one-line gate result |
 | `workflow_run_review` | `.ai_infra/scripts/pr/review.py` |
-| `workflow_run_merge_check` | `.ai_infra/scripts/pr/merge.py` |
+| `workflow_run_merge_check` | `.ai_infra/scripts/pr/merge.py` — pipeline `architecture_impacting` / `requires_alignment_artifacts` appends `--arch-impacting` |
 | `workflow_check_audit_artifacts` | `.ai_infra/scripts/workflow/check_audit_artifacts.py` |
 | `workflow_run_gate` | single gate — **verifier only** (registry policy) |
 | `workflow_check_governance` | `check_governance_consistency.py` |

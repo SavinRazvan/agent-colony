@@ -32,10 +32,11 @@ Notes:
    - `gh pr view --json number,url,headRefName,state,mergeStateStatus`
 5. **Prepare gates (before merge / push)** — run **`python .ai_infra/scripts/pr/prepare.py`** (executes **`resolve_gates()`** — see `.ai_infra/scripts/pr/prepare.py`; `GATES` is the 2-gate back-compat alias). Additionally run **`python .ai_infra/scripts/architecture/check_governance_consistency.py`** when changing governance/workflows.
 6. **Skills order (do not skip)** — see `.agents/skills/pr-workflow/SKILL.md`:
-   - `review-pr` → `prepare-pr` → `merge-pr`
+   - `review-pr` → **verifier hop** (shippable) → `prepare-pr` → `merge-pr`
+   - Architecture-impacting: Schema-1 alignment before review/prepare (see §B). `--skip-gates` refused on `architecture_impacting` (exit 2).
 7. **Artifacts** (must exist before merge; fill with real content):
    - `.local/workflow-artifacts/pr/review.md` — `python .ai_infra/scripts/pr/review.py --pr <id|url> --actor "<name>" --agents "review-pr"` then edit findings.
-   - `.local/workflow-artifacts/pr/prep.md` — `python .ai_infra/scripts/pr/prepare.py --pr ... --actor "..." --agents "review-pr | prepare-pr"` (runs gates unless `--skip-gates` with `--skip-gates-rationale`).
+   - `.local/workflow-artifacts/pr/prep.md` — `python .ai_infra/scripts/pr/prepare.py --pr ... --actor "..." --agents "review-pr | prepare-pr"` (runs gates unless `--skip-gates` with `--skip-gates-rationale`; **not** allowed with `--pipeline architecture_impacting`).
    - `.local/workflow-artifacts/pr/merge.md` — produced via `merge-pr` / `.ai_infra/scripts/pr/merge.py` when ready.
 8. **After merge**:
    - `git checkout main` && sync with `origin`

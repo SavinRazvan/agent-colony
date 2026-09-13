@@ -89,7 +89,7 @@ Date: <ISO-8601>
 Evidence-Standard: repository + user context only
 ```
 
-**Mandatory sections:** `## Accountability summary` (one paragraph) and `## Audit limits` (what this pass does **not** cover — see evidence-first audit scope boundary). P0/P1 findings require `owner`, `due_slice` (or `deadline`), and `consequence_if_ignored` per [alignment-audit-schema.md](../../.ai_infra/docs/roadmap/alignment-audit-schema.md).
+**Mandatory sections:** `## Accountability summary` (one paragraph) and `## Audit limits` (what this pass does **not** cover — see evidence-first audit scope boundary). **P0/P1** require `owner`, `due_slice` (or `deadline`), `consequence_if_ignored`, **`status`** (missing or `open` → Schema-1 **FAIL**), **`category`** (allowlist), **`source_path`**, **`target_path`**, **`recommendation`**, **`evidence`** (hard error) per [alignment-audit-schema.md](../../.ai_infra/docs/roadmap/alignment-audit-schema.md). Prefer MCP `workflow_check_audit_artifacts` before handoff.
 
 **Downstream:** **Implementer** → `enterprise-audit-actions.md`; board Ready cards when SSOT on. **Alignment** → `alignment-audit.md` + `alignment-todos.md` per schema. **Module map** → optional `audit-module-map` skill. Brief `updates-log.md` entry after audit.
 
@@ -99,9 +99,10 @@ When maintainer workflow requires alignment files but not full enterprise report
 
 - Stay on **`auditor`**; keep **Evidence contract**.
 - **Write only:** `alignment-audit.md`, `alignment-todos.md` (schema: `.ai_infra/docs/roadmap/alignment-audit-schema.md`).
-- Stamp the same **Audit-Schema: 1** frontmatter (`Audit-Scope`, `Named-Target`, `Commissioned-By`) and include `## Accountability summary` + `## Audit limits`.
+- Stamp the same **Audit-Schema: 1** frontmatter (`Audit-Scope`, `Named-Target`, `Commissioned-By`) and include `## Accountability summary` + `## Audit limits` — **even with zero findings**.
 - Scope: **touched** roadmap/plan/rules/skills/agents + relevant `src/` / `tests/modules/` — not whole-repo scorecard.
 - Short **CHK-*** tick table for PR-touching dimensions; N/A elsewhere.
+- Merge forces Schema-1 via `--arch-impacting`, pipeline `architecture_impacting` / `requires_alignment_artifacts`, or kit-dev path-trigger (`arch_impacting_paths.py`).
 - Plan/doctrine pulse remains **`drift-guard`** — do not duplicate DRIFT-011 here.
 
 ## Context block (paste at start)

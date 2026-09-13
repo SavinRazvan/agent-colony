@@ -271,10 +271,10 @@ const ARTIFACT_FLOWS = [
   ],
   [
     ".local/workflow-artifacts/alignment/alignment-audit.md + alignment-todos.md",
-    "auditor (optional)",
-    "Governance drift findings",
-    "implementer (advisory)",
-    "Optional alignment pass; no auto-remediation",
+    "auditor (Exit Schema-1)",
+    "Arch-impacting / governance alignment",
+    "implementer (remediation)",
+    "Merge-mandatory Schema-1 pair; findings-only in audit pass (no product auto-fix)",
   ],
   [
     ".local/workflow-artifacts/pr/ (review.md, prep.md, merge.md)",

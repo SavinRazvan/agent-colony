@@ -428,9 +428,9 @@ Skill: `.cursor/skills/canvas-artifacts/SKILL.md`
 | **Implement a feature slice** | `/implementer` | — | [implementer-loop](../../.cursor/skills/implementer-loop/SKILL.md) |
 | **Run tests / coverage** | `/test-runner` | `pytest -q` | [workflow-complete.md](workflow-complete.md) §C |
 | **Verify a claim** | `/verifier` | — | Check done claims vs evidence (no code fixes) |
-| **Architecture audit** *(not day-0)* | `/auditor` | — (subagent only; no dedicated MCP tool) | [agent-workflow-procedures.md](agent-workflow-procedures.md) §1 — after board shell |
+| **Architecture audit** *(not day-0)* | `/auditor` | `workflow_check_audit_artifacts` | [agent-workflow-procedures.md](agent-workflow-procedures.md) §1 — after board shell; Schema-1 even zero findings |
 | **Operational drift** (goal/plan/doctrine/docs + DRIFT; board-first when SSOT on) | `/drift-guard` (optional) | `python3 -m agent_colony drift validate --profile consumer` on app projects | [ADR-007](../decisions/ADR-007-workflow-drift-guard.md) · [consumer-quickstart](consumer-quickstart.md#drift-on-consumer-apps) |
-| **PR: review → prepare → merge** | `/review-pr` → `/prepare-pr` → `/merge-pr` | `prepare.py` `resolve_gates()` | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
+| **PR: review → verifier → prepare → merge** | `/review-pr` → verifier hop → `/prepare-pr` → `/merge-pr` | `prepare.py` `resolve_gates()` · `workflow_run_merge_check` | [workflow-complete.md](workflow-complete.md) §A · [PR_WORKFLOW](../../.agents/skills/PR_WORKFLOW.md) |
 | **Add agents / skills / MCP** | `/integrator` + `/integrator-protocol` | `integrate validate` | [integrator-protocol skill](../../.cursor/skills/integrator-protocol/SKILL.md) · [mas-infrastructure-integration.md](mas-infrastructure-integration.md) (ops filename kept) |
 | **Connect external MCP** | `/mcp-connect` | edit `mcp.agents.yaml` | [connect-external-mcp.md](connect-external-mcp.md) |
 | **Upgrade / version-gated refresh** | `/update-agent-colony` | Copy the **Upgrade kit** terminal block in § Terminal commands | [upgrade-kit.md](upgrade-kit.md) · [update-agent-colony skill](../../.cursor/skills/update-agent-colony/SKILL.md) |
@@ -493,9 +493,9 @@ Full checklist: [workflow-complete.md](workflow-complete.md).
 
 For architecture-impacting work before merge prep:
 
-1. **`/auditor`** with skill **`/auditor-protocol`**
-2. Outputs under `.local/workflow-artifacts/enterprise-architecture-audit/`
-3. Focused PR pass may write `.local/workflow-artifacts/alignment/` instead
+1. **`/auditor`** with skill **`/auditor-protocol`** — write Schema-1 alignment pair **even with zero findings**
+2. Outputs under `.local/workflow-artifacts/alignment/` (or enterprise-architecture-audit/ for full pass)
+3. Prefer MCP **`workflow_check_audit_artifacts`** (`--arch-impacting` when merging). Open P0/P1 `status` fails Schema-1. Pipeline / path-trigger forces merge check; prepare refuses `--skip-gates` on `architecture_impacting`.
 
 Procedure: [agent-workflow-procedures.md](agent-workflow-procedures.md).
 

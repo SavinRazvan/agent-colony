@@ -38,7 +38,7 @@ Evidence-only architecture audit (CHK-*). Not continuous plan pulse — that is 
 
 1. `enterprise-architecture-audit/enterprise-architecture-audit.md`
 2. `enterprise-architecture-audit/enterprise-audit-actions.md`
-3. Alignment files when schema applies (advisory)
+3. Alignment files when architecture-impacting (Schema-1 pair **mandatory**, even with zero findings — not advisory for the merge gate)
 
 ## Handoff
 
@@ -53,6 +53,6 @@ item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> ·
 | Kit | `agent-colony-mcp` | Prefer Pattern A CLI |
 | External | `.cursor/mcp.registry.yaml` | Only servers listed for this agent |
 
-**Pattern A:** `python3 -m agent_colony mcp doctor|list-tools|call`. Optional DeepWiki: arg `repoName`.
+**Pattern A:** `python3 -m agent_colony mcp doctor|list-tools|call`. Prefer `workflow_check_audit_artifacts` (and `--arch-impacting` when aligning). Optional DeepWiki: arg `repoName`.
 
 **Canvas / plan:** `python3 -m agent_colony canvas doctor|sync|save`, `plan snapshot|list|open` — `.cursor/skills/canvas-artifacts/SKILL.md`.

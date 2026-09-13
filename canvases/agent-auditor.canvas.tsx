@@ -286,8 +286,8 @@ export default function AgentAuditorCanvas() {
           <Text>
             3. Write .local/workflow-artifacts/enterprise-architecture-audit/
             enterprise-architecture-audit.md + enterprise-audit-actions.md
-            (artifact dir name kept; skill is auditor-protocol); optional
-            alignment/ for merge workflow.
+            (artifact dir name kept; skill is auditor-protocol); Schema-1
+            alignment/ mandatory for arch-impacting merges (even zero findings).
           </Text>
           <Text>4. Propose tracker edits in audit-actions — implementer applies.</Text>
           <Text>
@@ -314,7 +314,7 @@ export default function AgentAuditorCanvas() {
             <Table headers={["Path", "When", "Consumed by"]} rows={ARTIFACTS} />
             <Spacer size={8} />
             <Text tone="tertiary" size="small">
-              Audits are advisory — findings only; implementer applies tracker edits.
+              Remediation is findings-only (no auto-fix in audit pass). Merge gate is not advisory — Schema-1 must PASS; open P0/P1 status fails.
             </Text>
           </CardBody>
         </Card>
@@ -345,8 +345,9 @@ export default function AgentAuditorCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP">
-        Kit server agent-colony-mcp for audit scripts — prefer agent_colony project for
-        board. External: only servers listed for this agent in mcp.registry.yaml.
+        Prefer workflow_check_audit_artifacts for Schema-1 scans; agent_colony
+        project for board. External: only servers listed for this agent in
+        mcp.registry.yaml. Kit inventory: 28 tools.
       </Callout>
 
       <Text tone="tertiary" size="small">
