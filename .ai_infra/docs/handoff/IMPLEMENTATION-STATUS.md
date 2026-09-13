@@ -20,8 +20,8 @@ Notes:
 Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
-**Last updated:** 2026-09-13 (ADR-013 audit enforcement close — arch-impacting Schema-1)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1579
+**Last updated:** 2026-09-13 (board API rate-limit safety — cooldown + api-ready)
+**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1606
 
 ## Shipped (confirmed in repo)
 
@@ -40,7 +40,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Timestamped board Notes (CONT-TS) | `@user/agent · <ISO-8601-UTC> · …` via CLI (`claim`/`handoff`/`append-notes`) | `project_recipes.py` / `project_cli.py` + skill § Notes |
 | Tier-1 Size/Estimate + Start date | Size↔Estimate **points** table in skill; Start date on claim / `set-status` / `handoff` → `in_progress`; `create-from-template --priority` required | `board-ssot` skill · `project_atomics.ensure_start_date_if_starting` · PR #70 |
 | Local continuity-index | Rolling ≥3-day UTC rows; board Notes = full card lifetime | `history/continuity-index.md` (+ exemplar) |
-| Board outbox (rate-limit) | `project queue` / `outbox status|flush`; EXIT_QUEUED=6; precheck + Forbidden/429 queue + dedupe; **77 mocked unit tests** | `project_outbox.py` + `project_atomics.py` / `project_cli.py` + `tests/modules/install/test_project_outbox.py` |
+| Board outbox (rate-limit) | `project api-ready` / `queue` / `outbox status|flush` / `cooldown status|clear`; EXIT_QUEUED=6; `board-api-cooldown.json` circuit-breaker; Notes coalesce; secondary floor; **116 mocked outbox unit tests** | `project_outbox.py` + CLI/MCP + `tests/modules/install/test_project_outbox.py` |
 | Board shell schema + coach | `board-shell.schema.yaml` + `board-shell` skill; schema-aware `board-bootstrap --check`; opt-in `--ensure-fields` / `--apply-readme` | templates/project-board · project_handlers · board_shell.py |
 | Board CLI subcommands | **27** leaf commands (incl. `entry`, `heal-cards`; full table in ops doc) | [project-board-collaboration.md](../operations/project-board-collaboration.md) § Project CLI subcommands |
 | Board Status + Tier-1 heal | `create-from-template` Status default `ready`; `heal-cards`; validate empty Status; close-issue Done gate; merge outbox queue | `project_handlers.run_heal_cards` · `project_atomics.collect_validate_item_problems` · PR #217 |
@@ -69,7 +69,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Consumer update stamp | Scaffold + `update` write `.kit-version` from source manifest; CLI fallback `ensure_kit_version_stamp` | `scaffold.py` · `update_cli.py` · tests |
 | Multi-consumer isolation | Model A contract doc; DRIFT-013 tracked-runtime guard; DRIFT-011b advisory; `update --check` + `kit_managed_globs`; consumer CI template | `multi-consumer-isolation.md` · `drift_checks.py` · `update_cli.py` · `templates/ci/consumer-gates.yml` |
 | Dashboard removal | Documentation now points to GitHub Project board + Cursor Open Canvas; `.local/index-and-planning/` remains offline markdown only | operations docs · skills · canvases |
-| Tests | 1579 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1606 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

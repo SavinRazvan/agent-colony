@@ -25,6 +25,7 @@
       "enum": [
         "append-notes",
         "set-status",
+        "set-section",
         "handoff",
         "claim",
         "set-assignee",

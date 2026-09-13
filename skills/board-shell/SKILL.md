@@ -159,7 +159,7 @@ python3 -m agent_colony project board-bootstrap --check --apply-readme
 - `--ensure-fields`: create missing field definitions; print suggested YAML ids. Does **not** create views.
 - `--apply-readme`: push templated README via `updateProjectV2` (opt-in).
 
-Respect GraphQL quota / outbox — never retry-loop.
+Respect GraphQL quota / outbox / `project api-ready` — never retry-loop when EXIT_QUEUED or cooldown open.
 
 ### Smoke card
 

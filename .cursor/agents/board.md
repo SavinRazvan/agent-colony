@@ -18,7 +18,7 @@ description: board Agent Colony — Wire Project SSOT, triage cards, and coach f
 
 **Exit:** Update Status via MCP/CLI Pattern A. Append `change-index.md`. One line in `updates-log.md`. Print handoff. No dual-write under `board_only`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `workflow_project_claim` / `workflow_project_handoff` or CLI `claim` / `handoff --agent board`. Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `workflow_project_claim` / `workflow_project_handoff` or CLI `claim` / `handoff --agent board`. Use `mention-pr` and `promote-to-issue` before shippable PR. Gate: `workflow_project_api_ready` / `project api-ready` before board writes. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 
 **Tier-1:** On triage/create **must** set Priority, Size, Estimate. Canon: `board-ssot` § Tier-1.
 

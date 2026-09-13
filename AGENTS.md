@@ -56,13 +56,14 @@ Product rules: [`overlays/rules/`](overlays/README.md). Say *prepare gates green
 
 | Step | Command | Notes |
 |------|---------|--------|
-| Entry | `project entry` | Quota-aware read |
+| Entry | `project api-ready` then `project entry` | Quota/cooldown gate + scoped read |
 | Claim | `project claim --last --agent <name>` | In progress; Start date |
 | Done | `project set-status --to done` / `handoff --to done` | End date |
 | Triage | `project set-field --field priority\|size\|estimate --to … --last` | Own/triage cards |
 | Promote | `project promote-to-issue --last --agent <name>` | Draft→Issue |
 | PR link | `project mention-pr --pr N --last --agent <name>` | Notes + auto-promote |
 | Handoff | `project handoff --last --agent <name> --next <peer> --to in_review` | Status + Notes |
+| Rate-limit | `project api-ready` · `outbox status` · `cooldown status` · `outbox flush` | EXIT_QUEUED(6); no retry |
 
 Do not leave shippable work as Draft. Handoff: [workflow-complete.md](.ai_infra/docs/operations/workflow-complete.md) §F.
 

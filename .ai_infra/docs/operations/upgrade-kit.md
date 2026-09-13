@@ -45,7 +45,7 @@ Kit **0.6.2** hardens board Status + Tier-1 completeness (no rename):
 - `validate-item` / `doctor` flag empty Status and incomplete Tier-1 (no early-return skip)
 - `project heal-cards --check|--apply|--fill-tier1` inventories and repairs CLOSED+non-Done / empty Status cards
 - `close-linked-issue` requires board Status=`done` before closing the GitHub Issue
-- merge board sync queues `set-status` / Notes on queueable GraphQL failures (EXIT_QUEUED / outbox)
+- merge board sync queues `set-status` / Notes on queueable GraphQL failures (EXIT_QUEUED → api-ready / outbox)
 - Consumer activate no longer leaves `tests/modules/smoke/test_kit_installed.py` by default (`--keep-smoke-test` opt-in)
 
 Consumers: `python3 -m agent_colony update` after the plugin marketplace refreshes to **0.6.2**.
@@ -99,7 +99,7 @@ Upgrade lite → full: `python3 -m agent_colony update --force --profile with_mc
 Kit **0.7.2** ships MCP Pattern A board tools (no rename):
 
 - **ADR-012** — wrap-only MCP adapters for `project entry/claim/handoff/outbox` + `doc skill-section` + `workflow_session_entry`
-- JSON response envelope; EXIT_QUEUED recommends outbox status (never retry)
+- JSON response envelope; EXIT_QUEUED recommends `workflow_project_api_ready` then outbox status (never retry)
 - `workflow_run_gate` restricted to verifier via registry/agent policy
 - `workflow_drift_validate(summary=True)` default
 

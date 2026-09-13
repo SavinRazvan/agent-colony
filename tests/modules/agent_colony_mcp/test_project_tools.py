@@ -47,7 +47,7 @@ def test_format_envelope_exit_queued_forces_outbox() -> None:
     raw = pt.format_envelope(6, "queued", "workflow_project_claim", None)
     data = _parse(raw)
     assert data["exit_code"] == 6
-    assert data["next_recommended_tool"] == "workflow_project_outbox_status"
+    assert data["next_recommended_tool"] == "workflow_project_api_ready"
     assert "do not retry" in data["summary"].lower()
     assert data["detail"] is None
 
@@ -72,22 +72,49 @@ def test_project_entry_digest(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_project_claim_exit_queued(monkeypatch: pytest.MonkeyPatch) -> None:
     pc = _load_project_cli()
 
+    def fake_ready(args: argparse.Namespace) -> int:
+        print("api-ready=yes")
+        return 0
+
     def fake_claim(args: argparse.Namespace) -> int:
         assert args.last is True
         assert args.agent == "implementer"
         print("claim: EXIT_QUEUED", file=sys.stderr)
         return 6
 
+    monkeypatch.setattr(pc, "cmd_api_ready", fake_ready)
     monkeypatch.setattr(pc, "cmd_claim", fake_claim)
     raw = pt.run_project_claim(REPO_ROOT, agent="implementer")
     data = _parse(raw)
     assert data["exit_code"] == 6
-    assert data["next_recommended_tool"] == "workflow_project_outbox_status"
+    assert data["next_recommended_tool"] == "workflow_project_api_ready"
     assert "do not retry" in data["summary"].lower()
+
+
+def test_project_claim_preflight_blocks(monkeypatch: pytest.MonkeyPatch) -> None:
+    pc = _load_project_cli()
+
+    def fake_ready(args: argparse.Namespace) -> int:
+        print("api-ready=no · cooldown open", file=sys.stderr)
+        return 6
+
+    def boom_claim(args: argparse.Namespace) -> int:
+        raise AssertionError("claim must not run when api-ready fails")
+
+    monkeypatch.setattr(pc, "cmd_api_ready", fake_ready)
+    monkeypatch.setattr(pc, "cmd_claim", boom_claim)
+    raw = pt.run_project_claim(REPO_ROOT, agent="implementer")
+    data = _parse(raw)
+    assert data["exit_code"] == 6
+    assert data["next_recommended_tool"] == "workflow_project_api_ready"
 
 
 def test_project_handoff_ok(monkeypatch: pytest.MonkeyPatch) -> None:
     pc = _load_project_cli()
+
+    def fake_ready(args: argparse.Namespace) -> int:
+        print("api-ready=yes")
+        return 0
 
     def fake_handoff(args: argparse.Namespace) -> int:
         assert args.next == "verifier"
@@ -95,6 +122,7 @@ def test_project_handoff_ok(monkeypatch: pytest.MonkeyPatch) -> None:
         print("handoff: ok")
         return 0
 
+    monkeypatch.setattr(pc, "cmd_api_ready", fake_ready)
     monkeypatch.setattr(pc, "cmd_handoff", fake_handoff)
     raw = pt.run_project_handoff(
         REPO_ROOT, agent="implementer", next_agent="verifier", to="in_review"

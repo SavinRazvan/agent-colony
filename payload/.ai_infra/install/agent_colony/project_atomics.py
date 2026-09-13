@@ -351,6 +351,14 @@ def load_project_ssot(root: Path) -> tuple[dict[str, Any] | None, list[str]]:
     ssot = cfg.get("project_ssot")
     if not isinstance(ssot, dict):
         return None, ["project_ssot: missing block in github.collaboration.yaml"]
+    # Normalize owner so gh --owner never sees users/|orgs/ URL prefixes.
+    raw_owner = ssot.get("owner")
+    if raw_owner not in (None, ""):
+        owner, owner_err = normalize_project_owner(str(raw_owner))
+        if owner_err:
+            errors.append(owner_err)
+        else:
+            ssot = {**ssot, "owner": owner}
     return ssot, errors
 
 
@@ -398,6 +406,38 @@ def normalize_github_handle(raw: str) -> str:
     if not s:
         return ""
     return s if s.startswith("@") else f"@{s}"
+
+
+_OWNER_PREFIX_RE = re.compile(r"^(users?|orgs?)/", re.IGNORECASE)
+
+
+def owner_yaml_looks_url_shaped(raw: str) -> bool:
+    """True when YAML owner starts with users/|user/|orgs/|org/ (gh rejects these)."""
+    s = (raw or "").strip().lstrip("@")
+    return bool(_OWNER_PREFIX_RE.match(s))
+
+
+def normalize_project_owner(raw: str) -> tuple[str, str | None]:
+    """
+    Normalize project_ssot.owner for gh --owner.
+    Strips @ and users/|user/|orgs/|org/ prefixes.
+    Returns (owner, error_message). error set when still invalid (contains /).
+    """
+    s = (raw or "").strip().lstrip("@")
+    if not s:
+        return "", "project_ssot.owner is empty"
+    # Strip URL path prefixes gh rejects as "unknown owner type".
+    prev = None
+    while prev != s:
+        prev = s
+        s = _OWNER_PREFIX_RE.sub("", s).strip().lstrip("@")
+    if "/" in s or not s:
+        return s, (
+            f"project_ssot.owner {raw!r} is invalid for gh --owner "
+            "(use bare login like SavinRazvan, not users/… or orgs/…)"
+        )
+    return s, None
+
 def resolve_human_github_user(root: Path) -> str:
     """Human identity from owner.github_user (not project_ssot.owner)."""
     us = _import_user_settings(root)

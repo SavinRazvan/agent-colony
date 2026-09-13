@@ -19,7 +19,7 @@ External servers: [connect-external-mcp.md](../../docs/operations/connect-extern
 
 ## Pattern A board tools (kit 0.7.2+)
 
-JSON envelope: `exit_code`, `summary`, `next_recommended_tool`, `detail`. EXIT_QUEUED (6) → `workflow_project_outbox_status` — never retry.
+JSON envelope: `exit_code`, `summary`, `next_recommended_tool`, `detail`. EXIT_QUEUED (6) → `workflow_project_api_ready` — never retry.
 
 | Tool | Wraps |
 |------|--------|
@@ -28,6 +28,7 @@ JSON envelope: `exit_code`, `summary`, `next_recommended_tool`, `detail`. EXIT_Q
 | `workflow_project_claim` | `project claim --last --agent` |
 | `workflow_project_handoff` | `project handoff --last --agent --next [--to]` |
 | `workflow_project_outbox_status` | `project outbox status` |
+| `workflow_project_api_ready` | `project api-ready` |
 | `workflow_doc_skill_section` | `doc skill-section` |
 
 ## Other P0 tools

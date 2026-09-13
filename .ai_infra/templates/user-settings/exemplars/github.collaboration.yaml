@@ -60,6 +60,11 @@ project_ssot:
     quota_cache_ttl_seconds: 45         # avoid REST spam; protects GraphQL
     quota_cache_path: .local/generated-data/graphql-quota-cache.json
     dedupe_pending: true                # same op+item+payload → one pending outbox row
+    cooldown_path: .local/generated-data/board-api-cooldown.json
+    cooldown_floor_seconds: 60          # hard skip live API until max(reset, now+floor)
+    secondary_limit_floor_seconds: 120  # longer floor for secondary/abuse limits
+    coalesce_pending_notes: true
+    max_pending_notes_per_item: 3
 
   # GraphQL-efficient Entry / export (human-like scoped reads — not a second SSOT)
   efficiency:

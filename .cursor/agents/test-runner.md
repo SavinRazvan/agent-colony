@@ -18,7 +18,7 @@ description: test-runner Agent Colony — Module-focused tests, regressions, cov
 
 **Exit:** `handoff --last` / claim. Status → `in_review` if tests gate PR, else `done`. Update `change-index.md`, `test-index.md` / `test-plan.md`. No dual-write under `board_only`.
 
-**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent test-runner`. Use `mention-pr` and `promote-to-issue` before shippable PR. On EXIT_QUEUED (6): outbox; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
+**Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent test-runner`. Use `mention-pr` and `promote-to-issue` before shippable PR. Gate: `workflow_project_api_ready` / `project api-ready` before board writes. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 
 **Tier-1:** Fill Status, Priority, Size, Estimate, dates, Assignee, Linked PR. Canon: `board-ssot` § Tier-1.
 

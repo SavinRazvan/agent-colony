@@ -52,9 +52,9 @@ Work is **indexed on the Project**, not chat alone.
 
 | Phase | Required |
 |-------|----------|
-| **Entry** | Prefer `python3 -m agent_colony project entry` (live \| conserve \| offline_artifacts). Then `get` / `claim` **one** card. Read Acceptance / Rollback / Notes. Avoid unfiltered `list` / full `export` every turn — use `export --reuse-if-fresh`. One export refresh per parent wave. |
-| **During** | **One** In progress card for your assignee. Mid-slice progress → card Notes. |
-| **Exit** | Update Status → `in_review` / `done`, or stay `in_progress` with **Notes** naming next agent. Notes via `append-notes --agent <this-agent>` → `@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · …` (CLI stamps UTC). Print handoff line. **EXIT_QUEUED (6)** / rate-limit / Forbidden / precheck low quota: **do not** retry-loop — op in `.local/generated-data/board-outbox.jsonl`; later `project outbox flush`. |
+| **Entry** | Prefer `python3 -m agent_colony project api-ready` then `project entry` (live \| conserve \| offline_artifacts). Then `get` / `claim` **one** card. Read Acceptance / Rollback / Notes. Avoid unfiltered `list` / full `export` every turn — use `export --reuse-if-fresh`. One export refresh per parent wave. |
+| **During** | **One** In progress card for your assignee. Mid-slice progress → card Notes. Do not re-touch every non-done card. |
+| **Exit** | Update Status → `in_review` / `done`, or stay `in_progress` with **Notes** naming next agent. Notes via `append-notes --agent <this-agent>` → `@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · …` (CLI stamps UTC). Print handoff line. **EXIT_QUEUED (6)** / rate-limit / Forbidden / precheck low quota / open cooldown: **do not** retry-loop — op in `.local/generated-data/board-outbox.jsonl`; check `project cooldown status` / `project api-ready`; later `project outbox flush`. |
 | **Never** | Chat-only completion with stale Status. No dual-write tracker `in_progress` under `board_only`. No bare `Agent: implementer` without `@user/` namespace. |
 
 Handoff line (chat + Notes):
@@ -187,9 +187,11 @@ Never paste placeholder `--id`. After create, use `--last`. `project guide --age
 7. **Validate:** `validate-item --last`
 8. **Atomics:** `set-status` · `set-field` · `set-section` · `promote-to-issue` · `mention-pr` · `append-notes --agent` · `get --last` · `export`
 
-Exit codes: `0` ok · `2` usage/config · `3` gh · `4` not found · **`5` validation** · **`6` queued** (outbox; flush later).
+Exit codes: `0` ok · `2` usage/config · `3` gh · `4` not found · **`5` validation** · **`6` queued** (outbox/cooldown; flush later).
 
-Rate-limit: `project outbox status` / `project queue` / `project outbox flush` — see `project_ssot.outbox` in collaboration YAML.
+Rate-limit: `project api-ready` → `project outbox status` / `project cooldown status` / `project queue` / `project outbox flush` — see `project_ssot.outbox` in collaboration YAML. While `board-api-cooldown.json` is open, Pattern A writes hard-skip live API (EXIT_QUEUED) without REST/GraphQL spam.
+
+**Card-touch budget:** one claimed/`--last` card per wave; coalesce pending Notes; `heal-cards --apply --fill-tier1` requires `--id`/`--last` (Done End-date hygiene may run unscoped).
 
 ## Dual-write ban
 
@@ -203,9 +205,9 @@ Cite CLI output or `gh project` JSON. Label **Unknown** when board unreachable �
 
 ## Exit criteria
 
-- [ ] Entry read board (or explicit offline fallback)
+- [ ] Entry: `project api-ready` then read board (or explicit offline fallback)
 - [ ] Exit updated Status or Notes + next agent
-- [ ] If EXIT_QUEUED: `outbox status`; no API hammering
+- [ ] If EXIT_QUEUED: `outbox status` / `cooldown status`; no API hammering
 - [ ] Handoff line with real `item_id`
 - [ ] No dual-write; no unprompted Project view/workflow edits
 

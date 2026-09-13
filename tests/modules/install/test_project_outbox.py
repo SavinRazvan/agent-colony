@@ -162,6 +162,8 @@ def test_load_outbox_config_missing_outbox_key() -> None:
         ("Please retry later", True),
         ("Post https://api.github.com/graphql: Forbidden", True),
         ("error: 403 Forbidden", True),
+        ("403 Forbidden — Resource not accessible by integration", False),
+        ("Forbidden: must have admin permission", False),
         ("network timeout", False),
         ("", False),
         ("item not found", False),
@@ -172,6 +174,20 @@ def test_load_outbox_config_missing_outbox_key() -> None:
 def test_is_rate_limit_error(text: str, expected: bool) -> None:
     assert project_outbox.is_rate_limit_error(text) is expected
     assert project_outbox.is_queueable_gh_throttle(text) is expected
+
+
+def test_is_secondary_rate_limit() -> None:
+    assert project_outbox.is_secondary_rate_limit("secondary rate limit") is True
+    assert project_outbox.is_secondary_rate_limit("API rate limit exceeded") is False
+
+
+def test_load_outbox_config_cooldown_defaults() -> None:
+    cfg = project_outbox.load_outbox_config({})
+    assert "board-api-cooldown.json" in cfg["cooldown_path"]
+    assert cfg["cooldown_floor_seconds"] == 60
+    assert cfg["secondary_limit_floor_seconds"] == 120
+    assert cfg["coalesce_pending_notes"] is True
+    assert cfg["max_pending_notes_per_item"] == 3
 
 
 # --- graphql_rate_limit ---
@@ -802,12 +818,14 @@ def test_apply_outbox_entry_handoff_status_fail(
 def test_flush_outbox_refuses_low_remaining(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    ssot = _outbox_ssot(tmp_path)
+    ssot = _outbox_ssot(tmp_path, cooldown_path="outbox/cooldown.json")
     _mock_graphql(monkeypatch, remaining=50)
     code, summary = project_outbox.flush_outbox(tmp_path, ssot)
-    assert code == project_outbox.EXIT_GH
+    assert code == project_outbox.EXIT_QUEUED
     assert "remaining=50" in summary
     assert "refuse flush" in summary
+    active, _ = project_outbox.cooldown_active(tmp_path, ssot)
+    assert active is True
 
 
 def test_flush_outbox_invalid_remaining_type(
@@ -825,7 +843,7 @@ def test_flush_outbox_invalid_remaining_type(
 
     monkeypatch.setattr(project_outbox, "graphql_rate_limit", _bad_rl)
     code, summary = project_outbox.flush_outbox(tmp_path, ssot)
-    assert code == project_outbox.EXIT_GH
+    assert code == project_outbox.EXIT_QUEUED
     assert "refuse flush" in summary
 
 
@@ -1004,7 +1022,7 @@ def test_flush_outbox_stops_on_rate_limit_during_apply(
 
     monkeypatch.setattr(project_outbox, "apply_outbox_entry", flaky_apply)
     code, summary = project_outbox.flush_outbox(tmp_path, ssot, max_ops=5)
-    assert code == project_outbox.EXIT_GH
+    assert code == project_outbox.EXIT_QUEUED
     assert "rate-limit" in summary
     entries = project_outbox.read_outbox_entries(path)
     assert entries[0]["status"] == "pending"
@@ -1142,12 +1160,12 @@ def test_cmd_outbox_flush_refuses_low_remaining(
         project_outbox,
         "flush_outbox",
         lambda *a, **k: (
-            project_outbox.EXIT_GH,
+            project_outbox.EXIT_QUEUED,
             "GraphQL remaining=50 < min=200; refuse flush until 2026-01-01T00:00:00Z",
         ),
     )
     args = argparse.Namespace(directory=tmp_path, max=None, limit=100)
-    assert project_cli.cmd_outbox_flush(args) == project_cli.EXIT_GH
+    assert project_cli.cmd_outbox_flush(args) == project_cli.EXIT_QUEUED
 
 
 def _board_item(item_id: str = VALID_ITEM_ID) -> dict:
@@ -2012,3 +2030,248 @@ def test_project_parser_limit_defaults_200() -> None:
         "--directory", ".",
     ])
     assert get_ns.limit == 200
+
+
+# --- cooldown circuit-breaker ---
+
+
+def test_open_cooldown_and_guard_hard_skip(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    ssot = _outbox_ssot(
+        tmp_path,
+        cooldown_path="outbox/cooldown.json",
+        cooldown_floor_seconds=120,
+        quota_cache_path="outbox/quota.json",
+    )
+    monkeypatch.setattr(
+        project_cli,
+        "resolve_human_github_user",
+        lambda root: "@test",
+    )
+    monkeypatch.setattr(project_cli, "normalize_github_handle", lambda u: u)
+    # Should not call remaining_below_min / REST when cooldown open.
+    probes = {"n": 0}
+
+    def boom(*a: object, **k: object) -> tuple[bool, dict]:
+        probes["n"] += 1
+        raise AssertionError("should not probe while cooldown open")
+
+    monkeypatch.setattr(project_outbox, "remaining_below_min", boom)
+    project_outbox.open_cooldown(
+        tmp_path,
+        ssot,
+        reason="stderr_throttle",
+        source_cmd="set-status",
+        secondary=False,
+    )
+    active, data = project_outbox.cooldown_active(tmp_path, ssot)
+    assert active is True
+    assert data is not None
+    assert data["state"] == "open"
+    code = project_outbox.guard_write_or_queue(
+        tmp_path,
+        ssot,
+        cmd="set-status",
+        op="set-status",
+        item_id=VALID_ITEM_ID,
+        agent="implementer",
+        payload={"to": "done"},
+    )
+    assert code == project_outbox.EXIT_QUEUED
+    assert probes["n"] == 0
+    entries = project_outbox.read_outbox_entries(_outbox_file(tmp_path, ssot))
+    assert len(entries) == 1
+    assert entries[0]["status"] == "pending"
+
+
+def test_api_ready_no_when_cooldown_open(tmp_path: Path) -> None:
+    ssot = _outbox_ssot(tmp_path, cooldown_path="outbox/cooldown.json")
+    project_outbox.open_cooldown(
+        tmp_path, ssot, reason="test", source_cmd="unit", secondary=True
+    )
+    ready, code, msg = project_outbox.api_ready(tmp_path, ssot)
+    assert ready is False
+    assert code == project_outbox.EXIT_QUEUED
+    assert "api-ready=no" in msg
+
+
+def test_clear_cooldown_allows_api_ready(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    ssot = _outbox_ssot(
+        tmp_path,
+        cooldown_path="outbox/cooldown.json",
+        quota_cache_path="outbox/quota.json",
+    )
+    project_outbox.open_cooldown(
+        tmp_path, ssot, reason="test", source_cmd="unit"
+    )
+    project_outbox.clear_cooldown(tmp_path, ssot)
+    monkeypatch.setattr(
+        project_outbox,
+        "get_cached_graphql_remaining",
+        lambda *a, **k: {
+            "remaining": 5000,
+            "limit": 5000,
+            "reset_epoch": 9999999999,
+            "error": None,
+            "from_cache": True,
+        },
+    )
+    ready, code, msg = project_outbox.api_ready(tmp_path, ssot)
+    assert ready is True
+    assert code == project_outbox.EXIT_OK
+    assert "api-ready=yes" in msg
+
+
+def test_coalesce_pending_notes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    ssot = _outbox_ssot(
+        tmp_path,
+        coalesce_pending_notes=True,
+        max_pending_notes_per_item=2,
+        dedupe_pending=False,
+    )
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    monkeypatch.setattr(project_cli, "normalize_github_handle", lambda u: u)
+    for i in range(4):
+        entry, err = project_outbox.enqueue_op(
+            tmp_path,
+            ssot,
+            op="append-notes",
+            item_id=VALID_ITEM_ID,
+            agent="implementer",
+            payload={"text": f"note-{i}"},
+        )
+        assert err == ""
+        assert entry is not None
+    entries = [
+        e
+        for e in project_outbox.read_outbox_entries(_outbox_file(tmp_path, ssot))
+        if e.get("status") == "pending" and e.get("op") == "append-notes"
+    ]
+    assert len(entries) == 2
+    texts = {e["payload"]["text"] for e in entries}
+    assert "note-3" in texts
+
+
+def test_flush_refuses_when_cooldown_open(tmp_path: Path) -> None:
+    ssot = _outbox_ssot(tmp_path, cooldown_path="outbox/cooldown.json")
+    project_outbox.open_cooldown(
+        tmp_path, ssot, reason="stderr_throttle", source_cmd="flush-test"
+    )
+    code, summary = project_outbox.flush_outbox(tmp_path, ssot)
+    assert code == project_outbox.EXIT_QUEUED
+    assert "refuse flush" in summary
+
+
+def test_maybe_enqueue_opens_cooldown(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    ssot = _outbox_ssot(tmp_path, cooldown_path="outbox/cooldown.json")
+    monkeypatch.setattr(project_cli, "resolve_human_github_user", lambda root: "@test")
+    monkeypatch.setattr(project_cli, "normalize_github_handle", lambda u: u)
+    code = project_outbox.maybe_enqueue_on_gh_fail(
+        tmp_path,
+        ssot,
+        cmd="set-status",
+        err_detail="secondary rate limit",
+        op="set-status",
+        item_id=VALID_ITEM_ID,
+        agent="implementer",
+        payload={"to": "done"},
+    )
+    assert code == project_outbox.EXIT_QUEUED
+    active, data = project_outbox.cooldown_active(tmp_path, ssot)
+    assert active is True
+    assert data is not None
+    assert data.get("reason") == "secondary_throttle"
+
+
+def test_api_ready_fail_closed_on_throttle_probe(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    ssot = _outbox_ssot(tmp_path, cooldown_path="outbox/cooldown.json")
+    monkeypatch.setattr(
+        project_outbox,
+        "get_cached_graphql_remaining",
+        lambda *a, **k: {
+            "remaining": None,
+            "limit": None,
+            "reset_epoch": None,
+            "error": "API rate limit exceeded",
+            "from_cache": False,
+        },
+    )
+    ready, code, msg = project_outbox.api_ready(tmp_path, ssot)
+    assert ready is False
+    assert code == project_outbox.EXIT_QUEUED
+    assert "api-ready=no" in msg
+    active, _ = project_outbox.cooldown_active(tmp_path, ssot)
+    assert active is True
+
+
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("Retry-After: 90", 90),
+        ("retry-after=45", 45),
+        ("Please wait 60 seconds", 60),
+        ("wait: 30", 30),
+        ("no timing here", None),
+        ("", None),
+    ],
+)
+def test_parse_retry_after_seconds(text: str, expected: int | None) -> None:
+    assert project_outbox.parse_retry_after_seconds(text) == expected
+
+
+def test_open_cooldown_respects_retry_after(
+    tmp_path: Path,
+) -> None:
+    ssot = _outbox_ssot(
+        tmp_path,
+        cooldown_path="outbox/cooldown.json",
+        cooldown_floor_seconds=10,
+    )
+    now = project_outbox._utc_now_epoch()
+    payload = project_outbox.open_cooldown(
+        tmp_path,
+        ssot,
+        reason="stderr_throttle",
+        source_cmd="unit",
+        secondary=False,
+        retry_after_seconds=180,
+        reset_epoch=None,
+    )
+    until = float(payload["limited_until_epoch"])
+    assert until >= now + 179
+    assert payload.get("retry_after_seconds") == 180
+
+
+def test_api_ready_fail_open_on_bare_forbidden_probe(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    ssot = _outbox_ssot(tmp_path, cooldown_path="outbox/cooldown.json")
+    monkeypatch.setattr(
+        project_outbox,
+        "get_cached_graphql_remaining",
+        lambda *a, **k: {
+            "remaining": 5000,
+            "limit": 5000,
+            "reset_epoch": 9999999999,
+            "error": 'Get "https://api.github.com/rate_limit": Forbidden',
+            "from_cache": False,
+        },
+    )
+    monkeypatch.setattr(
+        project_outbox,
+        "remaining_below_min",
+        lambda *a, **k: (False, {"remaining": 5000, "reset_epoch": 9999999999, "error": None}),
+    )
+    ready, code, msg = project_outbox.api_ready(tmp_path, ssot)
+    assert ready is True
+    assert code == project_outbox.EXIT_OK
+    assert "api-ready=yes" in msg
+    active, _ = project_outbox.cooldown_active(tmp_path, ssot)
+    assert active is False

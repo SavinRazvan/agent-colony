@@ -161,17 +161,28 @@ All subcommands registered in `.ai_infra/install/agent_colony/project_parser.py`
 
 GitHub GraphQL quota (~5000/hour) can block board writes. When `project_ssot.outbox.enabled`:
 
-1. **Precheck (default):** before Pattern A writes, CLI reads cached REST `rate_limit` (TTL `quota_cache_ttl_seconds`, default 45s). If GraphQL `remaining < min_graphql_remaining`, enqueue + **EXIT_QUEUED (6)** without calling Projects GraphQL.
-2. Live write fails with throttle (rate-limit / secondary / 429 / bare Forbidden) → CLI **enqueues** to `.local/generated-data/board-outbox.jsonl` and returns **EXIT_QUEUED (6)**. Permanent scope-miss errors are **not** queued.
-3. **Dedupe:** identical pending `op`+`item_id`+payload fingerprint reuses one outbox row (`dedupe_pending`).
-4. Agent continues local evidence (`change-index`, handoff line) — **do not** hammer `gh` / retry loops (CODE=6 = soft-success).
-5. After quota recovers: `python3 -m agent_colony project outbox status` then `outbox flush` (capped by `max_flush_per_run`; refuses if `remaining < min_graphql_remaining`).
-6. Explicit enqueue: `project queue --op append-notes|set-status|handoff|claim|set-assignee|set-field …`
-7. Outbox is a **local buffer**, never a second Status SSOT. Prefer Pattern A CLI over raw `gh api graphql` (raw calls bypass the outbox).
+1. **Gate:** `python3 -m agent_colony project api-ready` (EXIT_OK = may write; EXIT_QUEUED(6) = skip). MCP: `workflow_project_api_ready`.
+2. **Circuit-breaker:** throttle / low remaining opens `.local/generated-data/board-api-cooldown.json` (`limited_until`). While open, Pattern A writes hard-skip live REST/GraphQL and enqueue with EXIT_QUEUED. `project cooldown status` / `project cooldown clear --force` (maintainer escape only).
+3. **Precheck (default):** before Pattern A writes, CLI reads cached REST `rate_limit` (TTL `quota_cache_ttl_seconds`, default 45s). If GraphQL `remaining < min_graphql_remaining`, enqueue + **EXIT_QUEUED (6)** without calling Projects GraphQL.
+4. Live write fails with throttle (rate-limit / secondary / 429 / bare Forbidden without permanent-permission text) → CLI **enqueues** to `.local/generated-data/board-outbox.jsonl` and returns **EXIT_QUEUED (6)**. Permanent scope-miss / permission Forbidden are **not** queued.
+5. **Dedupe / Notes coalesce:** identical pending `op`+`item_id`+payload reuses one row; pending `append-notes` for the same item are capped (`max_pending_notes_per_item`, default 3).
+6. Agent continues local evidence (`change-index`, handoff line) — **do not** hammer `gh` / retry loops (CODE=6 = soft-success).
+7. After quota recovers: `project api-ready` then `outbox status` then `outbox flush` (capped by `max_flush_per_run`; refuses if cooldown open or `remaining < min`).
+8. Explicit enqueue: `project queue --op append-notes|set-status|set-section|handoff|claim|set-assignee|set-field|promote-to-issue …`
+9. Outbox is a **local buffer**, never a second Status SSOT. Prefer Pattern A CLI over raw `gh api graphql` (raw calls bypass the outbox).
+10. **Card-touch budget:** one claimed/`--last` card per wave; `heal-cards --apply --fill-tier1` requires `--id`/`--last`.
 
 Doctor and board-bootstrap already honor the quota cache and live-probe skips; do not wrap them in retry loops or repeated `project list` calls. For audits, prefer a single export / GraphQL dump, then flush outbox once with the configured `max_flush_per_run`.
 
-Who flushes: any agent/human after reset; prefer implementer or board at slice close. Pending outbox is **not** a DRIFT failure.
+Who flushes: any agent/human after `api-ready` recovers; prefer implementer or board at slice close. Pending outbox is **not** a DRIFT failure.
+
+### Outbox triage
+
+1. `project api-ready` must exit 0.
+2. `project outbox list --status pending` — drop fake/smoke with `project outbox drop --id <uuid> --force`.
+3. Do not blind-flush claims that would wrong-transition Status.
+4. Then `project outbox flush` once (capped).
+
 
 ### Assignee backfill (legacy cards)
 

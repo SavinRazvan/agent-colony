@@ -78,6 +78,29 @@
             "dedupe_pending": {
               "type": "boolean",
               "description": "Reuse one pending outbox row for identical op+item+payload"
+            },
+            "cooldown_path": {
+              "type": "string",
+              "description": "Repo-relative path to board-api-cooldown.json circuit-breaker"
+            },
+            "cooldown_floor_seconds": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Minimum wall-clock skip after throttle/low quota (default 60)"
+            },
+            "secondary_limit_floor_seconds": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Longer floor for secondary/abuse rate limits (default 120)"
+            },
+            "coalesce_pending_notes": {
+              "type": "boolean",
+              "description": "Cap/replace pending append-notes for the same item_id"
+            },
+            "max_pending_notes_per_item": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Max pending append-notes rows per item when coalescing (default 3)"
             }
           }
         },
