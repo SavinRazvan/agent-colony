@@ -90,13 +90,13 @@ make doc-validate
 
 | Subagent / script | When |
 |----------|------|
-| `python .ai_infra/scripts/workflow/check_audit_artifacts.py --summary` (or `--arch-impacting`) | Before verifier/prepare when Schema-1 artifacts exist |
+| `python .ai_infra/scripts/workflow/check_audit_artifacts.py --summary` (or `--arch-impacting`); prefer MCP `workflow_check_audit_artifacts` | Before verifier/prepare when Schema-1 artifacts exist |
 | `drift-guard` | After tracker/doc edits; goal pulse + DRIFT-011; P0/P1 drift |
 | `verifier` | Spot-check top audit claims vs preflight + repo paths |
 
 ## Phase 4 — Maintainer PR
 
-Human or maintainer: `review-pr` → `prepare-pr` → `merge-pr` on `feature/` or `chore/` branch.
+Human or maintainer: `review-pr` → **verifier hop** (shippable) → `prepare-pr` → `merge-pr` on `feature/` or `chore/` branch. Architecture-impacting: Schema-1 alignment before review/prepare.
 
 ## Delegation rules
 

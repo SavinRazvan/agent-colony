@@ -60,6 +60,8 @@ Canon table: [evidence-first.md](../../.ai_infra/docs/operations/evidence-first.
 | Communication | Notes + `.local` artifacts |
 | Action | owner + due_slice + consequence + prepare gate |
 
+**Assurance-Level** frontmatter (`high` \| `reasonable` \| `limited` \| `very_limited`) is a **label only** — does not fail merge by itself. Thin evidence may WARN under `high`/`reasonable`; empty P0/P1 evidence is a **hard error**. Canon: [evidence-first.md](../../.ai_infra/docs/operations/evidence-first.md) § Assurance-Level · validator `audit_artifact_schema.py`.
+
 ## Evidence checklist (version / release example)
 
 When scope includes **version bump** or **release**:

@@ -35,6 +35,7 @@ Related: [ADR-003](ADR-003-plugin-mcp-boundaries.md), [ADR-008](ADR-008-project-
 - Module: `.ai_infra/mcp_servers/agent_colony_mcp/project_tools.py`
 - Agents prefer MCP/CLI Pattern A; ban raw Project GraphQL when tools exist
 - Schema tax amortized by replacing multi-read / wrong-retry paths
+- Full kit MCP inventory (28 tools) also includes PR/audit wrappers such as `workflow_check_audit_artifacts` — see [ADR-013](ADR-013-audit-accountability.md) and MCP README; this ADR scopes board Pattern A only
 
 ## Alternatives rejected
 

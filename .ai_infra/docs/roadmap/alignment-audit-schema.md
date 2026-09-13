@@ -106,9 +106,11 @@ Validator: `.ai_infra/scripts/workflow/audit_artifact_schema.py` · gate: `check
   "target_path": ".ai_infra/scripts/pr/prepare.py",
   "evidence": "Prose gate count stale; see resolve_gates() in prepare.py for authoritative kit-dev append list.",
   "recommendation": "Point prose to prepare.py resolve_gates() only; remove duplicated gate list.",
-  "status": "open",
+  "status": "fixed",
   "owner": "platform-architecture",
   "due_slice": "feature/starter-phase-2",
   "consequence_if_ignored": "merge prep may pass with outdated gate documentation"
 }
 ```
+
+P0/P1 with `"status": "open"` fail Schema-1 validation at merge — use `fixed`, `deferred`, or `accepted_divergence`.

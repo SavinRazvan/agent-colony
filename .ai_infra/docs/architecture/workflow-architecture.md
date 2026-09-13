@@ -45,7 +45,7 @@ Gate order: read `.ai_infra/scripts/pr/prepare.py` only — do not duplicate her
 
 ## Audit accountability (schema-1)
 
-Kit-dev `resolve_gates()` appends `check_audit_artifacts.py` (six gates total). Artifacts may opt in with `Audit-Schema: 1` frontmatter (`audit_scope`, `Named-Target`, `## Accountability summary`, `## Audit limits`). P0/P1 findings require owner, due_slice, and consequence_if_ignored. Architecture-impacting merges run `check_audit_artifacts.py --arch-impacting` (Schema-1 required, no skip). Drift **DRIFT-017** (kit-dev WARN) surfaces independence hygiene (`Commissioned-By` missing or equals `Audited-By`) without blocking merge.
+Kit-dev `resolve_gates()` appends `check_audit_artifacts.py` (six gates total). Artifacts may opt in with `Audit-Schema: 1` frontmatter (`audit_scope`, `Named-Target`, `## Accountability summary`, `## Audit limits`). **P0/P1** require owner, due_slice, consequence_if_ignored, **status** (missing/`open` → FAIL), **category** (allowlist), **source_path**, **target_path**, **recommendation**, and **evidence**. Architecture-impacting merges run `check_audit_artifacts.py --arch-impacting` (Schema-1 required) when CLI flag, pipeline `architecture_impacting` / `requires_alignment_artifacts`, or kit-dev path-trigger (`arch_impacting_paths.py`) applies. Prepare refuses `--skip-gates` on that pipeline (exit 2). Drift **DRIFT-017** (kit-dev WARN) surfaces independence hygiene (`Commissioned-By` missing or equals `Audited-By`) without blocking merge alone.
 
 ## Audit, drift, verification coordination
 

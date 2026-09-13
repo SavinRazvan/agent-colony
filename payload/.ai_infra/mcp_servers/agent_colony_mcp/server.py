@@ -162,6 +162,27 @@ def workflow_check_governance() -> str:
 
 
 @mcp.tool()
+def workflow_check_audit_artifacts(
+    directory: str = ".",
+    arch_impacting: bool = False,
+    summary: bool = True,
+) -> str:
+    """Run `.ai_infra/scripts/workflow/check_audit_artifacts.py`.
+
+    Prefer this from verifier when Notes cite alignment/drift/EA audit paths.
+    ``arch_impacting=True`` requires Schema-1 alignment pair (no skip).
+    """
+    root = workspace_root()
+    args = ["--directory", directory]
+    if arch_impacting:
+        args.append("--arch-impacting")
+    if summary:
+        args.append("--summary")
+    code, out = run_script("scripts/workflow/check_audit_artifacts.py", args, root)
+    return f"exit={code}\n{out}"
+
+
+@mcp.tool()
 def workflow_list_agents() -> str:
     """List agent ids from .cursor/agents/*.md."""
     root = workspace_root()

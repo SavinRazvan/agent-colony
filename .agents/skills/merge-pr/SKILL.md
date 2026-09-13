@@ -15,7 +15,7 @@ disable-model-invocation: true
 1. **Check** (pipeline from user settings when omitted):  
    `python .ai_infra/scripts/pr/merge.py --pr <id|url> --pipeline default --check-only`  
    Pipeline `architecture_impacting` (or `requires_alignment_artifacts: true`) **enforces** Schema-1 at merge automatically — same as `--arch-impacting`. Kit-dev path-triggers (`.cursor/rules|skills|agents`, ADRs, arch docs, PR/audit scripts) also force the check. Explicit `--arch-impacting` remains valid.
-2. No unresolved BLOCKER/IMPORTANT or alignment **P0** with `status: open`. `prep.md` must not contain `NOT READY`; externally verified gates require `Skip-Gates-Rationale` (refused when pipeline is architecture_impacting). Architecture-impacting merges run `check_audit_artifacts.py --arch-impacting` (Schema-1 required; open P0/P1 status fails).
+2. No unresolved BLOCKER/IMPORTANT or alignment **P0/P1** with `status: open` (or missing status). `prep.md` must not contain `NOT READY`; externally verified gates require `Skip-Gates-Rationale` (refused when pipeline is architecture_impacting). Architecture-impacting merges run `check_audit_artifacts.py --arch-impacting` (Schema-1 required; open P0/P1 status fails). Kit-dev path-trigger and MCP `workflow_run_merge_check` (pipeline) also force the check.
 3. `python .ai_infra/scripts/pr/verify_publish.py --branch <branch>` and `gh pr view --json headRefName,state`.
 4. **PR body:** `python -m agent_colony contributors pr-body --summary "…" --pipeline default` → paste into `gh pr create --body-file -`.
 5. `gh pr merge <n> --merge` (or repo policy).

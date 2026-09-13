@@ -92,7 +92,7 @@ Profile: kit-dev | consumer
 Command: python -m agent_colony drift validate --directory . [--profile consumer]
 ```
 
-Include **`## Accountability summary`** and mandatory **`## Audit limits`**. P0/P1 script findings mirrored in `drift-todos.md` need `owner`, `due_slice`, and `consequence_if_ignored`.
+Include **`## Accountability summary`** and mandatory **`## Audit limits`**. P0/P1 script findings mirrored in `drift-todos.md` need `owner`, `due_slice`, `consequence_if_ignored`, **`status`** (missing/`open` → Schema-1 FAIL), **`category`**, paths, **`recommendation`**, and **`evidence`** when stamped `Audit-Schema: 1`.
 
 **Consumer DRIFT-005:** When `IMPLEMENTATION-STATUS.md` is absent (normal on plugin installs), DRIFT-005 **PASSes (skip)**. A FAIL on the missing file is a **kit false positive** on older payloads — not a consumer app defect. See `consumer-quickstart.md` § Drift on consumer apps.
 

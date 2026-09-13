@@ -21,7 +21,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
 **Last updated:** 2026-09-13 (board docs/canvases aligned to rate-limit safety + owner hygiene)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1618
+**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1621
 
 ## Shipped (confirmed in repo)
 
@@ -34,7 +34,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
 | PR scripts + prepare gates | Pattern A — **2** universal; **6** on kit-dev (drift + doc facts + check-plugin + audit artifacts) | `.ai_infra/scripts/pr/prepare.py` |
-| Audit accountability residual | R0 owner normalize shipped; R1–R2 Schema-1 teeth + pipeline/path-trigger; R3 skill/doc hygiene (verifier hop, DRIFT-017 row) | PRs #259–#262 · ADR-013 |
+| Audit accountability residual | R0–R4 on stack (open-P0 fail, pipeline/path-trigger, field parity, skill hygiene, MCP `workflow_check_audit_artifacts` + validate-item teeth); merge order #259→#261→#263→#265 | PRs #259/#261/#263/#265 · ADR-013 |
 | Governance + debrand scanners | CI-ready | `.ai_infra/scripts/architecture/` |
 | Workflow drift validate | ADR-007 (+ DRIFT-004b, DRIFT-011 roster, DRIFT-012 plan snapshots) | `.ai_infra/scripts/workflow/check_drift.py` |
 | Timestamped board Notes (CONT-TS) | `@user/agent · <ISO-8601-UTC> · …` via CLI (`claim`/`handoff`/`append-notes`) | `project_recipes.py` / `project_cli.py` + skill § Notes |
@@ -53,7 +53,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Kit canvases | **15** files under `canvases/`; DOC-008 counts **11** roster/agent canvases (excludes concept hubs `board-ssot-vs-trackers.canvas.tsx`, `agents-artifacts-board.canvas.tsx`, `github-api-safety.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
-| MCP tools + resources | 27 tools + 6 resources (ADR-012 Pattern A board tools incl. `workflow_project_api_ready`) | `.ai_infra/mcp_servers/agent_colony_mcp/` |
+| MCP tools + resources | 28 tools + 6 resources (ADR-012 Pattern A board tools + `workflow_check_audit_artifacts`) | `.ai_infra/mcp_servers/agent_colony_mcp/` |
 | Install scaffold + contract | `install-contract.json`; idempotent trackers/`AGENTS.md` on re-activate; kit 0.7.3 deletes leftover `.local/agents-control-center/` if present | `.ai_infra/scripts/install/scaffold.py` |
 | Local artifact tiers | Tier 1 scaffold: all `workflow-artifacts/*` buckets + README stubs; SSOT `local_workflow_paths.py` | `.ai_infra/templates/local-workspace/` |
 | Integrate validate | INT-001…014; INT-009/011 plugin parity **kit-dev only** | `.ai_infra/scripts/integration/validate.py` |
@@ -69,7 +69,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Consumer update stamp | Scaffold + `update` write `.kit-version` from source manifest; CLI fallback `ensure_kit_version_stamp` | `scaffold.py` · `update_cli.py` · tests |
 | Multi-consumer isolation | Model A contract doc; DRIFT-013 tracked-runtime guard; DRIFT-011b advisory; `update --check` + `kit_managed_globs`; consumer CI template | `multi-consumer-isolation.md` · `drift_checks.py` · `update_cli.py` · `templates/ci/consumer-gates.yml` |
 | Dashboard removal | Documentation now points to GitHub Project board + Cursor Open Canvas; `.local/index-and-planning/` remains offline markdown only | operations docs · skills · canvases |
-| Tests | 1618 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1621 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

@@ -1,5 +1,5 @@
 ---
-description: Architecture-impacting advisory audits before prepare/merge (authored via auditor)
+description: Architecture-impacting alignment audits before prepare/merge (authored via auditor)
 alwaysApply: false
 ---
 
@@ -8,12 +8,13 @@ alwaysApply: false
 **Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
 
 - **Agent:** `.cursor/agents/auditor.md` + `.cursor/skills/auditor-protocol/SKILL.md`.
-- Merge workflow may use **focused alignment pass** (skill § Focused alignment pass).
-- **Remediation** is advisory during the audit step — do not auto-apply fixes in the audit pass.
-- **Schema-1 validation on `--arch-impacting`** is mandatory: both alignment files must exist, carry `Audit-Schema: 1`, and pass `check_audit_artifacts.py --arch-impacting` before merge readiness.
-- Run before `/prepare-pr` when scope touches: boundaries, workflow/rule/skill policy, test/CI, roadmap/research SSOT.
-- **Outputs:** `.local/workflow-artifacts/alignment/alignment-audit.md`, `.local/workflow-artifacts/alignment/alignment-todos.md`.
+- Merge workflow uses **focused alignment pass** (skill § Focused alignment pass).
+- **Remediation** during the audit step is findings-only — do not auto-apply product-code fixes in the audit pass. **Merge gate** is not advisory: Schema-1 must pass.
+- **Schema-1 validation** is mandatory when architecture-impacting: both alignment files must exist, carry `Audit-Schema: 1`, and pass `check_audit_artifacts.py --arch-impacting` (CLI flag, pipeline `architecture_impacting` / `requires_alignment_artifacts`, or kit-dev path-trigger via `arch_impacting_paths.py`).
+- Prepare refuses `--skip-gates` on `architecture_impacting` (exit 2). Prefer MCP `workflow_check_audit_artifacts`.
+- Run before `/prepare-pr` when scope touches: boundaries, workflow/rule/skill policy, test/CI, roadmap/research SSOT, or path-trigger list.
+- **Outputs:** `.local/workflow-artifacts/alignment/alignment-audit.md`, `.local/workflow-artifacts/alignment/alignment-todos.md` — write Schema-1 **even with zero findings**.
 - **Schema:** `.ai_infra/docs/roadmap/alignment-audit-schema.md`.
 - Each finding: evidence path, mismatch category, recommended fix, status (`open` | `accepted_divergence` | `fixed` | `deferred`).
-- **Schema-1:** artifacts with `Audit-Schema: 1` require `Audit-Scope`, `Named-Target`, `## Accountability summary`, `## Audit limits`; P0/P1 need owner, due_slice, consequence_if_ignored (validator: `check_audit_artifacts.py`).
-- **P0:** block merge prep until fixed or accepted with rationale. **P1:** fix in-slice or defer with owner. **P2:** batch; track in reconciliation TODOs.
+- **Schema-1:** require `Audit-Scope`, `Named-Target`, `## Accountability summary`, `## Audit limits`. **P0/P1:** owner, due_slice, consequence_if_ignored, **status** (missing or `open` → **FAIL**), **category** (allowlist), **source_path**, **target_path**, **recommendation**, **evidence** (hard error). Validator: `check_audit_artifacts.py`.
+- **P0/P1 open:** block merge until `fixed` / `deferred` / `accepted_divergence`. **P2:** batch; track in todos.

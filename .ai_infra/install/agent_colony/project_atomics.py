@@ -41,6 +41,10 @@ EXIT_QUEUED = 6
 _TEMPLATE_NAMES = ("slice", "bug", "research", "audit")
 _PLACEHOLDER_RE = re.compile(r"\{\{(\w+)\}\}")
 _SESSION_REL = Path(".local") / "generated-data" / "project-last-item.json"
+_AUDIT_ARTIFACT_PATH_RE = re.compile(
+    r"(\.local/workflow-artifacts/(?:alignment|drift|audit)/[A-Za-z0-9._/-]+\.md)"
+)
+_AUDIT_TITLE_RE = re.compile(r"\[AUDIT\]", re.IGNORECASE)
 def fail(cmd: str, code: int, reason: str) -> int:
     """Print structured FAIL and return exit code."""
     print(f"project {cmd}: FAIL — CODE={code} · {reason}", file=sys.stderr)
@@ -736,7 +740,78 @@ def collect_validate_item_problems(
         elif latest is not None and not notes_line_attributed(latest):
             problems.append(f"latest Notes line not attributed: {latest[:80]}")
 
+    _append_audit_artifact_checks(
+        problems=problems,
+        warnings=warnings,
+        item=item,
+        body=body,
+        status=status,
+        root=Path.cwd(),
+    )
+
     return problems, warnings
+
+
+def _item_looks_like_audit_card(item: dict[str, Any], body: str) -> bool:
+    title = str(item.get("title") or "")
+    if _AUDIT_TITLE_RE.search(title):
+        return True
+    lower = (body or "").lower()
+    return "## audit scope" in lower or "audit_scope" in lower
+
+
+def cited_audit_artifact_paths(body: str) -> list[str]:
+    """Return unique `.local/workflow-artifacts/.../*.md` paths cited in Notes/body."""
+    found = _AUDIT_ARTIFACT_PATH_RE.findall(body or "")
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for path in found:
+        if path not in seen:
+            seen.add(path)
+            ordered.append(path)
+    return ordered
+
+
+def _validate_audit_file(path: Path) -> list[str]:
+    """Return Schema-1 validation errors for one file (empty if skip or pass)."""
+    if not path.is_file():
+        return [f"missing audit artifact: {path.as_posix()}"]
+    text = path.read_text(encoding="utf-8")
+    workflow_dir = Path.cwd() / ".ai_infra" / "scripts" / "workflow"
+    if str(workflow_dir) not in sys.path:
+        sys.path.insert(0, str(workflow_dir))
+    try:
+        from audit_artifact_schema import validate_audit_text
+    except ImportError:
+        return [f"cannot import audit_artifact_schema to validate {path.as_posix()}"]
+    skip, errors, _warnings = validate_audit_text(text)
+    if skip:
+        return [f"cited audit artifact lacks Audit-Schema: 1: {path.as_posix()}"]
+    return [f"{path.as_posix()}: {err}" for err in errors]
+
+
+def _append_audit_artifact_checks(
+    *,
+    problems: list[str],
+    warnings: list[str],
+    item: dict[str, Any],
+    body: str,
+    status: str,
+    root: Path,
+) -> None:
+    """WARN missing artifact path on audit cards; problem on Schema-1 FAIL citations."""
+    if status not in ACTIVE_STATUSES:
+        return
+    cited = cited_audit_artifact_paths(body)
+    if _item_looks_like_audit_card(item, body) and not cited:
+        warnings.append(
+            "audit card Notes lack `.local/workflow-artifacts/` path — "
+            "cite alignment/drift/audit artifact after the pass"
+        )
+    for rel in cited:
+        errors = _validate_audit_file(root / rel)
+        for err in errors:
+            problems.append(err)
 
 
 def classify_card_completeness(
