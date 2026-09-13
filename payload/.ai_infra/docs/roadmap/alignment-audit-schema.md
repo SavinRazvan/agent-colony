@@ -34,9 +34,9 @@ When an artifact opts in with `Audit-Schema: 1`, these fields apply at the docum
 | `Assurance-Level` | reserved | `high` \| `reasonable` \| `limited` \| `very_limited` — caps when P0/P1 evidence is thin |
 | `Commissioned-By` | recommended | Human or role that requested the pass |
 
-Mandatory section: **`## Audit limits`** — states what the audit does **not** cover (see evidence-first audit scope boundary).
+Mandatory sections: **`## Accountability summary`** and **`## Audit limits`** — state what the audit covers at a glance and what it does **not** cover (see evidence-first audit scope boundary).
 
-Validator: `.ai_infra/scripts/workflow/audit_artifact_schema.py` · gate: `check_audit_artifacts.py`.
+Validator: `.ai_infra/scripts/workflow/audit_artifact_schema.py` · gate: `check_audit_artifacts.py`. Architecture-impacting merges use `--arch-impacting` (both alignment files must exist, carry `Audit-Schema: 1`, and pass — no skip).
 
 ## Finding Object (Required Fields)
 

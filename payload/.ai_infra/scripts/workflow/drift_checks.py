@@ -1202,7 +1202,7 @@ def check_drift016(paths: DriftPaths) -> CheckResult:
 
 
 def check_drift017(paths: DriftPaths) -> CheckResult:
-    """Audit artifact accountability (Audit-Schema: 1) — kit-dev WARN only."""
+    """Audit independence hygiene (Audit-Schema: 1) — kit-dev WARN only."""
     if not paths.implementation_status.is_file():
         return CheckResult(
             check_id="DRIFT-017",
@@ -1224,17 +1224,16 @@ def check_drift017(paths: DriftPaths) -> CheckResult:
         )
     issues: list[str] = []
     for path in collect_audit_paths(paths.root):
-        skip, errors, warnings = validate_file(path)
+        skip, _errors, warnings = validate_file(path)
         if skip:
             continue
         rel = path.relative_to(paths.root).as_posix()
-        if errors:
-            issues.append(f"{rel}: {errors[0]}")
-            continue
         independence = [
             w
             for w in warnings
-            if "independence" in w.lower() or "Audited-By equals" in w
+            if "independence" in w.lower()
+            or "commissioned-by" in w.lower()
+            or "Audited-By equals" in w
         ]
         if independence:
             issues.append(f"{rel}: {independence[0]}")
@@ -1243,13 +1242,13 @@ def check_drift017(paths: DriftPaths) -> CheckResult:
             check_id="DRIFT-017",
             severity=Severity.P2,
             passed=True,
-            detail=f"WARN audit accountability gaps ({len(issues)}): {issues[0]}",
+            detail=f"WARN audit independence ({len(issues)}): {issues[0]}",
         )
     return CheckResult(
         check_id="DRIFT-017",
         severity=Severity.P2,
         passed=True,
-        detail="audit artifacts schema-1 accountability ok (or none present)",
+        detail="audit artifacts schema-1 independence ok (or none present)",
     )
 
 

@@ -15,8 +15,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-import pytest
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 _WORKFLOW = REPO_ROOT / ".ai_infra" / "scripts" / "workflow"
 if str(_WORKFLOW) not in sys.path:
@@ -48,6 +46,33 @@ def test_scan_fails_on_invalid_alignment(tmp_path: Path) -> None:
 def test_arch_impacting_requires_alignment_files(tmp_path: Path) -> None:
     code = checker.main(["--directory", str(tmp_path), "--arch-impacting", "--summary"])
     assert code == 1
+
+
+def test_arch_impacting_fails_on_schema_zero(tmp_path: Path) -> None:
+    _write_audit(tmp_path, ".local/workflow-artifacts/alignment/alignment-audit.md", "no_schema.md")
+    _write_audit(tmp_path, ".local/workflow-artifacts/alignment/alignment-todos.md", "no_schema.md")
+    code = checker.main(["--directory", str(tmp_path), "--arch-impacting", "--summary"])
+    assert code == 1
+
+
+def test_arch_impacting_passes_complete_schema(tmp_path: Path) -> None:
+    _write_audit(tmp_path, ".local/workflow-artifacts/alignment/alignment-audit.md", "complete_ok.md")
+    _write_audit(tmp_path, ".local/workflow-artifacts/alignment/alignment-todos.md", "complete_ok.md")
+    code = checker.main(["--directory", str(tmp_path), "--arch-impacting", "--summary"])
+    assert code == 0
+
+
+def test_arch_impacting_fails_incomplete_schema(tmp_path: Path) -> None:
+    _write_audit(tmp_path, ".local/workflow-artifacts/alignment/alignment-audit.md", "missing_limits.md")
+    _write_audit(tmp_path, ".local/workflow-artifacts/alignment/alignment-todos.md", "missing_limits.md")
+    code = checker.main(["--directory", str(tmp_path), "--arch-impacting", "--summary"])
+    assert code == 1
+
+
+def test_default_scan_skips_schema_zero(tmp_path: Path) -> None:
+    _write_audit(tmp_path, ".local/workflow-artifacts/alignment/alignment-audit.md", "no_schema.md")
+    code = checker.main(["--directory", str(tmp_path), "--summary"])
+    assert code == 0
 
 
 def test_collect_includes_workflow_audit_dir(tmp_path: Path) -> None:

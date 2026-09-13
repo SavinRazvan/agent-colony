@@ -64,7 +64,7 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 | DRIFT-014 | P1 | kit-dev, consumer, consumer-board | Token-efficiency anchor in installed agent cards (profile-aware count) |
 | DRIFT-015 | P2 | kit-dev only | Plugin+workspace rule basename duplication (WARN) |
 | DRIFT-016 | P1 | kit-dev, consumer, consumer-board | Thin-index § headings exist for skills on disk (profile-aware skip) |
-| DRIFT-017 | P2 | kit-dev only | Audit artifact accountability (Audit-Schema: 1) — WARN when gaps exist; `passed=True` |
+| DRIFT-017 | P2 | kit-dev only | Audit independence (Audit-Schema: 1) — WARN when `Commissioned-By` missing/placeholder or equals `Audited-By`; `passed=True` |
 
 **Exit policy:** exit code 1 on any P0 failure; P1/P2 advisory in output (same as `integrate validate`). Pending `project_ssot.outbox` ops are **not** a drift failure — cite `project outbox status` in artifacts when relevant.
 

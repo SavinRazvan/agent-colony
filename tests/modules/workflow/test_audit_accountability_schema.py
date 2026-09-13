@@ -87,7 +87,11 @@ Audit-Schema: 1
 Audit-Scope: kit
 Named-Target: test
 Assurance-Level: high
+Commissioned-By: maintainer
+Audited-By: auditor
 ---
+## Accountability summary
+Test fixture.
 ## Audit limits
 - test
 ### AA-001
@@ -109,12 +113,36 @@ Named-Target: independence check
 Commissioned-By: same-actor
 Audited-By: Same-Actor
 ---
+## Accountability summary
+Independence fixture.
 ## Audit limits
 - kit-process only
 """
     _skip, errors, warnings = schema.validate_audit_text(text)
     assert errors == []
     assert any("independence" in w.lower() for w in warnings)
+
+
+def test_missing_severity_fails() -> None:
+    skip, errors, _warnings = schema.validate_audit_text(_read("missing_severity.md"))
+    assert skip is False
+    assert any("requires severity" in e for e in errors)
+
+
+def test_missing_accountability_summary_fails() -> None:
+    skip, errors, _warnings = schema.validate_audit_text(_read("missing_summary.md"))
+    assert skip is False
+    assert any("Accountability summary" in e for e in errors)
+
+
+def test_phase_heading_ignored() -> None:
+    skip, errors, warnings = schema.validate_audit_text(_read("phase_heading_ok.md"))
+    assert skip is False
+    assert errors == []
+    assert warnings == []
+    ids = {f["id"] for f in schema.iter_findings(_read("phase_heading_ok.md"))}
+    assert "AA-real-001" in ids
+    assert not any(i.startswith("PHASE") for i in ids)
 
 
 @pytest.mark.parametrize(

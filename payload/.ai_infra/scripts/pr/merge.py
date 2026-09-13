@@ -13,7 +13,7 @@ Notes:
  - This script does not perform git merge; it verifies readiness and logs evidence.
  - Call AFTER gh pr merge with --merge-sha <oid> so the artifact records the correct merge commit.
  - --branch is optional; if omitted the script reads the current git branch.
- - Checks for alignment artifact presence when --arch-impacting flag is set.
+ - Checks for alignment artifacts with Audit-Schema: 1 when --arch-impacting is set.
  - When project_ssot is operational, sets card Status → done and appends Notes (non-blocking on failure).
 """
 
@@ -312,7 +312,10 @@ def main() -> int:
         "--arch-impacting",
         action="store_true",
         default=False,
-        help="Set for architecture-impacting PRs; enforces alignment artifact presence check.",
+        help=(
+            "Architecture-impacting PRs: require alignment-audit.md and "
+            "alignment-todos.md with Audit-Schema: 1 that pass validation."
+        ),
     )
     parser.add_argument(
         "--check-only",

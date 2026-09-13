@@ -9,10 +9,11 @@ alwaysApply: false
 
 - **Agent:** `.cursor/agents/auditor.md` + `.cursor/skills/auditor-protocol/SKILL.md`.
 - Merge workflow may use **focused alignment pass** (skill § Focused alignment pass).
-- Audits are advisory. Do not auto-apply fixes in the audit step.
+- **Remediation** is advisory during the audit step — do not auto-apply fixes in the audit pass.
+- **Schema-1 validation on `--arch-impacting`** is mandatory: both alignment files must exist, carry `Audit-Schema: 1`, and pass `check_audit_artifacts.py --arch-impacting` before merge readiness.
 - Run before `/prepare-pr` when scope touches: boundaries, workflow/rule/skill policy, test/CI, roadmap/research SSOT.
 - **Outputs:** `.local/workflow-artifacts/alignment/alignment-audit.md`, `.local/workflow-artifacts/alignment/alignment-todos.md`.
 - **Schema:** `.ai_infra/docs/roadmap/alignment-audit-schema.md`.
 - Each finding: evidence path, mismatch category, recommended fix, status (`open` | `accepted_divergence` | `fixed` | `deferred`).
-- **Schema-1:** artifacts with `Audit-Schema: 1` require `Audit-Scope`, `Named-Target`, `## Audit limits`; P0/P1 need owner, due_slice, consequence_if_ignored (validator: `check_audit_artifacts.py`).
+- **Schema-1:** artifacts with `Audit-Schema: 1` require `Audit-Scope`, `Named-Target`, `## Accountability summary`, `## Audit limits`; P0/P1 need owner, due_slice, consequence_if_ignored (validator: `check_audit_artifacts.py`).
 - **P0:** block merge prep until fixed or accepted with rationale. **P1:** fix in-slice or defer with owner. **P2:** batch; track in reconciliation TODOs.

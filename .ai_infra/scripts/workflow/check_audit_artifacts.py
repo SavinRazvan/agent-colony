@@ -100,21 +100,41 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--arch-impacting",
         action="store_true",
-        help="Require alignment audit files to exist and pass schema when present",
+        help=(
+            "Require alignment-audit.md and alignment-todos.md to exist, "
+            "carry Audit-Schema: 1, and pass validation"
+        ),
     )
     args = parser.parse_args(argv)
 
     root = Path(args.directory).resolve()
     checked, skipped, failed, lines = run_scan(root)
+    scanned = {p.resolve() for p in collect_audit_paths(root)}
 
     if args.arch_impacting:
         for rel in (ALIGNMENT_AUDIT_MD, ALIGNMENT_TODOS_MD):
             path = root / rel
+            rel_posix = rel.as_posix()
             if not path.is_file():
                 failed += 1
-                lines.append(f"FAIL\t{rel.as_posix()} (required for --arch-impacting)")
-            elif path not in collect_audit_paths(root):
-                pass
+                lines.append(f"FAIL\t{rel_posix} (required for --arch-impacting)")
+                continue
+            skip, errors, _warnings = validate_file(path)
+            if skip:
+                failed += 1
+                lines.append(
+                    f"FAIL\t{rel_posix} (required Audit-Schema: 1 for --arch-impacting)"
+                )
+                continue
+            if errors:
+                # run_scan already counted this file when it was in the scan set
+                if path.resolve() not in scanned:
+                    failed += 1
+                    lines.append(f"FAIL\t{rel_posix} (--arch-impacting)")
+                    for err in errors:
+                        lines.append(f"  error: {err}")
+                else:
+                    lines.append(f"FAIL\t{rel_posix} (--arch-impacting incomplete)")
 
     if args.summary:
         verdict = "FAIL" if failed else "PASS"
