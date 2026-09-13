@@ -31,7 +31,7 @@ Goal/plan/agent-doctrine/docs coherence + DRIFT-001…017 (script-first). Not de
 ## Loop
 
 1. `python -m agent_colony drift validate --directory .` first.
-2. Map to drift-audit / drift-todos (incl. DRIFT-009…016 when applicable).
+2. Map to drift-audit / drift-todos (incl. DRIFT-009…017 when applicable).
 3. Goal pulse: board vs plan vs AGENTS — hand off gaps.
 4. P0 blocks prepare; P1 same slice; P2 backlog.
 
