@@ -458,6 +458,27 @@ def test_fetch_project_item_by_id_ok_maps_fields(monkeypatch: pytest.MonkeyPatch
     assert item["content"]["body"].startswith("## Acceptance")
 
 
+def test_fetch_project_item_by_id_query_uses_field_common_fragment(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ProjectV2FieldConfiguration is a union — field{name} is illegal without fragments."""
+    captured: list[str] = []
+
+    def _capture(*_a, **_k):
+        args = _a[0] if _a else []
+        for i, part in enumerate(args):
+            if isinstance(part, str) and part.startswith("query="):
+                captured.append(part[len("query=") :])
+        return _gh_ok('{"data":{"node":null}}')
+
+    monkeypatch.setattr(project_cli, "run_gh", _capture)
+    gha.fetch_project_item_by_id(SAMPLE_SSOT, VALID_PVTI)
+    assert captured, "expected graphql query to be captured"
+    q = captured[0]
+    assert "field{...on ProjectV2FieldCommon{name}}" in q
+    assert "field{name}" not in q.replace("field{...on ProjectV2FieldCommon{name}}", "")
+
+
 def test_fetch_project_item_by_id_gh_fail(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(project_cli, "run_gh", lambda *a, **k: _gh_fail("node query failed"))
     item, err = gha.fetch_project_item_by_id(SAMPLE_SSOT, VALID_PVTI)

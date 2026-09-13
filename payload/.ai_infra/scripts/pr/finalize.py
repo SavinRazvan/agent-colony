@@ -24,6 +24,7 @@ Notes:
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -40,6 +41,61 @@ def _run(cmd: list[str]) -> tuple[int, str]:
     proc = subprocess.run(cmd, capture_output=True, text=True)
     output = ((proc.stdout or "") + (proc.stderr or "")).strip()
     return proc.returncode, output
+
+
+def _list_dependent_prs(branch: str) -> tuple[list[dict[str, str]], str | None]:
+    """
+    Return open PRs that still use ``branch`` as their base (stack hazard).
+
+    Uses ``gh pr list --base`` (REST-backed). On gh failure returns ([], error).
+    """
+    code, out = _run(
+        [
+            "gh",
+            "pr",
+            "list",
+            "--base",
+            branch,
+            "--state",
+            "open",
+            "--json",
+            "number,url,title",
+        ]
+    )
+    if code != 0:
+        return [], out or "gh pr list --base failed"
+    try:
+        raw = json.loads(out or "[]")
+    except json.JSONDecodeError as exc:
+        return [], f"invalid gh pr list JSON: {exc}"
+    if not isinstance(raw, list):
+        return [], "gh pr list --base returned non-list JSON"
+    deps: list[dict[str, str]] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            continue
+        number = item.get("number")
+        if number is None:
+            continue
+        deps.append(
+            {
+                "number": str(number),
+                "url": str(item.get("url") or "").strip(),
+                "title": str(item.get("title") or "").strip(),
+            }
+        )
+    return deps, None
+
+
+def _format_dependent_pr_block(deps: list[dict[str, str]], branch: str) -> str:
+    refs = ", ".join(
+        f"#{d['number']}" + (f" ({d['url']})" if d.get("url") else "") for d in deps
+    )
+    return (
+        f"[BLOCK] dependent PR(s) still use --base {branch}: {refs}. "
+        "Retarget each child's base to main before finalize "
+        "(or pass --allow-dependent-prs in an emergency)."
+    )
 
 
 def _current_branch() -> str:
@@ -165,6 +221,15 @@ def main() -> int:
         default=False,
         help="Print planned steps without executing git mutations.",
     )
+    parser.add_argument(
+        "--allow-dependent-prs",
+        action="store_true",
+        default=False,
+        help=(
+            "Emergency: allow deleting a branch that is still the base of open PRs. "
+            "Default is to BLOCK (stack-safe)."
+        ),
+    )
     add_pr_attribution_arguments(parser)
     args = parser.parse_args()
 
@@ -175,6 +240,7 @@ def main() -> int:
 
     failures: list[str] = []
     logs: list[str] = []
+    dependent_pr_check = "PASS"
 
     current_branch = _current_branch()
     checkout_attempted = current_branch != "main"
@@ -209,6 +275,45 @@ def main() -> int:
         dry_run=args.dry_run,
     ):
         return _finish(logs, failures, dry_run=args.dry_run)
+
+    # Stack safety: refuse delete while open PRs still list this branch as base
+    # (workflow-complete.md § Stacked PRs). Dry-run still evaluates the check.
+    deps, dep_err = _list_dependent_prs(branch)
+    if dep_err:
+        logs.append(f"[WARN] dependent-pr-check: gh list failed ({dep_err}); treating as no dependents")
+        dependent_pr_check = "PASS (gh list unavailable)"
+    elif deps:
+        block_msg = _format_dependent_pr_block(deps, branch)
+        if args.allow_dependent_prs:
+            dependent_pr_check = "SKIPPED (--allow-dependent-prs)"
+            logs.append(f"[WARN] {block_msg} — proceeding due to --allow-dependent-prs")
+        else:
+            dependent_pr_check = "BLOCK"
+            logs.append(block_msg)
+            print(block_msg)
+            _write_finalize_artifact(
+                finalize_md=FINALIZE_MD,
+                branch=branch,
+                pr_ref=args.pr,
+                dry_run=args.dry_run,
+                delete_merged_local=args.delete_merged_local,
+                failures=["dependent-pr-check BLOCK"],
+                logs=logs,
+                checkout_attempted=checkout_attempted,
+                local_exists_before=_local_branch_exists(branch),
+                remote_exists_before=_remote_branch_exists(branch),
+                actor=args.actor,
+                agents=args.agents,
+                pipeline=args.pipeline,
+                agents_from_session=args.agents_from_session,
+                issue_closure_status="SKIPPED",
+                issue_closure_detail="blocked by dependent-pr-check",
+                dependent_pr_check=dependent_pr_check,
+            )
+            return _finish(logs, ["dependent-pr-check BLOCK"], dry_run=args.dry_run)
+    else:
+        logs.append(f"[PASS] dependent-pr-check: no open PRs with --base {branch}")
+        dependent_pr_check = "PASS"
 
     local_exists_before = _local_branch_exists(branch)
     remote_exists_before = _remote_branch_exists(branch)
@@ -285,6 +390,7 @@ def main() -> int:
         agents_from_session=args.agents_from_session,
         issue_closure_status=issue_status,
         issue_closure_detail=issue_detail,
+        dependent_pr_check=dependent_pr_check,
     )
 
     return _finish(logs, failures, dry_run=args.dry_run)
@@ -337,6 +443,7 @@ def _write_finalize_artifact(
     agents_from_session: bool,
     issue_closure_status: str = "SKIPPED",
     issue_closure_detail: str = "",
+    dependent_pr_check: str = "PASS",
 ) -> None:
     try:
         ensure_workflow_artifacts_dir()
@@ -402,6 +509,7 @@ def _write_finalize_artifact(
                     f"- checkout main: {checkout_main}",
                     f"- pull main: {pull_main}",
                     f"- fetch --prune origin: {fetch_main}",
+                    f"- dependent-pr-check: {dependent_pr_check}",
                     f"- delete local branch ({branch}): {local_delete_status}",
                     f"- delete remote branch ({branch}): {remote_delete_status}",
                     f"- delete-merged-local: {delete_merged_local}",

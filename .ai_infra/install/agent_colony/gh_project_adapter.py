@@ -433,10 +433,10 @@ def fetch_project_item_by_id(
         "...on Issue{id number title body state repository{nameWithOwner}}"
         "}"
         "fieldValues(first:50){nodes{__typename "
-        "...on ProjectV2ItemFieldSingleSelectValue{name field{name}} "
-        "...on ProjectV2ItemFieldTextValue{text field{name}} "
-        "...on ProjectV2ItemFieldDateValue{date field{name}} "
-        "...on ProjectV2ItemFieldNumberValue{number field{name}} "
+        "...on ProjectV2ItemFieldSingleSelectValue{name field{...on ProjectV2FieldCommon{name}}} "
+        "...on ProjectV2ItemFieldTextValue{text field{...on ProjectV2FieldCommon{name}}} "
+        "...on ProjectV2ItemFieldDateValue{date field{...on ProjectV2FieldCommon{name}}} "
+        "...on ProjectV2ItemFieldNumberValue{number field{...on ProjectV2FieldCommon{name}}} "
         "}}}}}"
     )
     proc = _cli().run_gh(
