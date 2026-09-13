@@ -6,6 +6,7 @@ servers:
     agents: [implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard, board]
     tools_hint:
       - workflow_session_entry
+      - workflow_project_api_ready
       - workflow_project_entry
       - workflow_project_claim
       - workflow_project_handoff

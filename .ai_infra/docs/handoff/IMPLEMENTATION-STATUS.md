@@ -53,7 +53,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Kit canvases | **15** files under `canvases/`; DOC-008 counts **11** roster/agent canvases (excludes concept hubs `board-ssot-vs-trackers.canvas.tsx`, `agents-artifacts-board.canvas.tsx`, `github-api-safety.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
-| MCP tools + resources | 26 tools + 6 resources (ADR-012 Pattern A board tools) | `.ai_infra/mcp_servers/agent_colony_mcp/` |
+| MCP tools + resources | 27 tools + 6 resources (ADR-012 Pattern A board tools incl. `workflow_project_api_ready`) | `.ai_infra/mcp_servers/agent_colony_mcp/` |
 | Install scaffold + contract | `install-contract.json`; idempotent trackers/`AGENTS.md` on re-activate; kit 0.7.3 deletes leftover `.local/agents-control-center/` if present | `.ai_infra/scripts/install/scaffold.py` |
 | Local artifact tiers | Tier 1 scaffold: all `workflow-artifacts/*` buckets + README stubs; SSOT `local_workflow_paths.py` | `.ai_infra/templates/local-workspace/` |
 | Integrate validate | INT-001…014; INT-009/011 plugin parity **kit-dev only** | `.ai_infra/scripts/integration/validate.py` |

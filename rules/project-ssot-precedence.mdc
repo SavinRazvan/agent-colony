@@ -15,7 +15,7 @@ alwaysApply: true
 - `project export` snapshots are read-only; never compete with board Status.
 - Overrides tracker `in_progress` in implementation-workflow-governance when board SSOT on (ADR-008).
 - Offline/disabled: `fallback: local_trackers`; resume sync when available.
-- EXIT_QUEUED (6) → `project_ssot.outbox` (`api-ready` / `queue` / `outbox flush`); do not hammer API or dual-write. Covers precheck low quota, Forbidden/429, and open `board-api-cooldown.json`.
+- EXIT_QUEUED (6) → `project_ssot.outbox` (`api-ready` / `queue` / `outbox status|list|drop|flush`); do not hammer API or dual-write. Covers precheck low quota, Forbidden/429, and open `board-api-cooldown.json`.
 - Prefer Pattern A (`claim --last`, `handoff --last`, `guide`) over raw multi-step claim.
 - Local only: PR Pattern A (`prepare.py`), post-merge `merge.py`, PR/audit artifacts, secrets, `user_settings` (`project_ssot.local_only`).
 - Humans own views, workflows, Insights, README, Ready ordering.

@@ -21,6 +21,7 @@ Related: [ADR-003](ADR-003-plugin-mcp-boundaries.md), [ADR-008](ADR-008-project-
 
 | Tool | Wraps |
 |------|-------|
+| `workflow_project_api_ready` | `project api-ready` |
 | `workflow_project_entry` | `project entry` (`digest=True` default) |
 | `workflow_project_claim` | `project claim --last` |
 | `workflow_project_handoff` | `project handoff --last` |
