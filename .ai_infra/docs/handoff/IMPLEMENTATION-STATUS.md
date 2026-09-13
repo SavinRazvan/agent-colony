@@ -34,7 +34,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
 | PR scripts + prepare gates | Pattern A — **2** universal; **6** on kit-dev (drift + doc facts + check-plugin + audit artifacts) | `.ai_infra/scripts/pr/prepare.py` |
-| Audit accountability (ADR-013) | Schema-1 opt-in; open P0/P1 `status` machine-fail; pipeline/path-trigger force merge `--arch-impacting`; prepare refuses skip-gates on arch pipeline; DRIFT-017 WARN | `audit_artifact_schema.py` · `arch_impacting_paths.py` · ADR-013 |
+| Audit accountability residual | R0 owner normalize shipped; R1–R2 Schema-1 teeth + pipeline/path-trigger; R3 skill/doc hygiene (verifier hop, DRIFT-017 row) | PRs #259–#262 · ADR-013 |
 | Governance + debrand scanners | CI-ready | `.ai_infra/scripts/architecture/` |
 | Workflow drift validate | ADR-007 (+ DRIFT-004b, DRIFT-011 roster, DRIFT-012 plan snapshots) | `.ai_infra/scripts/workflow/check_drift.py` |
 | Timestamped board Notes (CONT-TS) | `@user/agent · <ISO-8601-UTC> · …` via CLI (`claim`/`handoff`/`append-notes`) | `project_recipes.py` / `project_cli.py` + skill § Notes |

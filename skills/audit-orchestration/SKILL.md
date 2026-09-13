@@ -44,7 +44,7 @@ Do **not** run full CHK-* scorecard on every PR.
 
 ## Phase 0 — Script preflight (parallel, no prose)
 
-Run **once**; capture JSON for downstream agents:
+Run **once**; capture JSON for downstream agents. Include audit artifact gate:
 
 ```bash
 make verify-all
@@ -52,6 +52,7 @@ make verify-all
 python -m agent_colony verify all --write-preflight
 python -m agent_colony doc validate --write-preflight
 python -m agent_colony drift validate --directory .
+python .ai_infra/scripts/workflow/check_audit_artifacts.py --summary
 ```
 
 **MCP (Cursor):** `workflow_verify_all`, `workflow_doc_facts_validate`, `workflow_drift_validate`, `workflow_integrate_validate`, `workflow_activate`.
@@ -87,8 +88,9 @@ make doc-validate
 
 ## Phase 3 — Closure artifacts
 
-| Subagent | When |
+| Subagent / script | When |
 |----------|------|
+| `python .ai_infra/scripts/workflow/check_audit_artifacts.py --summary` (or `--arch-impacting`) | Before verifier/prepare when Schema-1 artifacts exist |
 | `drift-guard` | After tracker/doc edits; goal pulse + DRIFT-011; P0/P1 drift |
 | `verifier` | Spot-check top audit claims vs preflight + repo paths |
 
