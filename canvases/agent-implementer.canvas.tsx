@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-06";
+const VERIFIED = "2026-09-13";
 const SOURCES =
   ".cursor/agents/implementer.md · implementer-loop/SKILL.md · board-shell · board-ssot § Continuation";
 
@@ -145,7 +145,7 @@ const ARTIFACTS = [
   [
     ".local/generated-data/board-outbox.jsonl",
     "EXIT_QUEUED (6)",
-    "Later flush (any agent/human)",
+    "api-ready → list/drop → flush",
   ],
   [
     ".local/plans/",
@@ -377,7 +377,7 @@ export default function AgentImplementerCanvas() {
               --last. Project README is human-only.
             </Text>
             <Text>
-              Rate-limit: EXIT_QUEUED (6) → outbox status / flush; continue local
+              Rate-limit: api-ready → EXIT_QUEUED (6) → cooldown/outbox status|list → flush; continue local
               evidence; do not hammer GraphQL.
             </Text>
             <Text>

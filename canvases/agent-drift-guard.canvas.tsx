@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-06";
+const VERIFIED = "2026-09-13";
 const SOURCES =
   ".cursor/agents/drift-guard.md · drift-audit/SKILL.md · board-ssot/SKILL.md · ADR-007";
 
@@ -114,7 +114,7 @@ const ARTIFACTS = [
     "project export",
     "DRIFT-010 snapshot/export only",
   ],
-  [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
+  [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "api-ready → list/drop → flush"],
 ];
 
 const PEERS = [
@@ -301,7 +301,7 @@ export default function AgentDriftGuardCanvas() {
               or handoff to board/implementer via Ready.
             </Text>
             <Text>
-              Rate-limit: EXIT_QUEUED (6) → outbox status / flush; do not hammer
+              Rate-limit: api-ready → EXIT_QUEUED (6) → cooldown/outbox status|list → flush; do not hammer
               GraphQL.
             </Text>
           </Stack>

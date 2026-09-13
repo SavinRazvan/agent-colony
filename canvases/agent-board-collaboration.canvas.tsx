@@ -22,7 +22,7 @@ import {
 
 type FlowMode = "slice" | "side";
 
-const VERIFIED = "2026-08-06";
+const VERIFIED = "2026-09-13";
 const SOURCES =
   "project-board-collaboration.md · token-efficiency.md · board-ssot/SKILL.md · board-shell/SKILL.md · agent-relations · agent-roster · .cursor/agents/*.md · ADR-007 · ADR-008";
 
@@ -293,8 +293,8 @@ const ARTIFACT_FLOWS = [
   [
     ".local/generated-data/board-outbox.jsonl",
     "agent_colony project CLI",
-    "EXIT_QUEUED (6) on rate-limit",
-    "Any agent / human (outbox flush)",
+    "EXIT_QUEUED (6) · api-ready / cooldown",
+    "Any agent / human (list|drop → flush)",
     "Local buffer — not a second Status SSOT",
   ],
   [
@@ -536,16 +536,18 @@ export default function AgentBoardCollaborationCanvas() {
             and sync_policy: board_only.
           </Text>
           <Text>
-            Entry: prefer project entry (live scoped list → conserve snapshot →
-            offline_artifacts). One export --reuse-if-fresh per parent wave.
+            Entry: prefer project api-ready then project entry (live scoped list →
+            conserve snapshot → offline_artifacts). One export --reuse-if-fresh
+            per parent wave.
           </Text>
           <Text>
             Local evidence (.local/workflow-artifacts/, change-index, PR artifacts)
             stays local — never competes with board Status.
           </Text>
           <Text>
-            .local/generated-data/board-outbox.jsonl = EXIT_QUEUED buffer on
-            rate-limit — flush later; not a second Status SSOT.
+            .local/generated-data/board-outbox.jsonl = EXIT_QUEUED buffer;
+            board-api-cooldown.json = circuit-breaker. Gate with api-ready;
+            triage list|drop; flush later — not a second Status SSOT.
           </Text>
         </Stack>
       </Callout>

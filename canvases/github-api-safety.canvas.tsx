@@ -18,8 +18,8 @@ import {
 
 /**
  * Inventory of GitHub API hammering / safety protections in Agent Colony.
- * Source: project_outbox.py, project_cli (entry/export/list), agent Board-rights, ADR-008.
- * Verified: 2026-08-06 — G1–G5 write safety + G6 read stewardship (project entry / export reuse).
+ * Source: project_outbox.py, project_cli (api-ready/entry/export/list/outbox), agent Board-rights, ADR-008/012.
+ * Verified: 2026-09-13 — G1–G6 + G7 cooldown/api-ready + outbox list|drop triage + owner normalize.
  */
 
 const FIXED = [
@@ -47,19 +47,47 @@ const FIXED = [
     id: "G6",
     what: "Quota-aware Entry: project entry (live|conserve|offline_artifacts) + export --reuse-if-fresh + list WARN",
   },
+  {
+    id: "G7",
+    what: "api-ready gate + board-api-cooldown.json circuit-breaker + outbox list|drop triage + bare owner normalize",
+  },
 ] as const;
 
 const HARD = [
   {
+    layer: "API gate (G7)",
+    what: "project api-ready / workflow_project_api_ready — EXIT_QUEUED if cooldown or low remaining",
+    where: "project_handlers.run_api_ready + MCP project_tools",
+    enforces: "Code",
+  },
+  {
+    layer: "Cooldown breaker (G7)",
+    what: "board-api-cooldown.json opens on throttle; Pattern A hard-skips live API until clear",
+    where: "project_outbox cooldown + project cooldown status|clear",
+    enforces: "Code",
+  },
+  {
     layer: "Write precheck (G1)",
     what: "guard_write_or_queue: cached GraphQL remaining; enqueue if < min",
-    where: "project_cli + project_handlers (claim/handoff/set-*/mention-pr/…)",
+    where: "project_cli + project_handlers (claim/handoff/set-*/heal-cards/…)",
     enforces: "Code",
   },
   {
     layer: "Quota cache",
     what: "REST rate_limit cached (TTL); note_successful_write refreshes",
     where: "project_outbox read/write_quota_cache",
+    enforces: "Code",
+  },
+  {
+    layer: "Owner normalize (G7)",
+    what: "Strip users/|orgs/ prefixes; reject paths; doctor WARNs URL-shaped YAML",
+    where: "normalize_project_owner + run_doctor",
+    enforces: "Code",
+  },
+  {
+    layer: "Outbox triage (G7)",
+    what: "outbox list + outbox drop --force for smoke/stale failed rows",
+    where: "cmd_outbox_list / cmd_outbox_drop",
     enforces: "Code",
   },
   {
@@ -139,12 +167,12 @@ const HARD = [
 const SOFT = [
   {
     layer: "Agent Board rights",
-    what: "EXIT_QUEUED / precheck / Forbidden → do not hammer; outbox flush later",
+    what: "api-ready gate; EXIT_QUEUED → outbox_status; do not hammer; flush later",
     where: "All 8 agent cards",
   },
   {
     layer: "Skill checklist (G3)",
-    what: "Exit: CODE=6 = soft-success; no retry loop; outbox status",
+    what: "Exit: CODE=6 = soft-success; api-ready → status|list|drop → flush",
     where: "board-ssot/SKILL.md",
   },
   {
@@ -154,12 +182,12 @@ const SOFT = [
   },
   {
     layer: "Always-apply rule (G3)",
-    what: "EXIT_QUEUED covers precheck + Forbidden/429; no dual-write",
+    what: "EXIT_QUEUED → api-ready / queue / flush + cooldown file; no dual-write",
     where: "project-ssot-precedence.mdc",
   },
   {
     layer: "Ops + exemplar (G4)",
-    what: "Precheck / dedupe / throttle / efficiency documented for consumers",
+    what: "Precheck / dedupe / throttle / triage / owner hygiene documented",
     where: "project-board-collaboration · PLUGIN-USER-GUIDE · collab YAML",
   },
   {
@@ -189,10 +217,12 @@ const GAPS = [
 
 const CONFIG = [
   ["outbox.enabled", "true", "Master switch"],
-  ["min_graphql_remaining", "200", "Flush + precheck gate"],
+  ["min_graphql_remaining", "200", "Flush + precheck + api-ready gate"],
   ["precheck_writes", "true", "Cached GraphQL remaining before Pattern A writes"],
   ["quota_cache_ttl_seconds", "45", "REST→GraphQL quota cache TTL"],
   ["quota_cache_path", ".local/…/graphql-quota-cache.json", "Cache file"],
+  ["cooldown_path", ".local/…/board-api-cooldown.json", "Circuit-breaker file"],
+  ["cooldown_floor_seconds", "(schema)", "Minimum open window after throttle"],
   ["dedupe_pending", "true", "One pending row per fingerprint"],
   ["max_flush_per_run", "10", "Ops per flush"],
   ["retry_backoff_seconds", "30", "Sleep after failed apply"],
@@ -208,32 +238,34 @@ export default function GithubApiSafetyCanvas() {
       <Stack gap={6}>
         <Row gap={8} align="center">
           <H1>GitHub API safety</H1>
-          <Pill tone="neutral">PR #83 · #85</Pill>
-          <Pill tone="success">G1–G6 done</Pill>
+          <Pill tone="neutral">PR #83 · #85 · #256</Pill>
+          <Pill tone="success">G1–G7 done</Pill>
         </Row>
         <Text tone="secondary">
           How Agent Colony limits API hammering on Project writes — hard (code),
-          soft (policy), and accepted residual gaps. Post G1–G5. Soft layer
-          binds all 8 live agents (auditor · board · drift-guard · implementer ·
-          integrator · researcher · test-runner · verifier).
+          soft (policy), and accepted residual gaps. Soft layer binds all 8
+          live agents (auditor · board · drift-guard · implementer ·
+          integrator · researcher · test-runner · verifier). Verified
+          2026-09-13.
         </Text>
       </Stack>
 
       <Grid columns={3} gap={12}>
-        <Stat value="6" label="Gaps fixed (G1–G6)" />
+        <Stat value="7" label="Gaps fixed (G1–G7)" />
         <Stat value="2" label="Residual soft gaps" />
         <Stat value="CODE=6" label="Do not retry" />
       </Grid>
 
       <Callout tone="info" title="Verdict">
-        Pattern A writes use cached precheck + Forbidden/429 queue + pending
-        dedupe. Reads use project entry tiers (live / conserve /
-        offline_artifacts) plus export --reuse-if-fresh. Safe when agents use{" "}
+        Gate with project api-ready. Pattern A writes use cooldown breaker +
+        cached precheck + Forbidden/429 queue + pending dedupe. Reads use
+        project entry tiers plus export --reuse-if-fresh. Triage with outbox
+        list|drop before flush. Safe when agents use{" "}
         <Text weight="semibold">python3 -m agent_colony project …</Text> and
         treat EXIT_QUEUED (6) as soft-success (no retry loop).
       </Callout>
 
-      <H2>Fixed (G1–G6)</H2>
+      <H2>Fixed (G1–G7)</H2>
       <Table
         headers={["ID", "Fix"]}
         rows={FIXED.map((r) => [r.id, r.what])}
@@ -288,29 +320,32 @@ export default function GithubApiSafetyCanvas() {
         <CardBody>
           <Stack gap={4}>
             <Text size="small">
-              0. project entry — mode from GraphQL remaining (live scoped list /
-              conserve snapshot / offline_artifacts + queue writes)
+              0. project api-ready — refuse if cooldown open or remaining &lt; min
             </Text>
             <Text size="small">
-              1. guard_write_or_queue — if cached remaining &lt; min → enqueue +
+              1. project entry — mode from GraphQL remaining (live / conserve /
+              offline_artifacts + queue writes)
+            </Text>
+            <Text size="small">
+              2. guard_write_or_queue — if cached remaining &lt; min → enqueue +
               EXIT_QUEUED (no GraphQL)
             </Text>
             <Text size="small">
-              2. Else perform write (claim / handoff / set-status / …)
+              3. Else perform write (claim / handoff / set-status / heal-cards / …)
             </Text>
             <Text size="small">
-              3. On throttle stderr (rate-limit / 429 / Forbidden) → enqueue +
-              EXIT_QUEUED (dedupe pending)
+              4. On throttle stderr → open cooldown + enqueue + EXIT_QUEUED
+              (dedupe pending)
             </Text>
             <Text size="small">
-              4. On success → note_successful_write (refresh quota cache)
+              5. On success → note_successful_write (refresh quota cache)
             </Text>
             <Text size="small">
-              5. Agent continues local work — never retry-loop on CODE=6
+              6. Agent continues local work — never retry-loop on CODE=6
             </Text>
             <Text size="small">
-              6. Later: outbox status → outbox flush (cap 10 · remaining≥200 ·
-              backoff 30s)
+              7. Later: api-ready → outbox status|list → drop smoke → outbox
+              flush (cap 10 · remaining≥200 · backoff 30s)
             </Text>
           </Stack>
         </CardBody>
@@ -334,7 +369,7 @@ export default function GithubApiSafetyCanvas() {
 
       <Spacer height={8} />
       <Text tone="secondary" size="small">
-        Canon: ADR-008 · project_outbox.py · project_cli cmd_entry · board-ssot
+        Canon: ADR-008 · ADR-012 · project_outbox.py · api-ready · board-ssot
         skill · token-efficiency.md · project-ssot-precedence.mdc ·
         project-board-collaboration.md · github-collaboration.schema.json
       </Text>

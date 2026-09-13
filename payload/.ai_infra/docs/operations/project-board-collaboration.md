@@ -48,9 +48,11 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | **Agent** | Refuse day-to-day claim until bootstrap exit 0 | `project entry` → one card → Exit Status + Notes |
 | **Both** | Fill Acceptance/Rollback before In review / Done | `heal-cards --check` = inventory WARN only |
 
-**Incomplete cards WARN:** `doctor` / `heal-cards --check` often flag **Done** cards missing **End date** (historical hygiene). That is **not** blocked Ready work. Repair with human consent: `heal-cards --apply` (sets End date on Done). Use `--fill-tier1` only when you want Priority→p2 / Size defaults on gaps. Do **not** invent Acceptance/Rollback on old Done cards. Empty Ready → `create-from-template` + `claim`.
+**Incomplete cards WARN:** `doctor` / `heal-cards --check` often flag **Done** cards missing **End date** (historical hygiene). That is **not** blocked Ready work. Repair with human consent: `heal-cards --apply` (sets End date on Done). Use `--fill-tier1` only when you want Priority→p2 / Size defaults on gaps. Do **not** invent Acceptance/Rollback on old Done cards. Empty Ready → `create-from-template` + `claim`. During `heal-cards --apply [--fill-tier1]`, each live write goes through `guard_write_or_queue` — individual field ops may return **EXIT_QUEUED (6)** mid-sweep; continue local work, then `project api-ready` && re-run apply / `outbox flush` (do not retry-loop).
 
-**Entry modes:** Prefer `project entry` (or `--digest`). `live` / `conserve` when GraphQL works; `offline_artifacts` only when remaining is known-low or no usable snapshot. On EXIT_QUEUED (6): `outbox flush` after quota recovers — do not retry-loop.
+**Owner hygiene:** `project_ssot.owner` must be a **bare login** for `gh --owner` (e.g. `SavinRazvan`). `load_project_ssot` runs `normalize_project_owner`, which strips `@` and `users/`|`user/`|`orgs/`|`org/` prefixes. Paths like `users/a/b` fail load. Prefer bare login in YAML; `project doctor` WARNs when the raw YAML value still looks URL-shaped after normalize (prefix was stripped for runtime). Wrong prefix historically produced `unknown owner type` on `gh project` calls and failed outbox rows — fix YAML, then triage with `outbox drop --force` for stale failed rows (do not blind-flush).
+
+**Entry modes:** Prefer `project api-ready` then `project entry` (or `--digest`). `live` / `conserve` when GraphQL works; `offline_artifacts` only when remaining is known-low or no usable snapshot. On EXIT_QUEUED (6): `project api-ready` then `outbox flush` after quota recovers — do not retry-loop.
 
 **`--last`:** Use after create/claim. If guide prints `(invalid …)`, clear `.local/generated-data/project-last-item.json` and recreate — never paste docs placeholders as `--id`.
 
@@ -122,16 +124,21 @@ All subcommands registered in `.ai_infra/install/agent_colony/project_parser.py`
 | `promote-to-issue` | Convert DraftIssue → Issue (same `PVTI_`) | implementer (before shippable PR) |
 | `handoff` | Pattern A: Notes `next=@user/agent` + optional set-status; gates `in_review`\|`done` | Any (Exit) |
 | `validate-item` | Check body + Tier-1 fields + Status (flags empty Status) + status-scoped Notes (exit 5 on fail) | verifier, board |
-| `heal-cards` | Inventory incomplete Status/Tier-1; `--apply` sets Done when Issue CLOSED + Status empty/non-done | board, maintainer |
+| `heal-cards` | Inventory incomplete Status/Tier-1; `--apply` sets Done when Issue CLOSED + Status empty/non-done; per-op queue on throttle | board, maintainer |
 | `last` | Print last saved item_id (after create/claim) | Any (with `--last` recipes) |
 | `guide` | Print safe recipes using `--last` (no placeholder ids) | Any (Entry) |
-| `doctor` | Validate project_ssot config, templates, gh access; WARN incomplete card counts | Maintainer / human |
+| `doctor` | Validate project_ssot config, templates, gh access; WARN incomplete cards + URL-shaped owner YAML | Maintainer / human |
 | `board-bootstrap` | Schema-aware shell check (`--check`); opt-in `--ensure-fields` / `--apply-readme` | board first-run / human |
 | `set-assignee` | Assign GitHub human user (Issue-backed items) | board, implementer |
 | `find-by-pr` | Resolve project item id from PR number or URL | verifier, merge.py |
 | `export` | Read-only board snapshot (`--reuse-if-fresh` / `--force`); never mutates Status | drift-guard |
+| `api-ready` | Exit 0 if board API may proceed; EXIT_QUEUED(6) if cooldown / low GraphQL remaining | **Any (gate before writes)** |
+| `cooldown status` | Inspect `board-api-cooldown.json` circuit-breaker | Any |
+| `cooldown clear` | Clear cooldown (`--force`; maintainer escape only) | Maintainer |
 | `queue` | Enqueue a board op to local outbox (EXIT_QUEUED=6) | Any (rate-limit fallback) |
 | `outbox status` | Outbox counts + GraphQL remaining | Any |
+| `outbox list` | List outbox rows (`--status pending\|failed\|done`) for triage | board, maintainer |
+| `outbox drop` | Mark a row failed/triaged (`--id` + `--force`; smoke/stale only) | board, maintainer |
 | `outbox flush` | Apply pending outbox ops when quota allows | implementer, board |
 
 ## Three coordination layers (do not conflate)
@@ -170,7 +177,7 @@ GitHub GraphQL quota (~5000/hour) can block board writes. When `project_ssot.out
 7. After quota recovers: `project api-ready` then `outbox status` then `outbox flush` (capped by `max_flush_per_run`; refuses if cooldown open or `remaining < min`).
 8. Explicit enqueue: `project queue --op append-notes|set-status|set-section|handoff|claim|set-assignee|set-field|promote-to-issue …`
 9. Outbox is a **local buffer**, never a second Status SSOT. Prefer Pattern A CLI over raw `gh api graphql` (raw calls bypass the outbox).
-10. **Card-touch budget:** one claimed/`--last` card per wave; `heal-cards --apply --fill-tier1` requires `--id`/`--last`.
+10. **Card-touch budget:** one claimed/`--last` card per wave; `heal-cards --apply --fill-tier1` requires `--id`/`--last`. Each heal write uses `guard_write_or_queue` — mid-sweep EXIT_QUEUED is expected under throttle; flush / re-apply after `api-ready`.
 
 Doctor and board-bootstrap already honor the quota cache and live-probe skips; do not wrap them in retry loops or repeated `project list` calls. For audits, prefer a single export / GraphQL dump, then flush outbox once with the configured `max_flush_per_run`.
 
@@ -218,7 +225,7 @@ Optional end-to-end check against the real Project (skipped in default CI).
 3. Clear any other card **In progress** for the same assignee (claim enforces `one_in_progress_per_assignee`).
 4. Run: `make live-board-smoke`  
    (sets `PROJECT_SSOT_LIVE=1` and runs `tests/modules/install/test_project_cli_live.py`; claim retries briefly for GraphQL eventual consistency).
-5. If EXIT_QUEUED / rate-limit: `project outbox status` then `outbox flush` when GraphQL remaining recovers.
+5. If EXIT_QUEUED / rate-limit: `project api-ready` then `outbox status` / `cooldown status`, triage with `outbox list`/`drop` if needed, then `outbox flush` when GraphQL remaining recovers.
 6. Record PASS/FAIL under `.local/workflow-artifacts/release/` (local evidence only).
 
 Do **not** add this to default PR gates — it mutates the live board.

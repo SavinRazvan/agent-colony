@@ -17,7 +17,7 @@ import {
   useHostTheme,
 } from "cursor/canvas";
 
-const VERIFIED = "2026-08-06";
+const VERIFIED = "2026-09-13";
 const SOURCES = "Aggregated from .cursor/agents/*.md (post goal-pulse / CHK-*)";
 
 const AGENTS = [

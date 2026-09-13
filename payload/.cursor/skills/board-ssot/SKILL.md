@@ -189,7 +189,7 @@ Never paste placeholder `--id`. After create, use `--last`. `project guide --age
 
 Exit codes: `0` ok · `2` usage/config · `3` gh · `4` not found · **`5` validation** · **`6` queued** (outbox/cooldown; flush later).
 
-Rate-limit: `project api-ready` → `project outbox status` / `project cooldown status` / `project queue` / `project outbox flush` — see `project_ssot.outbox` in collaboration YAML. While `board-api-cooldown.json` is open, Pattern A writes hard-skip live API (EXIT_QUEUED) without REST/GraphQL spam.
+Rate-limit: `project api-ready` → `project outbox status` / `project outbox list` / `project outbox drop --id … --force` / `project cooldown status` / `project queue` / `project outbox flush` — see `project_ssot.outbox` in collaboration YAML. While `board-api-cooldown.json` is open, Pattern A writes hard-skip live API (EXIT_QUEUED) without REST/GraphQL spam. Owner: bare login in YAML (`users/`|`orgs/` prefixes stripped by `normalize_project_owner`; doctor WARNs URL-shaped raw values).
 
 **Card-touch budget:** one claimed/`--last` card per wave; coalesce pending Notes; `heal-cards --apply --fill-tier1` requires `--id`/`--last` (Done End-date hygiene may run unscoped).
 
@@ -207,7 +207,8 @@ Cite CLI output or `gh project` JSON. Label **Unknown** when board unreachable �
 
 - [ ] Entry: `project api-ready` then read board (or explicit offline fallback)
 - [ ] Exit updated Status or Notes + next agent
-- [ ] If EXIT_QUEUED: `outbox status` / `cooldown status`; no API hammering
+- [ ] If EXIT_QUEUED: `outbox status` / `outbox list` / `cooldown status`; drop smoke/stale with `outbox drop --force`; no API hammering
+- [ ] After recover: `api-ready` then `outbox flush` (once, capped)
 - [ ] Handoff line with real `item_id`
 - [ ] No dual-write; no unprompted Project view/workflow edits
 

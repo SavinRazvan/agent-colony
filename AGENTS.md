@@ -16,7 +16,7 @@
 - No dual-write of Status to `work-tracker.md` / `session-pointer.md` when `board_only`.
 - Shippable cards as **Issues** (`item_kind_default: issue`). Draft is scratch-only.
 - Fill **Tier-1** fields: Status, Priority, Size/Estimate, Start/End dates, Assignee, Linked PR (`mention-pr`).
-- EXIT_QUEUED (6) → `project outbox`; outbox is not SSOT.
+- EXIT_QUEUED (6) → `project api-ready` · `outbox status|list|drop|flush` · `cooldown status` (outbox is not SSOT).
 - **Evidence-first:** use facts, check fresh evidence, then act — [evidence-first.md](.ai_infra/docs/operations/evidence-first.md) · skill `evidence-first`. Do not claim complete without evidence or explicit **Partial** gaps.
 
 **Consumer install:** plugin + `/workflow-activate` — see [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
@@ -63,7 +63,7 @@ Product rules: [`overlays/rules/`](overlays/README.md). Say *prepare gates green
 | Promote | `project promote-to-issue --last --agent <name>` | Draft→Issue |
 | PR link | `project mention-pr --pr N --last --agent <name>` | Notes + auto-promote |
 | Handoff | `project handoff --last --agent <name> --next <peer> --to in_review` | Status + Notes |
-| Rate-limit | `project api-ready` · `outbox status` · `cooldown status` · `outbox flush` | EXIT_QUEUED(6); no retry |
+| Rate-limit | `project api-ready` · `outbox status\|list\|drop` · `cooldown status` · `queue` · `outbox flush` | EXIT_QUEUED(6); no retry |
 
 Do not leave shippable work as Draft. Handoff: [workflow-complete.md](.ai_infra/docs/operations/workflow-complete.md) §F.
 

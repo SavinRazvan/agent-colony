@@ -146,7 +146,7 @@ Tier 1 paths are created on first install; Tier 2 runtime `.md` files appear whe
 3. **`gh auth status`** — refresh Project scopes only if missing — [permissions-and-prerequisites.md § GitHub CLI](../../.ai_infra/docs/operations/permissions-and-prerequisites.md#2-github-cli-gh--main-github-authorization).
 4. Paste **Project URL + repo URL** in chat → **`/board`** wires `project_ssot` + `default_repo` (confirm before save) → `project doctor` + `project status`.
 5. When board SSOT enabled: optional **minimal 2-view overlay** ([Playground #3](https://github.com/users/SavinRazvan/projects/3)) → **`/board`** + `board-shell` (**CONSENT GATE** then TURN PROTOCOL) → `board-bootstrap --check` until **exit 0** → `project status`. See [views-setup.md](../../.ai_infra/templates/project-board/views-setup.md).
-6. **`/implementer`** to start · each session Entry: **`source .venv/bin/activate && python3 -m agent_colony project status`** when board SSOT on; else read `session-pointer.md` first. Audit (`/auditor`) is later — not day-0.
+6. **`/implementer`** to start · each session Entry: **`source .venv/bin/activate && python3 -m agent_colony project api-ready && python3 -m agent_colony project entry`** (or `project status`) when board SSOT on; else read `session-pointer.md` first. On EXIT_QUEUED (6): see [board-ssot](board-ssot/SKILL.md) § Rate-limit — do not retry. Audit (`/auditor`) is later — not day-0.
 
 Use **Ctrl+Shift+P → Open Canvas** for kit visualizations. Trackers under `.local/index-and-planning/` are offline markdown only.
 

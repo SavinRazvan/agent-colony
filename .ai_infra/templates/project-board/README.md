@@ -61,9 +61,13 @@ python3 -m agent_colony project handoff --last --agent implementer --next verifi
 **Rate-limit outbox (do not hammer GraphQL):**
 
 ```bash
+python3 -m agent_colony project api-ready
+python3 -m agent_colony project cooldown status
 python3 -m agent_colony project outbox status
+python3 -m agent_colony project outbox list --status pending
+# optional triage: project outbox drop --id <uuid> --force   # smoke/stale only
 python3 -m agent_colony project queue --op append-notes --last --agent implementer --text "deferred note"
 python3 -m agent_colony project outbox flush
 ```
 
-When a write returns `EXIT_QUEUED` (6) — including precheck low quota, rate-limit / 429 / Forbidden throttle — continue local evidence (`change-index` / handoff line); do **not** retry-loop. Gate: `project api-ready` → (if yes) `outbox flush`; on CODE=6 check `cooldown status` / `outbox status`. Outbox is **not** a second Status SSOT. See `project_ssot.outbox` (`precheck_writes`, `dedupe_pending`) in the collaboration exemplar.
+When a write returns `EXIT_QUEUED` (6) — including precheck low quota, rate-limit / 429 / Forbidden throttle — continue local evidence (`change-index` / handoff line); do **not** retry-loop. Gate: `project api-ready` → triage (`outbox list` / `drop`) → `outbox flush`; on CODE=6 check `cooldown status` / `outbox status`. Outbox is **not** a second Status SSOT. Prefer bare `project_ssot.owner` login (no `users/`|`orgs/` prefix). See `project_ssot.outbox` (`precheck_writes`, `dedupe_pending`) in the collaboration exemplar.

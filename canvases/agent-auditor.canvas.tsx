@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-06";
+const VERIFIED = "2026-09-13";
 const SOURCES =
   ".cursor/agents/auditor.md · auditor-protocol/SKILL.md · board-ssot/SKILL.md";
 
@@ -129,7 +129,7 @@ const ARTIFACTS = [
     "project export (read-only)",
     "DRIFT-010 evidence for drift-guard",
   ],
-  [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
+  [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "api-ready → list/drop → flush"],
   [
     ".local/plans/",
     "plan snapshot|list (history)",
@@ -332,7 +332,7 @@ export default function AgentAuditorCanvas() {
               implementer.
             </Text>
             <Text>
-              Rate-limit: EXIT_QUEUED (6) → outbox status / flush; do not hammer
+              Rate-limit: api-ready → EXIT_QUEUED (6) → cooldown/outbox status|list → flush; do not hammer
               GraphQL.
             </Text>
           </Stack>

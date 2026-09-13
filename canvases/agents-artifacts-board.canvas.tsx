@@ -25,7 +25,7 @@ import {
  * Not an agent-* canvas — excluded from DOC-008 roster scan (same as board-ssot-vs-trackers).
  */
 
-const VERIFIED = "2026-08-06";
+const VERIFIED = "2026-09-13";
 const SOURCES =
   "ADR-008 · ADR-010 · ADR-007 · board-ssot/SKILL.md · canvas-artifacts/SKILL.md · project-board-collaboration.md · agent cards · drift/auditor quality split";
 
@@ -189,9 +189,9 @@ const ARTIFACT_LANES: string[][] = [
   ],
   [
     "Outbox (rate-limit buffer)",
-    ".local/generated-data/board-outbox.jsonl",
+    ".local/generated-data/board-outbox.jsonl (+ cooldown)",
     "Any agent on EXIT_QUEUED (6)",
-    "Flush later — not a second SSOT",
+    "api-ready → list|drop → flush — not a second SSOT",
   ],
   [
     "Session canvases (local evidence)",
@@ -590,7 +590,7 @@ export default function AgentsArtifactsBoardCanvas() {
             remediation via Notes/Ready (never silent tracker Status).
           </Text>
           <Text size="small">
-            Rate-limit EXIT_QUEUED (6) → board-outbox.jsonl → project outbox flush
+            Rate-limit: api-ready → EXIT_QUEUED (6) → board-outbox.jsonl → outbox list|drop → flush
             when GraphQL budget recovers.
           </Text>
         </Stack>

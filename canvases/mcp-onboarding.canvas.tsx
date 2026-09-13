@@ -28,9 +28,9 @@ import {
   Text,
 } from "cursor/canvas";
 
-const VERIFIED = "2026-08-06";
+const VERIFIED = "2026-09-13";
 const SOURCES =
-  "ADR-009 · ADR-004 · connect-external-mcp.md · mcp-connect/SKILL.md · mcp.registry.yaml.example · mcp.user.example.json";
+  "ADR-009 · ADR-012 · ADR-004 · connect-external-mcp.md · mcp-connect/SKILL.md · mcp.registry.yaml.example · mcp.user.example.json";
 
 /** Seven Pattern A agents (board is not on DeepWiki allowlist by default). */
 const PATTERN_A_AGENTS = [
@@ -41,6 +41,24 @@ const PATTERN_A_AGENTS = [
   "researcher",
   "integrator",
   "drift-guard",
+];
+
+const BOARD_MCP_TOOLS: string[][] = [
+  [
+    "workflow_project_api_ready",
+    "Gate before board writes",
+    "Exit 0 = proceed; CODE=6 = cooldown/low quota",
+  ],
+  [
+    "workflow_project_claim / handoff",
+    "Pattern A Entry/Exit",
+    "Preflight api-ready; on CODE=6 → api_ready then outbox_status",
+  ],
+  [
+    "workflow_project_outbox_status",
+    "Inspect rate-limit buffer",
+    "Never retry live writes while CODE=6",
+  ],
 ];
 
 const TWO_TIER: string[][] = [
@@ -188,6 +206,10 @@ const TROUBLESHOOTING: string[][] = [
     "Expected — CI stays kit-tier. Consumers seed DeepWiki; or merge from .example / mcp seed.",
   ],
   [
+    "Board tool returns CODE=6 (EXIT_QUEUED)",
+    "Call workflow_project_api_ready then workflow_project_outbox_status — do not retry claim/handoff.",
+  ],
+  [
     "Strict validate fails",
     "Use mcp validate (non-strict) until live registry + user fragment are complete.",
   ],
@@ -204,7 +226,7 @@ export default function MCPOnboardingCanvas() {
         <Row gap={10} align="center" wrap>
           <H1 style={{ margin: 0 }}>MCP onboarding (Pattern A)</H1>
           <Pill tone="info" size="sm">
-            ADR-009
+            ADR-009 · ADR-012
           </Pill>
           <Pill tone="success" size="sm">
             DeepWiki default
@@ -214,7 +236,8 @@ export default function MCPOnboardingCanvas() {
           Canonical path for agents + CI:{" "}
           <Text weight="semibold">agent_colony mcp</Text> (validate → seed /
           link → doctor → smoke → list-tools → call). Cursor IDE host loading is
-          optional convenience.
+          optional convenience. Board Pattern A tools surface EXIT_QUEUED (6)
+          via envelope — see ADR-012.
         </Text>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED}
@@ -257,6 +280,17 @@ export default function MCPOnboardingCanvas() {
         rows={TWO_TIER}
         striped
       />
+
+      <H2>Board Pattern A tools (ADR-012)</H2>
+      <Table
+        headers={["Tool", "When", "CODE=6 handling"]}
+        rows={BOARD_MCP_TOOLS}
+        striped
+      />
+      <Text tone="secondary" size="small">
+        Envelope fields: exit_code · summary · next_recommended_tool · detail.
+        On EXIT_QUEUED, next_recommended_tool is typically workflow_project_api_ready.
+      </Text>
 
       <Divider />
 

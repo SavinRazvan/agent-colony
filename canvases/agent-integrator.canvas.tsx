@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-06";
+const VERIFIED = "2026-09-13";
 const SOURCES =
   ".cursor/agents/integrator.md · integrator-protocol/SKILL.md · board-ssot/SKILL.md";
 
@@ -110,7 +110,7 @@ const ARTIFACTS = [
   ["change-index.md", "Exit", "Next agents / humans"],
   ["history/updates-log.md", "Exit", "Continuity readers"],
   ["Board Status + Notes", "Exit (validate outcomes)", "implementer / escalations"],
-  [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
+  [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "api-ready → list/drop → flush"],
   [".local/plans/", "plan snapshot when touching plans", "History only (DRIFT-012)"],
   [".local/canvases/", "canvas save / sync", "Session evidence (ADR-010)"],
 ];
@@ -300,7 +300,7 @@ export default function AgentIntegratorCanvas() {
               outcomes.
             </Text>
             <Text>
-              Rate-limit: EXIT_QUEUED (6) → outbox status / flush; do not hammer
+              Rate-limit: api-ready → EXIT_QUEUED (6) → cooldown/outbox status|list → flush; do not hammer
               GraphQL.
             </Text>
           </Stack>

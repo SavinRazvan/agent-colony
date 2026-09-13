@@ -14,7 +14,7 @@ ADR-003/004 define kit + user MCP tiers and a registry. Cursor agent sessions of
 3. **Secrets:** `.local/user_settings/mcp.secrets.yaml` (gitignored); `mcp.user.json` stays transport-only.
 4. **Cursor `CallMcpTool` is optional** when the IDE host loads the same server; docs/skills must not require it.
 5. **Kit `agent-colony-mcp` stdio server unchanged** — still wraps `.ai_infra/scripts/`; CLI client talks to it over MCP stdio.
-6. **Exit codes:** align with project CLI (`0/2/3/4/5`); remote outbox / `EXIT_QUEUED=6` deferred.
+6. **Exit codes:** align with project CLI (`0/2/3/4/5/6`). Universal MCP `call` transport historically deferred board-specific `EXIT_QUEUED=6`; kit board MCP tools (`workflow_project_*`, ADR-012) surface code **6** in the JSON envelope — on CODE=6 use `workflow_project_api_ready` then `workflow_project_outbox_status` (never retry).
 
 ## Consequences
 
