@@ -32,7 +32,7 @@ Agent chats lose Status. Trackers and docs drift across sessions. Agents rubber-
 3. **Evidence-First Handoffs:** Agents generate verifiable artifacts in `.local/` (audits, test logs, coverage, drift reports). No agent trusts another without fresh proof.
 4. **Enforced PR Quality Gates:** Automated testing, governance consistency, doc-facts, and drift validation before merging.
 
-**Proof:** 1621 tests · 8 agents (optional **`consumer_lite`**: 6 agents, 6 skills) · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
+**Proof:** 1626 tests · 8 agents (optional **`consumer_lite`**: 6 agents, 6 skills) · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
 
 ---
 

@@ -19,6 +19,7 @@ disable-model-invocation: true
 5. **`finalize` (mandatory)** — clean repo state:
    - `python .ai_infra/scripts/pr/finalize.py --branch <feature-branch> --pr <n>`
    - Optional: `--delete-merged-local` (also delete other local branches already merged into `main`).
+   - **Stacked PRs:** `finalize.py` **blocks** (exit 1) when open PRs still use `--base <feature-branch>` — retarget children to `main` first (see `workflow-complete.md` § Stacked PRs). Emergency only: `--allow-dependent-prs`.
    - After branch cleanup succeeds, best-effort closes the GitHub Issue linked to `--pr`'s board item — opt-in via `conventions.close_linked_issue_on_cleanup` (default `false`). Never gates the finalize exit code; see § After cleanup.
 
 **Per-step detail:** `.agents/skills/review-pr/`, `prepare-pr/`, `merge-pr/`.
