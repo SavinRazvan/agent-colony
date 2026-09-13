@@ -188,49 +188,6 @@ def test_main_fetch_prune_fails(
     assert finalize_module.main() == 1
 
 
-def test_main_full_dry_run_with_delete_merged_local(
-    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
-    monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
-    monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda b: True)
-    monkeypatch.setattr(finalize_module, "_remote_branch_exists", lambda b: True)
-    monkeypatch.setattr(
-        finalize_module,
-        "_list_local_merged_branches",
-        lambda: ["main", "feature/x", "chore/stale"],
-    )
-    monkeypatch.setattr(
-        sys, "argv", ["finalize.py", "--branch", "feature/x", "--delete-merged-local", "--dry-run"]
-    )
-    assert finalize_module.main() == 0
-
-
-def test_main_local_and_remote_still_exist_after_non_dry_run(
-    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
-    monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
-    monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda b: True)
-    monkeypatch.setattr(finalize_module, "_remote_branch_exists", lambda b: True)
-    monkeypatch.setattr(sys, "argv", ["finalize.py", "--branch", "feature/x"])
-    assert finalize_module.main() == 1
-
-
-def test_main_local_and_remote_absent_logs_info(
-    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
-    monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
-    monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda b: False)
-    monkeypatch.setattr(finalize_module, "_remote_branch_exists", lambda b: False)
-    monkeypatch.setattr(sys, "argv", ["finalize.py", "--branch", "feature/x", "--dry-run"])
-    assert finalize_module.main() == 0
-
-
 # ---------------------------------------------------------------------------
 # _maybe_close_linked_issue
 # ---------------------------------------------------------------------------
@@ -346,6 +303,7 @@ def test_main_writes_finalize_md_pass(
     monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
     monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda _b: False)
     monkeypatch.setattr(finalize_module, "_remote_branch_exists", lambda _b: False)
+    monkeypatch.setattr(finalize_module, "_list_dependent_prs", lambda _b: ([], None))
 
     monkeypatch.setattr(
         sys,
@@ -373,6 +331,7 @@ def test_main_writes_finalize_md_pass(
     assert "## Attribution" in text
     assert "Action-By: Example Author" in text
     assert "## Cleanup Results" in text
+    assert "dependent-pr-check: PASS" in text
     assert "## Linked Issue Closure" in text
 
 
@@ -384,6 +343,7 @@ def test_main_writes_finalize_md_issue_closure_skipped_no_pr(
     monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
     monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda _b: False)
     monkeypatch.setattr(finalize_module, "_remote_branch_exists", lambda _b: False)
+    monkeypatch.setattr(finalize_module, "_list_dependent_prs", lambda _b: ([], None))
     monkeypatch.setattr(sys, "argv", ["finalize.py", "--branch", "feature/x"])
     assert finalize_module.main() == 0
 
@@ -392,3 +352,131 @@ def test_main_writes_finalize_md_issue_closure_skipped_no_pr(
     assert "## Linked Issue Closure" in text
     assert "- Status: SKIPPED" in text
     assert "no --pr provided" in text
+
+
+# ---------------------------------------------------------------------------
+# dependent-PR stack guard
+# ---------------------------------------------------------------------------
+
+
+def test_list_dependent_prs_parses_json(finalize_module, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        finalize_module,
+        "_run",
+        lambda cmd: (
+            0,
+            '[{"number":261,"url":"https://example/261","title":"R2"}]',
+        ),
+    )
+    deps, err = finalize_module._list_dependent_prs("fix/parent")
+    assert err is None
+    assert len(deps) == 1
+    assert deps[0]["number"] == "261"
+
+
+def test_list_dependent_prs_gh_fail(finalize_module, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(finalize_module, "_run", lambda cmd: (1, "Forbidden"))
+    deps, err = finalize_module._list_dependent_prs("fix/parent")
+    assert deps == []
+    assert "Forbidden" in (err or "")
+
+
+def test_main_blocks_when_dependent_prs_open(
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
+    monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
+    monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda _b: True)
+    monkeypatch.setattr(finalize_module, "_remote_branch_exists", lambda _b: True)
+    monkeypatch.setattr(
+        finalize_module,
+        "_list_dependent_prs",
+        lambda _b: (
+            [{"number": "261", "url": "https://example/261", "title": "child"}],
+            None,
+        ),
+    )
+    monkeypatch.setattr(sys, "argv", ["finalize.py", "--branch", "fix/parent", "--dry-run"])
+    assert finalize_module.main() == 1
+    out = capsys.readouterr().out
+    assert "[BLOCK] dependent PR(s)" in out
+    assert "#261" in out
+    text = (tmp_path / ".local" / "workflow-artifacts" / "pr" / "finalize.md").read_text(
+        encoding="utf-8"
+    )
+    assert "dependent-pr-check: BLOCK" in text
+
+
+def test_main_allow_dependent_prs_bypasses_block(
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
+    monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
+    monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda _b: False)
+    monkeypatch.setattr(finalize_module, "_remote_branch_exists", lambda _b: False)
+    monkeypatch.setattr(
+        finalize_module,
+        "_list_dependent_prs",
+        lambda _b: (
+            [{"number": "261", "url": "https://example/261", "title": "child"}],
+            None,
+        ),
+    )
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["finalize.py", "--branch", "fix/parent", "--allow-dependent-prs", "--dry-run"],
+    )
+    assert finalize_module.main() == 0
+    text = (tmp_path / ".local" / "workflow-artifacts" / "pr" / "finalize.md").read_text(
+        encoding="utf-8"
+    )
+    assert "dependent-pr-check: SKIPPED (--allow-dependent-prs)" in text
+
+
+def test_main_full_dry_run_with_delete_merged_local(
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
+    monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
+    monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda b: True)
+    monkeypatch.setattr(finalize_module, "_remote_branch_exists", lambda b: True)
+    monkeypatch.setattr(finalize_module, "_list_dependent_prs", lambda _b: ([], None))
+    monkeypatch.setattr(
+        finalize_module,
+        "_list_local_merged_branches",
+        lambda: ["main", "feature/x", "chore/stale"],
+    )
+    monkeypatch.setattr(
+        sys, "argv", ["finalize.py", "--branch", "feature/x", "--delete-merged-local", "--dry-run"]
+    )
+    assert finalize_module.main() == 0
+
+
+def test_main_local_and_remote_still_exist_after_non_dry_run(
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
+    monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
+    monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda b: True)
+    monkeypatch.setattr(finalize_module, "_remote_branch_exists", lambda b: True)
+    monkeypatch.setattr(finalize_module, "_list_dependent_prs", lambda _b: ([], None))
+    monkeypatch.setattr(sys, "argv", ["finalize.py", "--branch", "feature/x"])
+    assert finalize_module.main() == 1
+
+
+def test_main_local_and_remote_absent_logs_info(
+    finalize_module, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(finalize_module, "_current_branch", lambda: "main")
+    monkeypatch.setattr(finalize_module, "_run", lambda cmd: (0, ""))
+    monkeypatch.setattr(finalize_module, "_local_branch_exists", lambda b: False)
+    monkeypatch.setattr(finalize_module, "_remote_branch_exists", lambda b: False)
+    monkeypatch.setattr(finalize_module, "_list_dependent_prs", lambda _b: ([], None))
+    monkeypatch.setattr(sys, "argv", ["finalize.py", "--branch", "feature/x", "--dry-run"])
+    assert finalize_module.main() == 0
