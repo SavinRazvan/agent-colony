@@ -262,7 +262,8 @@ def cmd_mcp_smoke(args: argparse.Namespace) -> int:
     root = Path(args.directory).resolve()
     server = args.server
     try:
-        mcp_manage.write_merged_mcp(root)
+        # Read/validate only — do not mutate tracked `.cursor/mcp.json` (EROFS-safe for gates).
+        mcp_manage.load_merged_servers(root, write=False)
         result = mcp_client.smoke_server(root, server, agent=args.agent)
     except mcp_client.McpClientError as exc:
         print(f"mcp smoke: FAIL — {exc}", file=sys.stderr)

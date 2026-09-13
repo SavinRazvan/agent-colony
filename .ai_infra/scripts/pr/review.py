@@ -25,7 +25,7 @@ _PR_DIR = Path(__file__).resolve().parent
 if str(_PR_DIR) not in sys.path:
     sys.path.insert(0, str(_PR_DIR))
 
-from local_workflow_paths import REVIEW_MD, ensure_workflow_artifacts_dir
+from local_workflow_paths import REVIEW_MD, archive_then_write, ensure_workflow_artifacts_dir
 from user_settings import add_pr_attribution_arguments, resolve_pr_attribution
 
 
@@ -69,7 +69,8 @@ def main() -> int:
 
     branch = _current_branch()
 
-    review_file.write_text(
+    archive_then_write(
+        review_file,
         "\n".join(
             [
                 f"# Review Artifact ({args.pr})",
@@ -89,7 +90,8 @@ def main() -> int:
             ]
         )
         + "\n",
-        encoding="utf-8",
+        pr=str(args.pr),
+        phase="review",
     )
     print(f"Created {review_file}")
     return 0

@@ -25,6 +25,7 @@ Per-step detail: `.agents/skills/review-pr/`, `prepare-pr/`, `merge-pr/`.
 
 - `python .ai_infra/scripts/pr/verify_publish.py --branch "$(git branch --show-current)"`
 - `gh pr view --json number,url,headRefName,state`
+- Prefer `python .ai_infra/scripts/pr/wait_checks.py --pr <n>` over GraphQL check polling (exits immediately on Forbidden/429).
 
 ## Gates
 

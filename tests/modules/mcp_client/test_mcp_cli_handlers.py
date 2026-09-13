@@ -272,7 +272,9 @@ def test_cmd_mcp_smoke_client_error(tmp_path: Path, monkeypatch, capsys) -> None
 def test_cmd_mcp_smoke_validation_error(tmp_path: Path, monkeypatch, capsys) -> None:
     _seed_kit(tmp_path)
     monkeypatch.setattr(
-        mcp_manage, "write_merged_mcp", lambda _r: (_ for _ in ()).throw(ValueError("bad"))
+        mcp_manage,
+        "load_merged_servers",
+        lambda _r, write=False: (_ for _ in ()).throw(ValueError("bad")),
     )
     args = argparse.Namespace(directory=tmp_path, server="kit-server", agent=None)
     assert mcp_cli.cmd_mcp_smoke(args) == mcp_manage.EXIT_VALIDATION
