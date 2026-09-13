@@ -469,7 +469,7 @@ Detail: [connect-external-mcp.md § DeepWiki](connect-external-mcp.md#worked-exa
 
 1. When `project_ssot.enabled`: `python3 -m agent_colony project status` (board first); else open `.local/index-and-planning/current/session-pointer.md`
 2. Claim/update the board card (Status + Notes `@user/agent · <ISO-8601-UTC> · …`); local `plan.md` / `work-tracker.md` only as offline fallback under `board_only`; optional `history/continuity-index.md` (≥3-day local rollup)
-3. If board writes hit GraphQL rate-limit (EXIT_QUEUED (6)): `project api-ready` → (if yes) continue; else `cooldown status` / `outbox status` — do not retry; later `api-ready` then `outbox flush` — enable `project_ssot.outbox` defaults after activate
+3. If board writes hit GraphQL rate-limit (EXIT_QUEUED (6)): `python3 -m agent_colony project api-ready` → (if yes) continue; else `python3 -m agent_colony project cooldown status` / `outbox status` — do not retry; later `api-ready` then triage (`outbox list` / `drop`) then `outbox flush` — enable `project_ssot.outbox` defaults after activate
 4. **`/implementer`** (or `/test-runner`, `/verifier`; `/auditor` only for architecture-impacting / pre-merge audits — not day-0 onboarding)
 5. Canvas/plan (ADR-010): `canvas doctor` · `canvas sync --name <stem>` · `plan snapshot|list|open` — see [canvas-artifacts](../../.cursor/skills/canvas-artifacts/SKILL.md)
 6. Canvases and offline markdown: use **Ctrl+Shift+P → Open Canvas** and trackers under `.local/index-and-planning/`

@@ -21,7 +21,7 @@ Fill in the YAML files below once after install. They stay on your machine — n
 | PR | `pr_collaboration` | Pipelines, `Action-By:`, PR body |
 | **Project SSOT** | `project_ssot` | Shared GitHub Project backlog/status (board replaces local tracker markdown when `enabled: true`) |
 
-Optional **`project_ssot.outbox`**: local JSONL buffer for board writes when GraphQL is rate-limited. It is **not** a second Status SSOT — flush with `python3 -m agent_colony project outbox flush` after quota recovers. See `.ai_infra/templates/project-board/outbox-entry.schema.json`.
+Optional **`project_ssot.outbox`**: local JSONL buffer for board writes when GraphQL is rate-limited. It is **not** a second Status SSOT — gate with `python3 -m agent_colony project api-ready`, triage via `outbox list` / `outbox drop`, then `outbox flush` after quota recovers (also `cooldown status`). Prefer bare `project_ssot.owner` login. See `.ai_infra/templates/project-board/outbox-entry.schema.json` and [project-board-collaboration.md](../../docs/operations/project-board-collaboration.md).
 
 **Tier-1 board fields** (agent defaults): Status, Notes, Assignee (human from `owner.github_user`), Priority, Size, **Start date** on claim (`fields.start_date` + `conventions.set_start_date_on_claim`), **Estimate** via `project set-field --field estimate`. Linked PRs are derived on Issues + `mention-pr` Notes — not a writable Project field. Iteration / Labels / Reviewers / End date stay human or later slices.
 

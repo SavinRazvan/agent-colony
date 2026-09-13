@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-06";
+const VERIFIED = "2026-09-13";
 const SOURCES =
   ".cursor/agents/researcher.md · research-corpus/SKILL.md · research_cli.py · live pack flexiai-toolsmith + verifier";
 
@@ -122,7 +122,7 @@ const PATTERNS = [
 const ARTIFACTS = [
   ["_research_results/sources/<slug>/", "Pack + AGENT_BRIEF", "implementer / integrator"],
   ["Board Status + Notes", "Research card done + pack paths", "Next / requesting agent"],
-  [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
+  [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "api-ready → list/drop → flush"],
   [
     ".local/plans/",
     "plan snapshot|list (history)",
@@ -365,7 +365,7 @@ export default function AgentResearcherCanvas() {
               done + Notes with AGENT_BRIEF paths.
             </Text>
             <Text>
-              Rate-limit: EXIT_QUEUED (6) → outbox status / flush; do not hammer
+              Rate-limit: api-ready → EXIT_QUEUED (6) → cooldown/outbox status|list → flush; do not hammer
               GraphQL.
             </Text>
           </Stack>

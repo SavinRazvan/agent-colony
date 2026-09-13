@@ -72,8 +72,10 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs — for **con
 | Tier-1 | Mandatory board fields: Status, Priority, Size, Estimate, Start date (on first In progress), End date (on Done), Assignee, Linked PR when a PR exists |
 | `PVT_` | GitHub Project v2 **project** node id (in YAML `project_id`) |
 | `PVTI_` | GitHub Project v2 **item** id (card); Draft→Issue keeps the same `PVTI_` |
-| outbox | Local rate-limit buffer (`.local/generated-data/board-outbox.jsonl`); not a second SSOT |
-| EXIT_QUEUED | CLI exit code **6** — write queued to outbox; later `project outbox flush` |
+| outbox | Local rate-limit buffer (`.local/generated-data/board-outbox.jsonl`); not a second SSOT; triage via `outbox list` / `outbox drop` |
+| EXIT_QUEUED | CLI exit code **6** — write queued to outbox; gate with `project api-ready`; later `outbox flush` (check `board-api-cooldown.json` / `cooldown status`) |
+| api-ready | `project api-ready` — exit 0 if board writes may proceed; EXIT_QUEUED(6) if cooldown or low GraphQL remaining |
+| cooldown | Circuit-breaker file `board-api-cooldown.json`; `project cooldown status\|clear` |
 | dual-write | Forbidden under `board_only`: writing competing Status into local trackers |
 | Entry / Exit | Every agent: read board on Entry; update Status (+ Notes) on Exit |
 | canvas | Cursor Canvas visualization (`canvases/*.canvas.tsx`) |

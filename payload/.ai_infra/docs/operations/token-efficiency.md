@@ -143,6 +143,8 @@ Do **not** run individual gates in chat when `prepare.py` exists unless `verifie
 | Action | Command | MCP (kit 0.7.2+) |
 |--------|---------|------------------|
 | Session start | `python -m agent_colony project entry --digest` | `workflow_session_entry` or `workflow_project_entry(digest=True)` |
+| API gate | `python -m agent_colony project api-ready` | `workflow_project_api_ready` |
+| Cooldown | `python -m agent_colony project cooldown status` | — |
 | Health | `python -m agent_colony project doctor` | — |
 | Entry (quota-aware) | `python -m agent_colony project entry --digest` | `workflow_project_entry` |
 | Export reuse | `python -m agent_colony project export --reuse-if-fresh 900` | — |
@@ -150,12 +152,13 @@ Do **not** run individual gates in chat when `prepare.py` exists unless `verifie
 | Claim | `python -m agent_colony project claim --last --agent <name>` | `workflow_project_claim` |
 | Handoff | `python -m agent_colony project handoff --last --agent <name> --next <agent> [--to in_review]` | `workflow_project_handoff` |
 | Outbox status | `python -m agent_colony project outbox status` | `workflow_project_outbox_status` |
+| Outbox list / drop | `python -m agent_colony project outbox list\|drop …` | — |
 | Queue (no live write) | `python -m agent_colony project queue --op … --last --agent <name>` | — |
 | Flush outbox | `python -m agent_colony project outbox flush` | — |
 | Skill section | `python -m agent_colony doc skill-section --skill … --section …` | `workflow_doc_skill_section` |
 | Safe recipes | `python -m agent_colony project guide` | — |
 
-Prefer `--last` after `create-from-template`. Never paste docs placeholder ids. Never paste Project settings UI into the shell. On EXIT_QUEUED (6), do not retry — `project api-ready` then `outbox flush` after GraphQL quota recovers.
+Prefer `--last` after `create-from-template`. Never paste docs placeholder ids. Never paste Project settings UI into the shell. On EXIT_QUEUED (6), do not retry — `project api-ready` then triage (`outbox list` / `drop`) then `outbox flush` after GraphQL quota recovers.
 
 ## Maintainer lane
 

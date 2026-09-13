@@ -38,7 +38,7 @@ import {
 
 type Mode = "board" | "offline" | "compare";
 
-const VERIFIED = "2026-08-06";
+const VERIFIED = "2026-09-13";
 const SOURCES =
   "ADR-008 · AGENTS.md · project-ssot-precedence.mdc · token-efficiency.md · project-board-collaboration.md";
 
@@ -101,15 +101,15 @@ const LABELS: Record<string, string> = {
 const THREE_LAYERS: string[][] = [
   [
     "Live board",
-    "Quota healthy · board_only",
+    "Quota healthy · board_only · api-ready=yes",
     "Yes — only writable Status",
-    "project entry → claim / handoff / Notes",
+    "api-ready → project entry → claim / handoff / Notes",
   ],
   [
-    "Outbox JSONL",
-    "Writes throttled (EXIT_QUEUED=6)",
-    "No — buffer only",
-    "project queue / outbox flush when GraphQL recovers",
+    "Outbox JSONL + cooldown",
+    "Writes throttled (EXIT_QUEUED=6) or cooldown open",
+    "No — buffer / breaker only",
+    "api-ready → outbox list|drop → flush when GraphQL recovers",
   ],
   [
     "Offline trackers + snapshots",
@@ -121,11 +121,11 @@ const THREE_LAYERS: string[][] = [
 
 const COMPARE_ROWS: string[][] = [
   ["Writable Status SSOT", "work-tracker / session-pointer", "GitHub Project Status"],
-  ["Agent Entry", "session-pointer → plan → tracker", "project entry → get / claim"],
+  ["Agent Entry", "session-pointer → plan → tracker", "api-ready → project entry → get / claim"],
   ["Agent Exit", "Update tracker in_progress", "set-status + append-notes on board"],
   ["Live plan / Acceptance", "plan.md", "Board card body (board_only)"],
   [".local PR / audit / drift artifacts", "Evidence (always)", "Evidence (always) — not Status"],
-  ["Outbox", "N/A", "board-outbox.jsonl on CODE=6"],
+  ["Outbox / cooldown", "N/A", "board-outbox.jsonl + board-api-cooldown.json on CODE=6"],
   ["Dual-write Status", "Single writer (markdown)", "Forbidden — DRIFT-009"],
   ["Stale PR / roster / plan guards", "N/A / limited", "DRIFT-010 · 011 · 012"],
   ["PR merge gates", "prepare.py resolve_gates()", "Unchanged (local_only)"],
@@ -135,7 +135,7 @@ const COMPARE_ROWS: string[][] = [
 const LOCAL_ALWAYS: string[][] = [
   ["PR Pattern A (review / prep / merge.md)", "Merge readiness evidence — not Status"],
   ["Audit / drift / alignment under .local/workflow-artifacts/", "Evidence bundles"],
-  ["board-outbox.jsonl + graphql quota cache", "Rate-limit buffer — flush restores board"],
+  ["board-outbox.jsonl + cooldown + graphql quota cache", "Rate-limit buffer — api-ready then flush restores board"],
   ["project-board-snapshot.json", "Read-only export cache (DRIFT-010)"],
   [".local/canvases/ · .local/plans/", "ADR-010 evidence / plan history only"],
   [".venv, secrets, .coverage", "Machine-local protected paths"],
@@ -367,7 +367,7 @@ export default function BoardSsotVsTrackersCanvas() {
                   3. Exit — handoff / set-status + append-notes
                 </Text>
                 <Text size="small">
-                  4. CODE=6 → outbox; flush later — do not dual-write trackers
+                  4. CODE=6 → api-ready → outbox list|drop → flush — do not dual-write trackers
                 </Text>
                 <Text size="small">
                   5. Post-merge — merge.py → Done + Notes (PR URL + SHA)

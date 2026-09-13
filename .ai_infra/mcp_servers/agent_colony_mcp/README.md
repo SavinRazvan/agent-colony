@@ -19,7 +19,7 @@ External servers: [connect-external-mcp.md](../../docs/operations/connect-extern
 
 ## Pattern A board tools (kit 0.7.2+)
 
-JSON envelope: `exit_code`, `summary`, `next_recommended_tool`, `detail`. EXIT_QUEUED (6) → `workflow_project_api_ready` — never retry.
+JSON envelope: `exit_code`, `summary`, `next_recommended_tool`, `detail`. EXIT_QUEUED (6) → `workflow_project_api_ready` then `workflow_project_outbox_status` — never retry. CLI triage (`project outbox list` / `outbox drop`) and `project cooldown status` are CLI-only companions. Prefer bare `project_ssot.owner` login (no `users/`|`orgs/` prefix).
 
 | Tool | Wraps |
 |------|--------|

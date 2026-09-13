@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-08-06";
+const VERIFIED = "2026-09-13";
 const SOURCES =
   ".cursor/agents/board.md · board-ssot/SKILL.md · board-shell/SKILL.md · ADR-006 · ADR-008";
 
@@ -108,7 +108,7 @@ const ARTIFACTS = [
   ["change-index.md", "Exit", "Next agents / humans"],
   ["history/updates-log.md", "Exit", "Continuity readers"],
   ["Board Status + Notes", "Every triage", "implementer / next agent"],
-  [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "Later flush"],
+  [".local/generated-data/board-outbox.jsonl", "EXIT_QUEUED (6)", "api-ready → list/drop → flush"],
   [
     ".local/plans/",
     "plan snapshot|list (history)",
@@ -300,7 +300,7 @@ export default function AgentBoardCanvas() {
               --next implementer (typical).
             </Text>
             <Text>
-              Rate-limit: EXIT_QUEUED (6) → outbox status / flush; do not hammer
+              Rate-limit: api-ready → EXIT_QUEUED (6) → cooldown/outbox status|list → flush; do not hammer
               GraphQL.
             </Text>
             <Text>CLI helper: project guide. ADR-006 independent-governed · ADR-008 board_only SSOT.</Text>
