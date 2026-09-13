@@ -345,7 +345,12 @@ def check_doc006_implementation_test_count(paths: DocFactsPaths) -> CheckResult:
         detail=(
             f"test count matches ({actual})"
             if passed
-            else f"doc={doc_count} pytest={actual}"
+            else (
+                f"doc={doc_count} pytest={actual}; "
+                "run: make sync-doc-test-count  "
+                "(or .venv/bin/python .ai_infra/scripts/architecture/"
+                "sync_implementation_test_count.py)"
+            )
         ),
     )
 

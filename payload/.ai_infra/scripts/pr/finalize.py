@@ -33,7 +33,7 @@ _PR_DIR = Path(__file__).resolve().parent
 if str(_PR_DIR) not in sys.path:
     sys.path.insert(0, str(_PR_DIR))
 
-from local_workflow_paths import FINALIZE_MD, ensure_workflow_artifacts_dir
+from local_workflow_paths import FINALIZE_MD, archive_then_write, ensure_workflow_artifacts_dir
 from user_settings import add_pr_attribution_arguments, resolve_pr_attribution
 
 
@@ -494,8 +494,7 @@ def _write_finalize_artifact(
         # Keep artifact compact: store only the most recent log lines.
         tail_logs = logs[-25:]
 
-        finalize_md.write_text(
-            "\n".join(
+        finalize_md_content = "\n".join(
                 [
                     f"# Finalize Artifact ({pr_head})",
                     "",
@@ -530,8 +529,12 @@ def _write_finalize_artifact(
                     f"- {status}",
                     "",
                 ]
-            ),
-            encoding="utf-8",
+            )
+        archive_then_write(
+            finalize_md,
+            finalize_md_content,
+            pr=pr_head,
+            phase="finalize",
         )
         print(f"Created {finalize_md}")
     except Exception:  # noqa: BLE001 - finalize artifact must not block cleanup

@@ -47,6 +47,9 @@ gates:
 sync-plugin:
 	.venv/bin/python .ai_infra/scripts/release/sync_plugin_bundle.py
 
+sync-doc-test-count:
+	.venv/bin/python .ai_infra/scripts/architecture/sync_implementation_test_count.py
+
 check-plugin:
 	.venv/bin/python .ai_infra/scripts/release/sync_plugin_bundle.py --check
 

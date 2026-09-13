@@ -86,3 +86,17 @@ def test_prepare_skip_gates_requires_rationale(
         ["prepare.py", "--pr", "1", "--skip-gates", "--actor", "Test User"],
     )
     assert prepare.main() == 2
+
+
+def test_prepare_resolve_gate_cmd_uses_project_venv(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    prepare = _load_prepare()
+    monkeypatch.chdir(tmp_path)
+    venv_py = tmp_path / ".venv" / "bin" / "python"
+    venv_py.parent.mkdir(parents=True)
+    venv_py.write_text("#!/bin/sh\n", encoding="utf-8")
+    resolved = prepare._resolve_gate_cmd(["python", "-m", "pytest", "-q"])
+    assert resolved[0] == str(venv_py)
+    assert resolved[1:] == ["-m", "pytest", "-q"]

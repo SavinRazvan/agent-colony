@@ -10,7 +10,7 @@ Depends On:
  - subprocess
  - scripts/pr/local_workflow_paths.py
 Notes:
- - Gate subprocesses use `sys.executable` (same interpreter as this script), not a bare `python` on PATH.
+ - Gate subprocesses prefer `.venv/bin/python` via `resolve_project_python` (same as `cmd_gates`).
  - By default runs `resolve_gates()` (universal: check_testing_artifacts, pytest).
  - Kit-dev repos auto-append drift validate + doc facts + plugin bundle `--check` +
    audit artifact validation when `.ai_infra/docs/handoff/IMPLEMENTATION-STATUS.md` exists
@@ -32,10 +32,14 @@ import sys
 from pathlib import Path
 
 _PR_DIR = Path(__file__).resolve().parent
+_AI_INFRA = _PR_DIR.parents[1]
 if str(_PR_DIR) not in sys.path:
     sys.path.insert(0, str(_PR_DIR))
+if str(_AI_INFRA) not in sys.path:
+    sys.path.insert(0, str(_AI_INFRA))
 
-from local_workflow_paths import PREP_MD, ensure_workflow_artifacts_dir
+from local_workflow_paths import PREP_MD, archive_then_write, ensure_workflow_artifacts_dir
+from paths import resolve_project_python
 from user_settings import (
     add_pr_attribution_arguments,
     pipeline_requires_arch_impacting,
@@ -76,10 +80,10 @@ def resolve_gates(root: Path | None = None) -> list[list[str]]:
 
 
 def _resolve_gate_cmd(cmd: list[str]) -> list[str]:
-    """Run gates with the same interpreter that executed this script (e.g. project venv)."""
+    """Run gates with project `.venv` python when present (same as ``cmd_gates``)."""
     resolved = list(cmd)
     if resolved and resolved[0] == "python":
-        resolved[0] = sys.executable
+        resolved[0] = resolve_project_python(Path.cwd())
     return resolved
 
 
@@ -209,7 +213,12 @@ def main() -> int:
             "- (agent: add resolved findings, residual risks, and follow-ups below)",
         ]
     )
-    prep_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    archive_then_write(
+        prep_file,
+        "\n".join(lines) + "\n",
+        pr=str(args.pr),
+        phase="prep",
+    )
     if args.summary:
         verdict = "FAIL" if failed else "PASS"
         print(f"prepare: {verdict} · pr={args.pr} · artifact={prep_file}")

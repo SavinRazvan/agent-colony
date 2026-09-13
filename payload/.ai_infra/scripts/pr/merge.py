@@ -41,6 +41,7 @@ from local_workflow_paths import (
     MERGE_MD,
     PREP_MD,
     REVIEW_MD,
+    archive_then_write,
     ensure_workflow_artifacts_dir,
 )
 from arch_impacting_paths import branch_triggers_arch_impacting
@@ -477,7 +478,8 @@ def main() -> int:
         skip=args.skip_board_sync,
     )
 
-    merge_file.write_text(
+    archive_then_write(
+        merge_file,
         "\n".join(
             [
                 f"# Merge Artifact ({args.pr})",
@@ -509,7 +511,8 @@ def main() -> int:
             ]
         )
         + "\n",
-        encoding="utf-8",
+        pr=str(args.pr),
+        phase="merge",
     )
     print(f"Created {merge_file}")
     return 0
