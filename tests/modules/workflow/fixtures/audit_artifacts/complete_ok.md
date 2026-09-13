@@ -23,6 +23,9 @@ Kit-process accountability for prepare gate documentation.
 ### AA-gate-001
 - severity: P1
 - status: fixed
+- category: workflow_gate_drift
+- source_path: .ai_infra/docs/roadmap/alignment-audit-schema.md
+- target_path: .ai_infra/scripts/workflow/audit_artifact_schema.py
 - owner: platform-architecture
 - due_slice: feature/audit-accountability
 - consequence_if_ignored: merge prep blocked on incomplete gate docs

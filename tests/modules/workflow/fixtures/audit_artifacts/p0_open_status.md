@@ -17,6 +17,9 @@ Open P0 must fail Schema-1 validation.
 ### AA-open-p0-001
 - severity: P0
 - status: open
+- category: artifact_requirement_gap
+- source_path: tests/modules/workflow/fixtures/audit_artifacts/p0_open_status.md
+- target_path: .ai_infra/scripts/workflow/audit_artifact_schema.py
 - owner: platform-architecture
 - due_slice: next-slice
 - consequence_if_ignored: merge with unresolved critical finding
