@@ -44,13 +44,17 @@ Schema-1 audit artifacts (`Audit-Schema: 1`) cover **repository workflow and kit
 
 ## Assurance stages (schema-1)
 
-| Stage | Actor | Evidence surface | Accountability output |
-|-------|-------|------------------|------------------------|
-| Plan / slice | implementer | Acceptance, tests, board Notes | Owner on open risks before handoff |
-| Drift pass | drift-guard | `drift validate` output + artifacts | P0/P1 rows with owner + consequence in `drift-todos.md` |
-| Alignment / enterprise | auditor | Paths, CHK-* table, schema fields | `alignment-audit.md` + todos with schema-1 frontmatter |
-| Prepare | prepare-pr | `resolve_gates()` or documented skip rationale | `prep.md` gate lines or externally verified block |
-| Verify close | verifier | Disproof checks + audit validator when cited | Refuse `done` on incomplete P0 schema-1 findings |
+Paper §II names **four** audit process stages (Birhane et al., arXiv:2401.14462). Agent Colony adds a fifth **Action** stage for accountability outcomes the paper argues audits must drive.
+
+| Stage | Paper name | Kit owner | Evidence surface |
+|-------|------------|-----------|------------------|
+| Discovery | Harms Discovery | board / drift-guard | Board cards, drift validate, goal pulse |
+| Standards | Standards Identification | Acceptance, CHK-*, DRIFT-* | Criteria in card Acceptance and audit schemas |
+| Evaluation | Performance Analysis | auditor / verifier | CHK-* tables, disproof checks, validator output |
+| Communication | Audit Communication and Advocacy | Notes + `.local` artifacts | Artifact paths in board Notes; alignment/drift/EA files |
+| Action | *(kit extension — accountability outcome)* | owner + `due_slice` + `consequence_if_ignored` + prepare gate | P0/P1 rows in todos; `check_audit_artifacts.py` on schema-1 files |
+
+Do not claim the paper defined five process stages — **Action** is kit-process accountability only.
 
 ## Labels (shared vocabulary)
 

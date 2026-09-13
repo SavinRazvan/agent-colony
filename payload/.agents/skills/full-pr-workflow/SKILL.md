@@ -13,7 +13,7 @@ disable-model-invocation: true
 ## Order
 
 1. `review-pr` — findings only; optional **`make drift-validate`** before review when trackers/board status changed. When scope is architecture-impacting, run **`auditor`** and write alignment artifacts per `.cursor/rules/advisory-audit-alignment-enforcement.mdc`.
-2. `prepare-pr` — board Status (or tracker sync only if offline fallback) + `prepare.py` (`resolve_gates()` — universal gates; kit-dev auto-appends drift + doc facts when `IMPLEMENTATION-STATUS.md` exists).
+2. `prepare-pr` — board Status (or tracker sync only if offline fallback) + `prepare.py` (`resolve_gates()` — universal gates; kit-dev auto-appends drift + doc facts + check-plugin + audit artifacts when `IMPLEMENTATION-STATUS.md` exists — **six** total).
 3. `merge-pr` — `merge.py` check + `gh pr merge` + `merge.py --merge-sha` (records merge readiness and writes `merge.md`).
 4. **`finalize` (mandatory)** — clean repo state:
    - `python .ai_infra/scripts/pr/finalize.py --branch <feature-branch> --pr <n>`

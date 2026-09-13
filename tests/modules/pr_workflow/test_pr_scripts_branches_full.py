@@ -86,6 +86,55 @@ def test_artifact_matches_pr_os_error(tmp_path: Path) -> None:
     assert "unable to read" in detail
 
 
+def test_prep_status_blocks_merge_not_ready(tmp_path: Path) -> None:
+    module = _load_module("merge_prep_not_ready", "merge.py")
+    path = tmp_path / "prep.md"
+    path.write_text(
+        "# Prepare Artifact (123)\n\n## Status\n- NOT READY\n",
+        encoding="utf-8",
+    )
+    ok, detail = module._prep_status_blocks_merge(path)
+    assert ok is False
+    assert "NOT READY" in detail
+
+
+def test_prep_status_blocks_merge_skip_without_rationale(tmp_path: Path) -> None:
+    module = _load_module("merge_prep_skip_no_rationale", "merge.py")
+    path = tmp_path / "prep.md"
+    path.write_text(
+        "# Prepare Artifact (123)\n\n"
+        "## Gate Results\n- gates: externally verified by agent\n\n"
+        "## Status\n- PR is ready for /merge-pr\n",
+        encoding="utf-8",
+    )
+    ok, detail = module._prep_status_blocks_merge(path)
+    assert ok is False
+    assert "Skip-Gates-Rationale" in detail
+
+
+def test_prep_status_blocks_merge_skip_with_rationale(tmp_path: Path) -> None:
+    module = _load_module("merge_prep_skip_ok", "merge.py")
+    path = tmp_path / "prep.md"
+    path.write_text(
+        "# Prepare Artifact (123)\n\n"
+        "## Gate Results\n- gates: externally verified by agent\n"
+        "- Skip-Gates-Rationale: same SHA already ran resolve_gates\n"
+        "- Externally-Verified-By: Test User\n\n"
+        "## Status\n- PR is ready for /merge-pr\n",
+        encoding="utf-8",
+    )
+    ok, detail = module._prep_status_blocks_merge(path)
+    assert ok is True
+    assert detail == "ok"
+
+
+def test_prep_status_blocks_merge_missing_file(tmp_path: Path) -> None:
+    module = _load_module("merge_prep_missing", "merge.py")
+    ok, detail = module._prep_status_blocks_merge(tmp_path / "missing.md")
+    assert ok is True
+    assert detail == "ok"
+
+
 def test_merge_main_attribution_error(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     module = _load_module("merge_full_6", "merge.py")
     monkeypatch.chdir(tmp_path)

@@ -48,6 +48,18 @@ Audit passes with `Audit-Schema: 1` cover **repository workflow and kit-process 
 
 State exclusions under `## Audit limits` in every schema-1 artifact.
 
+## Assurance stages (schema-1)
+
+Canon table: [evidence-first.md](../../.ai_infra/docs/operations/evidence-first.md) § Assurance stages (four paper stages + kit **Action**). Short map:
+
+| Stage | Kit owner |
+|-------|-----------|
+| Discovery | board / drift-guard |
+| Standards | Acceptance, CHK-*, DRIFT-* |
+| Evaluation | auditor / verifier |
+| Communication | Notes + `.local` artifacts |
+| Action | owner + due_slice + consequence + prepare gate |
+
 ## Evidence checklist (version / release example)
 
 When scope includes **version bump** or **release**:

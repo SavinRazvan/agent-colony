@@ -21,7 +21,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
 **Last updated:** 2026-08-23 (ICC removed — kit 0.7.3)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1565
+**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1569
 
 ## Shipped (confirmed in repo)
 

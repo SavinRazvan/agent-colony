@@ -92,7 +92,7 @@ const READ_FIRST = [
 ];
 
 const PATTERNS = [
-  ["create-from-template", "slice [AUDIT] then claim --last"],
+  ["create-from-template", "--template audit then claim --last"],
   ["Board lifecycle", "Notes = artifact paths; Status in_review/done"],
   ["Tier-1", "Shared Board rights; Start date on claim / first In progress"],
   ["Tracker etiquette", "Propose edits in audit-actions; implementer applies"],
@@ -269,7 +269,7 @@ export default function AgentAuditorCanvas() {
           title={mode === "board" ? "project_ssot.enabled" : "Offline / disabled"}
         >
           {mode === "board"
-            ? "Entry: project entry; may create-from-template slice [AUDIT] then claim."
+            ? "Entry: project entry; may create-from-template --template audit then claim."
             : "Fallback: session-pointer. Audits write .local/ artifacts only."}
         </Callout>
         <DagPanel mode={mode} tokens={tokens} />
@@ -277,7 +277,7 @@ export default function AgentAuditorCanvas() {
 
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
-          <Text>1. project entry; create [AUDIT] slice card if needed; claim.</Text>
+          <Text>1. project entry; create --template audit card if needed; claim.</Text>
           <Text>
             2. Evidence-only audit per auditor-protocol — tick CHK-ARCH /
             GRANULARITY / PERF / SEC-CODE / SEC-AGENT / INFRA-KIT / DOCS (full or
@@ -325,7 +325,7 @@ export default function AgentAuditorCanvas() {
         <CardBody>
           <Stack gap={6}>
             <Text>
-              May create-from-template --template slice [AUDIT] then claim --last.
+              May create-from-template --template audit then claim --last.
             </Text>
             <Text>
               Exit: Status in_review or done; Notes with artifact paths for

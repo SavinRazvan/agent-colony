@@ -41,7 +41,7 @@ Quick reference for reading `README.md`, `AGENTS.md`, and kit docs — for **con
 | CLI | Command-line interface — here mainly `python3 -m agent_colony …` and `gh` |
 | PR | Pull request — maintainer merge workflow (Pattern A) |
 | ADR | Architecture Decision Record — `.ai_infra/docs/decisions/` (ADR-001…008) |
-| GATES | 2-gate back-compat alias in `.ai_infra/scripts/pr/prepare.py`; SSOT is `resolve_gates()` (kit-dev may append drift + doc facts) |
+| GATES | 2-gate back-compat alias in `.ai_infra/scripts/pr/prepare.py`; SSOT is `resolve_gates()` (kit-dev may append drift + doc facts + check-plugin + audit artifacts → **six** total) |
 | Pattern A | Script-first workflow; agents invoke **one** command per maintainer action |
 | YAML | Config format for `github.collaboration.yaml`, registries, manifests |
 | UTC / ISO-8601 | Board Notes timestamps (`YYYY-MM-DDTHH:MM:SSZ`); CLI stamps UTC |

@@ -19,7 +19,7 @@ disable-model-invocation: true
 5. Run (owner from YAML; **Agent/s** auto-merges trackers + pipeline unless `--agents` set):  
    `python .ai_infra/scripts/pr/prepare.py --pr <id|url> --pipeline default`  
    Same **`--agents-from-session`** behavior as review — see **`pr-workflow/SKILL.md`**.  
-   **`prepare.py`** runs `resolve_gates()` — universal (`check_testing_artifacts`, `pytest`); **kit-dev** auto-appends `drift validate` + `doc validate` when `IMPLEMENTATION-STATUS.md` exists. On failure, fix and re-run.  
+   **`prepare.py`** runs `resolve_gates()` — universal (`check_testing_artifacts`, `pytest`); **kit-dev** auto-appends `drift validate` + `doc facts` + `sync_plugin_bundle --check` + `check_audit_artifacts --summary` when `IMPLEMENTATION-STATUS.md` exists (**six** total). On failure, fix and re-run.  
    If gates were already run and recorded elsewhere: `--skip-gates --skip-gates-rationale '…'` to stamp `prep.md` only (rationale required).
 6. **Kit-dev (optional):** when drift/doc gates pass and you need fresh evidence, Task **`drift-guard`** to refresh `.local/workflow-artifacts/drift/drift-audit.md` and `drift-todos.md`.
 7. Append human notes to `prep.md`: resolved findings, residual risks.

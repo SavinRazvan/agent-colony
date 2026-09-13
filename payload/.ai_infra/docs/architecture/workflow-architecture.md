@@ -45,7 +45,21 @@ Gate order: read `.ai_infra/scripts/pr/prepare.py` only — do not duplicate her
 
 ## Audit accountability (schema-1)
 
-Kit-dev `resolve_gates()` appends `check_audit_artifacts.py` (six gates total). Artifacts may opt in with `Audit-Schema: 1` frontmatter (`audit_scope`, `Named-Target`, `## Audit limits`). P0/P1 findings require owner, due_slice, and consequence_if_ignored. Drift **DRIFT-017** (kit-dev WARN) surfaces incomplete schema-1 artifacts without blocking merge. Stage table: [evidence-first.md](../operations/evidence-first.md) § Assurance stages.
+Kit-dev `resolve_gates()` appends `check_audit_artifacts.py` (six gates total). Artifacts may opt in with `Audit-Schema: 1` frontmatter (`audit_scope`, `Named-Target`, `## Audit limits`). P0/P1 findings require owner, due_slice, and consequence_if_ignored. Drift **DRIFT-017** (kit-dev WARN) surfaces incomplete schema-1 artifacts without blocking merge.
+
+## Audit, drift, verification coordination
+
+Stage map (four paper stages + kit **Action**): [evidence-first.md](../operations/evidence-first.md) § Assurance stages.
+
+| Stage | Kit agents | Primary outputs |
+|-------|------------|-----------------|
+| Discovery | `board`, `drift-guard` | Ready cards, drift validate, goal pulse |
+| Standards | implementer Acceptance, CHK-*, DRIFT-* | Criteria before evaluation |
+| Evaluation | `auditor`, `verifier` | Alignment/EA artifacts, disproof, validator |
+| Communication | all audit roles | Notes cite `.local/workflow-artifacts/**` paths |
+| Action | implementer → `verifier` handoff | Owner, due_slice, consequence on P0/P1; prepare gate on schema-1 |
+
+Shippable implementer slices hand off to **verifier** (`in_review`) before `done`. Architecture-impacting merges require schema-1 alignment artifacts — see [workflow-complete.md](../operations/workflow-complete.md) §B.
 
 ## Anchoring
 

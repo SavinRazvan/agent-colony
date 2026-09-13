@@ -61,6 +61,7 @@ Before `/prepare-pr` / final merge:
 2. Ensure **both** exist (merge script enforces with `--arch-impacting`):
    - `.local/workflow-artifacts/alignment/alignment-audit.md`
    - `.local/workflow-artifacts/alignment/alignment-todos.md`
+   Both must carry `Audit-Schema: 1` frontmatter and pass `check_audit_artifacts.py --arch-impacting`.
 3. Use `python .ai_infra/scripts/pr/merge.py --pr ... --actor "..." --agents "..." --arch-impacting` when recording merge readiness.
 
 ## C) Testing + planning index sync (medium/high risk)
