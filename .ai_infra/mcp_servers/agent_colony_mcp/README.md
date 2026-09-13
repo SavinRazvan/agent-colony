@@ -38,6 +38,7 @@ JSON envelope: `exit_code`, `summary`, `next_recommended_tool`, `detail`. EXIT_Q
 | `workflow_run_prepare` | `.ai_infra/scripts/pr/prepare.py` — pass `summary=True` for one-line gate result |
 | `workflow_run_review` | `.ai_infra/scripts/pr/review.py` |
 | `workflow_run_merge_check` | `.ai_infra/scripts/pr/merge.py` |
+| `workflow_check_audit_artifacts` | `.ai_infra/scripts/workflow/check_audit_artifacts.py` |
 | `workflow_run_gate` | single gate — **verifier only** (registry policy) |
 | `workflow_check_governance` | `check_governance_consistency.py` |
 | `workflow_list_agents` | `.cursor/agents/*.md` |

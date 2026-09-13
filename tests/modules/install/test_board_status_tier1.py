@@ -85,6 +85,69 @@ def test_collect_validate_missing_status_flags_tier1() -> None:
     assert any("CLOSED" in w for w in warnings)
 
 
+def test_validate_audit_card_warns_missing_artifact_path() -> None:
+    item = {
+        "id": "PVTI_audit",
+        "title": "[AUDIT] Schema teeth",
+        "status": "In Progress",
+        "priority": "p1",
+        "size": "s",
+        "estimate": "1",
+        "start_date": "2026-09-13",
+        "content": {
+            "body": (
+                "## Acceptance\n\n- ok\n\n## Rollback\n\n- revert\n\n"
+                "## Audit scope\n\nkit\n\n## Notes\n\n- @u/a · claimed\n"
+            ),
+            "assignees": [{"login": "u"}],
+        },
+    }
+    _problems, warnings = pa.collect_validate_item_problems(SAMPLE_SSOT, item)
+    assert any("workflow-artifacts" in w for w in warnings)
+
+
+def test_validate_cited_failing_audit_artifact_is_problem(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    audit_dir = tmp_path / ".local" / "workflow-artifacts" / "alignment"
+    audit_dir.mkdir(parents=True)
+    bad = audit_dir / "alignment-audit.md"
+    bad.write_text(
+        "---\nAudit-Schema: 1\nAudit-Scope: kit\nNamed-Target: x\n---\n"
+        "## Accountability summary\n\nx\n\n## Audit limits\n\n- y\n\n"
+        "### AA-bad\n- severity: P0\n- status: open\n- category: workflow_gate_drift\n"
+        "- source_path: a.md\n- target_path: b.py\n- owner: o\n- due_slice: s\n"
+        "- consequence_if_ignored: c\n- evidence: open status\n"
+        "- recommendation: fix\n",
+        encoding="utf-8",
+    )
+    # Provide validator import path
+    workflow = REPO_ROOT / ".ai_infra" / "scripts" / "workflow"
+    (tmp_path / ".ai_infra" / "scripts" / "workflow").mkdir(parents=True)
+    import shutil
+
+    shutil.copy(workflow / "audit_artifact_schema.py", tmp_path / ".ai_infra" / "scripts" / "workflow" / "audit_artifact_schema.py")
+
+    item = {
+        "id": "PVTI_fail",
+        "title": "[AUDIT] fail cite",
+        "status": "In Progress",
+        "priority": "p1",
+        "size": "s",
+        "estimate": "1",
+        "content": {
+            "body": (
+                "## Acceptance\n\n- ok\n\n## Rollback\n\n- revert\n\n"
+                "## Notes\n\n- @u/a · see .local/workflow-artifacts/alignment/alignment-audit.md\n"
+            ),
+            "assignees": [{"login": "u"}],
+        },
+    }
+    problems, _warnings = pa.collect_validate_item_problems(SAMPLE_SSOT, item)
+    assert any("open P0/P1 status blocks merge" in p or "alignment-audit.md" in p for p in problems)
+
+
 def test_summarize_card_completeness_counts() -> None:
     items = [
         {

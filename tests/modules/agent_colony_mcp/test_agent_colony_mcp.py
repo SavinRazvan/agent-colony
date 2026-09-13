@@ -183,6 +183,15 @@ def test_workflow_check_governance() -> None:
     assert "exit=0" in text
 
 
+def test_workflow_check_audit_artifacts_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
+    _env_root()
+    _mock_run_script(monkeypatch)
+    from agent_colony_mcp.server import workflow_check_audit_artifacts
+
+    text = workflow_check_audit_artifacts(arch_impacting=False, summary=True)
+    assert text == "exit=0\nok"
+
+
 def test_workflow_run_prepare_skip_gates_requires_rationale() -> None:
     _env_root()
     from agent_colony_mcp.server import workflow_run_prepare
