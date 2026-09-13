@@ -21,7 +21,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
 **Last updated:** 2026-09-13 (board docs/canvases aligned to rate-limit safety + owner hygiene)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1606
+**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1615
 
 ## Shipped (confirmed in repo)
 
@@ -34,7 +34,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
 | PR scripts + prepare gates | Pattern A — **2** universal; **6** on kit-dev (drift + doc facts + check-plugin + audit artifacts) | `.ai_infra/scripts/pr/prepare.py` |
-| Audit accountability (ADR-013) | Schema-1 opt-in; `--arch-impacting` requires Schema-1 (no skip); Accountability summary + limits; DRIFT-017 independence WARN | `audit_artifact_schema.py` · `check_audit_artifacts.py` · ADR-013 |
+| Audit accountability (ADR-013) | Schema-1 opt-in; open P0/P1 `status` machine-fail; pipeline/path-trigger force merge `--arch-impacting`; prepare refuses skip-gates on arch pipeline; DRIFT-017 WARN | `audit_artifact_schema.py` · `arch_impacting_paths.py` · ADR-013 |
 | Governance + debrand scanners | CI-ready | `.ai_infra/scripts/architecture/` |
 | Workflow drift validate | ADR-007 (+ DRIFT-004b, DRIFT-011 roster, DRIFT-012 plan snapshots) | `.ai_infra/scripts/workflow/check_drift.py` |
 | Timestamped board Notes (CONT-TS) | `@user/agent · <ISO-8601-UTC> · …` via CLI (`claim`/`handoff`/`append-notes`) | `project_recipes.py` / `project_cli.py` + skill § Notes |
@@ -69,7 +69,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Consumer update stamp | Scaffold + `update` write `.kit-version` from source manifest; CLI fallback `ensure_kit_version_stamp` | `scaffold.py` · `update_cli.py` · tests |
 | Multi-consumer isolation | Model A contract doc; DRIFT-013 tracked-runtime guard; DRIFT-011b advisory; `update --check` + `kit_managed_globs`; consumer CI template | `multi-consumer-isolation.md` · `drift_checks.py` · `update_cli.py` · `templates/ci/consumer-gates.yml` |
 | Dashboard removal | Documentation now points to GitHub Project board + Cursor Open Canvas; `.local/index-and-planning/` remains offline markdown only | operations docs · skills · canvases |
-| Tests | 1606 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1615 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

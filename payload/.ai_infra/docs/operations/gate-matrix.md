@@ -32,4 +32,5 @@ Three gate surfaces exist by design (Pattern A).
 
 **Rule:** Agents preparing a PR run **`prepare.py`** (or MCP `workflow_run_prepare`). Kit-dev `prepare.py` runs drift + doc facts + strict `check-plugin` automatically; consumers keep universal gates unless extended at install. Maintainers validating the kit repo may also run **`make gates`**, **`make drift-validate`**, or **`agent-colony gates`**. GitHub Actions runs **`seed_kit_workspace.py`** first because `.local/` is gitignored. Note: **`make verify-all`** syncs the plugin bundle before `--check` (working-tree refresh); CI and kit-dev prepare use `--check` alone so committed drift fails.
 
-Optional product gates: append once to consumer `prepare.py` at install; document in overlay README.
+| **`merge.py` arch-impacting** | Architecture-impacting PR merge check | Schema-1 alignment pair + open P0/P1 status fail; forced by `--arch-impacting`, pipeline `architecture_impacting` / `requires_alignment_artifacts`, or kit-dev path-trigger (`arch_impacting_paths.py`) | `.ai_infra/scripts/pr/merge.py` + `check_audit_artifacts.py --arch-impacting` |
+| **`prepare.py` skip-gates** | Stamp-only prepare | Refused (exit 2) when pipeline is architecture_impacting / requires_alignment_artifacts | `.ai_infra/scripts/pr/prepare.py` |

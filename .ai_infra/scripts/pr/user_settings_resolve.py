@@ -195,6 +195,27 @@ def resolve_pipeline_name(
     return "default"
 
 
+def pipeline_requires_arch_impacting(
+    root: Path | None,
+    pipeline: str | None,
+    *,
+    arch_impacting_flag: bool = False,
+) -> bool:
+    """True when CLI flag, pipeline name, or requires_alignment_artifacts demands Schema-1."""
+    if arch_impacting_flag:
+        return True
+    pipe = resolve_pipeline_name(pipeline=pipeline, arch_impacting=False)
+    if pipe == "architecture_impacting":
+        return True
+    cfg = load_github_collaboration(root)
+    if not cfg:
+        return False
+    pr_collab = cfg.get("pr_collaboration") or {}
+    pipelines = pr_collab.get("pipelines") or {}
+    spec = pipelines.get(pipe) or {}
+    return bool(spec.get("requires_alignment_artifacts"))
+
+
 def resolve_pr_attribution(
     *,
     root: Path | None,

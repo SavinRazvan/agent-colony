@@ -22,6 +22,7 @@ Kit-process accountability for prepare gate documentation.
 
 ### AA-gate-001
 - severity: P1
+- status: fixed
 - owner: platform-architecture
 - due_slice: feature/audit-accountability
 - consequence_if_ignored: merge prep blocked on incomplete gate docs

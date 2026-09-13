@@ -17,7 +17,7 @@ Related: [ADR-007](ADR-007-workflow-drift-guard.md), [alignment-audit-schema.md]
 2. **Named target + limits** — Schema-1 artifacts (`Audit-Schema: 1`) require `Audit-Scope`, `Named-Target`, `## Accountability summary`, and `## Audit limits`. Default scope is `kit` (enum: `kit | product | model | dataset | ecosystem | meta`).
 3. **P0/P1 consequence** — Findings at P0/P1 require `owner`, `due_slice` (or `deadline`), and non-placeholder `consequence_if_ignored`. Finding rows require severity `P0|P1|P2`.
 4. **Machine gate (kit-dev)** — `check_audit_artifacts.py` is the 6th `resolve_gates()` append on kit-dev. Files without `Audit-Schema: 1` skip. Consumer universal gates stay at two.
-5. **Architecture-impacting** — `check_audit_artifacts.py --arch-impacting` (via `merge.py`) requires `alignment-audit.md` and `alignment-todos.md` to **exist**, carry `Audit-Schema: 1`, and **pass** validation (no skip).
+5. **Architecture-impacting** — `check_audit_artifacts.py --arch-impacting` (via `merge.py`) requires `alignment-audit.md` and `alignment-todos.md` to **exist**, carry `Audit-Schema: 1`, and **pass** validation (no skip). Forced when CLI flag, pipeline `architecture_impacting` / `requires_alignment_artifacts`, or kit-dev path-trigger (rules/skills/agents/ADRs/arch docs/PR+audit scripts). Open P0/P1 `status` fails. Prepare refuses `--skip-gates` on architecture_impacting pipelines.
 6. **Independence** — Role contracts (auditor ≠ implementer) plus DRIFT-017 WARN when `Commissioned-By` is missing/placeholder or `Audited-By` equals `Commissioned-By`. No agent sandbox.
 7. **Assurance labels** — ICO-style `high | reasonable | limited | very_limited` are labels only; no merge FAIL on `very_limited`.
 
@@ -25,6 +25,7 @@ Related: [ADR-007](ADR-007-workflow-drift-guard.md), [alignment-audit-schema.md]
 
 - Schema and skills stamp accountability frontmatter on new audits.
 - Architecture-impacting merges require schema-1 alignment artifacts that pass the validator.
+- Pipeline / path-trigger auto-enforcement at merge; ordinary prepare still skips unstamped leftovers.
 - Default prepare scan still skips unstamped leftover `.local` files.
 - Paper reference: `assets/other/paper-arxiv-2401.14462v1.txt`.
 

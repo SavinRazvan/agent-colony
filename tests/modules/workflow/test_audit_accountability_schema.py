@@ -96,6 +96,7 @@ Test fixture.
 - test
 ### AA-001
 - severity: P1
+- status: fixed
 - owner: alice
 - due_slice: slice-a
 - consequence_if_ignored: blocked
@@ -103,6 +104,41 @@ Test fixture.
     _skip, errors, warnings = schema.validate_audit_text(text)
     assert errors == []
     assert any("caps Assurance-Level" in w for w in warnings)
+
+
+def test_p0_open_status_fails() -> None:
+    skip, errors, _warnings = schema.validate_audit_text(_read("p0_open_status.md"))
+    assert skip is False
+    assert any("open P0/P1 status blocks merge" in e for e in errors)
+
+
+def test_p0_accepted_divergence_passes() -> None:
+    skip, errors, _warnings = schema.validate_audit_text(_read("p0_accepted_divergence.md"))
+    assert skip is False
+    assert errors == []
+
+
+def test_p1_missing_status_fails() -> None:
+    text = """---
+Audit-Schema: 1
+Audit-Scope: kit
+Named-Target: missing status
+Commissioned-By: maintainer
+Audited-By: auditor
+---
+## Accountability summary
+Missing status.
+## Audit limits
+- fixture
+### AA-missing-status
+- severity: P1
+- owner: alice
+- due_slice: slice-a
+- consequence_if_ignored: blocked
+"""
+    skip, errors, _warnings = schema.validate_audit_text(text)
+    assert skip is False
+    assert any("requires status" in e for e in errors)
 
 
 def test_independence_warning_when_audited_equals_commissioned() -> None:

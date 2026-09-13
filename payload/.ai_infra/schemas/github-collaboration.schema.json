@@ -262,7 +262,10 @@
                 "minItems": 1,
                 "items": { "type": "string", "minLength": 1 }
               },
-              "requires_alignment_artifacts": { "type": "boolean" },
+              "requires_alignment_artifacts": {
+                "type": "boolean",
+                "description": "When true, merge.py forces check_audit_artifacts --arch-impacting (Schema-1 alignment required; not PR-body hint only)."
+              },
               "session_pointer": { "type": "string" }
             }
           }

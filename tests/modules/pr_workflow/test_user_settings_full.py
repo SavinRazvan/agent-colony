@@ -523,6 +523,34 @@ def test_resolve_pipeline_name_arch_impacting() -> None:
     assert usres.resolve_pipeline_name(pipeline=None, arch_impacting=True) == "architecture_impacting"
 
 
+def test_pipeline_requires_arch_impacting_by_name() -> None:
+    assert (
+        usres.pipeline_requires_arch_impacting(
+            None, "architecture_impacting", arch_impacting_flag=False
+        )
+        is True
+    )
+
+
+def test_pipeline_requires_arch_impacting_by_yaml_flag(tmp_path: Path) -> None:
+    settings = tmp_path / ".local" / "user_settings"
+    settings.mkdir(parents=True)
+    (settings / "github.collaboration.yaml").write_text(
+        "owner:\n  display_name: Test\n  github_user: '@t'\n"
+        "pr_collaboration:\n  pipelines:\n    default:\n      agents: [review-pr]\n"
+        "    custom:\n      agents: [merge-pr]\n      requires_alignment_artifacts: true\n",
+        encoding="utf-8",
+    )
+    assert (
+        usres.pipeline_requires_arch_impacting(tmp_path, "custom", arch_impacting_flag=False)
+        is True
+    )
+    assert (
+        usres.pipeline_requires_arch_impacting(tmp_path, "default", arch_impacting_flag=False)
+        is False
+    )
+
+
 def test_resolve_pipeline_name_default() -> None:
     assert usres.resolve_pipeline_name(pipeline=None, arch_impacting=False) == "default"
 

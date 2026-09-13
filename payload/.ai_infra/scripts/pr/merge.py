@@ -13,7 +13,9 @@ Notes:
  - This script does not perform git merge; it verifies readiness and logs evidence.
  - Call AFTER gh pr merge with --merge-sha <oid> so the artifact records the correct merge commit.
  - --branch is optional; if omitted the script reads the current git branch.
- - Checks for alignment artifacts with Audit-Schema: 1 when --arch-impacting is set.
+ - Checks for alignment artifacts with Audit-Schema: 1 when --arch-impacting is set,
+   when pipeline is architecture_impacting / requires_alignment_artifacts, or when
+   kit-dev branch paths match arch_impacting_paths triggers.
  - When project_ssot is operational, sets card Status → done and appends Notes (non-blocking on failure).
 """
 
@@ -41,7 +43,16 @@ from local_workflow_paths import (
     REVIEW_MD,
     ensure_workflow_artifacts_dir,
 )
-from user_settings import add_pr_attribution_arguments, resolve_pr_attribution
+from arch_impacting_paths import branch_triggers_arch_impacting
+from user_settings import (
+    add_pr_attribution_arguments,
+    pipeline_requires_arch_impacting,
+    resolve_pr_attribution,
+)
+
+
+def _is_kit_dev_root(root: Path) -> bool:
+    return (root / ".ai_infra" / "docs" / "handoff" / "IMPLEMENTATION-STATUS.md").is_file()
 
 
 def _head_sha() -> str:
@@ -374,13 +385,22 @@ def main() -> int:
     )
     args = parser.parse_args()
 
+    root = Path.cwd()
+    arch_impacting = bool(args.arch_impacting)
+    if pipeline_requires_arch_impacting(
+        root, args.pipeline, arch_impacting_flag=arch_impacting
+    ):
+        arch_impacting = True
+    elif _is_kit_dev_root(root) and branch_triggers_arch_impacting(root):
+        arch_impacting = True
+
     try:
         actor, agents, github_user = resolve_pr_attribution(
-            root=Path.cwd(),
+            root=root,
             actor=args.actor,
             agents=args.agents,
             pipeline=args.pipeline,
-            arch_impacting=args.arch_impacting,
+            arch_impacting=arch_impacting,
             agents_from_session=args.agents_from_session,
         )
     except ValueError as exc:
@@ -407,7 +427,7 @@ def main() -> int:
     if not prep_ready:
         errors.append(prep_ready_detail)
 
-    if args.arch_impacting:
+    if arch_impacting:
         if not alignment_audit_file.exists():
             errors.append(
                 "missing .local/workflow-artifacts/alignment/alignment-audit.md "
@@ -428,7 +448,7 @@ def main() -> int:
             "--arch-impacting",
             "--summary",
         ]
-        proc = _sp.run(audit_cmd, capture_output=True, text=True, cwd=Path.cwd())
+        proc = _sp.run(audit_cmd, capture_output=True, text=True, cwd=root)
         if proc.returncode != 0:
             detail = (proc.stdout or proc.stderr or "").strip()
             errors.append(
