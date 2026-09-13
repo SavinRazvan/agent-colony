@@ -240,7 +240,18 @@ def test_prepare_main_skip_gates(monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     monkeypatch.setattr(
         sys,
         "argv",
-        ["prepare.py", "--pr", "123", "--actor", "A", "--agents", "review-pr", "--skip-gates"],
+        [
+            "prepare.py",
+            "--pr",
+            "123",
+            "--actor",
+            "A",
+            "--agents",
+            "review-pr",
+            "--skip-gates",
+            "--skip-gates-rationale",
+            "verified externally",
+        ],
     )
     assert module.main() == 0
     content = (tmp_path / ".local" / "workflow-artifacts" / "pr" / "prep.md").read_text(encoding="utf-8")

@@ -43,6 +43,10 @@ Optional cleanup: `full-pr-workflow` → `finalize.py`.
 
 Gate order: read `.ai_infra/scripts/pr/prepare.py` only — do not duplicate here.
 
+## Audit accountability (schema-1)
+
+Kit-dev `resolve_gates()` appends `check_audit_artifacts.py` (six gates total). Artifacts may opt in with `Audit-Schema: 1` frontmatter (`audit_scope`, `Named-Target`, `## Audit limits`). P0/P1 findings require owner, due_slice, and consequence_if_ignored. Drift **DRIFT-017** (kit-dev WARN) surfaces incomplete schema-1 artifacts without blocking merge. Stage table: [evidence-first.md](../operations/evidence-first.md) § Assurance stages.
+
 ## Anchoring
 
 **When `project_ssot.enabled`** (see `github.collaboration.yaml`, [ADR-008](../decisions/ADR-008-project-board-ssot.md)): session backlog/status is the **GitHub Project** via `python -m agent_colony project …` and `.cursor/skills/board-ssot/SKILL.md`. **Day-0:** `/board` + `board-shell` until `board-bootstrap --check` matches `board-shell.schema.yaml` (Playground six-view default) — before `/implementer`; audit is not day-0. Local `session-pointer.md` / `plan.md` / `work-tracker.md` are **offline fallback only** under `sync_policy: board_only` (no dual-write; DRIFT-009).
@@ -71,7 +75,7 @@ Drift validation: `make drift-validate` — see [gate-matrix.md](../operations/g
 
 | Root | Contents |
 |------|----------|
-| `.cursor/skills/` | Canonical protocols (**14**): `workflow-activate`, `update-agent-colony`, `board-ssot`, `board-shell`, `canvas-artifacts`, `implementer-loop`, `auditor-protocol`, `drift-audit`, … — full list in [repository-map.md](../handoff/repository-map.md) |
+| `.cursor/skills/` | Canonical protocols (**15**): `workflow-activate`, `update-agent-colony`, `board-ssot`, `board-shell`, `canvas-artifacts`, `implementer-loop`, `auditor-protocol`, `drift-audit`, … — full list in [repository-map.md](../handoff/repository-map.md) |
 | `.agents/skills/` | Maintainer slash skills: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `full-pr-workflow`, `audit-alignment` (redirect) |
 
 Plugin bundle copies `.cursor/skills/` first; maintainer skills are **additive only** (no overwrite).

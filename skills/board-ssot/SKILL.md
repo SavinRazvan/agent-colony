@@ -173,7 +173,7 @@ Never paste placeholder `--id`. After create, use `--last`. `project guide --age
 | slice / feature / chore | `create-from-template --template slice` |
 | bug / fix | `create-from-template --template bug` |
 | research | `--template research` |
-| audit pass | `--template slice` + `[AUDIT] …` then `claim --last` |
+| audit pass | `create-from-template --template audit` then `claim --last` |
 | test-runner / verifier | claim/continue only — **no** create |
 
 **Recipes:**

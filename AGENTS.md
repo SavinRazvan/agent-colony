@@ -70,7 +70,7 @@ Sequence: `plan → interfaces → implementation → tests → evidence → doc
 
 ## Quality gates
 
-Merge gate order: `resolve_gates()` in `.ai_infra/scripts/pr/prepare.py` — **two** universal + **three** kit-dev append (**five** total). Also run `check_governance_consistency.py` and `check_debrand.py` when changing governance, `.cursor/`, `.agents/`, or policy docs.
+Merge gate order: `resolve_gates()` in `.ai_infra/scripts/pr/prepare.py` — **two** universal + **four** kit-dev append (**six** total). Also run `check_governance_consistency.py` and `check_debrand.py` when changing governance, `.cursor/`, `.agents/`, or policy docs.
 
 Slice closure: `python3 -m agent_colony drift validate`; hand off `drift-guard` on P0/P1. Doc/agent changes: `make doc-validate`. Audits: `make verify-all` — see `audit-orchestration` skill.
 

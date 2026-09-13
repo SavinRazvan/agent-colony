@@ -32,10 +32,21 @@ Notes:
 
 1. **Restate** the claim in testable terms.
 2. **Gather** fresh evidence (paths + commands). Prefer smallest disproof first.
-3. **Label** outcome: Verified | Partial | Not verified. List gaps with severity.
-4. **Act** on evidence — fix, defer with owner, or correct the claim. Never hide a known gap.
+3. **Label** outcome: Verified | Partial | Not verified. List gaps with severity. For audit artifacts (schema 1), assign **owner** and **consequence_if_ignored** on P0/P1 before handoff.
+4. **Act** on evidence — fix, defer with owner + consequence, or correct the claim. Never hide a known gap.
 
 **Not inspected → Unknown.** Do not infer from chat history alone.
+
+## Audit scope boundary (schema-1 artifacts)
+
+Audit passes with `Audit-Schema: 1` cover **repository workflow and kit-process accountability** only. They do **not** certify:
+
+- Societal harm or ethics outside repo evidence
+- Legal or regulatory compliance
+- Production SLOs or live incident response
+- Third-party LLM vendor behavior or model safety
+
+State exclusions under `## Audit limits` in every schema-1 artifact.
 
 ## Evidence checklist (version / release example)
 

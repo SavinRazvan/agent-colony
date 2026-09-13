@@ -98,7 +98,7 @@ Human or maintainer: `review-pr` → `prepare-pr` → `merge-pr` on `feature/` o
 
 ## Delegation rules
 
-1. **Scripts before agents** — do not re-run five gates if preflight JSON is fresh (<1 session).
+1. **Scripts before agents** — do not re-run six kit-dev gates if preflight JSON is fresh (<1 session).
 2. **One primary `in_progress`:** board SSOT when enabled; else `work-tracker.md`. No dual-write under `board_only`.
 3. **Do not auto-edit** slice scope from audit agents — propose in `enterprise-audit-actions.md`.
 4. **Canvases** — optional IDE artifacts; not merge gates.

@@ -29,7 +29,7 @@ Do not tell the user a task is complete, a version is bumped everywhere, or a fi
 |------|--------|---------|
 | 1. **Facts** | Restate the claim in testable terms. List surfaces that must be true (repo paths, tags, releases, consumer cache, CLI output). | Claim is vague or untestable |
 | 2. **Evidence** | Run commands or open files **now** (not from chat memory). Record path, command, and outcome. | No command output or path cited |
-| 3. **Responsible action** | Act on evidence: fix gaps, downgrade the claim, or document deferrals with owner. | Action contradicts evidence or hides known gaps |
+| 3. **Responsible action** | Act on evidence: fix gaps, downgrade the claim, or document deferrals with **owner** and **consequence_if_ignored** on P0/P1 audit findings. | Action contradicts evidence or hides known gaps |
 
 ## What counts as evidence
 
@@ -37,6 +37,20 @@ Do not tell the user a task is complete, a version is bumped everywhere, or a fi
 2. **Command output** — exact command + outcome (exit code, key lines)
 3. **External surfaces** — GitHub release/tag, plugin cache manifest, board CLI JSON (when relevant)
 4. **User context** — label **`Context:`**; never treat as **Confirmed** for repo or shipped state
+
+## Audit scope boundary
+
+Schema-1 audit artifacts (`Audit-Schema: 1`) cover **repository workflow and kit-process accountability** only. They do **not** certify societal harm, legal compliance, production SLOs, or third-party LLM behavior. Every schema-1 artifact must include `## Audit limits` listing exclusions.
+
+## Assurance stages (schema-1)
+
+| Stage | Actor | Evidence surface | Accountability output |
+|-------|-------|------------------|------------------------|
+| Plan / slice | implementer | Acceptance, tests, board Notes | Owner on open risks before handoff |
+| Drift pass | drift-guard | `drift validate` output + artifacts | P0/P1 rows with owner + consequence in `drift-todos.md` |
+| Alignment / enterprise | auditor | Paths, CHK-* table, schema fields | `alignment-audit.md` + todos with schema-1 frontmatter |
+| Prepare | prepare-pr | `resolve_gates()` or documented skip rationale | `prep.md` gate lines or externally verified block |
+| Verify close | verifier | Disproof checks + audit validator when cited | Refuse `done` on incomplete P0 schema-1 findings |
 
 ## Labels (shared vocabulary)
 

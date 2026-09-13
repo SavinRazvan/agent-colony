@@ -55,10 +55,34 @@ def test_prepare_summary_skip_gates(
     monkeypatch.setattr(
         sys,
         "argv",
-        ["prepare.py", "--pr", "1", "--skip-gates", "--summary", "--actor", "Test User"],
+        [
+            "prepare.py",
+            "--pr",
+            "1",
+            "--skip-gates",
+            "--skip-gates-rationale",
+            "gates verified in CI for same SHA",
+            "--summary",
+            "--actor",
+            "Test User",
+        ],
     )
     assert prepare.main() == 0
     out = capsys.readouterr().out
     assert "prepare: PASS" in out
     assert "externally verified" in out
     assert prepare.PREP_MD.is_file()
+
+
+def test_prepare_skip_gates_requires_rationale(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    prepare = _load_prepare()
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["prepare.py", "--pr", "1", "--skip-gates", "--actor", "Test User"],
+    )
+    assert prepare.main() == 2

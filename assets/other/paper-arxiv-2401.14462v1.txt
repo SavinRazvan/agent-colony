@@ -1,0 +1,2188 @@
+Source: https://arxiv.org/abs/2401.14462v1
+Copy-paste: 
+
+AI auditing: The Broken Bus on the Road to AI
+Accountability
+Abeba Birhane
+Mozilla Foundation and
+Sch. of Computer Science and Statistics
+Trinity College Dublin
+Dublin, Ireland
+Briana Vecchione
+arXiv:2401.14462v1  [cs.CY]  25 Jan 2024
+Data & Society
+New York City, USA
+Ryan Steed
+Heinz College & Machine Learning Dept.
+Carnegie Mellon University
+Pittsburgh, USA
+Victor Ojewale
+Ctr. for Technological Responsibility,
+Reimagination, & Redesign
+Brown University
+Providence, USA
+Inioluwa Deborah Raji
+Mozilla Foundation and
+University of California, Berkeley
+Berkeley, USA
+Abstract—One of the most concrete measures to take towards
+meaningful AI accountability is to consequentially assess and re
+port the systems’ performance and impact. However, the practical
+nature of the “AI audit” ecosystem is muddled and imprecise,
+making it difficult to work through various concepts and map out
+the stakeholders involved in the practice. First, we taxonomize
+current AI audit practices as completed by regulators, law firms,
+civil society, journalism, academia, consulting agencies. Next, we
+assess the impact of audits done by stakeholders within each
+domain. We find that only a subset of AI audit studies translate
+to desired accountability outcomes. We thus assess and isolate
+practices necessary for effective AI audit results, articulating
+the observed connections between AI audit design, methodology
+and institutional context on its effectiveness as a meaningful
+mechanism for accountability.
+AUDIT STUDIES
+Ecosystem Audits
+Product Audits
+Meta
+Commentary
+Non-audits
+Model Audits
+Dataset 
+Audits
+Index Terms—Evaluation, auditing, accountability, trans
+parency, artificial intelligence, society, law, machine learning, data
+science
+I. INTRODUCTION
+The widespread use of artificial intelligence (AI) systems
+is heavily weighed down by its multitude of related risks.
+Functional failures [1], disparate performance [2, 3, 4], em
+bedded stereotypes [5, 6, 7], legal incompatibility [8], privacy
+violations [9], model inscrutability [10] and many more issues
+plague almost every use case.
+Algorithm 
+Audits
+Fig. 1. Audit studies considered in our survey, classified by their scope.
+Audits are a routine practice in various sectors including
+finance, public management, healthcare, food safety, and com
+mercial retail [11, 12]. The adoption of audits within the
+AI space, however, is relatively new. Despite its imprecision,
+we use the term “artificial intelligence” (AI) to encompass a
+wide range of deployed products with a significant algorith
+mic or data-defined component, including but not limited to
+risk assessments, large base models for computer vision and
+language, classification models, “generative” models, and rec
+ommendation systems. The inspiration for audit practice in the
+field of data science, machine learning (ML), and AI derives
+from a variety of related disciplines. Online platform audits,
+for example, cite social science and critical race studies as
+inspiration [13, 14], as do several audits of automated decision
+systems (ADS) and risk assessments [15]. Some audits of large
+language models take after security audits [16]. Some risk
+assessment evaluations follow models from traditional exper
+imental design [17], including clinical trials [18]. Meanwhile,
+internal auditors derive their practice from regulated industries
+such as finance, aerospace and medical devices [19].
+Across disciplines and contexts, one of the main motivations
+for conducting audits of AI systems is establishing informed
+and consequential judgements of the deployed AI systems
+that is algorithmic accountability [20]. We thus define an AI
+audit to be any evaluation of these AI systems, independent
+of the AI development process, executed for the purpose of
+accountability [21].
+However, unlike other, more mature audit industries, AI
+audit studies do not consistently translate into more concrete
+objectives to regulate system outcomes, such as influencing
+voluntary corporate action or internal corporate policies, in
+citing product recalls, informing product re-designs, as well
+as shaping broader governmental policy and regulation in the
+form of standards, bans, restrictions or moratoriums of use. In
+the AI audit context, such impact is fairly uncommon. In this
+paper, with the aim of enabling auditors and policymakers
+to achieve accountability outcomes , we taxonomize audit
+practices and identify the characteristics of audits that most
+directly and effectively contribute to audit objectives.
+Some initial work has been done to taxonomize various
+aspects of AI auditing. Many of these efforts have focused
+on categorizing methods [13, 15, 22, 23, 24], or types of
+audit organizations [25, 12]. Some efforts have also looked
+at an AI audit’s broader institutional [26, 19], policy [12], and
+societal context [15], through these analyses are often limited
+to one or at most a handful of case studies. Bandy [27] is
+one of few efforts that systematically classifed audit studies
+by a broader set of criteria– audit method, audit target, audit
+domain and audit objective. However, the study is narrow in
+scope, consisting of 62 exclusively academic audit studies.
+In this paper, we take a much broader and more compre
+hensive view than past studies. We review the broad audit
+landscape consisting of academia and six other domains,
+taxonomizing the key characteristics of their context, goals
+and practice (Figure 1). Notably, as a mechanism for achieving
+accountability, we investigate the consequences of these audit
+investigations and how well the outcomes from the studies
+match those stated objectives.
+II. BACKGROUND
+A. What is an AI audit?
+In the context of this paper, we consider the operationaliza
+tion of audits as a mechanism for accountability in computing
+— notably for AI, machine learning, data science, and related
+fields. We begin by proving definitions.
+Definition 1: An audit is defined as any independent as
+sessment of an identified audit target via an evaluation of
+articulated expectations with the implicit or explicit objective
+of accountability.
+Care must be taken to translate this definition in the AI con
+text. By independent assessment, we mean any measurement
+done by an entity operationally distinct from the team that
+engineered the examined AI system. Even if that team is within
+the same company and composed of corporate employees,
+the examination only counts as an audit if the auditors are
+adequately separate from those that built the system, or the
+audit process itself is distinct from the engineering process for
+the AI system [19, 12]. By an identified audit target, we look
+to studies and investigations that name a concrete and non
+abstract, specific object of examination. Ideally, this target is
+connected to a real-world AI deployment, though sometimes a
+widely used open-source algorithm or dataset can operate as a
+stand-in or proxy. For instance, Steed and Caliskan [28] looked
+at bias in an open-source image generation model, reflecting
+issues later discovered in similar commercial products [29];
+and an audit of Proctorio was conducted on the open source
+model OpenCV on which the commercial product is built [30].
+Due to a lack of training data disclosure for most AI products
+(even supposedly “open source” models [31]), many data
+audits investigate open source datasets [32, 33, 34] and attempt
+to generalize conclusions on broader industry practice. Studies
+of prototypical algorithms (hypothetical models trained by the
+authors) without concrete, specific targets were not considered.
+To be an evaluation with the objective of accountability, the
+audit must incorporate some implied or explicit objective to
+have the assessment play some role informing consequential
+judgements about the technology being examined. In order
+for these judgements to be more concrete, there needs to be
+some measurement between the reality of the AI deployment
+and articulated expectations held about a particular deploy
+ment. Many academic papers that we examined, for example,
+studying fairness, performance or safety in an abstract man
+ner [35], without connecting it to anticipated accountability
+outcome, even implicitly, were not considered by us to be
+audits [36]. Note that the actual type of audit target or criteria
+of assessment are not part of the definition of what constitutes
+an audit. AI audits can thus encompass a wide range of
+targets, including automated decision systems (ADS) [37, 38],
+recommendation systems underlying online platforms or apps
+[39, 40], large base models in computer vision [28, 41],
+speech [42], text-based natural language processing [16], or
+multimodal models [43]. At times, the evaluations involve
+domain-specific considerations in hiring [44], healthcare [2],
+criminal justice [45] or social service delivery [46]. The
+expectations articulated for these systems can also vary in
+concreteness and specificity. For instance, some conduct audits
+specifically for legal compliance [47] while others declare ex
+pectations more normatively [36]. Others yet are not explicitly
+labelled as audit work yet satisfy our audit criteria and result
+in immense explicit and gradual structural change [48, 49]. As
+a result, we can observe audits that can evaluate and diagnose
+for a range of performance, safety concerns, as well as broader
+societal injustices and are not limited to fairness.
+B. Who conducts AI audits?
+There is a wide range of possible audit practitioners that
+participate in the audit process [25], often described as below.
+Definition 2: An internal auditor is an entity executing
+an audit or investigation with some contractual relationship
+with the audit target [12]. They typically seek to minimize
+corporate liability and test for compliance to corporate or
+industry-wide expectations [19]. In policy, internal auditors are
+typically those designated to carry out mandatory corporate
+audit requirements (e.g. the “independent auditors” in Article
+37 of the Digital Services Act).
+Definition 3: An external auditor is an entity executing an
+audit or investigation without any contractual relationship with
+the audit target [12]. They typically execute audits voluntarily
+with a broader mandate of identifying and minimizing the
+harm impacting their constituents.
+Internal audits require a contractual relationship with the
+audit target. Internal audits are typically conducted by an
+organization hired by the audit target voluntarily or to maintain
+compliance with a required legal audit mandate. The auditor in
+these contexts are hired to operate in a professional capacity to
+audit the target. This often means they are selected and paid by
+the audit target, though that is not always necessarily the case
+(e.g., auditors selected and paid by the government). These
+are the auditors typically referenced in audit mandates. As the
+executors of more formal audit requirements, these auditors
+are ideally certified or otherwise qualified [12], and subject to
+some form of external oversight and quality control, including
+but not limited to auditor conduct and reporting standards.
+External auditors typically conduct audits voluntarily by
+organizations, typically with a broader mandate of research
+or advocacy. These auditors are not assigned an audit target
+and do not execute audits on behalf of the audit target but
+choose to study systems based on the needs and concerns
+of their constituents. Without any formal connection to the
+audit target, these auditors typically struggle to access the
+information necessary to conduct a thorough investigation.
+Furthermore, without any form of legal protection, data access
+regime, or oversight, these auditors tend to operate quite in
+dependently, taking on whatever methods suit their objectives.
+These auditors can be vulnerable to corporate retaliation and
+methodological skepticism after audit results are released.
+C. How are AI audits conducted?
+Although the specific methods used in the execution of AI
+audits vary widely, some terminology are deployed regularly
+to describe how audits are executed. Audits can be conducted
+ex ante (before deployment), in media res (during an iterative
+process of design and restricted re-deployment) or ex post
+(after widespread adoption and use). Furthermore, although
+the details of the AI audit process varies widely, the high
+level structure of that process follows similar stages, which
+we describe using the taxonomy from [50]. Note that not all
+audits follow all these processes.
+1) Harms Discovery: This is the stage of discovering what
+to audit for. It involves identifying the audit target entity,
+possible targeted populations, and the anticipated form of harm
+or measurement required for a meaningful audit. This can
+happen, for example, via direct reporting from the impacted
+population [51], active investigation from the auditors, or other
+methods [52].
+2) Standards Identification: This stage is about effectively
+articulating the requirements for an ideal AI audit outcome, by
+naming the standards the auditors will be holding the target to
+in the evaluation process. These expectations can be as vague
+as a set of named AI principles [53] or as precise as a specific
+threshold of performance (e.g., AI hiring tools’ adherence to
+the 4/5ths rule [54]).
+3) Performance Analysis: The core of the audit is the actual
+evaluation itself. There are a wide diversity of methods avail
+able to inform final assessments, ranging from qualitative to
+quantitative approaches [55]. Each method involves different
+degrees of complexity and challenges tied to data acquisition,
+model access, and measurement.
+4) Audit Communication and Advocacy: Following the
+evaluation of the AI system, there is often also some activity
+to disseminate and translate audit results to some relevant
+stakeholders. That audience could include the audit target,
+regulators and the public [36, 56]—but could also include
+internal stakeholders within the organization such as a legal,
+business, product or engineering team [19].
+III. METHODS
+In order to review the AI audit research and practice
+landscape, we conducted a wide-ranging literature review of
+academic work published in a range of venues. We reviewed
+websites, reports, and relevant documentations from numerous
+non-academic audit practitioners. For academic research, we
+collected a comprehensive sample of N = 341 audit studies
+published in interdisciplinary computing and related venues
+from 2018–2022. Figure 2 shows the number of collected
+academic studies published per year, grouped by audit label
+type, while Table I describes our search method for each
+source and lists the number of identified pieces of literature
+collected for each. For audit practices outside academia, we
+identified major domains that are both relatively established
+in existing academic literature and currently emerging as
+key players in the AI audit ecosystem (inspired by the
+main categories identified by [25]): journalism, civil society,
+government, consulting agencies and corporate audits, and
+legal firms. We collected specific cases that serve as concrete
+examples of each domain. These methodological choices not
+only facilitate coherence with existing scholarship but also
+enhance the reliability and comparability of our findings within
+broader academic discourse on the subject.
+Our list is not exhaustive of all academic audit literature
+or audit domains, but it provides the most comprehensive
+sample (to our knowledge) of the current state of AI audit
+ecosystem, encompassing from academic research to practice
+and everything in-between. The full list of audit studies we
+found using these methods is included in the supplementary
+information (see Appendix A).
+A. Academic literature
+Audits in the academic context, conducted by authors from
+universities, non-profits, and tech companies, encompass a
+wide variety of disciplines, methods, and aims. Academic
+audits are published in various formats and venues, for ex
+ample, as books, journals, and conference proceedings. Over
+the past five years, interdisciplinary computing conferences
+have become a central place where work around the topics
+of fairness, accountability, and transparency is discussed and
+published, especially within the ACM conferences, FAccT
+and AIES, two emerging main conferences in the space. In
+this regard, conference proceedings are not only the most
+common way of sharing work amongst the AI ethics (broadly
+defined) community, but such formats of publication also share
+commonalities such as relatively standardised style and presen
+tation. We have, therefore, selected conference proceedings as
+a primary focus for our systematic reviews of academic audits.
+Audit Type
+2022
+Year published
+2021
+2020
+2019
+2018
+Product/Model/
+Algo. Audit
+Data Audit
+Ecosystem
+Audit
+Meta−
+Commentary
+0
+25
+50
+# audit studies
+75
+100
+Fig. 2. Number of collected academic audit studies published in each year,
+grouped by manually labelled audit type. Studies that involve multiple audit
+types are counted only under the best-fitting category.
+Our search is not exhaustive—it did not, for example,
+include potential audit work that might have been covered in
+high-impact general audience journals such as Science, Nature,
+or PNAS. We also did not consider work published in non
+interdisciplinary social science venues—in particular, work
+from economics or sociology. Instead, our sample represents
+the kinds of audit work recently published at interdisciplinary
+computing and related conferences.
+1) Searching for audit studies: We found N = 341 aca
+demic papers that met our criteria for an audit study (Figure 2,
+Table I). We identified academic audit studies with two meth
+ods. First, we manually reviewed the conference proceedings
+from 2018 to 2022 for a selection of smaller interdisciplinary
+computing conferences: Fairness, Accountability, and Trans
+parency (FAccT), Artificial Intelligence, Ethics, and Society
+(AIES), Equity and Access in Algorithms, Mechanisms, and
+Optimization (EAAMO), Association for the Advancement
+of Artificial Intelligence (AAAI), Computer-Supported Co
+operative Work & Social Computing (CSCW), International
+Conference on Computational Social Science (IC2S2), and
+the International World Wide Web Conference (WWW). We
+selected these conferences as venues where audit work is likely
+to appear, but still, audits are not the primary focus of these
+conferences. Of the 5 years of proceedings we reviewed, only
+N =237 papers met our criteria for an audit study.
+Second, to expand our search to other, larger conferences,
+we automated the inclusion process: we applied keyword
+searches to both the ACM Digital Library (excluding FAccT,
+AIES, and CSCW proceedings, which we reviewed manually)
+and the ACL Anthology. In these two libraries, we searched
+for papers published from 2018 to 2022 with one or more
+of six keywords in the title: “audit”, “accountability”, “case
+study”, “bias”, “fairness”, and “assurance”. For ACL, where
+the searches were web-based, we manually reviewed the search
+results for audit studies online, downloading only the few stud
+ies that met our criteria (N = 6). For ACM, we downloaded
+the search results. There were thousands of papers in the
+queries in total. Three of the keywords yielded relatively few
+ACM entries: “audit” (N = 39), “accountability” (N = 87),
+and “assurance” (N = 65), after removing duplicates. For the
+rest of the keywords, which returned over 500 results each, we
+narrowed our manual search by considering only the first 500
+“most relevant” entries returned by the ACM search engine.
+After removing duplicates and other incomplete entries, each
+keyword yielded the following number of pieces of literature:
+“fairness” (N = 404), “bias” (N = 318), and “case study”
+(N = 472). We further excluded everything that is not a
+standard academic paper (such as panels, abstracts, workshops,
+and tutorials) for consistency. We then manually reviewed each
+abstract and, as before, excluded those that did not meet our
+criteria for an audit study, leaving a total of N = 103 audit
+studies from ACM conferences other than FAccT and AIES.
+2) Classifying audit types: We classified all the audit stud
+ies we collected into two main categories: audit studies and
+meta-commentary (depicted in Figure 1). We further classified
+audit studies into two kinds: product/model/algorithm audit
+studies and data audit studies. Some studies targeted specific
+products (e.g., YouTube comment moderation [57]); others
+targeted only the AI models behind the products (e.g., an
+investigation of tax audit models used by the IRS [58]);
+still others targeted only the algorithms used to build the
+model (e.g., pre-trained large language models such as GPT
+3 [59]). Since the methodologies for these kinds of audits
+are similar, we classify them together. We distinguish these
+studies from data audit studies—also a kind of model audit—
+which specifically target training or benchmark datasets (e.g.,
+ImageNet [60]) and tend to use different methodologies.
+During the iterative classification process, an additional
+category emerged: ecosystem audit studies. Ecosystem audit
+go beyond datasets, models, and products and examine com
+munities and sociotechnical environments (digital or physical)
+impacted by or are critical components to an AI system’s
+operation. Brown et al. [61], for example, audited the impact
+of child welfare service algorithms by conducting interac
+tive workshops with front-line service providers and families
+affected by such algorithms. Meta-commentary studies are
+those that examine auditing as a practice, including studies
+that put forward novel mechanisms and processes as a viable
+method for auditing certain systems as well as those proposing
+to improve existing audit processes. Meta-commentary also
+includes critiques, work that interrogates the effectiveness and
+merit of auditing as a practice.
+Note that not all papers fit neatly into one of the above
+categories, and sometimes we find some papers incorporating
+elements of two—and, rarely, three—categories. For example,
+methodology papers often also use a specific case study to
+TABLE I
+AUDIT LITERATURE FROM ACADEMIC SOURCES
+Source
+Search method
+N
+FAccT
+AIES
+EAAMO, AAAI, IC2S2,
+and WWW
+Manual review of proceedings —
+titles and abstracts, then full paper
+where classification still unclear
+”
+”
+55
+40
+137
+Other ACM proceedings
+ACL Anthology
+Keyword filters, then manual review
+”
+Total
+103
+6
+341
+illustrate the method in practice. In our analysis (Fig. 2), we
+consider only the classification that best fits the paper.
+B. Non-academic domains
+For audit work outside the academic domain, we identified
+the following categories where audits are regularly conducted
+and becoming an established practice: journalism, civil society,
+law firms, regulatory audits, and consulting agencies and
+corporate audits. For each category, we gathered sources, often
+information on auditors websites, audit reports, and other
+relevant documentation produced by various bodies (whenever
+they are available), which we reference in our analysis (§V).
+Based on information from these sources, for each category
+we identified a number of institutions, organisations, agencies,
+or audit reports that served as concrete examples of the given
+category. Appendix A lists all the reports, webpages, and other
+documents we reviewed in each audit category and institution.
+C. Analysis
+For both the academic audits and each non-academic audit
+source, we reviewed published audit studies, documents, and
+public webpages to summarize information on the following:
+1) Context: Context includes the specific structural factors
+shaping the audit (all as stated by the auditor): what motivated
+the audit (Motivations), its goals (Goals), the main artefact or
+system under investigation (Audit Target), the specific harms or
+concerns investigated (Types of Harms), and ways in which the
+audit may or may not shift power between stakeholders [62]
+(Institutional Context).
+2) Methodology: Methodology includes the main tech
+niques and procedures used to investigate the target artefact—
+for example, quantitative evaluation (typical in academic audit
+studies) or forensic analysis or qualitative interviews (found
+more often in civil society audits).
+3) Impact: Impact refers to changes that occur to the target
+artefact, the target audit, or the institutional environment as a
+direct consequence of the audit. Impacts could include policy
+developments, alterations to an algorithm, or monetary fines
+for certain violations. While impacts are well documented in
+some domains (e.g., journalism), the impact of an academic
+audit, for example, is not often clear at the time an audit is
+published. Detecting, measuring, and quantifying impact is
+challenging. Subsequently, we were as inclusive as possible
+of many different kinds of impacts, e.g., inspiring media
+coverage of an overlooked harm [63]. We considered notable
+documented evidence in the audit reports themselves or from
+related news stories, whenever available. In our analysis, we
+make a note wherever documented impacts were unstated and
+unclear (in academia, for example).
+For nearly all the academic studies we found, our dataset
+includes abstracts (N = 337) and author-selected keywords
+(N =263). In order to supplement our qualitative findings for
+academia (§IV) with quantitative statistics, we analysed key
+terms (e.g., “accountability”) that were used most frequently
+by authors. Appendix B describes how we selected key terms
+related to the criteria above.
+IV. RESULTS: AUDITING IN ACADEMIA
+A. Audit types
+1) Product/model/algorithm audits: Most audit work fell
+under the category of product-level case studies. These audit
+studies target a mix of social media platforms, algorithms for
+administering public services, large language and vision mod
+els, and search engines. These case studies typically evaluate
+specific deployed systems. These case studies mainly diagnose
+failures, errors, disparities. For example, some variation of
+“bias” is mentioned in 32.5%, and “fairness” in 21.2% of
+abstracts (see Table B-IV). Less commonly, these studies call
+for model builders and practitioners to make amendments
+accordingly. For example, the term “accountability” appeared
+in only 14% of abstracts, less often than in ecosystem audits
+(33.3%) or meta-commentary (28.1%).
+2) Data audits: Data audits typically focus on evaluating
+specific datasets, often targeting datasets used to train large
+models [64] and sometimes interrogate the benchmark datasets
+used for model evaluation, such as COMPAS [65]. Often
+times, these studies emphasise (both implied and explicit)
+shifting norms around data use and benchmarking practices,
+while fewer explicitly emphasize holding dataset creators
+accountable. For example, “accountability” is mentioned in
+9% of data audit abstracts, while “bias” is mentioned in
+39.1% of abstracts (more in this category than any other).
+These studies typically focus on surfacing harms ranging from
+representation and stereotyping to privacy and, more recently,
+copyright protection [66]. The type of methods used include
+quantitative measurement (such as the incidence of NSFW
+images), simulation, ablation (removing or changing certain
+aspects of the dataset and measuring the result), and critical
+assessment. Like case studies, data audits tend to be conducted
+by a range of academic, non-profit, and corporate authors
+examining open-sourced and academic datasets.
+3) Ecosystem audits: These studies target public services
+—predictive risk models used by child welfare agencies, for
+example [67, 61]—more often than any other kinds of audits.
+Abstracts of these studies also mention specific domains such
+as hiring and education more often than any other audit type
+(Table B-V). Harms and concerns are often concretely defined
+and audit are typically carried out with the expectation of
+subsequent change both to specific stakeholders and some
+times, society at large. The term “accountability”, for example,
+is mentioned in over 33% of ecosystem audit abstracts, the
+highest of any category. is goal, These studies often utilise a
+wider range of methods, including qualitative interviews, sur
+veys, workshops, and literature reviews [68, 69, 70]. Given the
+scope of investigation, methods are often all-encompassing and
+diffuse, less precise than more scoped audit investigations [71],
+where they are much more likely to employ qualitative and
+participatory methods than other audit studies. 6 out of 15
+ecosystem audit abstracts, for example, mention ethnography,
+interviews, workshops, or other qualitative methods, while two
+explicitly use the term “participatory” (see Table B-VI).
+4) Meta-commentary & critique: We found that 28.1% of
+meta-commentaries mention “accountability” in the abstract.
+The type of methods they used include surveys, interviews,
+and literature reviews. These kinds of studies were nearly
+exclusively conducted by academic, non-profit, or government
+authors—for example, guidance from government agencies
+such as NIST’s AI Risk Management Framework [72].
+Many meta-commentary papers aimed to develop a method
+ology and many considered the development of rigorous
+audit methods as a vital contribution. Audit methods these
+studies put forward include both qualitative and quantitative
+approaches. These studies also examine audit practitioners
+themselves, interrogating norms around algorithm evaluation
+and audit practice. The harms at issue tend to be less well
+specified; most mention some form of independence, fairness,
+privacy, or recourse. These studies rarely mention affected
+stakeholders in method design. Similarly, a couple of tool
+development papers developed standardised tools, usually
+quantitative, for auditing or for algorithmic recourse.
+B. Impact by audit type
+1) Product/model/algorithm audits: We found few audit
+studies that acknowledge and address power asymmetries.
+Many prominent papers we surveyed are collaborations be
+tween authors from academic institutions and large tech corpo
+rations, usually examining their own systems and datasets, and
+rarely explicitly calling for systemic change, auditing systems,
+often without involvement from affected stakeholders. Unlike
+audit work by journalists and civil society, academic audit
+work tends to follow academic norms where the objective
+is academic publication. Subsequently, more often than not,
+audits are seen as an academic, intellectual exercise than
+practices directly linked to real world consequences. Audit
+findings are rarely presented with demands for concrete sys
+temic change. This does not, however, mean that academic
+audits are not impactful. To the contrary, seminal audit case
+studies such as Gender Shades [41] have not only resulted
+in meaningful improvements to deployed systems [36] but
+also have come to establish algorithmic audits as a field
+of enquiry. The impact of such work is, however, rarely
+obvious at the time of publication but becomes apparent
+gradually over time. For industry collaborations, the audits
+may result in organisational reform. For example, case studies
+co-authored by authors with big tech affiliations such as [73]
+may have contributed to tightening Google Play Store app
+data access restrictions [74]. Generally, academic audit results
+that publicly call out audit targets [36], that tend to be picked
+up by news outlets such as MIT Tech Review, activists, and
+regulators tend to bring about the most observable changes.
+2) Data audits: The impact of data audits are also often
+unclear, though prominent data audits sometimes resulted in
+changes to benchmarks — an audit of 80 Million Tiny Images,
+for example, resulted in the withdrawal [75] of the dataset [60]
+and a Financial Times investigation of Microsoft’s dataset of
+“celebrity” faces even resulted in its discontinuation [76, 77].
+3) Ecosystem audits: Ecosystem audits often reveal com
+prehensive institutional or legislative policy demands in ad
+vocacy. This includes, connecting performance and privacy
+concerns involved in facial recognition use by law en
+forcement [68], breaking down sources of bias throughout
+the model development cycle [78], systematic environmental
+costs [79, 80] or the labor issues across the entire supply chain
+of AI development [81].
+4) Meta-commentary & Critique: Although the immediate
+impact is directly quantifiable, meta-commentaries provide
+important mechanisms that allow audit studies and practices
+to zoom out, self-reflect, and evaluate the overall picture and
+direction, all of which is a crucial element for grounding audits
+in concrete foundations and optimal accountability.
+More specifically, a certain type of meta-commentary that
+seems to be of particular importance are critique studies. This
+category of work engages in reflexive commentary critiques
+of auditing as a practice. A few pieces of critical work
+interrogate the effectiveness, shortcomings, and limitations
+of audits. Such work highlights structural issues such as
+historical power asymmetries that might be reinforced by
+common academic auditing practices, or how audits might
+serve as a smoke-screen for corporate responsibility, such as,
+audit washing [82, 83] or how audits might lead to simplis
+tic technological solutionism [84]. They draw on qualitative
+interviews, literature reviews, and statistical analysis. Like
+meta-commentaries, the impacts of these works are not easily
+measured, though many of these studies are highly cited.
+V. RESULTS: AUDITING OUTSIDE ACADEMIA
+In this section, we review a sample of audits and audit prac
+tices from outside academia — law firms, consulting agencies
+and corporate audits, journalism, civil society, government,
+and civil society — examining how factors such as institutional
+context affects the practice of auditing and accountability.
+These auditors operate in a variety of domains and deploy
+various methods throughout the audit design, development,
+and execution process. For each domain, we pay particular
+attention to the details of the audit context and methodology,
+then connect this to the observed impact derived from audits
+for that particular domain. Our analysis criteria and results
+are summarised in Table II (The full list of documents we
+analysed is found in Appendix A).
+TABLEII
+SUMMARYOFANALYSISACROSSAIAUDITINGDOMAINS.
+Domain Context Methods Impacts Motivation Target TypesofHarms Inst.Context
+ACADEMIA Accountability,
+make policy,
+establishstandards
+ADS, online
+platforms,
+training
+datasets, audit
+practitioners
+Functionality failures,
+disparateimpact,privacy
+harms, stereotyping,
+manipulation, ethics
+washing,unfairness
+Academic,non-profit,&
+corp. authors studying
+systems built by same,
+occasionally involving
+stakeholders
+interview,survey,
+simulation,quant
+&qualeval, the
+ory, lit review,
+framework devt,
+ablation
+Often unclear;
+media coverage;
+occasionally,
+reforms to target
+systems
+CIVIL SO
+CIETY
+Accountability, ad
+vocacy, make pol
+icy
+ADS, online
+platforms,
+surveillance
+tech, biometric
+datause
+Fair use harms, privacy
+harms, censorship, dis
+parateimpact,HRviola
+tions, deceptive claims,
+hatespeech
+Non-profit,independents
+usually advocating on
+behalf of harmedstake
+holders
+Activism,
+interviews, visu
+alisation/media,
+forensics, public
+recordsrequests
+Civil suits won,
+media coverage,
+moratoriums,
+abolition
+JOURNALISM Accountability Online
+platforms, large
+tech companies,
+ADS (public
+services)
+disparate impact, fraud,
+non-compliance,privacy
+harms,culturalgenocide
+Targets mostly tech
+firms&gov’t agencies
+on behalf of /in
+consultation with
+public; funded by
+foundt’ns/privatedonors
+Investigative
+reporting, quant.
+eval., interviews,
+data donation,
+scraping, docs
+review
+Regulatory
+action, civil
+suits, reforms to
+target systems,
+inspiration for
+research
+GOVERNMENTEnforce
+regulations,
+establishstandards
+Datasharingand
+management;
+surveillance
+tech,ADS
+Non-compliance,
+privacy harms, racial
+disparities, physical
+safety, functionality
+Targets companies and
+gov’t agencies; may or
+may not have enforce
+mentauthority
+Interviews, test
+ing, docs review,
+quant. eval.
+Monetary
+penalties,
+standard-setting
+CORPORATE
+AUDIT
+REPORTS
+Identify ethical is
+sues
+Internal APIs,
+platforms
+Humanrights“impacts”,
+racial injustice, voter
+suppression,hatespeech
+“Voluntary”reforms,of
+ten at request of & in
+consultationwith exter
+nal stakeholders
+Stakeholder/expert
+consultation,
+interviews
+Reforms to
+practices,
+commitments
+tofuturechanges
+LAWFIRMS Compliance,
+impact assessment
+(BNH.AI, AWO);
+accountability
+(Foxglove)
+Public services,
+onlineplatforms,
+gig platforms,
+other private
+companies
+Non-compliance,
+injustice/disparate
+impact, privacy
+harms, safety, digital
+manipulation
+For-profits and public
+services (BNH.AI,
+AWO); consulting for
+harmed stakeholders
+(Foxglove)
+Testimony, docs
+review, policy
+development,
+legal research
+Reform,revision,
+abolition, forced
+disclosure of
+secret contracts,
+(Foxglove)
+CONSULTING
+AGENCIES
+Compliance,
+impact assessment,
+mitigate
+financial/PRrisk
+ADS, online
+platforms, gig
+work platforms,
+surveillancetech
+Noncompliance,
+disparate impact, non
+functionality, privacy
+harms, security, risk
+Consultingfor for-profit
+audit targets;may con
+sult stakeholders (Babl
+AI)
+Assessment
+frameworks,
+docs review,
+data governance
+planning
+Set precedent
+for policy
+(ORCAA);
+otherwise not
+clearorunstated
+ADS:automateddecisionsystems.
+A. LawFirms
+There isa large industrydevotedtodatagovernance legal
+services,butfirmsofferinglegal services forAIauditingare
+lesscommon.Threesuchmergingboutiquelawfirmsare:Lu
+minos.Law[85](formerlycalledBHN.AI),Foxglove[86],and
+AWO[87].Thesefirms represent threedifferent institutional
+arrangements inaudit-relatedlegal services.
+a)Context:Lawfirmsoperateasbothinternalandexter
+nalauditors.Theycanbehiredbytheaudit target toconduct
+aninternal assessment aspartofaregulatoryrequirementor
+inlegaldefense.Lawfirmsalsoworkwithrepresentativesof
+impactedpopulations(oftenprobono)toexternallyinvestigate
+anaudit target tocollectmaterial evidenceof perceivedor
+reported harms. Both scenarios are typically prompted by
+individualorcollectivecomplaintspost-deployment.
+The organisational structure, businessmodel, and subse
+quent selectionofclienteledetermines thegeneralobjectives
+for these threeorganisations.Foxglove—anon-profit organi
+sationadvocatingfor the least empowered—aims toholdAI
+operators to account, aspiring to “stand up to tech giants
+andgovernments” and “make tech fair for everyone” [86].
+Accordingly, themainaudit target forFoxgloveincludesdata
+practicesofsocialmediaplatforms,governmental institutions,
+as well as theworking conditions of content moderators,
+warehouseworkers, andgigworkers.
+Luminos.LawandAWO—bothfor-profitfirms—offercom
+plianceandpublicpolicyservices.Theycarryoutauditwork
+at the behest of their clients, with the goal of ensuring
+compliancewith standards, data rights, data protectiondue
+diligence, and regulatory obligations. Luminos.Law’s client
+testimonials feature Fortune 100&500 tech firms [88];
+AWO’s “commercial practice is balancedwithgiving those
+less-resourcedavoice”,accordingtothefirm,andtheirclient
+testimonials featuremany non-profit and university clients
+[89].Thetypeofharmandconcernsthatunderliethesefirms’
+servicesvaryaccordingly.ForLuminos.Law, theseareassess
+ment andassurance around legal compliance, legal defence
+and liability [90]. Similarly, AWOfocuses on auditing for
+privacy and data rights, safety, surveillance violations, digital
+manipulation and exploitation [89, 91]. The types of harm
+and concerns that drive audit practice for Foxglove, on the
+other hand, include violations of justice, disparate performance
+[92, 93], and specific breaches of data governance law [94, 95].
+We see a stark difference in power asymmetries amongst
+these three organisations. As for profit forms, both Lumi
+nos.Law and AWO’s objectives, missions, and practices are
+shaped by their business models that prioritise the needs of
+their clients, which are often wealthy and powerful corpora
+tions. Foxglove’s work directly or indirectly pushes to shift
+power from the most to the least powerful. Subsequently,
+Foxglove frequently works with groups such as content mod
+erators, warehouse workers and gig-workers, groups that are
+often underpaid, over-exploited, and disfranchised.
+b) Methodology: Foxglove’s cases often involve specific
+campaigns, petitions, and/or case studies. Foxglove uses meth
+ods such as legal compliance analysis, interviewing, and anec
+dotal evidence, or leans on previous research to diagnose and
+highlight harms, concerns, and to pursue legal challenges. Both
+Luminos.Law and AWO work within the needs of their clients,
+which include big tech companies and start-ups. Within such a
+context, the main audit target for Luminos.Law are models and
+data, while audit target include social media platforms [96] and
+hiring algorithms [97], based on media coverage of the firm
+[85]. AWO similarly carries out documentation analysis, legal
+compliance analysis, and policy development using previous
+research as a basis [91].
+c) Impact: As firms that provide audits as a service
+to clients, some details of their practices are inaccessible—
+particularly for Luminos.Law—because much of their work is
+explicitly marketed as “privileged and confidential” [88]. In
+formation on the impacts of their commercial work is therefore
+difficult to identify. AWO’s blog, for example, mostly features
+work done in collaboration with civil society organizations like
+the Ada Lovelace Institute [98]. Luminos’s public portfolio
+includes some standards guidance, a bias calculator for New
+York’s new audit law [99, 100], and an audit of the open
+source large language model RoBERTa [101, 102], but the
+impacts of these audits on practice are not evident.
+Foxglove’s work, on the other hand, often results in sig
+nificant impactful changes including the reversal of Ofqual’s
+A level grading algorithm [103], halting the use of visa
+streaming algorithm that was deployed by the UK Home
+Office [104], and forcing disclosure of a secrete contracts
+between corporations and the UK government; for example,
+the “NHS Covid-19 data deals” [105] and exposing contracts
+between Palantir and the UK government.
+B. Consulting Agencies & Corporate Audits
+Other organizations offer audit services beyond legal and
+policy advice. A crop of recent startups, such as, Arthur AI
+and Fiddler AI, offer model monitoring services with fairness
+and privacy components. Others offer consulting specifically,
+auditing as a service, including boutiques such as, Parity
+Consulting [106] as well as large consulting firms such as
+Deloitte [107], McKinsey [108], and Accenture [109].
+Because the product-specific work stemming from an inter
+nal audit team is rarely published, corporations occasionally
+publish a report in conjunction with an external consulting
+agency. For example, Business for Social Responsibility (BSR)
+has conducted audits on behalf of Google for its celebrity
+facial recognition system [110], and Facebook regarding its
+human rights impact in Myanmar [111]. At times these con
+sulting agencies are also part of a regulatory process. For
+example, the management consulting firm called Guidehouse
+Inc. played the role of an “independent third-party reviewer”
+in the Department of Justice (in the US) settlement with
+Facebook regarding bias in its advertising [112].
+Here, we examine three consulting agencies that have been
+involved with prominent audit case studies: ORCAA [113],
+Eticas [114], and BABL AI [115].
+a) Context: All three agencies provide internal audits as
+a service with the main objective of algorithmic accountability,
+and engage primarily in case-by-case consulting with private
+and public sector clients such as HireVue, Airbnb, Proctorio
+[115], the states of Illinois and Colorado [113], the Allegheny
+County Health Department [114], the cities of Barcelona [114]
+and Amsterdam [113], and the University of Iowa [115].
+Within the bounds of client-agency agreement, the main audit
+targets for these agencies include social media platforms (such
+as TikTok and YouTube), ADS, FRT, ride hailing apps (such
+as Uber, Cabify, Bolt), predictive scoring systems, hiring algo
+rithms, and healthcare algorithms [113, 114, 116]. Typically,
+the audits are ex post, though some can also be completed
+pre-deployment (e.g. BSR celebrity facial recognition audit
+was conducted before model release). ORCAA and Eticas also
+undertake some internal audit methodology development work.
+ORCAA conducts audits in order to assess regulatory com
+pliance, performance testing, as well as to measure and mit
+igate disparate performance [113]. BABL AI conducts audits
+for bias, risk, and impact assessment [116]. Like Luminos,
+ORCAA and BABL AI, both offer services to help companies
+comply legal requirements, for example, in the US, the New
+York Local Law 144 [100], which requires annual audits of AI
+hiring tools. Eticas similarly conducts audits to ensure security
+and data protection and to assess issues such as fairness,
+bias, and model accuracy [114]. The type of concerns and
+harms these consulting agencies mention in public materials
+vary. ORCAA, for example, mainly focuses on measuring
+bias—such as discrimination, race, and gender—and assessing
+for regulatory compliance [113]. Eticas mainly focuses on
+assessing algorithmic systems, for example, for functionality
+and detecting unfair practices towards protected groups [114].
+Similarly, the main types of harm BABL AI focuses on include
+bias, fairness, transparency as well as assessment for standards
+and privacy compliance [115].
+It is difficult to asses how these three consulting agencies
+might shift power with clarity. However, they target discrimi
+nation, fairness, and gender and ethnicity disparities and aspire
+to lofty goals—BABL AI, for example, seeks to “prioritize
+human flourishing” [115]. But, like the legal consulting firms,
+these audits are subordinate to client needs, and those clients
+include large corporations, startups, and government bodies.
+Ultimately, these audits primarily serve those entities—for
+example, by protecting clients from concerns such as organi
+sational and reputational crisis —and help clients build trust
+with stakeholders [114, 115, 117].
+b) Methodology: We have sparse information on audit
+methodologies used within these agencies. From the infor
+mation we can gather on their web-pages, these agencies
+sometimes develop internal audit tools. ORCAA, for example
+uses “Ethical Matrix Framework” [113], while BABL AI has
+developed a set of criteria that can be used to conduct bias
+testing in their “process audit” [116]. Other methods include
+reviewing documents, interacting with stakeholders, and ethics
+due diligence vetting, the details of which are not provided.
+c) Impact: The impact of these types of audits, more
+particularly impact as a direct consequence of these three
+agencies, is not clear, particularly, with Eticas and BABL
+AI. ORCAA’s work has seen some impact (albeit as an
+indirect influence) on policy on the US White House AI Ethics
+Blueprint [118]. ORCAA also conducted an audit of HireVue’s
+early career and campus hire assessment tools [117, 119].
+HireVue subsequently declared its intention to make changes
+to its practices (but only following a formal complaint from the
+Electronic Privacy Information Center to the U.S. FTC [120]),
+including halting the use of facial analysis in its tools, but
+received criticism for misrepresenting ORCAA’s analysis and
+not taking bolder steps [119]. HireVue also commissioned the
+audit and defined both the scope of evaluation and the extent
+of its impact—a problem of independence raised frequently in
+prior work [12, 119, 83, 25].
+C. Journalism
+Journalists have a long history of investigating and reporting
+on AI systems [121]. Investigative journalists at the Wall Street
+Journal, the New York Times, the MIT Technology Review,
+and many other outlets have unearthed concrete examples of
+systematic AI harms [122, 123, 124, 125, 126].
+We examined work from two of the most prominent outlets
+that have conducted extensive AI audits: ProPublica and The
+Markup. ProPublica [127] carried out a foundational investiga
+tion into criminal risk assessment in 2016, that has set prece
+dence for the field of AI auditing [37]. The Markup [128] is a
+relatively newer outlet focused on data-driven investigations.
+a) Context: Audits from both The Markup and ProPub
+lica tend to be external focusing on specific types of targets.
+These include, AI systems that are commonly used by large
+corporations or social media platforms for advertising, hiring,
+and ranking; government ADS, or public programs with digital
+sites; as well as content moderation systems and related labor
+conditions. Both organisations carry out audits with the stated
+objective of accountability. The Markup’s slogan reads, “Big
+Tech is watching you. We’re watching big tech” [128]. The
+type of harms and concerns both organisations investigate,
+surface, diagnose, and evaluate include disparities in perfor
+mance (for instance, along the dimensions of gender, race,
+ethnicity, age), injustice, discrimination, privacy violations,
+fraud, and legal compliance breaches. As harm discovery
+happens through publicly submitted journalistic “tips”, the
+audits are typically ex-post.
+b) Methodology: Both Propublica and The Markup
+utilise quantitative statistical analysis in addition to inves
+tigative reporting, interviews, and document analysis. The
+Markup’s investigation of Amazon’s product ranking system,
+for example, involved training a model to predict where
+products would appear based on various factors [129]. Com
+pared to other domains, these outlets engage in an extensive
+amount of data collection using a variety of custom scraping,
+data donation, and analysis tools, often built in-house. The
+Markup’s Citizen Browser project, for example, used data
+donations to investigate discriminatory targeted advertising
+[130, 131, 132] on Facebook [133].
+c) Impact: Of the various domains we have examined,
+journalistic audits result in the most impactful outcomes.
+Audits carried out both by The Markup and ProPublica have
+resulted in subsequent changes in numerous domains including
+shifting the audit discourse in academia, altering practices in
+industry (including big tech corporations such as Facebook,
+Amazon, and Google) [134], and inspiring activism [135].
+Audits both from both outlets have also directly inspired leg
+islative and regulatory action [136, 137], including a settlement
+in which the U.S. Department of Justice required Facebook to
+stop using a special audience tool for housing ads [138, 139].
+Those actions included abolishing deployed tools—such as an
+algorithm governing liver transplants that favored rich, urban
+patients [140, 141]. ProPublica’s audit of COMPAS set the
+precedent for algorithmic auditing and remains a canonical
+work not only for academic research but also as a prime
+example of algorithmic audit [37].
+D. Civil society
+Activist and other civil society organisations—such as the
+Electronic Privacy Information Center (EPIC), Data & So
+ciety, and the AI Now Institute—conduct algorithm audits
+studies as part of their work. We examined work from six
+prominent organisations: the Electronic Frontier Foundation
+(EFF) [142], Refugee Law Lab (RLL) [143], The Citizen
+Lab [144], Migration Tech Monitor (MTM) [145], the Ada
+Lovelace Institute [146] and the American Civil Liberties
+Union (ACLU) [147].
+a) Context: These organisations and institutions primar
+ily conduct case studies, while the Ada Lovelace Institute in
+particular, also conducts meta-commentary work, especially on
+audit methods. Though the audits are consistently external,
+the harms and concerns these civil society audits aim to
+surface, diagnose, and mitigate vary. Diagnosing and miti
+gating security vulnerabilities, spying technology, and illegal
+surveillance are some of the main focuses for EFF. Similarly,
+the Citizen Lab audits are driven by overarching goals such
+as investigating and exposing security vulnerabilities and de
+fending free speech online [144]. RLL and MTM primarily
+focus on investigative and advocacy work around the questions
+of transparency and the impacts of technology on refugees
+[148, 143]. MTM particularly aims to document, map, and
+monitor migration technology and dismantle and destabilise
+hierarchical power structures [148]. Audits at Ada Lovelace
+Institute are often driven by the objective of policy change
+with the primary focus of diagnosis and remedy for concerns
+such as privacy, transparency, participation, and disparate
+impact. Accountability through legal action, litigation, and
+legal objectives are central to ACLU.
+The audits we examined target mostly ADS in govern
+ment services, online platforms, and—more than any other
+domain—surveillance tech. RLL in particular targets tech
+nology such as lie detectors and border patrolling drones
+[143]. The Citizen Lab focuses on surveillance and biometric
+technologies (e.g. for facial recognition), hardware (such as
+phones and other devices used by politicians and activists),
+apps, and code [144]. Biometric data, digital ID systems,
+surveillance drones, facial recognition, iris scan data, algorith
+mic motion detectors, ankle monitors, GPS tags, AI powered
+satellites as well as border surveillance vendors themselves are
+the central audit targets for MTM [145]. The Ada Lovelace
+Institute also has a diverse target of audit, with a general
+focus on biometric data and healthcare in particular [146]. The
+ACLU similarly targets facial recognition technology, medical
+algorithms, welfare algorithms, insurance pricing algorithms,
+and redlining algorithms as well as advertising algorithms on
+platforms such as Facebook [147].
+b) Methodology: Civil society audits utilize the most
+diverse audit methods. EFF, for example, uses policy analysis,
+grass-root activism, and technology development. Some of the
+methods used by RLL include interviews with refugees, film
+making, data collection (from the Immigration and refugee
+board through Access to Information request, for instance) and
+analysis, interactive visualisation of data, and documentation
+of issues such as deportation and refused refugee claims.
+The Citizen Lab audit methods include in-house developed
+tools, interviews, and forensic analysis of devices. Similar to
+RLL, MTM also uses methods such as interviews with people
+crossing borders, photography, investigative analysis, as well
+as documenting and archiving migration tech. The main audit
+methods for Ada Lovelace Institute are participatory methods,
+including opinion polling, as well as policy research and devel
+opment. The ACLU often uses quantitative evaluation of, for
+example operational systems, analysis of data acquired through
+privileged access, public record requests, and scraping.
+c) Impact: Similar to journalistic investigations, civil
+society audits often result in significant impact, often through
+legal action. These include nuanced and difficult to measure
+impacts such as shifting public attitude towards surveillance
+technology or drawing public and media attention towards
+harmful or controversial tech, as well as more concrete
+outcomes such as moratoriums and abolition. The EFF, for
+example, won a student’s civil lawsuit against the exam
+surveillance company Proctorio [149]. In K.W. v. Armstrong,
+the ACLU obtained an injunction stopping algorithmically
+determined welfare cuts targeting individuals with develop
+mental disabilities in Idaho [150]. Civil society organisations
+often represent those harmed by AI systems and in doing so,
+shift power from the most to the least powerful.
+E. Government
+Several government agencies, especially in Europe, have
+begun to engage in AI audits. The EU’s recent Digital Services
+Act and an AI hiring bill passed in New York City [100],
+for example, both require some form independent audit. We
+looked at two government organizations, one with an initially
+prominent role in AI auditing in the UK, the Information Com
+missioner’s Office (ICO) [151], and another in the U.S., the
+National Institute for Standards and Technology (NIST) [152].
+a) Context: ICO conducts audits with the broader ob
+jective of upholding information rights and enforcing legal
+requirements [153, 154]. NIST, on the other hand, is primarily
+focused on establishing standards and best practice principles
+for ensuring the development and deployment of socially
+responsible algorithmic systems [155, 154]. ICO conducts
+audits on a case by case basis, often published as a report.
+Comparatively, NIST tends to produce meta-commentary on
+audits. The central goal for engaging in audit practices for
+ICO is primarily to investigate and enforce regulations, while
+NIST lacks such authoritative power and is mainly focused on
+establishing standards.
+The type of audits regulators carry out tend to be procedural
+rather than substantive. Audits are carried out with specific ob
+jectives which often involve ensuring that a given organisation,
+institution or corporation is in compliance with established
+standards or legal requirements. While some organisations like
+ICO, for example, have the authority to assess and enforce
+regulatory compliance, others, organisations like NIST, focus
+on establishing best practice standards and principles that
+tech developers and vendors are only encouraged to follow.
+Guidelines from both ICO [154] and NIST [156] tend to apply
+to informing and standardizing practice amongst internal
+audit actors. As these guidelines explicitly mention model
+development interventions such as fairness or explainability
+mitigation strategies, it is implied that they apply to ex ante
+and in media res audits, as well as ex post audits.
+The main audit targets for ICO are data governance prac
+tices within public and private companies, public authorities,
+and government departments, especially those considered to
+have major impacts [157, 154]. Organisation can request to
+be audited but also the ICO audits organisations that the
+Commissioner believes require audits, that is organisations
+and corporations with major impacts on society. The ICO
+audits are a mechanism to check for compliance with data
+protection legislation, how personal data is managed, data
+sharing agreements with third parties, and security measures,
+amongst other things. NIST, on the other hand, focuses on
+artefacts such as facial recognition technology and “general”
+AI as the main target for audit with the aim of assessing
+harms such as racial disparities, basic functionality, privacy
+harms, as well as physical safety of these systems [158, 159].
+To the degree that government actors participate in the audit
+process themselves, they tend to execute external ex-post
+audits, separate from formal corporate participation.
+b) Methodology: The ICO has developed a set of def
+initions of what an audit consists of as well as setting out
+mechanisms for assessing compliance in accordance with
+regulations based on four assurance ratings: high, reasonable,
+limited, and very limited assurance. Following an audit, ICO
+makes recommendations on how to improve on the audit
+result. The main method used to conduct audits for ICO
+include examining documents, testing, and interviews with key
+personnel [154]. For NIST, the main audit methods include
+data trust, accuracy evaluation, and benchmarking [155, 160].
+c) Impact: ICO has issued several monetary penalties for
+data protection legislation breaches, including a fine of £12.7
+million to TikTok for misusing children’s data [153] and £17
+million fine to Clearview AI inc [161], in addition to issuing a
+notice to stop further processing of the personal data of people
+in the UK and a request to delete such data. NIST has made
+significant impact in the U.S. regulatory conversation with its
+AI Risk Management Framework (RMF), though it has not
+conducted any audits with specific impacts and has no power
+to enforce these guidelines [72].
+VI. DISCUSSION
+While many of the academic studies we reviewed formed
+the foundation for important methods and topics for AI au
+diting, they also often lacked in achieving comparable levels
+of impact to the audit work we analyzed in journalism, civil
+society, government, and industry. In this section, we outline
+several practical takeaways from our analysis for researchers,
+policymakers, and practitioners. In particular, we identify
+several ways that audit work outside academia could serve
+as a guide for more impactful audit studies within academia:
+first, by expanding the aims of audit work beyond evaluation,
+and towards accountability; second, by encouraging more
+explicit and forward-looking engagement with often excluded
+stakeholders, acknowledging power asymmetries [62], and
+fostering mechanisms for collective action and ecological
+change; and third, by offering specific improvements for audit
+methodology, including specificity, practitioner diversity, and
+interdisciplinary collaboration.
+1) Power asymmetries & auditor-stakeholder relation
+ships: One of the most influential factors in determining an
+audit’s impact was revealed in the power analysis of how
+the auditors interacted with various stakeholders—including
+impacted populations, the audit target and others. Subse
+quently, methodological innovation and evaluation of AI sys
+tems without considerations of structural factors—such as the
+uneven distribution of power, control, benefit and harm—
+is unlikely to result in significant impact. Future research
+could further explore tools and strategies to map out, define
+and foster auditor relationships with various stakeholders.
+Similarly, policy-makers and other authorities could step in to
+empower auditors– for example, by incorporating audit results
+into more consequential repercussions for companies or open
+sourcing, publishing, disseminating, and reviewing submitted
+audit results.
+2) Prioritizing audit execution stages beyond evaluation:
+Framing details such as the selection of audit targets, named
+motivations, types of harms investigated and the scope of audit
+goals are more likely to determine the effectiveness of an
+audit’s outcome than the details of audit execution. Most of
+the academic work we reviewed focused on the process of
+evaluating AI systems for bias, fairness, or disparate impacts.
+Conversely, these studies rarely focused on other stages of au
+diting crucial to accountability in non-academic work, such as
+discovering harms, communicating audit results, or organizing
+non-technical interventions and collective action. As detailed
+in Section V, these factors are critical in influencing audit
+success outside of the auditor’s control [12, 25]. For example,
+some auditors, such as regulators and law firms, have the legal
+authority to demand access. Meanwhile, for others, this degree
+of internal visibility is rare, requiring the auditors to rely on
+proxy evaluations and open up their audit results to critique,
+denial and retaliation from the audit targets.
+Even as policymakers work to install legal protections for
+external auditors and direct resources towards harms discovery
+and audit reporting, future research should investigate the
+under-studied aspects of the AI auditing process and prac
+titioners should prioritize these aspects of auditing in addition
+to evaluation.
+3) Expanding audit scope beyond the product, model
+or algorithm: In our survey, we use the ecosystem audit
+classification to describe studies that consider the entire AI
+pipeline in a holistic way— communities and socio-technical
+environments (digital or physical) defining or impacted by
+critical components to an AI system’s operation— (§IV-A).
+While these ecosystem audits exemplify many of the elements
+of the socio-technical auditing advocated for in various aca
+demic critiques [82, 68, 162], most academic audit studies we
+found extremely rarely involved a comprehensive analysis of
+involved stakeholders and any holistic view of multiple inter
+acting AI systems. Future work should continue to incorporate
+and expand broader and holistic perspectives in order to craft
+a richer account of algorithmic systems and their impacts.
+4) Impact increases with specificity: Even as audit studies
+broaden their scope to include the ecosystem surrounding and
+defining an AI system, most audits need to be specific in order
+to be more impactful. As has been previously discussed in the
+aftermath of the Gender Shades audit Raji and Buolamwini
+[36], naming a specific audit target, advocacy objectives and
+intended target responses ensures that the audit speaks to more
+specific demands from the audit target. This makes that target
+more likely to to respond to the audit and informs advocates on
+precise policy demands. This strategy was seen in many civic
+audits, such as the ACLU, the Markup and regulators like ICO,
+where the scope and demands tied to their investigations are
+specific. When audit scope was too diffused, the audit seemed
+to hold less effectiveness for accountability. ORCAA’s Hirevue
+audit, for example, was criticized for being too high level to
+inform any specific allegations or demands for remedy [119].
+Constraining audit objectives and scope has benefits as well
+as limitations. Too narrow a scope may obfuscate broader
+systematic factors and make it even more difficult to advocate
+for more structural changes beyond the scope of the examined
+audit target [163, 36]. Therefore, future work should aim to be
+highly specific without losing focus on holistic and ecological
+observations.
+5) Utilising a wider range of audit methodologies:
+Within CS and CS-adjacent academic venues, quantitative
+methodological approaches to AI auditing were often front and
+center. These methods are evident in the range of fairness met
+rics developed and debated within these communities [164].
+Existing critiques already articulate the limitations of these
+approaches, in terms of its abstraction [165], legal incom
+patibilities [166, 167] and lack of connection to substantive
+outcomes [168]. It is particularly noteworthy that in many non
+academic domains, the methods employed are far from what
+is being explored or commonly discussed in academia, in
+cluding a range of qualitative methodological approaches such
+as investigative reporting, document review, and stakeholder
+consultation. Granted, these other institutions often possess
+different skill sets and operate within different constraints.
+However, especially for academics hoping to connect their
+work to the practice of other audit practitioner communities,
+future AI audit research should explore how extra-disciplinary
+methods and tactics like these—especially those with a proven
+record of impact—could bolster academic audit work.
+6) Appreciating the diversity of audit practitioners:
+Different audit communities possess different strengths and
+weaknesses—civil society auditors, for example, typically
+have mature and well-developed methods around audit com
+munication and advocacy, but at times may lack the technical
+capacity to execute more complex quantitative analyses. On
+the other hand, in academia, auditors might be well-equipped
+for innovating technically but struggled with public and other
+stakeholder engagement.
+Our survey supports prior findings [25] that audit prac
+titioners within a given domain are not a monolith. For
+instance, there are law firms that provide audits as a service
+on behalf of audit targets while others execute civic audits
+on behalf of, and in collaboration with impacted populations.
+Similarly, we found a wide range of technical competence
+within domains. Audits from the journalism organization the
+Markup, for instance, were often more thorough and repro
+ducible than some academic studies. Similarly, auditors can
+have differing motivations and goals, which deeply informs
+their practice [169].
+Future research on the practice of AI auditing should still
+consider the strengths and weaknesses of different auditing
+institutions. These findings are informative not only for im
+proving audit practice but also 1) facilitating avenues for
+collaboration with auditors outside academia and 2) informing
+a growing set of enacted and proposed legislation requiring
+audits for AI systems [100, 170, 171, 172, 173].
+7) Timing and auditor type are not the primary deter
+mining factors of audit impact: The distinction of when
+the audit should ideally be conducted (i.e. ex ante, in media
+res, ex post) has recently been the subject of some policy
+debate [174, 175]. As expected, those with increased access
+(i.e. internal auditors) typically have the opportunity to execute
+audits pre-deployment, while others (i.e. external auditors)
+are often restricted to conducting audits post-deployment.
+However, when it comes to translating audit results to ac
+countability, both scenarios come with distinct challenges and
+it seems that other contextual factors outside of auditor type
+or timing, including audit goal, target, design, communication
+and scope, can ultimately be much more meaningful.
+For example, despite increased and early access, internal au
+ditors may still struggle to convince key organizational stake
+holders to act on audit results [176, 177, 178]. Furthermore,
+such auditors can become vulnerable to internal corporate
+retaliation, and corporate censorship [179] as well as being
+mired in conflict of interest [180]. All of this can interfere
+with the auditors’ ability to externally communicate results, or
+force auditors to scope results too narrowly to be meaningfully.
+In policy, internal auditors are typically those designated to
+carry out mandatory corporate audit requirements (e.g. the
+“independent auditors” in Article 37 of the Digital Services
+Act). The particular challenges of internal auditors indicate
+that requirements for external reporting, product standards and
+auditor conduct standards are especially important in such
+contexts.
+On the other hand, external auditors are free to set their
+scope and communicate results publicly. However, they typ
+ically face issues around external legitimacy and visibility
+that can make them easy to ignore completely [36]. The
+serious issues they face around auditor capacity and infor
+mation access are further hindrances to audit quality and thus
+impact [12], and the public-facing nature of their advocacy
+makes them even more vulnerable to corporate retaliation.
+External auditors are typically designated as voluntary “in
+vestigators” or “researchers”, rather than actual auditors (e.g.
+“vetted researchers” in Article 40 of the Digital Services
+Act), and are often mentioned in data access or safe harbor
+clauses, revealing the importance of such policy interventions
+in addressing their particular challenges.
+8) Recognizing the limits of audits: Some societal impacts
+of AI are not amenable to audits. What can be evaluated and
+audited depends on numerous factors including normative and
+pragmatic considerations as well as what is prioritised and
+anticipated, and whether harms and risks are known or antic
+ipated [181]. As there are several serious, although gradual,
+and pernicious harms emanating from AI– for instance, the
+chilling effect of surveillance, or corporate power concentra
+tion [182]– it is clear that not all pressing issues regarding
+the technology can be addressed with audits. Although the
+ecological audits we have introduced in this work are an
+encouraging first step towards significant structural change
+in some of these cases, other, likely moral or rights-based
+arguments are required for this kind of advocacy. Thus, it is
+clear that audits are just one element of a necessarily broader
+set of AI accountability strategies. We caution against any
+approaches that treat audits as any kind of all-encompassing
+solution to technological ills.
+VII. CONCLUSION
+Audits have become widely popular in the AI field as an
+aspirational accountability measure to inform our decision
+making and regulation of AI deployments. However, lessons
+from the broader range of AI audit practitioners beyond
+academia reveal that there is still much to learn in order for
+these audit studies to operate as consequential judgements.
+Future work will hopefully continue to investigate this rela
+tionship between contextual factors, audit design, audit exe
+cution and the underlying shared vision of audit practitioners
+across all domains: a substantively meaningful path towards
+AI accountability.
+
+References:
+
+...
+
+PPENDIX A
+METHODS: SEARCHING IN NON-ACADEMIC DOMAINS
+To produce the analysis in §V, we analyzed reports, press
+releases, publications, blogs, and web postings from multiple
+institutions outside of academia. Here, we describe in more
+detail the specific search methods used to produce our analysis
+for each institution. (The full list of academic audit studies
+we found can be accessed at github.com/ryansteed/academic
+audits.)
+A. Regulators
+1) National Institute of Standards and Technology (NIST):
+We reviewed documents (N = 16) from two programs: NIST’s
+Trustworthy & Responsible AI Resource Center (airc.nist.gov)
+and NIST’s Face Recognition Vendor Test (FRVT) program
+[183]. From the Resource Center, we reviewed the NIST
+AI Risk Management Framework (RMF) [72] (as well as
+the accompanying Playbook and Roadmap) and the N = 5
+special publications and internal reports in the RMF Knowl
+edge Base [155]. From the FRVT program, we reviewed the
+executive summary of all the pages linked under sections
+with titles pre-pended “FRVT” (N = 8) on the FRVT page
+[184, 185, 186, 187, 183], including the homepages for FRVT
+2000, 2002, 2006, and 2013, as well as NIST Interagency
+Reports (NISTIR) 8331, 8280, 7709, and 7830. NISTIR 8280
+in particular describes analyses of demographic differences
+across a large number of algorithms, developers, and test
+images [158].
+2) Information Commissioner’s Office (ICO): The ICO
+details audit information on its website ico.org.uk, including
+definition of audit, assurance ratings, audit target, as well as
+audit reports. We reviewed the “Audits and overview reports”
+section yielding 48 results in total.
+B. Law Firms
+1) AWO: We reviewed publicly available pages on AWO’s
+website (awo.agency), particularly the descriptions of their
+services at awo.agency/services. We also reviewed all the posts
+on their blog up to July 2023 (N = 62), only a few of which
+were related to AWO’s audit work (AWO [188], for example).
+2) Foxglove: In order to extract relevant information on
+the organization, we reviewed the website, mainly the Who
+We Are and News sections.
+3) Luminos.Law: Our information on Luminos.Law—
+called BHN.AI at the time of our study—is sourced from
+the firm’s website, and more particularly, in the AI Audits
+section.
+C. Civil Society
+1) Electronic Frontier Foundation (EFF): We looked at
+the About page to extract general information on the Foun
+dation. We also reviewed the Our Work, and Tools page in
+order to extract detailed information on including Methods
+and Tools.
+2) Refugee Law Laboratory (RLL): The Refugee Law Lab
+website About page provided the initial general information.
+For reports, datasets, data visualizations, and impact, we
+reviewed the Projects and News and Recent Publications
+sections.
+3) The Citizen Lab: The About the Citizen Lab pro
+vided general information about this group. In order to ex
+tract detailed relevant information, we reviewed the Research
+and News pages.
+4) Migration and Tech Monitor (MTM): We started our
+survey with the Home page of MTM’s website. The Method
+ology section details the methods used by the organization,
+the Resources page lists various case studies carried out by
+the organization, and the Snapshots section presents numerous
+pictorial evidence supporting the organization’s work.
+5) Ada Lovelace Institute: We surveyed the “Projects”
+listed at adalovelaceinstitute.org/our-work, selecting only those
+related to AI auditing. We followed any reports listed in those
+project overviews. In particular, we analyzed the executive
+summary of N = 4 reports on algorithmic impact assessments
+in healthcare [189], tools and methods for assessing algorith
+mic systems [23, 24], and auditing standards [190]. We also
+surveyed N = 47 blog posts published July 2023 or earlier
+at adalovelaceinstitute.org/blog, filtering for the programmes
+“Biometrics”, “Enabling a responsible AI ecosystem”, “Ethics
+and accountability in practice”, and “Public-sector use of data
+& algorithms”. We considered only blog posts that discussed
+the Institute’s own AI auditing work.
+6) The American Civil Liberties Union (ACLU): The
+ACLU publishes details about its work on its website aclu.org,
+including news, publications and reports. We reviewed all doc
+uments labelled as “reports and other assets” published 2018
+2022 (N = 70), using aclu.org/search. Most of these did not
+relate to AI, so we also used Google to search aclu.org/news
+using the keywords from our academic search as well as
+other keywords such as “algorithm”, “machine learning”,
+and “automated decision” (e.g., site:aclu.org/news
+after:2017 ‘‘algorithm’’).
+D. Journalism
+1) Propublica: We initially scraped the ProPublica website
+using the keyword “audit”. However, this did not yield fruitful
+as significant number of articles that the keyword returned
+were not relevant, for example, articles on financial audit
+and web pages with reports of financial audits. Subsequently,
+we manually reviewed the website looking specifically for al
+gorithm (and technology) related audits under the Technology
+section of the website.
+2) The Markup: We manually sifted through the main
+page of the Markup’s website identifying audit investigation
+report articles. We reviewed each article and extracted thematic
+information.
+E. Consulting Agencies
+1) O’Neil Risk Consulting & Algorithmic Auditing (OR
+CAA): We reviewed the website starting from the Home
+page and scrolling through the main pages such as What We
+Do, NYC Bias Audit and Principles.
+2) Eticas: We surveyed the Eticas website, more partic
+ularly focusing on the Research page of the Eticas Library
+to glean insights into the organization’s algorithmic audit
+practice.
+3) BABL AI: We started by reviewing the About Us page
+of BABL.IA’S website. We then looked at the Services page
+and extracted contextual information such as the kind of infor
+mation the agency provides. We also reviewed the Research
+page for more detailed information on past audits carried out
+by the agency.
+APPENDIX B
+METHODS: QUANTITATIVE CONTENT ANALYSIS
+We supplement our qualitative analysis in §IV by analyz
+ing words and phrases commonly used in the abstracts and
+keywords of the academic audit studies we collected. All but
+4 of the N = 341 studies we found were published with an
+abstract; 78 were published without keywords.
+Many of the most-used terms are fairly generic (e.g. “algo
+rithm”, or “system), so we show only a selection of key terms
+relevant to our study. We manually filtered the most frequent
+1-grams and 2-grams across all abstracts and keywords in
+our dataset of academic audits, keeping only those terms
+relevant to one of the following dimensions of our analysis
+(see Table II): 1) motivation (e.g., “accountability”); 2) target
+(including specific entities, e.g., “Facebook”; types of sys
+tems, e.g., “computer vision”; and domains, e.g., “healthcare”
+or “hiring”); 3) types of harms (e.g., “discrimination” or
+“privacy”); 4) methods (e.g., “qualitative” or “ethnography”).
+We drop 2-grams that are already encompassed by a more
+general 1-gram unless they indicate a meaningfully different
+concept or subset (e.g., “criminal justice” is much different
+than “justice” alone, whereas, e.g., “algorithm auditing” is
+encompassed by “auditing”, given the scope of our study).
+We include only terms that were mentioned in more than one
+keyword list (more than 0.27% of papers) or in more than 10
+abstracts (more than 2.7% of papers).
+For further analysis, the entire dataset of academic audits
+we collected, along with the code for this analysis, can be
+accessed at github.com/ryansteed/academic-audits.
+Tables B-I–B-III list the most frequent terms related to
+audit motivations and harms, audit targets, and audit methods,
+respectively. Tables B-IV–B-VI further compare the most
+frequent keywords across audit types.
+TABLEB-I
+MOSTFREQUENTTERMS:AUDITMOTIVATIONANDTYPESOFHARMS.
+Term(s) # times
+used
+# studies
+(%oftotal)
+Terms inkeywords(onlyterms in≥1%of studies)
+fairness/fair 75 66(25.1%)
+bias/biases/biased 75 65(24.7%)
+audit/audits/auditing 56 49(18.6%)
+accountability/accountable 42 41(15.6%)
+ethics/ethical 26 26(9.9%)
+impact/impacts 17 15(5.7%)
+evaluate/evaluation/evaluations/evaluating 17 13(4.9%)
+privacy 16 12(4.6%)
+transparency 12 12(4.6%)
+explainability/explanations/explanation/xai 12 10(3.8%)
+discrimination/discriminatory 8 8(3.0%)
+justice 8 8(3.0%)
+governance 6 6(2.3%)
+hatespeech 6 6(2.3%)
+impactassessment(s) 6 6(2.3%)
+disparateimpact /disparity/disparities 5 5(1.9%)
+genderbias 5 5(1.9%)
+harm/harms 5 5(1.9%)
+risk 5 5(1.9%)
+dataprotection 5 4(1.5%)
+interpretability 4 4(1.5%)
+misinformation 6 4(1.5%)
+security 4 4(1.5%)
+surveillance 4 4(1.5%)
+trust 4 4(1.5%)
+accessibility 3 3(1.1%)
+Terms inabstract (onlyterms in≥5%of studies)
+bias/biases/biased 325 99(29.4%)
+audit/audits/auditing 201 87(25.8%)
+impact/impacts 135 85(25.2%)
+fairness/fair 271 78(23.1%)
+evaluate/evaluation/evaluations/evaluating 114 69(20.5%)
+accountability/accountable 112 56(16.6%)
+harm/harms 74 44(13.1%)
+transparency 62 44(13.1%)
+ethics/ethical 65 37(11.0%)
+discrimination/discriminatory 57 34(10.1%)
+risk 55 34(10.1%)
+mitigate 31 28(8.3%)
+privacy 56 25(7.4%)
+explainability/explanations/explanation/xai 63 22(6.5%)
+disparateimpact /disparity/disparities 37 21(6.2%)
+justice 31 21(6.2%)
+TABLEB-II
+MOSTFREQUENTTERMS:TARGETSYSTEMSANDDOMAINS.
+Term(s) # times
+used
+# studies
+(%oftotal)
+Terms inkeywords(onlyterms in≥1%of studies)
+socialmedia/ socialnetworks / facebook/ twitter /youtube 18 17(6.5%)
+computervision 13 13(4.9%)
+health/healthcare/medical 14 11(4.2%)
+natural language/ languageprocessing 22 11(4.2%)
+advertising/ads 8 7(2.7%)
+platform/platforms 6 6(2.3%)
+hiring/employment 5 5(1.9%)
+policing/police 5 5(1.9%)
+credit 4 4(1.5%)
+criminal justice 4 4(1.5%)
+multimodal 4 4(1.5%)
+searchengines 4 4(1.5%)
+speechrecognition/speakerrecognition/speakerverification 6 4(1.5%)
+automateddecision 3 3(1.1%)
+facial recognition/ facerecognition 3 3(1.1%)
+generative 3 3(1.1%)
+google 3 3(1.1%)
+government 3 3(1.1%)
+riskassessment 3 3(1.1%)
+socialcredit 3 3(1.1%)
+welfare 3 3(1.1%)
+Terms inabstract (onlyterms in≥5%of studies)
+platform/platforms 99 45(13.4%)
+health/healthcare/medical 89 42(12.5%)
+socialmedia/ socialnetworks / facebook/ twitter /youtube 99 40(11.9%)
+advertising/ads 79 21(6.2%)
+hiring/employment 23 18(5.3%)
+google 22 17(5.0%)
+government 22 17(5.0%)
+TABLE B-III
+MOST FREQUENT TERMS: METHODS.
+Term(s)
+# times
+used
+#
+studies
+(% of total)
+Terms in keywords (only terms in ≥ 1% of studies)
+sociotechnical
+participatory
+hci
+qualitative/ethnography/interviews/interviewed/workshop(s)
+participatory design
+community/communities
+human centered
+interdisciplinary
+9
+8
+7
+7
+5
+4
+4
+5
+9 (3.4%)
+7 (2.7%)
+6 (2.3%)
+5 (1.9%)
+5 (1.9%)
+4 (1.5%)
+4 (1.5%)
+3 (1.1%)
+Terms in abstract (only terms in ≥ 5% of studies)
+community/communities
+qualitative/ethnography/interviews/interviewed/workshop(s)
+benchmark/benchmarks
+sociotechnical
+70
+37
+50
+27
+48 (14.2%)
+26 (7.7%)
+24 (7.1%)
+22 (6.5%)
+TABLEB-IV
+FREQUENTTERMSBYAUDITTYPE:AUDITMOTIVATIONANDTYPESOFHARMS.
+Term(s) #studies (%of studiesof thesameaudit type)
+DataAudit Product/Model/
+Algo.Audit
+EcosystemAu
+dit
+Meta
+Commentary
+Terms inkeywords
+bias/biases/biased 8(29.6%) 48(28.4%) 3(20.0%) 6(11.5%)
+fairness/fair 8(29.6%) 40(23.7%) 3(20.0%) 15(28.8%)
+audit/audits/auditing 1(3.7%) 35(20.7%) 1(6.7%) 12(23.1%)
+accountability/accountable 1(3.7%) 16(9.5%) 3(20.0%) 21(40.4%)
+ethics/ethical 3(11.1%) 13(7.7%) 0 10(19.2%)
+Terms inabstract
+bias/biases/biased 18(39.1%) 69(32.5%) 2(13.3%) 10(15.6%)
+fairness/fair 8(17.4%) 45(21.2%) 4(26.7%) 21(32.8%)
+audit/audits/auditing 4(8.7%) 57(26.9%) 1(6.7%) 25(39.1%)
+evaluate/evaluation/evaluations/evaluating 11(23.9%) 45(21.2%) 2(13.3%) 11(17.2%)
+impact/impacts 12(26.1%) 52(24.5%) 4(26.7%) 17(26.6%)
+accountability/accountable 4(8.7%) 29(13.7%) 5(33.3%) 18(28.1%)
+transparency 5(10.9%) 26(12.3%) 4(26.7%) 9(14.1%)
+ethics/ethical 7(15.2%) 19(9.0%) 2(13.3%) 9(14.1%)
+harm/harms 8(17.4%) 19(9.0%) 4(26.7%) 13(20.3%)
+risk 2(4.3%) 20(9.4%) 3(20.0%) 9(14.1%)
+mitigate 3(6.5%) 18(8.5%) 3(20.0%) 4(6.2%)
+Showingonlyterms thatappear in≥15%ofstudiesforat leastoneaudit type(bolded).
+TABLEB-V
+FREQUENTTERMSBYAUDITTYPE:TARGETSYSTEMSANDDOMAINS.
+Term(s) #studies (%of studiesof thesameaudit type)
+DataAudit Product/Model/
+Algo.Audit
+EcosystemAu
+dit
+Meta
+Commentary
+Terms inkeywords
+socialmedia/socialnetworks/facebook/ twitter
+/youtube
+0 17(10.1%) 0 0
+natural language/ languageprocessing 3(11.1%) 6(3.6%) 1(6.7%) 1(1.9%)
+computervision 7(25.9%) 5(3.0%) 0 1(1.9%)
+welfare 1(3.7%) 0 2(13.3%) 0
+childwelfare 0 0 2(13.3%) 0
+Terms inabstract
+socialmedia/socialnetworks/facebook/ twitter
+/youtube
+2(4.3%) 38(17.9%) 0 0
+platform/platforms 1(2.2%) 42(19.8%) 1(6.7%) 1(1.6%)
+health/healthcare/medical 5(10.9%) 30(14.2%) 1(6.7%) 6(9.4%)
+computervision 7(15.2%) 8(3.8%) 0 1(1.6%)
+natural language/ languageprocessing 5(10.9%) 9(4.2%) 0 1(1.6%)
+hiring/employment 2(4.3%) 11(5.2%) 2(13.3%) 3(4.7%)
+government 2(4.3%) 8(3.8%) 3(20.0%) 4(6.2%)
+welfare 1(2.2%) 3(1.4%) 2(13.3%) 0
+childwelfare 0 1(0.5%) 2(13.3%) 0
+education 1(2.2%) 6(2.8%) 2(13.3%) 1(1.6%)
+Showingonlyterms thatappear in≥10%ofstudiesforat leastoneaudit type(bolded).
+TABLEB-VI
+FREQUENTTERMSBYAUDITTYPE:METHODS.
+Term(s) #studies (%of studiesof thesameaudit type)
+DataAudit Product/Model/
+Algo.Audit
+EcosystemAu
+dit
+Meta
+Commentary
+Terms inkeywords
+qualitative/ethnography/interviews/interviewed/workshop(s) 3(1.8%) 2(13.3%) 0
+participatory 1(0.6%) 3(20.0%) 3(5.8%)
+participatorydesign 0 3(20.0%) 2(3.8%)
+humancentered 2(1.2%) 2(13.3%) 0
+Terms inabstract
+benchmark/benchmarks 14(30.4%) 6(2.8%) 0 4(6.2%)
+community/communities 9(19.6%) 21(9.9%) 6(40.0%) 12(18.8%)
+qualitative/ethnography/interviews/interviewed/
+workshop(s)
+3(6.5%) 13(6.1%) 6(40.0%) 4(6.2%)
+sociotechnical 1(2.2%) 12(5.7%) 1(6.7%) 8(12.5%)
+hci 0 3(1.4%) 2(13.3%) 1(1.6%)
+participatory 1(2.2%) 0 2(13.3%) 1(1.6%)
+Showingonlyterms thatappear in≥10%ofstudiesforat leastoneaudit type(bolded).
+APPENDIX C
+ADDITIONAL RESULTS
+Below, we include more detailed summaries of the non
+academic auditors we reviewed.
+TABLEC-VII
+CONSULTINGAGENCIES
+Consulting
+Agencies
+ORCAA Eticas BablAI
+Motivation regulatorycompliance, performance testing,
+measureandmitigatedisparateperformance
+helpcompanies complywith legal require
+ments,securityanddataprotection, fairness,
+biasandmodelaccuracy
+biasassessment, riskandimpactassessment
+Target predictivescoringsystems,hiringalgorithms,
+healthcareAI,AIplatforms,ADS,FRT
+risk assessment algorithms; social media
+platforms such as tiktok andyoutube; ride
+hailingapps, suchasuber, cabifyandbolt;
+algorithmsusedbygovernmentsandcompa
+nies
+their clients include universities, small AI
+companies, startups likeProctorio
+Types of
+harm
+discrimination, bias, measure gender and
+race/ethnicity bias, assess for regulatory
+compliance
+algorithmic systems (their functioning), to
+detect anomalies or practices that couldbe
+unfair towardsprotectedgroupsorsociety
+bias, fairness, effectiveness, transparency,
+bestpoliciesandstandards,privacy, compli
+ance
+Institutional
+context
+Theagencyassists techgiants andgovern
+ments,whileitsauditsprioritizetheconcerns
+ofmarginalizedcommunities
+The consulting agency champions fairness
+for protected groups, yet also safeguards
+corporations fromfinancial andreputational
+risks.
+Ultimately, they are consultants that work
+with/forclients tohelporgsbuildtrustwith
+stakeholders.
+Methods internal tool (EthicalMatrixframework), re
+viewdocuments
+data management planning, encryption,
+ethicsduediligenceandvetting
+in-house developed set of criteria used to
+conduct conduct bias testing, reviewdocu
+mentations, interactwithstakeholders
+Impact someinfluence(albeitindirect)onpolicy(on
+theWhiteHouseAIethicsblueprint)
+notclear nonestated
+TABLEC-VIII
+CORPORATEAUDITS
+Corporate
+Audits
+Google Facebook
+Motivation identifypotential issuesrelatingtocelebrityrecognitionproducts help thecompany identify, prioritise, and implement improvements
+in accordancewith civil rights ”at the behest of the civil rights
+communityandmembersof theUScongress”
+Target Google’scelebrityrecognitionAPI Facebook
+Types of
+harm
+humanrights*impacts* racial injustice,votersuppression,hatespeech, algorithmicbias
+Methods consultationwithstakeholders,dialoguewithexpert resources interviewwith hundreds of civil rights orgs and advocates and
+membersofcongress
+Impact incorporationofsomeof thefindings intoproductdesign facebookcommittedtoimplement (noinformationif thesechanges
+were infact implemented) anewadvertisingsysteminaccordance
+withcivil rights
+TABLEC-IX
+JOURNALISM
+Journalism TheMarkUp Propublica
+Motivation Accountability, exposedisparities injusticeandillegalpractice accountability, exposedisparities inperformance, privacyviola
+tions,discriminationindeployedsystems
+Target argecorporations/institutions,socialmediaplatforms,algorithms,
+contentmoderators
+Gov’t ADS, VLOPs (Facebook advertising, Amazon product
+placement)publicprogramswithdigital sites
+Typesofharm Disparities, fraud, discrimination, legal compliance, privacy
+breach
+discrimination,privacyharms, culturalgenocide, injustice
+Institutional
+context
+Targetingmostlytechfirms/platforms,onbehalfofgeneralpublic;
+fundedbyfoundationsandprivatedonors
+Targetingpublic agencies andprivate companies, onbehalf of
+generalpublic; fundedbyfoundationsandprivatedonors
+Methods Inhouse audit tools, interview, data donation, reviewing docu
+ments
+scraping,datadonation,APIexploitation,evaluation, interviews,
+qualitativeevidence
+Impacts highimpact resultinginlegislativeandsystemic(intheUS) Highimpact, legislativeaction, companypolicychanges,COM
+PASacanonicalworkthat setpresident foracademicresearch
+Audit Type
+FAccT
+Publication venue
+AIES
+Other ACM
+Other non−ACM
+Product/Model/
+Algo. Audit
+Data Audit
+Ecosystem
+Audit
+Meta−
+Commentary
+0
+50
+100
+# audit studies
+Fig. C-I. Number of collected academic audit studies published in each year, grouped by publication source.
+TABLE C-X
+LAW FIRMS
+Law
+firms
+BNH.AI
+Foxglove
+AWO
+Audit
+type
+information not available
+Case study. algorithms, social media plat
+forms, living conditions of tech workers
+evaluative reviews of general industries or
+technologies, case studies
+Audit
+Goal
+compliance with standards
+keeping tech giants and governments ac
+countable
+evaluate/design governance, protect data
+rights
+Audit
+target
+models and data
+social media platforms, governments, content
+moderator, warehouse workers, gig-workers
+VLOPs, private companies, FRT
+Type of
+harm
+legal compliance/liability/legal defence
+ustice, disparate performance, enforcing le
+gal requirements
+privacy/data rights/surveillance violations,
+safety, digital manipulation/exploitation
+Methods
+information not available
+legal compliance, anecdotal evidence
+documentation, critical commentary, policy
+development, legal/compliance research
+Impact
+information not available
+Sforced disclosure of secret contract between
+tech corps and governments, stopped the
+UK Home Office use of visa-streaming algo,
+reversed Ofqual’s A level grading algorithm
+litigation, change to govt’s and corporate
+policy/strategy
+Power
+Analysis
+corporate/for profit, confidential and privi
+leged
+non-profit
+corporate/for profit, consulting for both cor
+porate and public agencies
+TABLE C-XI
+REGULATORS
+Regulators ICO
+NIST
+General
+Objec
+tives
+Uphold information rights. Enforcing legal requirements. Regulatory
+interventions through guidance, enforcement notice, and issuing mon
+etary penalties.
+Quality assurance, develop best standards and regulatory practices
+Audit
+type
+Case studies
+Meta-commentary
+Audit
+Goal
+Investigate and enforce regulations
+Establish standards
+Audit
+target
+Data, data sharing and management documents
+FRT, ADS
+Type of
+harm
+Legal compliance, privacy breach, data management
+Racial disparities, physical safety, functionality, privacy
+Methods
+Interview, testing, reviewing documents
+Data trust, accuracy evaluation, benchmarking
+Impact
+Significant monetary penalties issued
+Significant contribution on standardisation
+Power
+Analysis
+Targets companies and gov’t agencies; has authority to enforce laws
+with fines
+Targets companies and gov’t agencies; establishes standards but no
+enforcement authority
+TABLEC-XII
+CIVILSOCIETY
+CivilSociety EFF RLL TheCitizenLab MTM AdaLovelace ACLU
+Motivation accountability,
+non-profit and
+independent
+accountability,
+non-profit and
+independent
+accountability accountability accountability accountability
+Target ADS, online plat
+forms, largecorpo
+rations
+ADS, liedetectors,
+border patrolling
+drones
+ADS, apps, code,
+websites, FRT,
+surveillance tech,
+hardware (phones
+and other devices
+usedbypoliticians
+and activists),
+software
+biometric data,
+digital IDsystems,
+border surveillance
+vendors,
+surveillance
+drones, FRT,
+iris scan data,
+lie detector tech,
+thermal cameras,
+algorithmicmotion
+detectors, AI
+powered satellites,
+anklemonitorsand
+GPS tags, voice
+recognitiontech
+AI anddata-driven
+systems generally,
+biometric data
+(facial recognition)
+and healthcare in
+particular
+ADS, platform
+advertising,
+facial recognition
+tech, medical
+algorithms,
+online advertising
+(particularly
+Facebook),
+welfare programs,
+insurance
+pricing, redlining
+algorithms
+Typesofharm security
+vulnerabilities,
+fair use, user
+rights,privacy, free
+speech, resisting
+surveillance,
+encryption,
+consumer
+protection
+disparities in
+refugee claim
+recognition rates,
+human rights
+violations, digital
+rights violations,
+xenophobic
+and racial
+discrimination,
+privacy
+privacy, security,
+transparency,
+surveillance,
+spyware,
+censorship,
+freedom of
+expression
+racial discrim
+ination, border
+surveillance,
+xenophobia,
+human rights
+violations
+privacyharms, due
+processharms,dis
+parateimpact
+fallacyoffunction
+ality,culturalhege
+mony,hatespeech/
+toxicity
+Methods litigation,
+policy analysis,
+grassroot activism,
+technology
+development
+interviews with
+refugees, data
+collection, analysis
+and interactive
+visualisation from
+the Immigration
+and Refugee
+Board (IRB)
+through Access
+to Information
+Request,
+documentations of
+deportation and
+refused refugee
+claims, film
+making
+in-house tools,
+forensicanalysisof
+devices, interviews
+document and
+archive migration
+tech, interviews
+with people
+crossing borders,
+investigative
+analysis,
+photography
+participatory
+methods, including
+opinion polling;
+also policy
+researchandpolicy
+development
+quantitative
+evaluation of
+operational
+systems (but
+not necessarily
+as rigorous as
+academic papers;
+may be simple
+metrics); data
+acquired through
+privileged access,
+public records
+requests, scraping
+Impact high impact. Sued
+andwonacasefor
+First Amendment
+protection for
+software code for
+privacy protection,
+class-actionlawsuit
+that resulted in
+removing Sony
+BMG off the
+market, won a
+rulings against the
+US government’s
+attempt to track
+locationofmobile
+phone users, won
+Proctorio lawsuit
+on behalf of a
+student

@@ -67,7 +67,7 @@ const FALLBACK_EDGES = [
 
 const BOARD_LABELS: Record<string, string> = {
   status: "project entry",
-  create: "create [AUDIT] slice",
+  create: "create-from-template --template audit",
   claim: "claim --last",
   audit: "evidence-only audit",
   artifacts: "audit + alignment",

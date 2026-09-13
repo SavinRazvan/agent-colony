@@ -21,7 +21,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
 **Last updated:** 2026-08-23 (ICC removed — kit 0.7.3)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1544
+**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1565
 
 ## Shipped (confirmed in repo)
 
@@ -33,7 +33,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Maintainer skills | 6 folders (additive plugin merge; includes `full-pr-workflow`) | `.agents/skills/` |
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
-| PR scripts + prepare gates | Pattern A — **2** universal; **4** on kit-dev (drift + doc facts) | `.ai_infra/scripts/pr/prepare.py` |
+| PR scripts + prepare gates | Pattern A — **2** universal; **6** on kit-dev (drift + doc facts + check-plugin + audit artifacts) | `.ai_infra/scripts/pr/prepare.py` |
 | Governance + debrand scanners | CI-ready | `.ai_infra/scripts/architecture/` |
 | Workflow drift validate | ADR-007 (+ DRIFT-004b, DRIFT-011 roster, DRIFT-012 plan snapshots) | `.ai_infra/scripts/workflow/check_drift.py` |
 | Timestamped board Notes (CONT-TS) | `@user/agent · <ISO-8601-UTC> · …` via CLI (`claim`/`handoff`/`append-notes`) | `project_recipes.py` / `project_cli.py` + skill § Notes |
@@ -68,7 +68,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Consumer update stamp | Scaffold + `update` write `.kit-version` from source manifest; CLI fallback `ensure_kit_version_stamp` | `scaffold.py` · `update_cli.py` · tests |
 | Multi-consumer isolation | Model A contract doc; DRIFT-013 tracked-runtime guard; DRIFT-011b advisory; `update --check` + `kit_managed_globs`; consumer CI template | `multi-consumer-isolation.md` · `drift_checks.py` · `update_cli.py` · `templates/ci/consumer-gates.yml` |
 | Dashboard removal | Documentation now points to GitHub Project board + Cursor Open Canvas; `.local/index-and-planning/` remains offline markdown only | operations docs · skills · canvases |
-| Tests | 1544 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1565 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

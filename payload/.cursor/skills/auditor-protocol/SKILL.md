@@ -1,6 +1,10 @@
 ---
 name: auditor-protocol
 description: Phased, evidence-only enterprise architecture audit for Python repos with weighted scorecard; writes .local workflow artifacts for downstream agents.
+Audit-Schema: 1
+Audit-Scope: kit
+Named-Target: repository architecture and alignment
+Commissioned-By: maintainer workflow
 ---
 <!--
 File: SKILL.md
@@ -69,9 +73,14 @@ Audits are **evidence-backed** or they fail the contract. Chat-only opinions wit
 | Full audit | `.local/workflow-artifacts/enterprise-architecture-audit/enterprise-architecture-audit.md` |
 | Actions | `.local/workflow-artifacts/enterprise-architecture-audit/enterprise-audit-actions.md` |
 
-**Frontmatter:**
+**Frontmatter (all audit artifacts):**
 
 ```text
+Audit-Schema: 1
+Audit-Scope: kit | product | model | dataset | ecosystem | meta
+Named-Target: <non-empty subject>
+Commissioned-By: <human or role>
+Assurance-Level: high | reasonable | limited | very_limited  # optional; reserved
 Audit-Type: enterprise-architecture-python
 Audited-By: <agent or human>
 Action-By: <name>
@@ -79,6 +88,8 @@ GitHub-User: <handle>
 Date: <ISO-8601>
 Evidence-Standard: repository + user context only
 ```
+
+**Mandatory sections:** `## Accountability summary` (one paragraph) and `## Audit limits` (what this pass does **not** cover — see evidence-first audit scope boundary). P0/P1 findings require `owner`, `due_slice` (or `deadline`), and `consequence_if_ignored` per [alignment-audit-schema.md](../../.ai_infra/docs/roadmap/alignment-audit-schema.md).
 
 **Downstream:** **Implementer** → `enterprise-audit-actions.md`; board Ready cards when SSOT on. **Alignment** → `alignment-audit.md` + `alignment-todos.md` per schema. **Module map** → optional `audit-module-map` skill. Brief `updates-log.md` entry after audit.
 
@@ -88,6 +99,7 @@ When maintainer workflow requires alignment files but not full enterprise report
 
 - Stay on **`auditor`**; keep **Evidence contract**.
 - **Write only:** `alignment-audit.md`, `alignment-todos.md` (schema: `.ai_infra/docs/roadmap/alignment-audit-schema.md`).
+- Stamp the same **Audit-Schema: 1** frontmatter (`Audit-Scope`, `Named-Target`, `Commissioned-By`) and include `## Accountability summary` + `## Audit limits`.
 - Scope: **touched** roadmap/plan/rules/skills/agents + relevant `src/` / `tests/modules/` — not whole-repo scorecard.
 - Short **CHK-*** tick table for PR-touching dimensions; N/A elsewhere.
 - Plan/doctrine pulse remains **`drift-guard`** — do not duplicate DRIFT-011 here.

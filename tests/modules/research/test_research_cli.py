@@ -121,6 +121,7 @@ def test_load_card_template_research() -> None:
     assert "## Acceptance" in body
     assert "## Brief" in body
     assert "research" in project_atomics._TEMPLATE_NAMES
+    assert "audit" in project_atomics._TEMPLATE_NAMES
 
 
 def test_structural_validate_index_errors() -> None:
