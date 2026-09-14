@@ -69,7 +69,7 @@ const FALLBACK_EDGES = [
 ];
 
 const BOARD_LABELS: Record<string, string> = {
-  status: "project entry",
+  status: "api-ready → project entry",
   notes: "board card Notes",
   claim: "claim card",
   restate: "restate claim",

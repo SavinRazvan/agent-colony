@@ -68,7 +68,7 @@ const FALLBACK_EDGES = [
 ];
 
 const BOARD_LABELS: Record<string, string> = {
-  status: "project entry",
+  status: "api-ready → project entry",
   skill: "integrator-protocol",
   claim: "claim / create card",
   intake: "Intake → Plan",
@@ -244,7 +244,7 @@ export default function AgentIntegratorCanvas() {
           title={mode === "board" ? "project_ssot.enabled" : "Offline / disabled"}
         >
           {mode === "board"
-            ? "Entry: project entry + integrator-protocol skill; claim/create card."
+            ? "Entry: project api-ready then project entry + integrator-protocol skill; claim/create card."
             : "Fallback: session-pointer. Resume board sync when available."}
         </Callout>
         <Callout tone="danger" title="Machine gate — shippable Done">
@@ -256,7 +256,7 @@ export default function AgentIntegratorCanvas() {
 
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
-          <Text>1. Intake: read integration request; project entry + skill.</Text>
+          <Text>1. Intake: read integration request; project api-ready then project entry + skill.</Text>
           <Text>2. Plan: board card with scope and acceptance criteria.</Text>
           <Text>3. Templates → wire agents/skills/MCP into kit structure.</Text>
           <Text>
@@ -298,7 +298,7 @@ export default function AgentIntegratorCanvas() {
         <CardBody>
           <Stack gap={6}>
             <Text>
-              Entry: project entry + integrator-protocol skill;
+              Entry: project api-ready then project entry + integrator-protocol skill;
               claim/create card.
             </Text>
             <Text>

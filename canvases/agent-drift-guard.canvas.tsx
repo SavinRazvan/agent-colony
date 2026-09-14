@@ -68,7 +68,7 @@ const FALLBACK_EDGES = [
 ];
 
 const BOARD_LABELS: Record<string, string> = {
-  status: "project entry",
+  status: "api-ready → project entry",
   list: "list in_progress",
   validate: "drift validate",
   audit: "drift-audit.md",
@@ -245,7 +245,7 @@ export default function AgentDriftGuardCanvas() {
           title={mode === "board" ? "project_ssot.enabled" : "Offline / disabled"}
         >
           {mode === "board"
-            ? "Entry MUST: project entry (live|conserve|offline_artifacts) when board on."
+            ? "Entry MUST: project api-ready then project entry (live|conserve|offline_artifacts) when board on."
             : "Fallback: session-pointer. Resume board sync when available."}
         </Callout>
         <DagPanel mode={mode} tokens={tokens} />
@@ -253,7 +253,7 @@ export default function AgentDriftGuardCanvas() {
 
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
-          <Text>1. project entry (prefer over unfiltered list; board required when on).</Text>
+          <Text>1. project api-ready then project entry (prefer over unfiltered list; board required when on).</Text>
           <Text>2. Run drift validate; check DRIFT-009…012 board subset (full catalog DRIFT-001…017).</Text>
           <Text>3. Goal pulse: board Acceptance/Notes + plan pointers + roster.</Text>
           <Text>4. project export --reuse-if-fresh 900 for DRIFT-010 when needed.</Text>
@@ -297,7 +297,7 @@ export default function AgentDriftGuardCanvas() {
         <CardBody>
           <Stack gap={6}>
             <Text>
-              Entry MUST: project entry when board SSOT enabled; scoped list only in live mode.
+              Entry MUST: project api-ready then project entry when board SSOT enabled; scoped list only in live mode.
             </Text>
             <Text>
               Exit: shippable (PR / [AUDIT] / P0|P1) drift-pass → handoff --next verifier --to

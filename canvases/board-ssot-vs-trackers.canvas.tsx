@@ -452,7 +452,7 @@ export default function BoardSsotVsTrackersCanvas() {
               ["B — Post-merge board sync", "merge.py → Done + Notes"],
               ["C — Export + DRIFT-010/011", "Read-only snapshot; never Status"],
               ["FIX-NOTES-DI", "append-notes DraftIssue DI_ resolve"],
-              ["CLI + Metric A", "26 project leaves · 1455 tests · Metric A 100%"],
+              ["CLI + Metric A", "29 project leaves · 1653 tests · Metric A 100%"],
             ]}
           />
         </Stack>

@@ -66,7 +66,7 @@ const FALLBACK_EDGES = [
 ];
 
 const BOARD_LABELS: Record<string, string> = {
-  status: "project entry",
+  status: "api-ready → project entry",
   create: "create-from-template --template audit",
   claim: "claim --last",
   audit: "evidence-only audit",
@@ -270,7 +270,7 @@ export default function AgentAuditorCanvas() {
           title={mode === "board" ? "project_ssot.enabled" : "Offline / disabled"}
         >
           {mode === "board"
-            ? "Entry: project entry; may create-from-template --template audit then claim."
+            ? "Entry: project api-ready then project entry; may create-from-template --template audit then claim."
             : "Fallback: session-pointer. Audits write .local/ artifacts only."}
         </Callout>
         <Callout tone="danger" title="Machine gate — [AUDIT] is shippable">
@@ -282,7 +282,7 @@ export default function AgentAuditorCanvas() {
 
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
-          <Text>1. project entry; create --template audit card if needed; claim.</Text>
+          <Text>1. project api-ready then project entry; create --template audit card if needed; claim.</Text>
           <Text>
             2. Evidence-only audit per auditor-protocol — tick CHK-ARCH /
             GRANULARITY / PERF / SEC-CODE / SEC-AGENT / INFRA-KIT / DOCS (full or
@@ -330,7 +330,8 @@ export default function AgentAuditorCanvas() {
         <CardBody>
           <Stack gap={6}>
             <Text>
-              May create-from-template --template audit then claim --last.
+              Entry: project api-ready then project entry. May create-from-template
+              --template audit then claim --last.
             </Text>
             <Text>
               Exit: prefer handoff --next verifier --to in_review — [AUDIT] cards
