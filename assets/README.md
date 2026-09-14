@@ -28,6 +28,9 @@ assets/
 │   │   └── NN_tutorial_agent-colony.png
 │   ├── agent-colony-img/          # Brand still variants
 │   └── agent_colony_img/          # Brand still variants (alt folder)
+├── other/                         # Maintainer reference (not in payload/)
+│   ├── README.md                  # Paper credit + insight-transfer scope
+│   └── paper-arxiv-2401.14462v1.txt
 └── video/
     └── agent-colony-hero.mp4      # Source MP4 (README uses user-attachments CDN URL)
 ```

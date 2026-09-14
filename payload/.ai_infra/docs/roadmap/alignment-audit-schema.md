@@ -20,6 +20,8 @@ Notes:
 
 Standardize advisory audit findings so outputs from skills, rules checks, and manual review merge into one deterministic report.
 
+Accountability field model (owner, due_slice, consequence_if_ignored, Schema-1 frontmatter) is informed by Birhane et al. ([arXiv:2401.14462](https://arxiv.org/abs/2401.14462)); **kit-process scope only** — see [ADR-013](../decisions/ADR-013-audit-accountability.md).
+
 **Product vocabulary:** When findings involve domain boundaries, cite your project's strategy/architecture docs as `target_path` (e.g. `docs/architecture/*`, overlay rules in `overlays/rules/`).
 
 ## Artifact-level frontmatter (Audit-Schema: 1)

@@ -20,7 +20,7 @@ Notes:
 Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
-**Last updated:** 2026-09-14 (README enforce pitch + verifier-before-Done status/docs parity)
+**Last updated:** 2026-09-14 (paper-credit hygiene + skill-count 16 parity)
 **Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1652
 
 ## Shipped (confirmed in repo)
@@ -36,7 +36,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
 | PR scripts + prepare gates | Pattern A — **2** universal; **6** on kit-dev (drift + doc facts + check-plugin + audit artifacts) | `.ai_infra/scripts/pr/prepare.py` |
-| Audit accountability residual | R0–R4 shipped on main (open-P0 fail, pipeline/path-trigger, field parity, skill hygiene, MCP `workflow_check_audit_artifacts` + validate-item teeth); merge order #259→#266→#267→#265 | PRs #259/#266/#267/#265 · ADR-013 · tip `cc3ef2e` |
+| Audit accountability residual | R0–R4 + verifier-before-Done (#275) + agent-surface-parity (#279/#281); Schema-1 validator, 6th gate, DRIFT-017 WARN, MCP `workflow_check_audit_artifacts` | PRs #253…#281 · ADR-013 · tip `bba77c3` |
 | Governance + debrand scanners | CI-ready | `.ai_infra/scripts/architecture/` |
 | Workflow drift validate | ADR-007 (+ DRIFT-004b, DRIFT-011 roster, DRIFT-012 plan snapshots) | `.ai_infra/scripts/workflow/check_drift.py` |
 | Timestamped board Notes (CONT-TS) | `@user/agent · <ISO-8601-UTC> · …` via CLI (`claim`/`handoff`/`append-notes`) | `project_recipes.py` / `project_cli.py` + skill § Notes |
@@ -113,6 +113,13 @@ agent-colony drift validate
 | `make check-plugin` / CI (`kit-quality.yml`) | Regenerates mirrors to a temp tree and diffs against **committed** `agents/` / `rules/` / `skills/` / `payload/` — fails if stale (no prior sync) |
 | `make verify-all` | Runs **sync-plugin first**, then `--check` — refreshes the working tree; does **not** by itself prove committed trees were already green |
 | Kit-dev `prepare.py` | Includes the same strict `--check` as CI (see [gate-matrix.md](../operations/gate-matrix.md)) |
+
+## Related research
+
+| Source | Role in kit |
+|--------|-------------|
+| Birhane et al., [arXiv:2401.14462](https://arxiv.org/abs/2401.14462) · local copy [`assets/other/paper-arxiv-2401.14462v1.txt`](../../../assets/other/paper-arxiv-2401.14462v1.txt) | Insight transfer into **kit-process** accountability (ADR-013); not societal/ML product audits |
+| [ADR-013](../decisions/ADR-013-audit-accountability.md) · [evidence-first](../operations/evidence-first.md) § Assurance stages | Decision + stage map |
 
 ## Not yet shipped
 

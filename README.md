@@ -52,7 +52,7 @@ These are **machine exits and merge refusals**, not prompt suggestions.
 | **Pattern A + rate-limit** | Prefer `entry` / `claim` / `handoff` / `mention-pr`. Low GraphQL / throttle → **EXIT_QUEUED (6)** → cooldown + local outbox → `api-ready` then flush. Outbox is **not** SSOT; do not retry-loop |
 | **Drift / audit independence** | DRIFT checks + auditor `Commissioned-By` ≠ `Audited-By` (ADR-013) |
 
-Canon: [gate-matrix.md](.ai_infra/docs/operations/gate-matrix.md) · [project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md) · [evidence-first.md](.ai_infra/docs/operations/evidence-first.md).
+Canon: [gate-matrix.md](.ai_infra/docs/operations/gate-matrix.md) · [project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md) · [evidence-first.md](.ai_infra/docs/operations/evidence-first.md) · [ADR-013](.ai_infra/docs/decisions/ADR-013-audit-accountability.md) (kit-process accountability; insight transfer from Birhane et al., [arXiv:2401.14462](https://arxiv.org/abs/2401.14462) — not product-ML / societal audits).
 
 ---
 
