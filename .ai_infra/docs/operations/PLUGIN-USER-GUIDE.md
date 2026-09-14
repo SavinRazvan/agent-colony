@@ -66,8 +66,8 @@ flowchart LR
 
 | Profile | Agents | Skills | MCP | First-run board coach |
 |---------|--------|--------|-----|------------------------|
-| **`with_mcp`** *(default)* | 8 | 15 | Yes | `/board` + `board-shell` skill |
-| **`default`** | 8 | 15 | No | `/board` + `board-shell` skill |
+| **`with_mcp`** *(default)* | 8 | 16 | Yes | `/board` + `board-shell` skill |
+| **`default`** | 8 | 16 | No | `/board` + `board-shell` skill |
 | **`consumer_lite`** | 6 (includes `board`, `integrator`; no `researcher`, `auditor`) | 6 (no `board-shell`, `auditor-protocol`, …) | Yes | Inline in `board.md` — no `board-shell` skill |
 
 **Lite + `update` (0.7.1+):** Plain `python3 -m agent_colony update --directory .` defaults to profile **`with_mcp`** and upgrades lite to **16 skills / 8 agents** on version bump. To stay lite, use `--profile consumer_lite`. See [consumer-lite-profile.md](consumer-lite-profile.md) § Upgrade.
@@ -270,7 +270,7 @@ your-project/
 ├── AGENTS.md                      # thin router (lite: stub-lite variant)
 ├── .cursor/
 │   ├── agents/                    # 8 subagents (6 on consumer_lite)
-│   ├── skills/                    # 15 protocols (6 on consumer_lite)
+│   ├── skills/                    # 16 protocols (6 on consumer_lite)
 │   ├── rules/                     # 7 rules (4 always-on + 3 requestable)
 │   └── mcp.json                   # with_mcp / consumer_lite profile
 ├── .agents/skills/                # maintainer slash skills (/review-pr, …)
