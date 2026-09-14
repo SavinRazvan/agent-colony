@@ -257,7 +257,7 @@ export default function AgentVerifierCanvas() {
           title={mode === "board" ? "project_ssot.enabled" : "Offline / disabled"}
         >
           {mode === "board"
-            ? "Entry: project entry + board card Notes. Always verify claims vs evidence. No dual-write."
+            ? "Entry: project api-ready then project entry + board card Notes. Always verify claims vs evidence. No dual-write."
             : "Entry: session-pointer.md. Always verify claims vs evidence."}
         </Callout>
         <DagPanel mode={mode} tokens={tokens} />
@@ -310,8 +310,8 @@ export default function AgentVerifierCanvas() {
         <CardBody>
           <Stack gap={6}>
             <Text>
-              Entry: project entry + board card Notes. Claim card for verification
-              work.
+              Entry: project api-ready then project entry + board card Notes.
+              Claim card for verification work.
             </Text>
             <Text>
               Exit: handoff/claim; Status → done with --agent verifier (shippable
@@ -335,9 +335,10 @@ export default function AgentVerifierCanvas() {
       </Stack>
 
       <Callout tone="neutral" title="MCP">
-        Kit server agent-colony-mcp for PR scripts / prepare.py resolve_gates() —
-        prefer agent_colony project for board. External: only servers listed
-        for this agent in mcp.registry.yaml.
+        Prefer workflow_project_validate_item, workflow_check_audit_artifacts,
+        workflow_run_gate (verifier doctrine only). prepare.py resolve_gates() for
+        PR evidence. Prefer agent_colony project for board. External: only servers
+        listed for this agent in mcp.registry.yaml.
       </Callout>
 
       <Text tone="tertiary" size="small">

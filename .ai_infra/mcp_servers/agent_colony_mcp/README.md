@@ -40,7 +40,7 @@ JSON envelope: `exit_code`, `summary`, `next_recommended_tool`, `detail`. EXIT_Q
 | `workflow_run_review` | `.ai_infra/scripts/pr/review.py` |
 | `workflow_run_merge_check` | `.ai_infra/scripts/pr/merge.py` — pipeline `architecture_impacting` / `requires_alignment_artifacts` appends `--arch-impacting` |
 | `workflow_check_audit_artifacts` | `.ai_infra/scripts/workflow/check_audit_artifacts.py` |
-| `workflow_run_gate` | single gate — **verifier only** (registry policy) |
+| `workflow_run_gate` | single gate — **verifier doctrine** (only verifier should call; MCP list-tools is server-level, no per-tool filter yet) |
 | `workflow_check_governance` | `check_governance_consistency.py` |
 | `workflow_list_agents` | `.cursor/agents/*.md` |
 | `workflow_get_tracker` | `.local/.../current/{name}.md` |

@@ -14,7 +14,7 @@ Related: [ADR-003](ADR-003-plugin-mcp-boundaries.md), [ADR-008](ADR-008-project-
 1. **Wrap only** — MCP board tools call existing `project_cli.cmd_*` / `doc_cli` / drift CLI. No second GraphQL client.
 2. **Response envelope** on new tools: `exit_code`, `summary`, `next_recommended_tool`, `detail` (null unless failure). EXIT_QUEUED (6) → recommend `workflow_project_api_ready` first, then `workflow_project_outbox_status`; never recommend retry. Claim/handoff tools preflight `project api-ready` before CLI writes.
 3. **CLI remains canonical** when MCP host is unavailable (ADR-009 Pattern A CLI).
-4. **Registry allowlist** — board/session/skill-section tools for Pattern A agents; `workflow_run_gate` restricted to **verifier** only.
+4. **Registry allowlist** — board/session/skill-section tools for Pattern A agents; `workflow_run_gate` is **verifier doctrine** (only verifier should call). Kit MCP `list-tools` remains **server-level** today (no per-tool agent filter) — non-verifier agents must not invoke `workflow_run_gate` even if listed.
 5. Ship as kit **0.7.2** (0.7.1 already released).
 
 ## Tools
