@@ -136,7 +136,11 @@ const ARTIFACTS = [
 ];
 
 const PEERS = [
-  ["Outbound", "verifier", "When tests gate the PR — handoff --to in_review"],
+  [
+    "Outbound",
+    "verifier",
+    "Shippable or tests gate PR — handoff --next verifier --to in_review",
+  ],
   ["Outbound", "next (generic)", "handoff format per card when not gating"],
   ["Inbound", "implementer", "Handoff when tests/coverage needed before merge"],
   ["Inbound", "integrator", "Escalates coverage work to test-runner"],
@@ -235,9 +239,15 @@ export default function AgentTestRunnerCanvas() {
 
       <Grid columns={3} gap={12}>
         <Stat value="Entry→Exit" label="Board-first Anchor" />
-        <Stat value="in_review" label="When tests gate PR" tone="warning" />
+        <Stat value="verifier" label="Must next when shippable" tone="warning" />
         <Stat value="EXIT_QUEUED" label="Outbox on rate-limit" tone="warning" />
       </Grid>
+
+      <Callout tone="danger" title="Machine gate — shippable Done">
+        Shippable (PR / [AUDIT] / P0|P1) or tests gating the PR → handoff --next
+        verifier --to in_review. Straight Status→Done without verifier hop /
+        allow-skip → CLI EXIT_VALIDATION (5).
+      </Callout>
 
       <Stack gap={8}>
         <H2>Goals</H2>
@@ -262,7 +272,7 @@ export default function AgentTestRunnerCanvas() {
           title={mode === "board" ? "project_ssot.enabled" : "Offline / disabled"}
         >
           {mode === "board"
-            ? "Entry: project entry + claim. Read test-index when tests change."
+            ? "Entry: project api-ready then entry + claim. Read test-index when tests change."
             : "Entry: session-pointer.md. Read test-index when tests change."}
         </Callout>
         <DagPanel mode={mode} tokens={tokens} />
