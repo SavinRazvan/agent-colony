@@ -69,7 +69,7 @@ First install remains `/workflow-activate`. Full semver/force: [upgrade-kit.md](
 
 ## Visual walkthrough
 
-Onboarding screenshots are ~**1920×1080**. Each displays at **800px** — **click** any image for full resolution, then zoom in the browser (<kbd>Ctrl</kbd>+<kbd>+</kbd> / <kbd>−</kbd>).
+Onboarding screenshots are ~**1920×1080**. Previews display at **480px** — **click** any image for full resolution, then zoom in the browser (<kbd>Ctrl</kbd>+<kbd>+</kbd> / <kbd>−</kbd>).
 
 | # | What you see | Section |
 |---|--------------|---------|
@@ -93,21 +93,21 @@ Cursor shows an **Add Plugin** preview — click the **Agent Colony** card to in
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png" alt="Cursor Agent chat: type /add-plugin with the GitHub URL and review the Agent Colony preview card" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png" alt="Cursor Agent chat: type /add-plugin with the GitHub URL and review the Agent Colony preview card" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>01</strong> — Preview card · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/02_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/02_tutorial_agent-colony.png" alt="Select your app project in Cursor and click Add Plugin" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/02_tutorial_agent-colony.png" alt="Select your app project in Cursor and click Add Plugin" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>02</strong> — Select project → Add Plugin · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/02_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/03_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/03_tutorial_agent-colony.png" alt="Agent Colony plugin installing in Cursor" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/03_tutorial_agent-colony.png" alt="Agent Colony plugin installing in Cursor" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>03</strong> — Installing · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/03_tutorial_agent-colony.png">Full size</a></sub></p>
@@ -154,7 +154,7 @@ Or type `/` and pick **workflow-activate** from the menu.
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/04_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/04_tutorial_agent-colony.png" alt="Agent chat: type /workflow-activate and pick workflow-activate from the Agent Colony menu" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/04_tutorial_agent-colony.png" alt="Agent chat: type /workflow-activate and pick workflow-activate from the Agent Colony menu" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>04</strong> — Activate · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/04_tutorial_agent-colony.png">Full size</a></sub></p>
@@ -184,7 +184,15 @@ python3 -m agent_colony activate --directory .
 
 ### Lite install (`consumer_lite`)
 
-Smaller Cursor footprint — **6 agents**, **6 skills**, no `board-shell` skill. First-run board coaching is inline in `board.md`. Full reference: [consumer-lite-profile.md](consumer-lite-profile.md).
+Smaller Cursor footprint — **6 agents**, **6 skills**, MCP yes, no `board-shell` skill. First-run board coaching is inline in `board.md`. Full reference: [consumer-lite-profile.md](consumer-lite-profile.md).
+
+| Included agents | Included skills |
+|-----------------|-----------------|
+| `board`, `implementer`, `test-runner`, `verifier`, `drift-guard`, `integrator` | `board-ssot`, `implementer-loop`, `evidence-first`, `test-coverage`, `workflow-activate`, `mcp-connect` |
+
+**Also on lite (shared with full):** 7 rules · MCP **29** tools + **7** resources · PR slash skills (`review-pr` → `full-pr-workflow`) · board CLI + verifier-before-Done.
+
+**Not on lite:** `auditor`, `researcher`, `board-shell`, audit/research/canvas/`update-agent-colony` skills.
 
 **First install** (module absent — use plugin payload):
 
@@ -282,14 +290,14 @@ python3 -m agent_colony health
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/05_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/05_tutorial_agent-colony.png" alt="After VERIFY PASS: edit github.collaboration.yaml display_name and github_user" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/05_tutorial_agent-colony.png" alt="After VERIFY PASS: edit github.collaboration.yaml display_name and github_user" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>05</strong> — Identity YAML · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/05_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/06_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/06_tutorial_agent-colony.png" alt="Terminal: python3 -m agent_colony contributors validate showing PASS" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/06_tutorial_agent-colony.png" alt="Terminal: python3 -m agent_colony contributors validate showing PASS" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>06</strong> — contributors validate PASS · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/06_tutorial_agent-colony.png">Full size</a></sub></p>
@@ -314,7 +322,7 @@ Create a **GitHub Project** for your app and set the **default repository** to y
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/07_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/07_tutorial_agent-colony.png" alt="GitHub: new Project with default repository set to the app repo" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/07_tutorial_agent-colony.png" alt="GitHub: new Project with default repository set to the app repo" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>07</strong> — New Project + default repo · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/07_tutorial_agent-colony.png">Full size</a></sub></p>
@@ -332,7 +340,7 @@ The agent fills **`project_ssot`** field ids and **`default_repo`**. Confirm bef
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/08_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/08_tutorial_agent-colony.png" alt="Agent chat /board with Project and repo URLs; github.collaboration.yaml Board Identity section updated" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/08_tutorial_agent-colony.png" alt="Agent chat /board with Project and repo URLs; github.collaboration.yaml Board Identity section updated" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>08</strong> — /board wire + YAML Board Identity · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/08_tutorial_agent-colony.png">Full size</a></sub></p>
@@ -374,28 +382,28 @@ Agent chat: **`/board`** → CONSENT GATE → TURN PROTOCOL (Turn A + Turn B for
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/09_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/09_tutorial_agent-colony.png" alt="First Project view after board wire; board agent instructions for Status board setup" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/09_tutorial_agent-colony.png" alt="First Project view after board wire; board agent instructions for Status board setup" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>09</strong> — First view + coach turn · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/09_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/10_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/10_tutorial_agent-colony.png" alt="Prioritized backlog and Status board views; board agent configuring Tier-1 columns" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/10_tutorial_agent-colony.png" alt="Prioritized backlog and Status board views; board agent configuring Tier-1 columns" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>10</strong> — Two views + column setup · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/10_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/11_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/11_tutorial_agent-colony.png" alt="Board agent using in-IDE browser to configure GitHub Project views" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/11_tutorial_agent-colony.png" alt="Board agent using in-IDE browser to configure GitHub Project views" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>11</strong> — Browser-in-IDE setup (continued) · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/11_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/12_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/12_tutorial_agent-colony.png" alt="Prioritized backlog view with Tier-1 columns visible" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/12_tutorial_agent-colony.png" alt="Prioritized backlog view with Tier-1 columns visible" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>12</strong> — Prioritized backlog columns · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/12_tutorial_agent-colony.png">Full size</a></sub></p>
@@ -420,21 +428,21 @@ These shots use the **Agent Colony kit repo** example Project after onboarding �
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/13_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/13_tutorial_agent-colony.png" alt="Reference Prioritized backlog view with many cards on the Agent Colony board SSOT example project" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/13_tutorial_agent-colony.png" alt="Reference Prioritized backlog view with many cards on the Agent Colony board SSOT example project" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>13</strong> — Reference Prioritized backlog · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/13_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/14_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/14_tutorial_agent-colony.png" alt="Reference Status board with Ready through Done columns and sample cards" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/14_tutorial_agent-colony.png" alt="Reference Status board with Ready through Done columns and sample cards" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>14</strong> — Reference Status board · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/14_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/15_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/15_tutorial_agent-colony.png" alt="Agent chat: board agent drafting sample cards with P0 P1 P2 priorities on the tutorial project" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/15_tutorial_agent-colony.png" alt="Agent chat: board agent drafting sample cards with P0 P1 P2 priorities on the tutorial project" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>15</strong> — Draft cards (priority examples) · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/15_tutorial_agent-colony.png">Full size</a></sub></p>
@@ -447,14 +455,14 @@ DeepWiki is **seeded on activate** by default. Pattern A CLI + Agent chat (index
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/16_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/16_tutorial_agent-colony.png" alt="Agent chat: ask DeepWiki MCP about karpathy/nanochat repository" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/16_tutorial_agent-colony.png" alt="Agent chat: ask DeepWiki MCP about karpathy/nanochat repository" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>16</strong> — DeepWiki in chat · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/16_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/17_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/17_tutorial_agent-colony.png" alt="Terminal: python3 -m agent_colony mcp call deepwiki ask_question success output" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/17_tutorial_agent-colony.png" alt="Terminal: python3 -m agent_colony mcp call deepwiki ask_question success output" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>17</strong> — CLI mcp call PASS · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/17_tutorial_agent-colony.png">Full size</a></sub></p>

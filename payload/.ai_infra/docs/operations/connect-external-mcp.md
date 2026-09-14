@@ -135,14 +135,14 @@ Optional: reload Cursor MCP so `CallMcpTool` also works when the IDE host loads 
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/16_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/16_tutorial_agent-colony.png" alt="Agent chat: ask DeepWiki MCP about karpathy/nanochat repository" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/16_tutorial_agent-colony.png" alt="Agent chat: ask DeepWiki MCP about karpathy/nanochat repository" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>16</strong> — DeepWiki in chat · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/16_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/17_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/17_tutorial_agent-colony.png" alt="Terminal: python3 -m agent_colony mcp call deepwiki ask_question success output" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/17_tutorial_agent-colony.png" alt="Terminal: python3 -m agent_colony mcp call deepwiki ask_question success output" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>17</strong> — CLI <code>mcp call</code> PASS · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/17_tutorial_agent-colony.png">Full size</a></sub></p>
