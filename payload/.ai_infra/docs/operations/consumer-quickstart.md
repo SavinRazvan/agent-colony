@@ -596,7 +596,7 @@ Full checklist: [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) §6 · [workflow-co
 For architecture-impacting work before merge prep:
 
 1. **`/auditor`** with **`/auditor-protocol`**
-2. Outputs under `.local/workflow-artifacts/enterprise-architecture-audit/`
+2. Outputs under `.local/workflow-artifacts/enterprise-architecture-audit/` (full CHK-* scorecard). Architecture-impacting merges also require the Schema-1 tip pair under `.local/workflow-artifacts/alignment/` (`alignment-audit.md` + `alignment-todos.md`) — see [auditor-protocol](../../.cursor/skills/auditor-protocol/SKILL.md) and [alignment-audit-schema.md](../roadmap/alignment-audit-schema.md).
 
 Procedure: [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) §7 · [agent-workflow-procedures.md](agent-workflow-procedures.md) §1.
 
@@ -614,12 +614,19 @@ Procedure: [PLUGIN-USER-GUIDE.md](PLUGIN-USER-GUIDE.md) §7 · [agent-workflow-p
 
 ## Verify (optional)
 
+Do not conflate these two commands:
+
+| Command | Steps | When |
+|---------|-------|------|
+| `agent-colony install … --verify` / scaffold `_run_verify` | **4** (testing artifacts + pytest + governance + debrand; **no** doc facts) | Post-install smoke |
+| `python3 -m agent_colony gates` | **5** (adds doc facts) | Post-change hygiene |
+
 ```bash
-python3 -m agent_colony gates      # full gate pass
+python3 -m agent_colony gates      # 5-step gate pass (see gate-matrix)
 python3 -m agent_colony health     # layout + kit_version
 ```
 
-Gate details: [gate-matrix.md](gate-matrix.md) (consumer scaffold = 4 checks).
+Gate details: [gate-matrix.md](gate-matrix.md).
 
 ---
 
@@ -653,8 +660,8 @@ Use **`--profile consumer`** for the minimal consumer set. When the tracker cont
 
 | Profile | Checks |
 |---------|--------|
-| `consumer` | DRIFT-005 + DRIFT-008 + **DRIFT-013** + **DRIFT-011b** (advisory) |
-| `consumer-board` | DRIFT-005 + DRIFT-008 + DRIFT-009 + DRIFT-010 + DRIFT-012 + **DRIFT-013** + **DRIFT-011b** |
+| `consumer` | DRIFT-005 + DRIFT-008 + **DRIFT-013** + **DRIFT-011b** (advisory) + **DRIFT-014** + **DRIFT-016** |
+| `consumer-board` | DRIFT-005 + DRIFT-008 + DRIFT-009 + DRIFT-010 + DRIFT-012 + **DRIFT-013** + **DRIFT-011b** + **DRIFT-014** + **DRIFT-016** |
 
 Auto-detect defaults to **`kit-dev`** unless `work-tracker.md` contains `STARTER-001`; without the flag you may see kit-dev-only checks (DRIFT-003, DRIFT-006) that do not apply to your app.
 
@@ -664,6 +671,8 @@ Auto-detect defaults to **`kit-dev`** unless `work-tracker.md` contains `STARTER
 | **DRIFT-008** | Scaffold trackers (`session-pointer`, `plan`, `work-tracker`) present |
 | **DRIFT-013** | Git must not track `.local/`, `.venv/`, `.env`, or `mcp.user.json` — see [multi-consumer-isolation.md](multi-consumer-isolation.md) |
 | **DRIFT-011b** | Advisory: extra integrator agents beyond eight kit ids |
+| **DRIFT-014** | Token-efficiency anchor in installed agent cards (profile-aware count) |
+| **DRIFT-016** | Thin-index § headings exist for skills on disk (profile-aware skip) |
 
 ---
 

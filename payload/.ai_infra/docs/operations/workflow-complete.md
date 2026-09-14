@@ -103,7 +103,7 @@ This is the **implementation agent** end-of-loop on top of sections **C** and **
 4. **`test-plan.md` / `test-index.md`** — when tests changed.
 5. After merge: **`merge.py --merge-sha`** is the sole Pattern A writer that sets the card → **Done** + Notes (PR URL + SHA) and End date when empty/`set_end_date_on_done`; `find-by-pr` resolves from the PR body, or pass `--item-id` when known. Prefer `- Board-Item: <id>` in the PR Collaboration section (never paste docs placeholders).
 6. When plan-mode was used: `plan snapshot --slug <kebab> --agent <name> --board-item <PVTI_>` (`.local/plans/` history only under `board_only`).
-7. **`make drift-validate`** — on P0/P1, hand off to **`drift-guard`** (reads + updates the board; DRIFT-009/010/012).
+7. **`make drift-validate`** — full kit-dev catalog (DRIFT-001…017 + 004b/011b as applicable). On P0/P1, hand off to **`drift-guard`** (reads + updates the board; board subset includes DRIFT-009/010/012).
 
 **Offline fallback (project_ssot disabled / no gh):**
 

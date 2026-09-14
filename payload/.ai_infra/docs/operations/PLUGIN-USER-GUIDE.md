@@ -526,10 +526,10 @@ Use project `.venv`: `source .venv/bin/activate` before CLI commands.
 
 | Command | When | Steps |
 |---------|------|-------|
-| `python3 -m agent_colony gates` | Post-change smoke | 4 on consumer (no doc-facts) |
+| `python3 -m agent_colony gates` | Post-change smoke | **5** steps (testing artifacts + pytest + governance + debrand + doc facts) — same as [gate-matrix.md](gate-matrix.md); not the 4-step install `--verify` |
 | `python3 -m agent_colony health` | Anytime | Layout + version |
 | `python3 -m agent_colony drift validate` | Slice closure (kit-dev) | Plan ↔ tracker coherence |
-| `python3 -m agent_colony drift validate --profile consumer` | Consumer verify | DRIFT-005 + DRIFT-008 only; no agent required. **DRIFT-005 FAIL** on missing `IMPLEMENTATION-STATUS.md` = kit bug (false positive on older payloads) — see [consumer-quickstart](consumer-quickstart.md#drift-005-fail--kit-bug-not-your-app) |
+| `python3 -m agent_colony drift validate --profile consumer` | Consumer verify | DRIFT-005 + 008 + 013 + 011b + **014** + **016**; no agent required. **DRIFT-005 FAIL** on missing `IMPLEMENTATION-STATUS.md` = kit bug (false positive on older payloads) — see [consumer-quickstart](consumer-quickstart.md#drift-005-fail--kit-bug-not-your-app) |
 
 Details: [gate-matrix.md](gate-matrix.md). **`make gates`** / **`make verify-all`** are **kit maintainer only**.
 
