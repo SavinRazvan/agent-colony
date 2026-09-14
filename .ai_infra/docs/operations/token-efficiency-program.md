@@ -19,7 +19,7 @@ Notes:
 
 **Use ASD-STE100:** [asd-ste100-prose.md](asd-ste100-prose.md)
 
-Program to close the gap between **documented** token contracts ([token-efficiency.md](token-efficiency.md)) and **machine-enforced** behavior. Target release: kit **0.7.0** (shipped through **0.7.3**).
+Program to close the gap between **documented** token contracts ([token-efficiency.md](token-efficiency.md)) and **machine-enforced** behavior. Target release: kit **0.7.0** (shipped through **0.8.0**).
 
 ## Goals (G1–G6)
 
@@ -66,6 +66,10 @@ Program to close the gap between **documented** token contracts ([token-efficien
 
 - Token instrumentation (if Cursor exposes metering APIs)
 - Marker-aware plain `update` (read `install-profile.json` in `update_cli`) — **deferred**; plain `update` keeps default `with_mcp`
+
+## Shipped in 0.8.0
+
+- Kit version stamp **0.8.0** (`manifest.yaml` / `.kit-version`) — accountability / board / verifier gates from the 0.8.0 release wave (see [upgrade-kit.md](upgrade-kit.md) § Changes in 0.8.0); token-efficiency contracts unchanged from 0.7.x
 
 ## Shipped in 0.7.3
 

@@ -73,6 +73,18 @@ Kit **0.6.4** ships token-efficient agent prose and board Entry reliability (no 
 
 Consumers: `python3 -m agent_colony update` after the plugin refreshes to **0.6.4**.
 
+## Changes in 0.8.0
+
+Kit **0.8.0** ships accountability and fail-closed kit process (no rename):
+
+- **ADR-013 Schema-1 audit accountability** — named target, limits, owner + consequence; `check_audit_artifacts` as the **6th** kit-dev prepare gate; open P0/P1 fail closed; architecture-impacting merges require alignment artifacts; MCP `workflow_check_audit_artifacts`; **DRIFT-017** independence WARN
+- **Board API safety** — `project api-ready`, cooldown circuit-breaker, EXIT_QUEUED flush discipline, `outbox list|drop|purge`, owner `users/`|`orgs/` normalize
+- **Verifier-before-Done** — shippable cards (PR citation / `[AUDIT]` / P0|P1) need a verifier hop (or `--allow-skip-verifier` + rationale) before Status→Done
+- **PR workflow** — stack-safe finalize, ProjectV2 GraphQL fix, prepare prefers `.venv`, `wait_checks`, Pattern A tip archive
+- **Surface parity** — new `agent-surface-parity` skill (**16** skills); canvases/docs Entry `api-ready`→`entry`; board CLI **29** leaves; MCP **29** tools + **7** resources; DRIFT-001…017
+
+Consumers: refresh plugin → `python3 -m agent_colony update --directory .` after **0.8.0** is available. Verify `.kit-version` == `manifest.yaml` `kit_version` == `update --check` installed/available.
+
 ## Changes in 0.7.0
 
 Kit **0.7.0** ships the **Token Efficiency Program** and optional **`consumer_lite`** install profile (no rename):

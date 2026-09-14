@@ -16,7 +16,7 @@ When `project_ssot` is on, **GitHub Projects** is the writable state engine. Age
 
 | | |
 |--|--|
-| **Version** | [`0.7.3`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.7.3) · **Tests** · 1653 · **Agents** · 8 (6 on `consumer_lite`) · **Skills** · 16 (6 on lite) · **Rules** · 7 (4 always-on + 3 requestable) · **MCP** · 29 tools · **License** · [Apache-2.0](LICENSE) |
+| **Version** | [`0.8.0`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.8.0) · **Tests** · 1653 · **Agents** · 8 (6 on `consumer_lite`) · **Skills** · 16 (6 on lite) · **Rules** · 7 (4 always-on + 3 requestable) · **MCP** · 29 tools + 7 resources · **License** · [Apache-2.0](LICENSE) |
 | **Reference board** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
 
 ---
@@ -246,7 +246,7 @@ Upgrading is **two steps**: refresh the **plugin payload** in Cursor, then run *
 
 #### Step A — Refresh the plugin (Cursor)
 
-Distribution is **GitHub `/add-plugin`** (Marketplace listing pending review). A new git tag (e.g. [`v0.7.3`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.7.3)) does **not** change your local plugin cache until you re-add the plugin.
+Distribution is **GitHub `/add-plugin`** (Marketplace listing pending review). A new git tag (e.g. [`v0.8.0`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.8.0)) does **not** change your local plugin cache until you re-add the plugin.
 
 In **Agent chat** (your app project open):
 
@@ -293,8 +293,8 @@ python3 -m agent_colony update --directory . --clean-only
 Read the first lines of `--check`:
 
 ```text
-installed=0.7.3
-available=0.7.3
+installed=0.8.0
+available=0.8.0
 source=…/payload
 action=heal
 ```
@@ -336,13 +336,13 @@ test -f .ai_infra/docs/operations/multi-consumer-isolation.md && echo OK   # 0.6
 python3 -m agent_colony drift validate --profile consumer
 ```
 
-Example on **0.7.3** (token efficiency program + `consumer_lite`):
+Example on **0.8.0** (accountability gates + token efficiency + `consumer_lite`):
 
 ```text
-0.7.3
-kit_version: "0.7.3"
-installed=0.7.3
-available=0.7.3
+0.8.0
+kit_version: "0.8.0"
+installed=0.8.0
+available=0.8.0
 action=heal
 check: PASS — kit version current
 ```

@@ -31,7 +31,7 @@ python3 -m agent_colony activate --directory . --profile consumer_lite
 Profile marker written to `.local/generated-data/install-profile.json`:
 
 ```json
-{"profile": "consumer_lite", "kit_version": "0.7.3"}
+{"profile": "consumer_lite", "kit_version": "0.8.0"}
 ```
 
 ## Included (6 skills, 6 agents)
