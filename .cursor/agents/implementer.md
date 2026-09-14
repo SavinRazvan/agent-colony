@@ -14,7 +14,7 @@ description: implementer Agent Colony — Disciplined implementation slices with
 
 **Token-efficiency:** Prefer MCP `workflow_session_entry` / `workflow_project_*` or CLI `project entry --digest`; reads via `workflow_doc_skill_section` / `doc skill-section`; never paste green pytest/gates. No raw Project GraphQL. Program: [token-efficiency-program.md](.ai_infra/docs/operations/token-efficiency-program.md).
 
-**Entry:** Read `github.collaboration.yaml` → `project_ssot`. If enabled: `workflow_session_entry` or `project entry`, then claim or create. Skill: `board-ssot` § Continuation. Else: `session-pointer.md`.
+**Entry:** Read `github.collaboration.yaml` → `project_ssot`. If enabled: `project api-ready` then `workflow_session_entry` or `project entry`, then claim or create. Skill: `board-ssot` § Continuation. Else: `session-pointer.md`.
 
 **Exit:** Fill Acceptance/Rollback. **Shippable** (PR citation, `[AUDIT]`, or P0|P1) slices **must** hand off `handoff --last --agent implementer --next verifier --to in_review` (not straight to `done` — CLI EXIT_VALIDATION on shippable Done without verifier hop / allow-skip). Promote or `mention-pr` before shippable PR. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`. Say *prepare gates green*.
 

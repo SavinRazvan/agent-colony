@@ -84,6 +84,7 @@ const FALLBACK_LABELS: Record<string, string> = {
 
 const READ_FIRST = [
   [".cursor/skills/auditor-protocol/SKILL.md", "CHK-* checklists + phases"],
+  [".cursor/skills/agent-surface-parity/SKILL.md", "Per-agent doc/canvas vs machine"],
   [".cursor/skills/audit-module-map/SKILL.md", "Optional deep map"],
   [".cursor/skills/audit-orchestration/SKILL.md", "Quarterly vs PR cadence"],
   [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],

@@ -210,7 +210,7 @@ Submitted to Cursor Marketplace publisher application (status: pending review). 
 >
 > Eight specialized agents (implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard, board) ship with hard role boundaries. The researcher never writes product code. The verifier is falsification-first (tries to disprove “done”; no code fixes). The auditor stays independent (`Commissioned-By` ≠ `Audited-By`). Agents produce evidence under `.local/` — no peer trusts word-of-mouth.
 >
-> Enforcement is machine-backed: verifier-before-Done (`item_is_shippable` → EXIT_VALIDATION unless verifier hop / allow-skip), `prepare.py` → `resolve_gates()` (2 universal / 6 kit-dev), Schema-1 alignment on architecture-impacting merge, and EXIT_QUEUED (6) + local outbox under GraphQL throttle. Bundles 15 skills, 7 rules (4 always-on + 3 requestable), 29 MCP tools wrapping the same CLI, drift detection, and health checks.
+> Enforcement is machine-backed: verifier-before-Done (`item_is_shippable` → EXIT_VALIDATION unless verifier hop / allow-skip), `prepare.py` → `resolve_gates()` (2 universal / 6 kit-dev), Schema-1 alignment on architecture-impacting merge, and EXIT_QUEUED (6) + local outbox under GraphQL throttle. Bundles 16 skills, 7 rules (4 always-on + 3 requestable), 29 MCP tools wrapping the same CLI, drift detection, and health checks.
 >
 > Result: Cursor agents + GitHub Projects + PR gates as a coordinated, fail-closed pipeline — discipline, coordination, and accountability you can audit.
 
@@ -252,7 +252,9 @@ Submitted to Cursor Marketplace publisher application (status: pending review). 
 
 **Listing copy refresh (2026-08-21 ASD-STE100 + board Entry reliability):** ASD-STE100 banners + governance; Entry false-offline fix; `--last` PVTI_ validation; heal Day-N playbook; **1514** tests; **8** / **14** / **7**; kit version **0.6.4**.
 
-**Listing copy refresh (2026-09-14 README enforce + verifier-before-Done):** README leads with coordination/accountability/machine gates; listing + `plugin.json` aligned; shipped row in IMPLEMENTATION-STATUS; **1652** tests; **8** / **15** / **7** (lite: **6** / **6**); MCP **29** tools; kit version **0.7.3**.
+**Listing copy refresh (2026-09-14 agent-surface-parity):** New auditor skill `agent-surface-parity`; canonical skills **16**; thin-index + doctrine wired; **1652** tests; **8** / **16** / **7** (lite: **6** / **6**); kit **0.7.3**.
+
+**Listing copy refresh (2026-09-14 README enforce + verifier-before-Done):** README leads with coordination/accountability/machine gates; listing + `plugin.json` aligned; shipped row in IMPLEMENTATION-STATUS; **1652** tests; **8** / **15** / **7** (lite: **6** / **6**); MCP **29** tools; kit version **0.7.3** — skill count **superseded** by agent-surface-parity refresh (**16**).
 
 **Listing copy refresh (2026-09-01 Marketplace submit):** Publisher application submitted with coordination-layer positioning. Org **Razvan Savin Labs** / `razvan-savin-labs`. Counts at submit: **1544** tests; **8** / **15** / **7** (lite: **6** / **6**); kit **0.7.3** — **superseded** by 2026-09-14 refresh (**1652**).
 
