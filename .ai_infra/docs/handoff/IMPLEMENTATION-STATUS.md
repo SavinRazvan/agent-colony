@@ -20,8 +20,8 @@ Notes:
 Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
-**Last updated:** 2026-09-14 (MCP inventory — 29 tools + 7 resources)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1653
+**Last updated:** 2026-09-14 (kit release 0.8.0)
+**Product:** `agent-colony` · CLI: `agent-colony` 0.8.0 · **Tests:** 1653
 
 ## Shipped (confirmed in repo)
 
@@ -66,7 +66,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | User MCP registry | ADR-004 | `.cursor/mcp.registry.yaml.example`, `mcp_manage.py` |
 | Marketplace plugin | ADR-001 Option B | `.cursor-plugin/`, `sync_plugin_bundle.py` |
 | Researcher agent (corpus) | **Shipped / proven** — adaptive Brief; anti-loop ≤6; CLI `research init\|fetch\|validate`; live E2E flexiai-toolsmith (18 curated, validate PASS) + verifier Claim A+B VERIFIED 2026-07-19; corpus **opt-in** after first `research init` | `.cursor/agents/researcher.md` · `research-corpus` · `canvases/agent-researcher.canvas.tsx` · Issue #74 |
-| Kit version on install | `kit_version` 0.7.3 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
+| Kit version on install | `kit_version` 0.8.0 | `.ai_infra/manifest.yaml`, `.ai_infra/.kit-version` |
 | Token efficiency program | G1–G6 + Phase 2 allowlist + ADR-012 MCP Pattern A | [token-efficiency-program.md](../operations/token-efficiency-program.md) · ADR-011 · ADR-012 |
 | Consumer update stamp | Scaffold + `update` write `.kit-version` from source manifest; CLI fallback `ensure_kit_version_stamp` | `scaffold.py` · `update_cli.py` · tests |
 | Multi-consumer isolation | Model A contract doc; DRIFT-013 tracked-runtime guard; DRIFT-011b advisory; `update --check` + `kit_managed_globs`; consumer CI template | `multi-consumer-isolation.md` · `drift_checks.py` · `update_cli.py` · `templates/ci/consumer-gates.yml` |
