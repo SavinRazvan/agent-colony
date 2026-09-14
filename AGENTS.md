@@ -16,7 +16,7 @@
 - No dual-write of Status to `work-tracker.md` / `session-pointer.md` when `board_only`.
 - Shippable cards as **Issues** (`item_kind_default: issue`). Draft is scratch-only.
 - Fill **Tier-1** fields: Status, Priority, Size/Estimate, Start/End dates, Assignee, Linked PR (`mention-pr`).
-- EXIT_QUEUED (6) → `project api-ready` · `outbox status|list|drop|flush` · `cooldown status` (outbox is not SSOT).
+- EXIT_QUEUED (6) → `project api-ready` · `outbox status|list|drop|purge` · `cooldown status` · `queue` · `outbox flush` (outbox is not SSOT).
 - **Evidence-first:** use facts, check fresh evidence, then act — [evidence-first.md](.ai_infra/docs/operations/evidence-first.md) · skill `evidence-first`. Do not claim complete without evidence or explicit **Partial** gaps.
 
 **Consumer install:** plugin + `/workflow-activate` — see [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#product-promise).
@@ -48,7 +48,7 @@ Product rules: [`overlays/rules/`](overlays/README.md). Say *prepare gates green
 
 ## Execution
 
-**Resume:** `project_ssot.enabled` → `python3 -m agent_colony project entry`, claim one card (`.cursor/skills/board-ssot/SKILL.md`). First-run: `board-bootstrap --check` fail → `/board` + `board-shell`. Else: `session-pointer.md` → `plan.md` → `work-tracker.md`.
+**Resume:** `project_ssot.enabled` → `python3 -m agent_colony project api-ready` then `project entry`, claim one card (`.cursor/skills/board-ssot/SKILL.md`). First-run: `board-bootstrap --check` fail → `/board` + `board-shell`. Else: `session-pointer.md` → `plan.md` → `work-tracker.md`.
 
 **After each agent:** update board Status/Notes. Tier-1 on owned cards — see board-ssot skill § Tier-1.
 

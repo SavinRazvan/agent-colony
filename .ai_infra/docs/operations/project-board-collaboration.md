@@ -45,7 +45,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Who | Day-0 | Day-N |
 |-----|-------|-------|
 | **Human** | `/board` wire YAML → CONSENT → TURN → `board-bootstrap --check` exit **0** | Ready order, views, Insights, README |
-| **Agent** | Refuse day-to-day claim until bootstrap exit 0 | `project entry` → one card → Exit Status + Notes |
+| **Agent** | Refuse day-to-day claim until bootstrap exit 0 | `project api-ready` then `project entry` → one card → Exit Status + Notes |
 | **Both** | Fill Acceptance/Rollback before In review / Done | `heal-cards --check` = inventory WARN only |
 
 **Incomplete cards WARN:** `doctor` / `heal-cards --check` often flag **Done** cards missing **End date** (historical hygiene). That is **not** blocked Ready work. Repair with human consent: `heal-cards --apply` (sets End date on Done). Use `--fill-tier1` only when you want Priority→p2 / Size defaults on gaps. Do **not** invent Acceptance/Rollback on old Done cards. Empty Ready → `create-from-template` + `claim`. During `heal-cards --apply [--fill-tier1]`, each live write goes through `guard_write_or_queue` — individual field ops may return **EXIT_QUEUED (6)** mid-sweep; continue local work, then `project api-ready` && re-run apply / `outbox flush` (do not retry-loop).
@@ -129,6 +129,8 @@ All subcommands registered in `.ai_infra/install/agent_colony/project_parser.py`
 | `guide` | Print safe recipes using `--last` (no placeholder ids) | Any (Entry) |
 | `doctor` | Validate project_ssot config, templates, gh access; WARN incomplete cards + URL-shaped owner YAML | Maintainer / human |
 | `board-bootstrap` | Schema-aware shell check (`--check`); opt-in `--ensure-fields` / `--apply-readme` | board first-run / human |
+| `board-shell` | Overlay helper (`init` installs `board-shell.schema.yaml` from kit exemplar) | board first-run / human |
+| `close-linked-issue` | Close GitHub Issue linked to a PR’s board item (opt-in finalize; requires Status=Done) | full-pr-workflow finalize |
 | `set-assignee` | Assign GitHub human user (Issue-backed items) | board, implementer |
 | `find-by-pr` | Resolve project item id from PR number or URL | verifier, merge.py |
 | `export` | Read-only board snapshot (`--reuse-if-fresh` / `--force`); never mutates Status | drift-guard |
