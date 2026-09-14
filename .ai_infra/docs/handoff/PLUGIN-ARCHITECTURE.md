@@ -176,10 +176,12 @@ Product rules ship in `.cursor/rules/` via activate (**4** always-on + **3** req
 | **MCP**                | Optional `.cursor/mcp.json` → `agent_colony_mcp` tools wrapping scripts |
 | **Cursor Marketplace** | Future distribution channel for the same bundle                     |
 
-`.cursor/settings.json` (tracked) is a maintainer kit-dev preference — enables the
-`cursor-team-kit` plugin used while authoring this repo. It is not part of the consumer
-bundle (not copied by `sync_plugin_bundle.py` or `scaffold.py`) and has no effect on
-`agent_colony activate` output.
+`.cursor/settings.json` (tracked) is a maintainer kit-dev preference — enables
+`cursor-team-kit` while authoring this repo, and keeps **`agent-colony/agent-colony`
+disabled** so workspace `.cursor/` is SSOT (avoids DRIFT-015 plugin/workspace rule
+basename overlap). It is not part of the consumer bundle (not copied by
+`sync_plugin_bundle.py` or `scaffold.py`) and has no effect on `agent_colony activate`
+output.
 
 
 Plugins ≠ MCP. This product is agent infrastructure; MCP is an optional wire.

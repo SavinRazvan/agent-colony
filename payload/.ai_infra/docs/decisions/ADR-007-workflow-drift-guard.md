@@ -62,7 +62,7 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 | DRIFT-012 | P2 | kit-dev | When `board_only`, `.local/plans/` is snapshot-only — no live/current plan SSOT in that dir (ADR-010) |
 | DRIFT-013 | P1 | kit-dev, consumer, consumer-board | Git index must not track `.local/`, `.venv/`, `.env`, `.cursor/mcp.user.json` |
 | DRIFT-014 | P1 | kit-dev, consumer, consumer-board | Token-efficiency anchor in installed agent cards (profile-aware count) |
-| DRIFT-015 | P2 | kit-dev only | Plugin+workspace rule basename duplication (WARN) |
+| DRIFT-015 | P2 | kit-dev only | Plugin+workspace rule basename duplication (WARN); skip when `.cursor/settings.json` disables `agent-colony/agent-colony` |
 | DRIFT-016 | P1 | kit-dev, consumer, consumer-board | Thin-index § headings exist for skills on disk (profile-aware skip) |
 | DRIFT-017 | P2 | kit-dev only | Audit independence (Audit-Schema: 1) — WARN when `Commissioned-By` missing/placeholder or equals `Audited-By`; `passed=True` |
 
