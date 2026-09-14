@@ -200,11 +200,11 @@ Cursor loads repo-root `agents/`, `rules/`, and `skills/` from the GitHub plugin
 |------|:-----------:|:------------------------:|
 | `implementation-workflow-governance.mdc` | Yes | Yes |
 | `pr-workflow-enforcement.mdc` | Yes | Yes |
-| `commit-trailer-format.mdc` | Yes | Yes |
-| `file-docstring-header-relations.mdc` | Yes | Yes |
 | `local-artifact-protection.mdc` | Yes | Yes |
-| `advisory-audit-alignment-enforcement.mdc` | Yes | Yes |
 | `project-ssot-precedence.mdc` | Yes | Yes (product SSOT; in payload for this kit) |
+| `commit-trailer-format.mdc` | No (requestable) | Yes |
+| `file-docstring-header-relations.mdc` | No (requestable) | Yes |
+| `advisory-audit-alignment-enforcement.mdc` | No (requestable) | Yes |
 
 Product overlays: `overlays/rules/*.mdc` remains the source for domain overlays; **this product** also ships `project-ssot-precedence` in `payload/.cursor/rules/` (7 total).
 

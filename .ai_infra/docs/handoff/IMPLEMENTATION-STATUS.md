@@ -20,7 +20,7 @@ Notes:
 Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
-**Last updated:** 2026-09-14 (paper-credit hygiene + skill-count 16 parity)
+**Last updated:** 2026-09-14 (AA-DOC batch A — board CLI 29 leaves)
 **Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1653
 
 ## Shipped (confirmed in repo)
@@ -44,7 +44,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Local continuity-index | Rolling ≥3-day UTC rows; board Notes = full card lifetime | `history/continuity-index.md` (+ exemplar) |
 | Board outbox (rate-limit) | `project api-ready` / `queue` / `outbox status|list|drop|flush` / `cooldown status|clear`; EXIT_QUEUED=6; `board-api-cooldown.json` circuit-breaker; owner bare-login normalize (`users/`|`orgs/` strip); Notes coalesce; secondary floor; **116 mocked outbox unit tests** | `project_outbox.py` + CLI/MCP + `tests/modules/install/test_project_outbox.py` |
 | Board shell schema + coach | `board-shell.schema.yaml` + `board-shell` skill; schema-aware `board-bootstrap --check`; opt-in `--ensure-fields` / `--apply-readme` | templates/project-board · project_handlers · board_shell.py |
-| Board CLI subcommands | **27** leaf commands (incl. `entry`, `heal-cards`; full table in ops doc) | [project-board-collaboration.md](../operations/project-board-collaboration.md) § Project CLI subcommands |
+| Board CLI subcommands | **29** leaf commands (incl. `entry`, `heal-cards`, `board-shell`, `close-linked-issue`; full table in ops doc) | [project-board-collaboration.md](../operations/project-board-collaboration.md) § Project CLI subcommands |
 | Board Status + Tier-1 heal | `create-from-template` Status default `ready`; `heal-cards`; validate empty Status; close-issue Done gate; merge outbox queue | `project_handlers.run_heal_cards` · `project_atomics.collect_validate_item_problems` · PR #217 |
 | Board End date on Done | UTC End date when Status→done if empty (`set_end_date_on_done`); validate/heal; Tier-1 column | `ensure_end_date_if_done` · board-shell · kit 0.6.3 |
 | ASD-STE100 agent prose | Use ASD-STE100 banners; § AI and STE (assist, human review, no STEMG endorsement); governance enforces; token-efficiency contract | `asd-ste100-prose.md` · `token-efficiency.md` · `check_governance_consistency.py` · PRs #223–#226 |

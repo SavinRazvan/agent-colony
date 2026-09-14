@@ -37,8 +37,9 @@ Introduce a script-first drift validator and MAS-integrated agent per [ADR-006](
 
 | Profile | When | Checks |
 |---------|------|--------|
-| `kit-dev` | Default for `agent-colony` (kit product repo) | DRIFT-001…011 + 004b (full set; 004b/009–011 when applicable) |
-| `consumer` | `work-tracker.md` contains exemplar `STARTER-001` | DRIFT-005, DRIFT-008 (relaxed tracker rules) |
+| `kit-dev` | Default for `agent-colony` (kit product repo) | DRIFT-001…017 + 004b / 011b (full catalog; board/token/audit checks when applicable) |
+| `consumer` | `work-tracker.md` contains exemplar `STARTER-001` | DRIFT-005, DRIFT-008, DRIFT-013, DRIFT-014, DRIFT-016 (relaxed tracker rules) |
+| `consumer-board` | Consumer with Project SSOT wired | Consumer set + board-aware checks when configured |
 
 Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 
