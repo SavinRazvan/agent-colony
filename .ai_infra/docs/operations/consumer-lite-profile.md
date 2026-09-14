@@ -40,6 +40,16 @@ Profile marker written to `.local/generated-data/install-profile.json`:
 |--------|--------|
 | `board-ssot`, `implementer-loop`, `evidence-first`, `test-coverage`, `workflow-activate`, `mcp-connect` | `board`, `implementer`, `test-runner`, `verifier`, `drift-guard`, `integrator` |
 
+## Shared with full (`with_mcp`)
+
+| Surface | On lite |
+|---------|---------|
+| Rules | All **7** (4 always-on + 3 requestable) — scaffold does not prune rules |
+| MCP | Yes — **29** tools + **7** resources (`consumer_lite` extends `with_mcp`) |
+| Board CLI | `api-ready` / `entry` / `claim` / `handoff` / outbox / verifier-before-Done |
+| PR slash skills | `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `full-pr-workflow` |
+| Kit version | Same release as full (e.g. **0.8.0**) |
+
 ## Maintainer slash skills (`.agents/skills`)
 
 Lite keeps PR workflow slash skills only (kit **0.7.1+**):

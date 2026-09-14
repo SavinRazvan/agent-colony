@@ -35,7 +35,20 @@ Agent chats lose Status. Local trackers drift from “what we said we shipped.�
 | **Accountability** | Attributed Notes (`@user/agent · UTC · …`). Evidence in gitignored `.local/` (tests, audits, PR prep, drift). Evidence-first: facts → proof → action — or label **Partial**. |
 | **Enforcement** | Machine checks — not vibes. Verifier-before-Done on shippable cards. `prepare.py` → `resolve_gates()`. Arch-impacting merge needs Schema-1 alignment. EXIT_QUEUED (6) + outbox under GraphQL throttle (no retry hammer). |
 
-Optional **`consumer_lite`**: 6 agents / 6 skills for a smaller footprint. Full kit: 8 / 16. Proof: **1653** tests · live reference on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
+### Full kit vs `consumer_lite`
+
+Same plugin release (**0.8.0**). Profiles change Cursor footprint, not a second product. Spec: [consumer-lite-profile.md](.ai_infra/docs/operations/consumer-lite-profile.md).
+
+| Surface | Both profiles | Full only (`with_mcp` default) | Lite only notes |
+|---------|---------------|--------------------------------|-----------------|
+| **Agents** | `board`, `implementer`, `test-runner`, `verifier`, `drift-guard`, `integrator` | + `auditor`, `researcher` | 6 total |
+| **Skills** | `board-ssot`, `implementer-loop`, `evidence-first`, `test-coverage`, `workflow-activate`, `mcp-connect` | + `board-shell`, `integrator-protocol`, `auditor-protocol`, `drift-audit`, `audit-orchestration`, `audit-module-map`, `agent-surface-parity`, `research-corpus`, `canvas-artifacts`, `update-agent-colony` (**16** total) | **6** total; first-run coach inline in `board.md` |
+| **Rules** | 7 (4 always-on + 3 requestable) | same | same |
+| **MCP** | 29 tools + 7 resources | same | lite extends `with_mcp` |
+| **PR slash skills** | `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `full-pr-workflow` | + maintainer extras pruned on lite | kept on lite (0.7.1+) |
+| **Enforcement** | Board CLI, verifier-before-Done, prepare/merge gates, EXIT_QUEUED outbox | Schema-1 audits via `/auditor` | drift validate is profile-aware |
+
+Proof: **1653** tests · live reference on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
 
 ---
 
@@ -80,18 +93,18 @@ Canon: [gate-matrix.md](.ai_infra/docs/operations/gate-matrix.md) · [project-bo
 
 ## Agents (roles with teeth)
 
-| Agent | Job | Hard boundary |
-|-------|-----|---------------|
-| `implementer` | Slices with trackers / board claim + Pattern A | Does not close shippable work as Done without verifier path |
-| `test-runner` | Module tests, regressions, coverage evidence | Produces proof; does not redefine product scope |
-| `verifier` | Falsification-first: try to **disprove** “done” | **No code fixes** — fresh evidence only |
-| `auditor` | Deep CHK-* architecture audit → Schema-1 artifacts | Independent of commissioner (`Commissioned-By` ≠ `Audited-By`) |
-| `researcher` | Multi-round research packs under `_research_results/` | **No product code** |
-| `integrator` | Wire agents, skills, MCP expansions | Procedural + Pattern A; no silent doctrine drift |
-| `drift-guard` | Goal/plan/doctrine coherence + DRIFT scripts | Handoff remediations only — no silent tracker dual-write |
-| `board` | Wire SSOT, triage, first-run board shell | Coaches bootstrap; humans own views/Insights |
+| Agent | Profile | Job | Hard boundary |
+|-------|---------|-----|---------------|
+| `implementer` | both | Slices with trackers / board claim + Pattern A | Does not close shippable work as Done without verifier path |
+| `test-runner` | both | Module tests, regressions, coverage evidence | Produces proof; does not redefine product scope |
+| `verifier` | both | Falsification-first: try to **disprove** “done” | **No code fixes** — fresh evidence only |
+| `integrator` | both | Wire agents, skills, MCP expansions | Procedural + Pattern A; no silent doctrine drift |
+| `drift-guard` | both | Goal/plan/doctrine coherence + DRIFT scripts | Handoff remediations only — no silent tracker dual-write |
+| `board` | both | Wire SSOT, triage, first-run board shell | Coaches bootstrap; humans own views/Insights |
+| `auditor` | full | Deep CHK-* architecture audit → Schema-1 artifacts | Independent of commissioner (`Commissioned-By` ≠ `Audited-By`) |
+| `researcher` | full | Multi-round research packs under `_research_results/` | **No product code** |
 
-Slash skills: activate, update, board protocols, PR lifecycle (`/review-pr` → `/prepare-pr` → `/merge-pr`), and more — [Plugin User Guide](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md).
+Slash skills: activate, board protocols, PR lifecycle (`/review-pr` → `/prepare-pr` → `/merge-pr`). Full kit also ships update/audit/research/canvas skills — [Plugin User Guide](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) § Full `/` menu · [consumer-lite-profile.md](.ai_infra/docs/operations/consumer-lite-profile.md).
 
 ---
 
@@ -121,7 +134,7 @@ Draft is scratch-only. Shippable work ships as **Issue**. Full contract: [board-
 
 ## Install (consumers)
 
-Screenshots are ~**1920×1080**. Each image displays at **800px** width — **click** to open full resolution, then use browser zoom (<kbd>Ctrl</kbd>+<kbd>+</kbd> / <kbd>−</kbd> or pinch). Full gallery: [consumer-quickstart § Visual walkthrough](.ai_infra/docs/operations/consumer-quickstart.md#visual-walkthrough).
+Screenshots are ~**1920×1080**. Previews display at **480px** — **click** to open full resolution, then use browser zoom (<kbd>Ctrl</kbd>+<kbd>+</kbd> / <kbd>−</kbd> or pinch). Full gallery: [consumer-quickstart § Visual walkthrough](.ai_infra/docs/operations/consumer-quickstart.md#visual-walkthrough).
 
 ### 1. Install the plugin (Agent chat)
 
@@ -133,21 +146,21 @@ In **Agent chat** (not the terminal):
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="assets/img/tutorials_img/01_tutorial_agent-colony.png" alt="Cursor Agent chat: type /add-plugin with the GitHub URL and review the Agent Colony preview card" width="800" />
+    <img src="assets/img/tutorials_img/01_tutorial_agent-colony.png" alt="Cursor Agent chat: type /add-plugin with the GitHub URL and review the Agent Colony preview card" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>Step 1a</strong> — Preview card · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/02_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="assets/img/tutorials_img/02_tutorial_agent-colony.png" alt="Select your app project in Cursor and click Add Plugin" width="800" />
+    <img src="assets/img/tutorials_img/02_tutorial_agent-colony.png" alt="Select your app project in Cursor and click Add Plugin" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>Step 1b</strong> — Select project → <strong>Add Plugin</strong> · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/02_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/03_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="assets/img/tutorials_img/03_tutorial_agent-colony.png" alt="Agent Colony plugin installing in Cursor" width="800" />
+    <img src="assets/img/tutorials_img/03_tutorial_agent-colony.png" alt="Agent Colony plugin installing in Cursor" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>Step 1c</strong> — Installing · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/03_tutorial_agent-colony.png">Full size</a></sub></p>
@@ -181,14 +194,14 @@ python3 -m agent_colony health
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/04_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="assets/img/tutorials_img/04_tutorial_agent-colony.png" alt="Agent chat: type /workflow-activate and pick workflow-activate from the Agent Colony menu" width="800" />
+    <img src="assets/img/tutorials_img/04_tutorial_agent-colony.png" alt="Agent chat: type /workflow-activate and pick workflow-activate from the Agent Colony menu" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>Step 2</strong> — Activate · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/04_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/05_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="assets/img/tutorials_img/05_tutorial_agent-colony.png" alt="After VERIFY PASS: edit github.collaboration.yaml display_name and github_user" width="800" />
+    <img src="assets/img/tutorials_img/05_tutorial_agent-colony.png" alt="After VERIFY PASS: edit github.collaboration.yaml display_name and github_user" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>Step 3</strong> — Identity YAML · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/05_tutorial_agent-colony.png">Full size</a></sub></p>
@@ -201,7 +214,7 @@ python3 -m agent_colony health
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/06_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="assets/img/tutorials_img/06_tutorial_agent-colony.png" alt="Terminal: python3 -m agent_colony contributors validate showing PASS" width="800" />
+    <img src="assets/img/tutorials_img/06_tutorial_agent-colony.png" alt="Terminal: python3 -m agent_colony contributors validate showing PASS" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>Step 3</strong> — <code>contributors validate</code> PASS · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/06_tutorial_agent-colony.png">Full size</a></sub></p>
@@ -217,21 +230,21 @@ When `project_ssot.enabled`, finish this ladder ([consumer-quickstart](.ai_infra
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/08_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="assets/img/tutorials_img/08_tutorial_agent-colony.png" alt="Agent chat /board with Project and repo URLs; github.collaboration.yaml Board Identity section updated" width="800" />
+    <img src="assets/img/tutorials_img/08_tutorial_agent-colony.png" alt="Agent chat /board with Project and repo URLs; github.collaboration.yaml Board Identity section updated" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>Wire board</strong> — <code>/board</code> + YAML ids · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/08_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/10_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="assets/img/tutorials_img/10_tutorial_agent-colony.png" alt="Board agent configuring Prioritized backlog and Status board views and Tier-1 columns" width="800" />
+    <img src="assets/img/tutorials_img/10_tutorial_agent-colony.png" alt="Board agent configuring Prioritized backlog and Status board views and Tier-1 columns" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>Board shell</strong> — views + columns (agent-assisted) · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/10_tutorial_agent-colony.png">Full size</a></sub></p>
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/14_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="assets/img/tutorials_img/14_tutorial_agent-colony.png" alt="Reference Status board: Ready through Done columns with sample cards (kit repo example project)" width="800" />
+    <img src="assets/img/tutorials_img/14_tutorial_agent-colony.png" alt="Reference Status board: Ready through Done columns with sample cards (kit repo example project)" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>Reference</strong> — Status board when shell is ready (kit example) · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/14_tutorial_agent-colony.png">Full size</a></sub></p>

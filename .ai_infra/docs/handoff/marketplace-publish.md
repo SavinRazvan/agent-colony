@@ -252,6 +252,8 @@ Submitted to Cursor Marketplace publisher application (status: pending review). 
 
 **Listing copy refresh (2026-08-21 ASD-STE100 + board Entry reliability):** ASD-STE100 banners + governance; Entry false-offline fix; `--last` PVTI_ validation; heal Day-N playbook; **1514** tests; **8** / **14** / **7**; kit version **0.6.4**.
 
+**Listing copy refresh (2026-09-14 onboarding lite/full inventory):** README + PLUGIN-USER-GUIDE + consumer-lite/quickstart name shared vs exclusive agents/skills; `plugin.json` notes full **8/16** or lite **6/6**; MCP **29**+**7** on both; **1653** tests; kit **0.8.0**.
+
 **Listing copy refresh (2026-09-14 release 0.8.0):** Accountability & fail-closed kit process — ADR-013 Schema-1 / 6th prepare gate / DRIFT-017; board `api-ready` + outbox purge; verifier-before-Done; agent-surface-parity (skills **16**); board CLI **29**; MCP **29** tools + **7** resources; **1653** tests; **8** / **16** / **7** (lite: **6** / **6**); kit **0.8.0**.
 
 **Listing copy refresh (2026-09-14 kit-dev plugin disable / DRIFT-015):** Kit-dev `.cursor/settings.json` keeps `agent-colony/agent-colony` disabled; DRIFT-015 skips when disabled; **1653** tests; **8** / **16** / **7** (lite: **6** / **6**); kit **0.7.3**.

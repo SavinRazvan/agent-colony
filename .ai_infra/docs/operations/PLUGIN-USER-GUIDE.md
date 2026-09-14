@@ -70,6 +70,10 @@ flowchart LR
 | **`default`** | 8 | 16 | No | `/board` + `board-shell` skill |
 | **`consumer_lite`** | 6 (includes `board`, `integrator`; no `researcher`, `auditor`) | 6 (no `board-shell`, `auditor-protocol`, …) | Yes | Inline in `board.md` — no `board-shell` skill |
 
+**Shared on both (`with_mcp` and `consumer_lite`):** 7 rules (4 always-on + 3 requestable); MCP **29** tools + **7** resources; board Pattern A CLI (`api-ready` / `entry` / `claim` / `handoff` / outbox); verifier-before-Done; PR slash skills `review-pr` · `prepare-pr` · `merge-pr` · `pr-workflow` · `full-pr-workflow`.
+
+**Lite allowlist (names):** agents `board`, `implementer`, `test-runner`, `verifier`, `drift-guard`, `integrator` · skills `board-ssot`, `implementer-loop`, `evidence-first`, `test-coverage`, `workflow-activate`, `mcp-connect`. Full inventory: § [Full `/` menu](#full--menu-8-agents--skills) · [Lite `/` menu](#lite--menu-6-agents--6-skills).
+
 **Lite + `update` (0.7.1+):** Plain `python3 -m agent_colony update --directory .` defaults to profile **`with_mcp`** and upgrades lite to **16 skills / 8 agents** on version bump. To stay lite, use `--profile consumer_lite`. See [consumer-lite-profile.md](consumer-lite-profile.md) § Upgrade.
 
 **Rules (all profiles):** 7 files — **4** always-on + **3** requestable. See [consumer-lite-profile.md](consumer-lite-profile.md) and [token-efficiency-program.md](token-efficiency-program.md).
@@ -110,7 +114,7 @@ Cursor shows an **Add Plugin** preview — click the **Agent Colony** card to in
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png" title="Open full resolution (1920×1080)">
-    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png" alt="Cursor Agent chat: type /add-plugin with the GitHub URL and review the Agent Colony preview card" width="800" />
+    <img src="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png" alt="Cursor Agent chat: type /add-plugin with the GitHub URL and review the Agent Colony preview card" width="480" />
   </a>
 </p>
 <p align="center"><sub><strong>Step 1</strong> — Preview card · <a href="https://raw.githubusercontent.com/SavinRazvan/agent-colony/main/assets/img/tutorials_img/01_tutorial_agent-colony.png">Full size</a> · more steps in <a href="consumer-quickstart.md#visual-walkthrough">consumer-quickstart</a></sub></p>
@@ -427,8 +431,9 @@ Skill: `.cursor/skills/canvas-artifacts/SKILL.md`
 | I want to… | Type in chat | Or run | Deep dive |
 |------------|--------------|--------|-----------|
 | **First-time setup** | `/workflow-activate` | `python3 -m agent_colony activate --directory .` | §2 above · [workflow-activate skill](../../.cursor/skills/workflow-activate/SKILL.md) |
-| **Lite install (smaller footprint)** | — | `activate --profile consumer_lite` (payload path on first install) | [consumer-lite-profile.md](consumer-lite-profile.md) |
-| **First-run board shell** *(SSOT on)* | `/board` | paste Project+repo URLs → wire YAML → `project doctor` → `board-bootstrap --check` | [board-shell](../../.cursor/skills/board-shell/SKILL.md) · checklist §3b–4 |
+| **Lite install (smaller footprint)** | — | `activate --profile consumer_lite` (payload path on first install) | [consumer-lite-profile.md](consumer-lite-profile.md) · [Lite `/` menu](#lite--menu-6-agents--6-skills) |
+| **First-run board shell** *(SSOT on, full)* | `/board` | paste Project+repo URLs → wire YAML → `project doctor` → `board-bootstrap --check` | [board-shell](../../.cursor/skills/board-shell/SKILL.md) · checklist §3b–4 |
+| **First-run board** *(SSOT on, lite)* | `/board` | same wire steps; CONSENT + TURN inline in `board.md` (no `board-shell` skill) | [board.md](../../.cursor/agents/board.md) § First-run (lite) · [consumer-lite-profile.md](consumer-lite-profile.md) |
 | **Implement a feature slice** | `/implementer` | — | [implementer-loop](../../.cursor/skills/implementer-loop/SKILL.md) |
 | **Run tests / coverage** | `/test-runner` | `pytest -q` | [workflow-complete.md](workflow-complete.md) §C |
 | **Verify a claim** | `/verifier` | — | Check done claims vs evidence (no code fixes) |
@@ -461,8 +466,30 @@ Skill: `.cursor/skills/canvas-artifacts/SKILL.md`
 | `/mcp-connect` | `.cursor/skills/mcp-connect/` |
 | `/auditor-protocol` | `.cursor/skills/auditor-protocol/` |
 | `/drift-audit` | `.cursor/skills/drift-audit/` |
+| `/agent-surface-parity` | `.cursor/skills/agent-surface-parity/` — auditor-owned; full kit |
+| `/research-corpus` | `.cursor/skills/research-corpus/` |
+| `/canvas-artifacts` | `.cursor/skills/canvas-artifacts/` |
+| `/audit-orchestration`, `/audit-module-map` | `.cursor/skills/audit-orchestration/`, `audit-module-map/` |
 
 Cursor may also auto-delegate subagents when the task matches their `description` — explicit **`/name`** is the reliable manual path.
+
+### Lite `/` menu (6 agents + 6 skills)
+
+On `consumer_lite`, only these agent/skill folders are on disk. Shared MCP + rules + PR slash skills still apply (see § Install profiles).
+
+| Chat name | Disk path |
+|-----------|-----------|
+| `/workflow-activate` | `.cursor/skills/workflow-activate/` |
+| `/implementer` | `.cursor/agents/implementer.md` |
+| `/test-runner` | `.cursor/agents/test-runner.md` |
+| `/verifier` | `.cursor/agents/verifier.md` |
+| `/drift-guard` | `.cursor/agents/drift-guard.md` |
+| `/integrator` | `.cursor/agents/integrator.md` |
+| `/board` | `.cursor/agents/board.md` + `board-ssot` · first-run **inline** in `board.md` (no `/board-shell`) |
+| `/mcp-connect` | `.cursor/skills/mcp-connect/` |
+| `/review-pr`, `/prepare-pr`, `/merge-pr` | `.agents/skills/` (lite keeps PR slash skills) |
+
+**Not on lite:** `/auditor`, `/researcher`, `/board-shell`, `/auditor-protocol`, `/drift-audit`, `/agent-surface-parity`, `/research-corpus`, `/canvas-artifacts`, `/update-agent-colony`, `/audit-*`. Upgrade: `update --force --profile with_mcp`. Full list: [consumer-lite-profile.md](consumer-lite-profile.md).
 
 ---
 

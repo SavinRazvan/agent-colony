@@ -44,7 +44,7 @@ Details: [consumer-lite-profile.md](.ai_infra/docs/operations/consumer-lite-prof
 
 ## Project intent
 
-**Agent Colony (lite profile)** — 6 agents, 6 skills, board SSOT when enabled. Merge gates: `resolve_gates()` in `.ai_infra/scripts/pr/prepare.py`.
+**Agent Colony (lite profile)** — 6 agents (`board`, `implementer`, `test-runner`, `verifier`, `drift-guard`, `integrator`), 6 skills (`board-ssot`, `implementer-loop`, `evidence-first`, `test-coverage`, `workflow-activate`, `mcp-connect`), shared MCP + 7 rules + PR slash skills. Merge gates: `resolve_gates()` in `.ai_infra/scripts/pr/prepare.py`.
 
 ## First reads
 
