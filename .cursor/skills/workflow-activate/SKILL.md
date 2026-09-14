@@ -46,7 +46,7 @@ Never list `/board-shell` before wire. Never imply views are API-automated. Defa
 3. Run activate (below) — or tell them to pick **`/workflow-activate`** from the **`/`** menu.
 4. Wire collaboration YAML — set name/@handle → **`contributors validate`** → **`gh auth status`** (refresh only if needed) → paste **Project URL + repo URL** in chat → **`/board`** wires `project_ssot` + `default_repo` → `project doctor`.
 5. When `project_ssot.enabled`: copy **minimal 2-view overlay** (optional; [Playground #3](https://github.com/users/SavinRazvan/projects/3)) → **`/board`** + [board-shell](board-shell/SKILL.md) **CONSENT GATE** + **TURN PROTOCOL** → `board-bootstrap --check` exit **0** → `project status`.
-6. Point them to **`/implementer`** (from **`/`** menu). When board SSOT on, Entry is **`python -m agent_colony project status`**; else read `session-pointer.md` first.
+6. Point them to **`/implementer`** (from **`/`** menu). When board SSOT on, Entry is **`python3 -m agent_colony project status`**; else read `session-pointer.md` first.
 
 Do **not** dump gate lists or maintainer `make` commands.
 

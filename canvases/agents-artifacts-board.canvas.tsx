@@ -25,7 +25,7 @@ import {
  * Not an agent-* canvas — excluded from DOC-008 roster scan (same as board-ssot-vs-trackers).
  */
 
-const VERIFIED = "2026-09-13";
+const VERIFIED = "2026-09-14";
 const SOURCES =
   "ADR-008 · ADR-010 · ADR-007 · board-ssot/SKILL.md · canvas-artifacts/SKILL.md · project-board-collaboration.md · agent cards · drift/auditor quality split";
 
@@ -126,19 +126,19 @@ const WHO_WRITES: string[][] = [
   ],
   [
     "drift-guard",
-    "Shippable P0|P1 → verifier; hygiene may Done; remediation via Ready",
+    "Shippable (PR / [AUDIT] / P0|P1) → verifier; hygiene may Done; remediation via Ready",
     ".local/workflow-artifacts/drift/drift-audit.md · drift-todos.md",
     "Goal pulse + DRIFT scripts; never silent dual-write Status",
   ],
   [
     "integrator",
-    "Shippable → verifier in_review; chores may Done",
+    "Shippable (PR / [AUDIT] / P0|P1) → verifier in_review; chores may Done",
     "integrate validate evidence in Notes",
     "Escalate product/coverage/arch",
   ],
   [
     "researcher",
-    "Research card → Done",
+    "Non-shippable → Done; shippable (PR / [AUDIT] / P0|P1) → verifier",
     "_research_results packs (gitignored)",
     "No product PRs",
   ],
@@ -153,9 +153,9 @@ const ARTIFACT_LANES: string[][] = [
   ],
   [
     "Day-0 board shell",
-    "board-bootstrap --check · views-setup.md · board-shell",
+    "board-bootstrap --check · views-setup · board-shell (full); lite: inline in board.md",
     "board / human (before claim)",
-    "Does not write Status — Playground six-view gate",
+    "Does not write Status — Playground six-view gate (or minimal 2-view)",
   ],
   [
     "PR Pattern A (local evidence)",
@@ -515,6 +515,12 @@ export default function AgentsArtifactsBoardCanvas() {
         Open this hub first for orientation. Detail hubs: agent-board-collaboration
         (recipes), agent-relations (handoff graph), board-ssot-vs-trackers (writable
         Status: board vs offline trackers), per-agent canvases for deep dive.
+      </Callout>
+
+      <Callout tone="danger" title="Machine gate — verifier-before-Done">
+        Shippable cards (PR citation / [AUDIT] / P0|P1): Status→Done returns
+        EXIT_VALIDATION (5) unless verifier hop / allow-skip. prepare resolve_gates()
+        + Schema-1 arch merge. EXIT_QUEUED outbox ≠ Status SSOT.
       </Callout>
 
       <Callout tone="warning" title="How to render kit canvases">

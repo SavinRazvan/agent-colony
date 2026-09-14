@@ -38,7 +38,7 @@ import {
 
 type Mode = "board" | "offline" | "compare";
 
-const VERIFIED = "2026-09-13";
+const VERIFIED = "2026-09-14";
 const SOURCES =
   "ADR-008 · AGENTS.md · project-ssot-precedence.mdc · token-efficiency.md · project-board-collaboration.md";
 
@@ -317,6 +317,12 @@ export default function BoardSsotVsTrackersCanvas() {
         </Stack>
       </Callout>
 
+      <Callout tone="danger" title="Machine gate — verifier-before-Done">
+        item_is_shippable (PR / [AUDIT] / P0|P1): Status→Done → EXIT_VALIDATION (5)
+        unless --agent verifier, Notes hop, or allow-skip. Outbox EXIT_QUEUED (6)
+        is rate-limit only — not a Status bypass.
+      </Callout>
+
       <Grid columns={3} gap={12}>
         <Stat value="GitHub Project" label="board_only Status" tone="success" />
         <Stat value="Trackers" label="offline fallback only" />
@@ -349,7 +355,8 @@ export default function BoardSsotVsTrackersCanvas() {
           <H2>board_only — GitHub Project is Status SSOT</H2>
           <Text tone="secondary">
             Entry via project entry (live | conserve | offline_artifacts). Exit
-            updates Status + Notes. Dashed path = read-only export for DRIFT-010.
+            updates Status + Notes; shippable (PR / [AUDIT] / P0|P1) → verifier
+            before Done. Dashed path = read-only export for DRIFT-010.
           </Text>
           <Legend />
           <FlowDiagram mode="board" />
@@ -364,13 +371,15 @@ export default function BoardSsotVsTrackersCanvas() {
                   2. Work — Acceptance on card body; code + tests
                 </Text>
                 <Text size="small">
-                  3. Exit — handoff / set-status + append-notes
+                  3. Exit — handoff / set-status + append-notes; shippable (PR /
+                  [AUDIT] / P0|P1) → verifier before Done
                 </Text>
                 <Text size="small">
                   4. CODE=6 → api-ready → outbox list|drop → flush — do not dual-write trackers
                 </Text>
                 <Text size="small">
-                  5. Post-merge — merge.py → Done + Notes (PR URL + SHA)
+                  5. Post-merge — merge.py → Done + Notes (PR URL + SHA;
+                  Pattern A allow-skip for verifier gate)
                 </Text>
               </Stack>
             </CardBody>

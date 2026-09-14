@@ -4,35 +4,55 @@
 
 # Agent Colony
 
-**Stop losing Status in chat.** Agent Colony is a discipline-enforcing multi-agent workflow for [Cursor](https://cursor.com) that uses GitHub Projects as the coordination state engine — featuring **8** specialized agents with strict role boundaries, falsification-first verification, local evidence artifacts, and automated PR quality gates.
+**A coordination and accountability system for multi-agent work in [Cursor](https://cursor.com)** — not a prompt pack.
+
+When `project_ssot` is on, **GitHub Projects** is the writable state engine. Agents follow **Entry → work → evidence → Exit**. Role cards, skills, and **always-on rules** set discipline. CLI, MCP, and PR scripts **enforce** it: Status→Done can fail closed; prepare/merge refuse soft skips; audit artifacts must match Schema-1.
 
 <p align="center">
   <video src="https://github.com/user-attachments/assets/f9015ab5-28bf-47f7-a065-2127c098b80e" width="720" controls></video>
 </p>
 
-<p align="center"><em>Agent Colony at work</em></p>
+<p align="center"><em>Agent Colony at work — board Status, attributed Notes, evidence under <code>.local/</code></em></p>
 
 | | |
 |--|--|
-| **Version** | [`0.7.3`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.7.3) · **Tests** · 1652 · **Agents** · 8 (6 on `consumer_lite`) · **Skills** · 15 (6 on lite) · **Rules** · 7 (4 always-on + 3 requestable) · **License** · [Apache-2.0](LICENSE) |
+| **Version** | [`0.7.3`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.7.3) · **Tests** · 1652 · **Agents** · 8 (6 on `consumer_lite`) · **Skills** · 15 (6 on lite) · **Rules** · 7 (4 always-on + 3 requestable) · **MCP** · 29 tools · **License** · [Apache-2.0](LICENSE) |
 | **Reference board** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
 
 ---
 
 ## The problem
 
-Agent chats lose Status. Trackers and docs drift across sessions. Agents rubber-stamp each other's work without proof, and developers constantly re-explain context in fresh chats.
+Agent chats lose Status. Local trackers drift from “what we said we shipped.” Peers rubber-stamp “done” without fresh proof. Context dies when the thread ends. Soft procedures do not stop a merge or a Done click.
 
 ## The solution
 
-**Agent Colony** transforms multi-agent coding from chaotic prompt loops into a coordinated, evidence-driven development pipeline inside [Cursor](https://cursor.com):
+**Agent Colony** turns Cursor multi-agent coding into a **disciplined pipeline** with three layers that work together:
 
-1. **GitHub Projects as State Engine (SSOT):** When enabled, the board is the single writable source of truth for backlog, priority, and progress. Agents **enter** by reading active cards and **exit** by updating Status and timestamped Notes.
-2. **Strict Role Boundaries:** Each agent has explicit operational constraints (e.g., the `researcher` never tampers with product code; the `verifier` is designed to actively disprove "done" claims rather than rubber-stamp them).
-3. **Evidence-First Handoffs:** Agents generate verifiable artifacts in `.local/` (audits, test logs, coverage, drift reports). No agent trusts another without fresh proof.
-4. **Enforced PR Quality Gates:** Automated testing, governance consistency, doc-facts, and drift validation before merging.
+| Layer | What it does |
+|-------|----------------|
+| **Coordination** | Board SSOT (when enabled): one backlog, one Status, Tier-1 fields, Pattern A CLI (`entry` / `claim` / `handoff` / `mention-pr`). Chat executes; the board remembers. |
+| **Accountability** | Attributed Notes (`@user/agent · UTC · …`). Evidence in gitignored `.local/` (tests, audits, PR prep, drift). Evidence-first: facts → proof → action — or label **Partial**. |
+| **Enforcement** | Machine checks — not vibes. Verifier-before-Done on shippable cards. `prepare.py` → `resolve_gates()`. Arch-impacting merge needs Schema-1 alignment. EXIT_QUEUED (6) + outbox under GraphQL throttle (no retry hammer). |
 
-**Proof:** 1652 tests · 8 agents (optional **`consumer_lite`**: 6 agents, 6 skills) · reference layout on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
+Optional **`consumer_lite`**: 6 agents / 6 skills for a smaller footprint. Full kit: 8 / 15. Proof: **1652** tests · live reference on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
+
+---
+
+## How we enforce (real gates)
+
+These are **machine exits and merge refusals**, not prompt suggestions.
+
+| Gate | What fails closed |
+|------|-------------------|
+| **Verifier-before-Done** | `item_is_shippable` (PR citation / `[AUDIT]` / P0\|P1): Status→Done returns **EXIT_VALIDATION (5)** unless `--agent verifier`, prior Notes `next=…/verifier`, or `--allow-skip-verifier` + rationale |
+| **PR prepare** | `prepare.py` → `resolve_gates()` — **2** universal; **6** on kit-dev (tests + drift + doc facts + `sync_plugin_bundle --check` + audit artifacts). Architecture pipelines refuse `--skip-gates` |
+| **PR merge (arch-impacting)** | Schema-1 alignment pair required; open P0/P1 in that pair fail merge |
+| **Board validate-item** | Audit cards: Notes must cite `.local/workflow-artifacts/`; bad Schema-1 path → **EXIT_VALIDATION (5)** |
+| **Pattern A + rate-limit** | Prefer `entry` / `claim` / `handoff` / `mention-pr`. Low GraphQL / throttle → **EXIT_QUEUED (6)** → cooldown + local outbox → `api-ready` then flush. Outbox is **not** SSOT; do not retry-loop |
+| **Drift / audit independence** | DRIFT checks + auditor `Commissioned-By` ≠ `Audited-By` (ADR-013) |
+
+Canon: [gate-matrix.md](.ai_infra/docs/operations/gate-matrix.md) · [project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md) · [evidence-first.md](.ai_infra/docs/operations/evidence-first.md).
 
 ---
 
@@ -40,37 +60,52 @@ Agent chats lose Status. Trackers and docs drift across sessions. Agents rubber-
 
 | | |
 |--|--|
-| **Is** | Installable Cursor workflow kit: 8 agents (or **`consumer_lite`**: 6), PR gates, local evidence; optional GitHub Project coordination, MCP, and research packs |
-| **Is not** | A new LLM runtime, chatbot framework, or hosted SaaS |
+| **Is** | Installable Cursor workflow kit: agents + skills + rules + CLI/MCP that **coordinate** work on a GitHub Project and **enforce** handoffs, evidence, and ship gates |
+| **Is not** | A new LLM runtime, chatbot framework, hosted SaaS, or “agents that only suggest best practices” |
+
+**Shipped infrastructure (three planes):** Cursor contract (`.cursor/` agents, skills, rules; `.agents/skills/`; `AGENTS.md`) · kit CLI + docs (`.ai_infra/`, `agent_colony/`) · runtime evidence (`.local/`). Same planes on consumer activate — see [workflow-architecture.md](.ai_infra/docs/architecture/workflow-architecture.md).
 
 ---
 
 ## Why teams use it
 
-- **Optional board SSOT** — when enabled, backlog and Status stay on the GitHub Project; chat is execution, not the source of truth
-- **Eight specialized agents** — implement, test, verify, audit, research, integrate, drift-check, board coach
-- **PR gates** — prepare/merge evidence before ship
-- **MCP-ready** — kit MCP server; DeepWiki seeded on consumer activate by default
-- **Local evidence** — `.local/` for audits, coverage, and workflow artifacts (gitignored)
+- **Discipline by default** — 4 always-on rules (implementation lifecycle, PR-first, local artifact protection, board SSOT precedence) plus requestable commit/header/audit rules
+- **Coordination without dual-write** — when `board_only`, Status lives on the Project; `.local/` holds evidence and outbox only
+- **Accountability you can audit** — Entry/Exit, Tier-1 fields, verifier falsification, auditor independence
+- **Ship path that refuses theater** — prepare/merge + verifier-before-Done + Schema-1 on architecture changes
+- **MCP Pattern A** — 29 tools as thin wrappers over the same CLI (same exits, same outbox behavior)
+- **Local evidence** — gitignored `.local/` for audits, coverage, PR artifacts, cooldown/outbox
 
 ---
 
-## Agents
+## Agents (roles with teeth)
 
-| Agent | Job |
-|-------|-----|
-| `implementer` | Disciplined implementation slices with trackers and Pattern A gates |
-| `test-runner` | Module-focused tests, regressions, and coverage |
-| `verifier` | Check “done” claims against fresh evidence (try to disprove; no code fixes) |
-| `auditor` | Deep/periodic evidence architecture audit (CHK-*; not plan pulse) |
-| `researcher` | Brief-driven multi-round research packs; no product code |
-| `integrator` | Integrate agents, skills, MCP expansions (procedural, Pattern A) |
-| `drift-guard` | Continuous goal/plan/doctrine coherence + DRIFT scripts (handoff remediations only) |
-| `board` | Wire Project SSOT, triage cards, and coach first-run board shell |
+| Agent | Job | Hard boundary |
+|-------|-----|---------------|
+| `implementer` | Slices with trackers / board claim + Pattern A | Does not close shippable work as Done without verifier path |
+| `test-runner` | Module tests, regressions, coverage evidence | Produces proof; does not redefine product scope |
+| `verifier` | Falsification-first: try to **disprove** “done” | **No code fixes** — fresh evidence only |
+| `auditor` | Deep CHK-* architecture audit → Schema-1 artifacts | Independent of commissioner (`Commissioned-By` ≠ `Audited-By`) |
+| `researcher` | Multi-round research packs under `_research_results/` | **No product code** |
+| `integrator` | Wire agents, skills, MCP expansions | Procedural + Pattern A; no silent doctrine drift |
+| `drift-guard` | Goal/plan/doctrine coherence + DRIFT scripts | Handoff remediations only — no silent tracker dual-write |
+| `board` | Wire SSOT, triage, first-run board shell | Coaches bootstrap; humans own views/Insights |
 
-When `project_ssot.enabled`, agents **enter** by reading the board and **exit** by updating Status and Notes — see [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md).
+Slash skills: activate, update, board protocols, PR lifecycle (`/review-pr` → `/prepare-pr` → `/merge-pr`), and more — [Plugin User Guide](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md).
 
-Slash skills cover activate, update, board protocols, PR lifecycle (`/review-pr` → `/prepare-pr` → `/merge-pr`), and more — see the [Plugin User Guide](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md).
+---
+
+## Collaboration loop
+
+When `project_ssot.enabled` + `sync_policy: board_only`:
+
+1. **Entry** — `project api-ready` then `project entry` (scoped read; not unfiltered list)
+2. **Claim** — `project claim --last --agent <name>` → In progress + Start date
+3. **Work** — role skill; write evidence under `.local/`
+4. **Exit** — Status + attributed Notes (`handoff` / `append-notes` / `set-status`)
+5. **Ship** — Tier-1 filled; PR via `mention-pr`; shippable cards → **verifier** before Done
+
+Draft is scratch-only. Shippable work ships as **Issue**. Full contract: [board-ssot](.cursor/skills/board-ssot/SKILL.md) · [project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md).
 
 ---
 
@@ -344,6 +379,8 @@ Details: [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md) · isolation
 |-------|--------|
 | Identity / user settings | [PLUGIN-USER-GUIDE § Personalize](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#10-personalize-settings) |
 | Board wire + shell | [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md) · [`board-shell`](.cursor/skills/board-shell/SKILL.md) |
+| Collaboration + Tier-1 | [project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md) · [`board-ssot`](.cursor/skills/board-ssot/SKILL.md) |
+| Gates + enforcement | [gate-matrix.md](.ai_infra/docs/operations/gate-matrix.md) · [evidence-first.md](.ai_infra/docs/operations/evidence-first.md) |
 | MCP (DeepWiki, custom servers) | [connect-external-mcp.md](.ai_infra/docs/operations/connect-external-mcp.md) |
 | Research packs | [`research-corpus`](.cursor/skills/research-corpus/SKILL.md) · Guide [use-case matrix](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md#6-use-case-matrix) |
 | Upgrade an existing install | Copy [§4 Upgrade kit](#4-upgrade-kit-when-a-new-release-ships) (plugin `/add-plugin` then the Step B terminal block) · [upgrade-kit.md](.ai_infra/docs/operations/upgrade-kit.md) |
@@ -363,7 +400,10 @@ Developing **this** repository? See **[CONTRIBUTING.md](CONTRIBUTING.md)** (clon
 |-----|----------|
 | [consumer-quickstart](.ai_infra/docs/operations/consumer-quickstart.md) | Consumers — 5-step install |
 | [PLUGIN-USER-GUIDE](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) | Consumers — full manual |
-| [Abbreviations notepad](.ai_infra/docs/operations/abbreviations-notepad.md) | Consumers + kit-dev — glossary (SSOT, DRIFT, Pattern A, agents) |
+| [project-board-collaboration.md](.ai_infra/docs/operations/project-board-collaboration.md) | Board SSOT contract (Entry/Exit, Pattern A, outbox) |
+| [gate-matrix.md](.ai_infra/docs/operations/gate-matrix.md) | Prepare/merge/board/drift enforcement surfaces |
+| [evidence-first.md](.ai_infra/docs/operations/evidence-first.md) | Facts → evidence → action |
+| [Abbreviations notepad](.ai_infra/docs/operations/abbreviations-notepad.md) | Glossary (SSOT, DRIFT, Pattern A, agents) |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Kit-dev setup |
 | [AGENTS.md](AGENTS.md) | Kit-dev agent doctrine |
 | [Docs index](.ai_infra/docs/README.md) | Full `.ai_infra/docs/` navigation |

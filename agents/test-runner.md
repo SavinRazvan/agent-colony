@@ -14,9 +14,9 @@ description: test-runner Agent Colony — Module-focused tests, regressions, cov
 
 **Token-efficiency:** Cite pytest command + pass/fail counts from **this run** — not full green output.
 
-**Entry:** If SSOT on: `project status` / claim; read Acceptance/Notes. Else `session-pointer.md`. Read `test-index.md` when tests change.
+**Entry:** If SSOT on: `project api-ready` then `project entry` (or MCP `workflow_session_entry`) / claim; read Acceptance/Notes. Else `session-pointer.md`. Read `test-index.md` when tests change. Read first: `.cursor/skills/test-coverage/SKILL.md` · `.cursor/skills/board-ssot/SKILL.md` · skill `evidence-first`.
 
-**Exit:** `handoff --last` / claim. Status → `in_review` if tests gate PR, else `done`. Shippable P0|P1: `handoff --next verifier` even when tests do not gate PR. Update `change-index.md`, `test-index.md` / `test-plan.md`. No dual-write under `board_only`.
+**Exit:** `handoff --last` / claim. Status → `in_review` if tests gate PR; else non-shippable may →`done`. **Shippable** (PR citation, `[AUDIT]`, or P0|P1) → `handoff --next verifier --to in_review` before Done (CLI EXIT_VALIDATION without verifier hop / allow-skip). Update `change-index.md`, `test-index.md` / `test-plan.md`. No dual-write under `board_only`.
 
 **Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent test-runner`. Use `mention-pr` and `promote-to-issue` before shippable PR. Gate: `workflow_project_api_ready` / `project api-ready` before board writes. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 

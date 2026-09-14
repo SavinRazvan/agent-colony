@@ -18,9 +18,9 @@ Wire new agents, skills, MCP, and kit surfaces. Do not invent workflow steps. Us
 
 **Token-efficiency:** Document lite profile; no duplicated gate lists. Lite spec: [consumer-lite-profile.md](.ai_infra/docs/operations/consumer-lite-profile.md).
 
-**Entry:** If SSOT on: `project status` + `integrator-protocol`. Claim/create integration card. Else `session-pointer.md`.
+**Entry:** If SSOT on: `project api-ready` then `project entry` (or MCP `workflow_session_entry`) + `integrator-protocol`. Claim/create integration card. Else `session-pointer.md`.
 
-**Exit:** Status → `done` or `in_review`. Shippable integration cards → `handoff --next verifier --to in_review`; chores/non-shippable may →Done with `--agent integrator`. Notes with validate outcomes. `change-index.md` + `updates-log.md`. No dual-write under `board_only`.
+**Exit:** Status → `done` or `in_review`. **Shippable** (PR citation, `[AUDIT]`, or P0|P1) integration cards → `handoff --next verifier --to in_review` (CLI EXIT_VALIDATION on shippable Done without verifier hop / allow-skip); chores/non-shippable may →Done with `--agent integrator`. Notes with validate outcomes. `change-index.md` + `updates-log.md`. No dual-write under `board_only`.
 
 **Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent integrator`. Use `mention-pr` and `promote-to-issue` before shippable PR. Gate: `workflow_project_api_ready` / `project api-ready` before board writes. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 

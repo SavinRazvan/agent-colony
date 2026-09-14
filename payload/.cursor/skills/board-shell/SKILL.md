@@ -11,7 +11,7 @@ Used By:
 Depends On:
  - .ai_infra/templates/project-board/board-shell.schema.yaml
  - .ai_infra/templates/project-board/views-setup.md
- - python -m agent_colony project board-bootstrap
+ - python3 -m agent_colony project board-bootstrap
 Notes:
  - Consent gate is mandatory before shell apply (description + proceed).
  - Views: coach TURN PROTOCOL by default; browser MCP only when user asks; opt-in CLI when official APIs allow (ADR-008).

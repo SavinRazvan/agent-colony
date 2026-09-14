@@ -2,6 +2,18 @@
 name: canvas-artifacts
 description: Three-tier canvas and plan snapshot workflow via agent_colony canvas/plan CLI (ADR-010).
 ---
+<!--
+File: SKILL.md
+Path: .cursor/skills/canvas-artifacts/SKILL.md
+Role: Canvas sync/save and plan snapshot CLI for agents and maintainers.
+Used By:
+ - .cursor/agents/*.md (Canvas / plan footer)
+Depends On:
+ - .ai_infra/docs/decisions/ADR-010-canvas-plan-local-artifacts.md
+ - .ai_infra/docs/operations/local-workspace-layout.md
+Notes:
+ - Live plan SSOT is board (board_only) or plan.md; .local/plans/ is snapshot-only.
+-->
 
 # Canvas and plan artifacts (Pattern A)
 

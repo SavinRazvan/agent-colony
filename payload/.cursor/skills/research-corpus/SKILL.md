@@ -2,6 +2,19 @@
 name: research-corpus
 description: Brief-driven multi-round research into _research_results packs (external GitHub/local or host self).
 ---
+<!--
+File: SKILL.md
+Path: .cursor/skills/research-corpus/SKILL.md
+Role: Research pack lifecycle — init, fetch, validate; hard-stop on product code.
+Used By:
+ - .cursor/agents/researcher.md
+Depends On:
+ - .ai_infra/templates/research-corpus/RESEARCH_BOUNDARIES.md
+ - .ai_infra/install/agent_colony/research_cli.py
+ - .cursor/skills/evidence-first/SKILL.md
+Notes:
+ - Write only under _research_results/ unless user expands scope.
+-->
 
 # Research corpus
 

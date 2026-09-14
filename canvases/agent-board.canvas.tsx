@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-09-13";
+const VERIFIED = "2026-09-14";
 const SOURCES =
   ".cursor/agents/board.md · board-ssot/SKILL.md · board-shell/SKILL.md · ADR-006 · ADR-008";
 
@@ -74,7 +74,7 @@ const BOARD_LABELS: Record<string, string> = {
   triage: "move Status",
   create: "create-from-template",
   claim: "claim --last",
-  handoff: "→ implementer",
+  handoff: "→ implementer (or verifier if shippable)",
 };
 
 const FALLBACK_LABELS: Record<string, string> = {
@@ -259,7 +259,8 @@ export default function AgentBoardCanvas() {
           <Text>3. create-from-template + claim --last for new work.</Text>
           <Text>4. Move Status for every triage action.</Text>
           <Text>
-            5. Exit: Status for every triage; change-index; updates-log; handoff
+            5. Exit: Status for every triage; shippable (PR / [AUDIT] / P0|P1) →
+            verifier before Done; change-index; updates-log; handoff
             next=implementer|….
           </Text>
         </Stack>
@@ -296,8 +297,9 @@ export default function AgentBoardCanvas() {
               project CLI.
             </Text>
             <Text>
-              Exit: Status for every triage; change-index; updates-log; handoff
-              --next implementer (typical).
+              Exit: Status for every triage; shippable (PR / [AUDIT] / P0|P1) →
+              verifier before Done; change-index; updates-log; handoff --next
+              implementer (typical).
             </Text>
             <Text>
               Rate-limit: api-ready → EXIT_QUEUED (6) → cooldown/outbox status|list → flush; do not hammer

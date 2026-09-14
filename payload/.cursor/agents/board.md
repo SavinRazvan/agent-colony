@@ -16,7 +16,7 @@ description: board Agent Colony — Wire Project SSOT, triage cards, and coach f
 
 **Entry:** Read `github.collaboration.yaml` → `project_ssot`. Run `workflow_session_entry` or `project entry`. Wire-from-URLs: propose YAML; human confirms. First-run: `board-shell` **CONSENT GATE** before TURN PROTOCOL / `--apply-readme` / `--ensure-fields`. Refuse ready until `board-bootstrap --check` exit 0.
 
-**Exit:** Update Status via MCP/CLI Pattern A. Append `change-index.md`. One line in `updates-log.md`. Print handoff. No dual-write under `board_only`.
+**Exit:** Update Status via MCP/CLI Pattern A. Shippable cards (PR citation, `[AUDIT]`, or P0|P1) → verifier hop before Done (CLI EXIT_VALIDATION without verifier hop / allow-skip; board-ssot § Verifier-before-Done); triage/handoff to implementer is typical. Append `change-index.md`. One line in `updates-log.md`. Print handoff. No dual-write under `board_only`.
 
 **Board rights:** Status + Notes on the card you touch. Prefer `workflow_project_claim` / `workflow_project_handoff` or CLI `claim` / `handoff --agent board`. Use `mention-pr` and `promote-to-issue` before shippable PR. Gate: `workflow_project_api_ready` / `project api-ready` before board writes. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 

@@ -28,30 +28,30 @@ Notes:
 2. **Implement + commit** — follow layer rules; commit trailers (required `Author` / `GitHub-User`, optional `Assisted-by`; no `Made-with:`) per `.cursor/rules/commit-trailer-format.mdc` and `AGENTS.md` § Commits.
 3. **Push + PR** — `git push -u origin HEAD` → open PR to `main`.
 4. **Publish checkpoint** (before merge workflow):
-   - `python .ai_infra/scripts/pr/verify_publish.py --branch "$(git branch --show-current)"`
+   - `python3 .ai_infra/scripts/pr/verify_publish.py --branch "$(git branch --show-current)"`
    - `gh pr view --json number,url,headRefName,state,mergeStateStatus`
-5. **Prepare gates (before merge / push)** — run **`python .ai_infra/scripts/pr/prepare.py`** (executes **`resolve_gates()`** — see `.ai_infra/scripts/pr/prepare.py`; `GATES` is the 2-gate back-compat alias). Additionally run **`python .ai_infra/scripts/architecture/check_governance_consistency.py`** when changing governance/workflows.
+5. **Prepare gates (before merge / push)** — run **`python3 .ai_infra/scripts/pr/prepare.py`** (executes **`resolve_gates()`** — see `.ai_infra/scripts/pr/prepare.py`; `GATES` is the 2-gate back-compat alias). Additionally run **`python3 .ai_infra/scripts/architecture/check_governance_consistency.py`** when changing governance/workflows.
 6. **Skills order (do not skip)** — see `.agents/skills/pr-workflow/SKILL.md`:
    - `review-pr` → **verifier hop** (shippable) → `prepare-pr` → `merge-pr`
-   - Shippable board cards: CLI machine-blocks Status→Done without verifier hop (`require_verifier_before_done`; see [gate-matrix.md](gate-matrix.md)).
+   - Shippable board cards (PR citation in body/Notes, `[AUDIT]` title, or Priority P0|P1): CLI machine-blocks Status→Done without verifier hop (`require_verifier_before_done`; see [gate-matrix.md](gate-matrix.md)).
    - Architecture-impacting: Schema-1 alignment before review/prepare (see §B). `--skip-gates` refused on `architecture_impacting` (exit 2).
 7. **Artifacts** (must exist before merge; fill with real content):
-   - `.local/workflow-artifacts/pr/review.md` — `python .ai_infra/scripts/pr/review.py --pr <id|url> --actor "<name>" --agents "review-pr"` then edit findings.
-   - `.local/workflow-artifacts/pr/prep.md` — `python .ai_infra/scripts/pr/prepare.py --pr ... --actor "..." --agents "review-pr | prepare-pr"` (runs gates unless `--skip-gates` with `--skip-gates-rationale`; **not** allowed with `--pipeline architecture_impacting`).
+   - `.local/workflow-artifacts/pr/review.md` — `python3 .ai_infra/scripts/pr/review.py --pr <id|url> --actor "<name>" --agents "review-pr"` then edit findings.
+   - `.local/workflow-artifacts/pr/prep.md` — `python3 .ai_infra/scripts/pr/prepare.py --pr ... --actor "..." --agents "review-pr | prepare-pr"` (runs gates unless `--skip-gates` with `--skip-gates-rationale`; **not** allowed with `--pipeline architecture_impacting`).
    - `.local/workflow-artifacts/pr/merge.md` — produced via `merge-pr` / `.ai_infra/scripts/pr/merge.py` when ready.
 8. **After merge**:
    - `git checkout main` && sync with `origin`
    - Cleanup is **optional** on the staged path (default `/merge-pr`).
      If you want repo tidiness + branch deletion with evidence, run:
      - `/full-pr-workflow` (preferred), or
-     - `python .ai_infra/scripts/pr/finalize.py --branch <feature-branch>`
+     - `python3 .ai_infra/scripts/pr/finalize.py --branch <feature-branch>`
      This writes `.local/workflow-artifacts/pr/finalize.md`.
 
 ## A2) Full PR slice (cleanup + evidence)
 
 Use this when you want branch deletion + deterministic cleanup evidence.
 
-1. Run `python .ai_infra/scripts/pr/finalize.py --branch <feature-branch> --pr <n>` after `/merge-pr` has created `merge.md` (this is what `/full-pr-workflow` calls — invoke either the skill or the script directly; don't re-run `/full-pr-workflow`'s earlier review/prepare/merge steps if they're already done).
+1. Run `python3 .ai_infra/scripts/pr/finalize.py --branch <feature-branch> --pr <n>` after `/merge-pr` has created `merge.md` (this is what `/full-pr-workflow` calls — invoke either the skill or the script directly; don't re-run `/full-pr-workflow`'s earlier review/prepare/merge steps if they're already done).
 2. Verify `.local/workflow-artifacts/pr/finalize.md` exists and reflects the cleanup outcome.
 3. If `conventions.close_linked_issue_on_cleanup: true`, `finalize.py` also best-effort closes the GitHub Issue linked to the merged PR's board item (after branch cleanup succeeds; never blocks exit code) — check `finalize.md § Linked Issue Closure` for `PASS`/`SKIPPED`/`DEFERRED`. Default `false`; board `Status=Done` and Issue `open`/`closed` stay independent otherwise (ADR-008 §10).
 
@@ -65,7 +65,7 @@ Before `/prepare-pr` / final merge:
    - `.local/workflow-artifacts/alignment/alignment-todos.md`
    Both must carry `Audit-Schema: 1` frontmatter and pass `check_audit_artifacts.py --arch-impacting`. Open P0/P1 `status` fails.
 3. Path-trigger list (kit-dev): `.cursor/rules|skills|agents/`, `.agents/skills/`, `.ai_infra/docs/decisions|architecture/`, `alignment-audit-schema.md`, `.ai_infra/scripts/pr/`, `audit_artifact_schema.py`, `check_audit_artifacts.py`, `drift_checks.py` — see `arch_impacting_paths.py`.
-4. Use `python .ai_infra/scripts/pr/merge.py --pr ... --pipeline architecture_impacting --check-only` (or explicit `--arch-impacting`) when recording merge readiness. Prepare refuses `--skip-gates` on that pipeline.
+4. Use `python3 .ai_infra/scripts/pr/merge.py --pr ... --pipeline architecture_impacting --check-only` (or explicit `--arch-impacting`) when recording merge readiness. Prepare refuses `--skip-gates` on that pipeline.
 
 ## C) Testing + planning index sync (medium/high risk)
 
@@ -74,7 +74,7 @@ Before final `/prepare-pr`:
 1. Map changes → `tests/modules/<area>/`.
 2. Follow `.cursor/skills/test-coverage/SKILL.md` (local) / test-runner agent profile.
 3. Update `.local/index-and-planning/current/test-plan.md` and `test-index.md`.
-4. Run `python .ai_infra/scripts/pr/check_testing_artifacts.py`.
+4. Run `python3 .ai_infra/scripts/pr/check_testing_artifacts.py`.
 5. **Post scoped coverage 100%:** full doc reality sync per `.cursor/skills/test-coverage/SKILL.md` step 6 — `IMPLEMENTATION-STATUS.md`, `make coverage-index`, `make doc-validate`, README/AGENTS/repository-map claims, `make sync-plugin` when payload copies change.
 
 ## D) Doc / plan sync (when scope shifts)

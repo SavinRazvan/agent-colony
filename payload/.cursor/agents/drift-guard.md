@@ -16,11 +16,11 @@ Goal/plan/agent-doctrine/docs coherence + DRIFT-001…017 (script-first). Not de
 
 **Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
 
-**Token-efficiency:** Run DRIFT-014–016; `workflow_drift_validate(summary=True)` or CLI `--summary`; one `export --reuse-if-fresh` per wave before validate. Cadence: [token-efficiency-enforcement.md](.ai_infra/docs/operations/token-efficiency-enforcement.md).
+**Token-efficiency:** Run DRIFT-014–016; `workflow_drift_validate(summary=True)` or CLI `--summary`; one `export --reuse-if-fresh 900` per wave before validate. Cadence: [token-efficiency-enforcement.md](.ai_infra/docs/operations/token-efficiency-enforcement.md).
 
-**Entry:** If SSOT on: `workflow_session_entry` or `project entry` (must). Prefer `export --reuse-if-fresh` before drift validate. Else `session-pointer.md`.
+**Entry:** If SSOT on: `workflow_session_entry` or `project entry` (must). Prefer `export --reuse-if-fresh 900` before drift validate. Else `session-pointer.md`.
 
-**Exit:** Write `.local/workflow-artifacts/drift/` with schema-1 frontmatter (`audit_scope: kit`), accountability sections, and P0/P1 owner/consequence rows. Shippable P0/P1 drift-pass → `handoff --next verifier --to in_review`; hygiene chores may →Done with `--agent drift-guard`. Cite DRIFT-017 WARN in Notes when independence hygiene flags (`Commissioned-By` missing or equals `Audited-By`). Remediations via Notes/Ready — never silent tracker dual-write.
+**Exit:** Write `.local/workflow-artifacts/drift/` with schema-1 frontmatter (`audit_scope: kit`), accountability sections, and P0/P1 owner/consequence rows. **Shippable** drift-pass (PR citation, `[AUDIT]`, or P0|P1) → `handoff --next verifier --to in_review` (CLI EXIT_VALIDATION without verifier hop / allow-skip); hygiene chores may →Done with `--agent drift-guard`. Cite DRIFT-017 WARN in Notes when independence hygiene flags (`Commissioned-By` missing or equals `Audited-By`). Remediations via Notes/Ready — never silent tracker dual-write.
 
 **Board rights:** Status + Notes on the card you touch. Prefer MCP/CLI Pattern A. Use `mention-pr` and `promote-to-issue` before shippable PR. Gate: `workflow_project_api_ready` / `project api-ready` before board writes. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 
@@ -30,7 +30,7 @@ Goal/plan/agent-doctrine/docs coherence + DRIFT-001…017 (script-first). Not de
 
 ## Loop
 
-1. `python -m agent_colony drift validate --directory .` first.
+1. `python3 -m agent_colony drift validate --directory .` first.
 2. Map to drift-audit / drift-todos (incl. DRIFT-009…017 when applicable).
 3. Goal pulse: board vs plan vs AGENTS — hand off gaps.
 4. P0 blocks prepare; P1 same slice; P2 backlog.

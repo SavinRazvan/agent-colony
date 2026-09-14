@@ -22,7 +22,7 @@ Notes:
 
 Install **Agent Colony** (`agent-colony`) into your project in a few minutes. No special git setup required.
 
-**Product promise:** Install the plugin → open **your app repo** → **`/workflow-activate`** installs the **full kit**. Customize identity in `github.collaboration.yaml`, then **`/board`** wires board ids from Project + repo URLs. **Ready for agents** requires `board-bootstrap --check` **exit 0** — either **two views** (minimal overlay, matches [Playground #3](https://github.com/users/SavinRazvan/projects/3)) or **six Playground views** (kit default). Wire-only is not enough. Details: [PLUGIN-USER-GUIDE § Product promise](PLUGIN-USER-GUIDE.md#product-promise).
+**Product promise:** Agent Colony is a **coordination and accountability** kit — board SSOT when enabled, evidence under `.local/`, and **machine gates** (verifier-before-Done / EXIT_VALIDATION, prepare `resolve_gates()`, Schema-1 merge, EXIT_QUEUED outbox). Install the plugin → open **your app repo** → **`/workflow-activate`**. Customize identity in `github.collaboration.yaml`, then **`/board`** wires board ids. **Ready for agents** requires `board-bootstrap --check` **exit 0** — either **two views** (minimal overlay, matches [Playground #3](https://github.com/users/SavinRazvan/projects/3)) or **six Playground views** (kit default). Wire-only is not enough. Details: [PLUGIN-USER-GUIDE § Product promise](PLUGIN-USER-GUIDE.md#product-promise) · [gate-matrix.md](gate-matrix.md) · [README § How we enforce](../../../README.md#how-we-enforce-real-gates).
 
 > **Also:** [What you need — permissions & prerequisites](permissions-and-prerequisites.md) · [MCP](connect-external-mcp.md) · [upgrade](upgrade-kit.md) · [abbreviations](abbreviations-notepad.md) · skill `research-corpus` · skill `board-shell`
 
@@ -40,7 +40,7 @@ Install **Agent Colony** (`agent-colony`) into your project in a few minutes. No
 | **3b. GitHub auth** *(board SSOT)* | `gh auth status` — if Project scopes missing: `gh auth refresh -h github.com -s read:project,project`. Device flow: [github.com/login/device](https://github.com/login/device). Canon: [permissions-and-prerequisites.md § GitHub CLI](permissions-and-prerequisites.md#2-github-cli-gh--main-github-authorization). |
 | **3c. Wire board** *(board SSOT)* | Agent chat **`/board`** + paste **Project URL + repo URL** → agent proposes `project_ssot` + `default_repo` (confirm) → `project doctor` + `project status` |
 | **4. Board shell** *(when SSOT on)* | **Minimal 2-view** (recommended): copy overlay → Prioritized backlog + Status board in UI ([Playground #3](https://github.com/users/SavinRazvan/projects/3)). **Or** six-view Playground default. **`/board`**: CONSENT GATE + TURN PROTOCOL → `--check` exit **0**. |
-| **5. Build** | **`/implementer`** · Entry = `python3 -m agent_colony project status` when board SSOT on |
+| **5. Build** | **`/implementer`** · Entry = `project api-ready` then `project entry` when board SSOT on |
 
 **Healthy install?** `python3 -m agent_colony health` · with board on: `gh auth status` → `project doctor` → `project board-bootstrap --check`
 
@@ -467,7 +467,7 @@ Detail: [connect-external-mcp.md § DeepWiki](connect-external-mcp.md#worked-exa
 
 *(After first-run board shell in step 4 when SSOT is on.)*
 
-1. When `project_ssot.enabled`: `python3 -m agent_colony project status` (board first); else open `.local/index-and-planning/current/session-pointer.md`
+1. When `project_ssot.enabled`: `python3 -m agent_colony project api-ready` then `project entry` (board first); else open `.local/index-and-planning/current/session-pointer.md`
 2. Claim/update the board card (Status + Notes `@user/agent · <ISO-8601-UTC> · …`); local `plan.md` / `work-tracker.md` only as offline fallback under `board_only`; optional `history/continuity-index.md` (≥3-day local rollup)
 3. If board writes hit GraphQL rate-limit (EXIT_QUEUED (6)): `python3 -m agent_colony project api-ready` → (if yes) continue; else `python3 -m agent_colony project cooldown status` / `outbox status` — do not retry; later `api-ready` then triage (`outbox list` / `drop`) then `outbox flush` — enable `project_ssot.outbox` defaults after activate
 4. **`/implementer`** (or `/test-runner`, `/verifier`; `/auditor` only for architecture-impacting / pre-merge audits — not day-0 onboarding)
@@ -530,7 +530,8 @@ source .venv/bin/activate          # recommended; gates auto-use `.venv/bin/pyth
 | `python3 -m agent_colony drift validate --profile consumer --summary` | One-line consumer drift |
 | `python3 -m agent_colony project entry --digest` | Board Entry digest when SSOT on |
 | `python3 -m agent_colony project doctor --digest` | One-line board doctor |
-| `python3 -m agent_colony project status` | Board-first Entry (full output) |
+| `python3 -m agent_colony project entry` | Board-first Entry (scoped continuation; prefer after `api-ready`) |
+| `python3 -m agent_colony project status` | SSOT config / doctor companion (not daily Entry) |
 | `python3 -m agent_colony project heal-cards --check` | Board SSOT: inventory empty Status / incomplete Tier-1 (`--apply` repairs CLOSED+empty→Done) |
 | `python3 -m agent_colony doc skill-section --skill board-ssot --section "Continuation contract"` | Read one skill section without loading full skill |
 | `python3 -m agent_colony mcp validate` | MCP config after edits |
@@ -541,7 +542,7 @@ Token-efficiency program: [token-efficiency-program.md](token-efficiency-program
 
 ## Canvases and offline markdown
 
-Use the **GitHub Project board** when `project_ssot.enabled` (`python3 -m agent_colony project status`) and **Ctrl+Shift+P → Open Canvas** for kit visualizations. Local trackers under `.local/index-and-planning/` are offline markdown only; they are not a browser UI and do not replace the board when `board_only` is enabled.
+Use the **GitHub Project board** when `project_ssot.enabled` (`project api-ready` then `project entry`) and **Ctrl+Shift+P → Open Canvas** for kit visualizations. Local trackers under `.local/index-and-planning/` are offline markdown only; they are not a browser UI and do not replace the board when `board_only` is enabled.
 
 ### Refresh after a kit update
 

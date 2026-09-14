@@ -7,7 +7,7 @@ Used By:
 Depends On:
  - agent_colony_mcp/gates.py, workspace.py
 Notes:
- - P1 resources per IMPLEMENTATION-STATUS.md. No second GATES list in inventory.
+ - P1 resources per IMPLEMENTATION-STATUS.md. No second gate list in inventory.
 """
 
 from __future__ import annotations
@@ -124,7 +124,7 @@ def _list_skill_ids(root: Path) -> list[str]:
 
 
 def build_inventory(root: Path) -> str:
-    """Minimal live inventory JSON — not a duplicate of prepare.py GATES commands."""
+    """Minimal live inventory JSON — not a duplicate of prepare.py resolve_gates() commands."""
     payload = {
         "schema": "agent-colony-mcp-inventory/v1",
         "agents": _list_agent_ids(root),

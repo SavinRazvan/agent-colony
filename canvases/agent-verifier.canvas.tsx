@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-09-13";
+const VERIFIED = "2026-09-14";
 const SOURCES = ".cursor/agents/verifier.md · board-ssot/SKILL.md § Continuation";
 
 const GOALS = [
@@ -89,6 +89,7 @@ const FALLBACK_LABELS: Record<string, string> = {
 
 const READ_FIRST = [
   [".cursor/agents/verifier.md", "Agent card (canon)"],
+  [".cursor/skills/evidence-first/SKILL.md", "Disproof doctrine + role extension"],
   [".cursor/skills/board-ssot/SKILL.md", "When project_ssot.enabled"],
   [".local/index-and-planning/current/session-pointer.md", "Fallback Entry"],
   [".local/workflow-artifacts/pr/", "When maintainer workflow in play"],
@@ -99,6 +100,8 @@ const PATTERNS = [
   ["Consume only", "Do NOT create-from-template"],
   ["Board lifecycle", "Evidence on handed-off card; promote not primary path"],
   ["Tier-1", "Shared Board rights; Start date on claim / first In progress"],
+  ["validate-item", "CLI/MCP before Status→done; exit 5 on Schema-1 FAIL"],
+  ["workflow_run_gate", "Verifier-only MCP (ADR-012) — targeted disproof"],
   ["Checks", "pytest · prepare.py resolve_gates() · governance · verify_publish"],
   ["Merge gate", "Do not approve merge without pr/ artifacts when maintainer workflow active"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
@@ -212,8 +215,7 @@ export default function AgentVerifierCanvas() {
         </Row>
         <Text tone="secondary">
           verifier Agent Colony — Check “done” claims against fresh evidence
-          (try to disprove; no code fixes). No primary skill folder (agent card is
-          canon).
+          (try to disprove; no code fixes). Anchors evidence-first skill + board-ssot.
         </Text>
         <Text tone="tertiary" size="small">
           Source: {SOURCES} · verified {VERIFIED} · facts only
@@ -222,9 +224,15 @@ export default function AgentVerifierCanvas() {
 
       <Grid columns={3} gap={12}>
         <Stat value="Entry→Exit" label="Board-first Anchor" />
-        <Stat value="consume only" label="No create-from-template" />
+        <Stat value="EXIT_VAL (5)" label="Shippable Done gate" tone="warning" />
         <Stat value="EXIT_QUEUED" label="Outbox on rate-limit" tone="warning" />
       </Grid>
+
+      <Callout tone="danger" title="Machine gate — you unlock Done">
+        item_is_shippable cards: Status→done with --agent verifier satisfies
+        verifier-before-Done. Other agents without hop / allow-skip get
+        EXIT_VALIDATION (5). Falsification-first; no code fixes.
+      </Callout>
 
       <Stack gap={8}>
         <H2>Goals</H2>
@@ -264,7 +272,13 @@ export default function AgentVerifierCanvas() {
             resolve_gates(); governance when policy docs change; verify_publish).
           </Text>
           <Text>4. Verdict: Verified | Partial | Not verified.</Text>
-          <Text>5. One next action; handoff/claim. Status done or in_review with failure Notes.</Text>
+          <Text>
+            5. One next action; handoff/claim. Prefer validate-item --last and
+            workflow_check_audit_artifacts when Notes cite audits. Status → done
+            with --agent verifier (satisfies item_is_shippable / EXIT_VALIDATION)
+            or leave in_review with failure Notes. workflow_run_gate is
+            verifier-only.
+          </Text>
         </Stack>
       </CollapsibleSection>
 
@@ -300,7 +314,8 @@ export default function AgentVerifierCanvas() {
               work.
             </Text>
             <Text>
-              Exit: handoff/claim; Status done or leave in_review with failure Notes.
+              Exit: handoff/claim; Status → done with --agent verifier (shippable
+              gate) or leave in_review with failure Notes.
             </Text>
             <Text>
               change-index if findings change status. Do not dual-write work-tracker

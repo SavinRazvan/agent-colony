@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-09-13";
+const VERIFIED = "2026-09-14";
 const SOURCES =
   ".cursor/agents/drift-guard.md · drift-audit/SKILL.md · board-ssot/SKILL.md · ADR-007";
 
@@ -97,7 +97,7 @@ const READ_FIRST = [
 
 const PATTERNS = [
   ["Write scope", "Drift artifacts only — no product-code"],
-  ["Board lifecycle", "list --status in_progress; shippable P0|P1 → verifier; hygiene may done"],
+  ["Board lifecycle", "list --status in_progress; shippable (PR/[AUDIT]/P0|P1) → verifier; hygiene may done"],
   ["Tier-1", "Shared Board rights; no silent tracker dual-write"],
   ["Dual-write remediation", "Notes or handoff to board / implementer via Ready"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
@@ -118,6 +118,7 @@ const ARTIFACTS = [
 ];
 
 const PEERS = [
+  ["Outbound", "verifier", "shippable drift-pass → handoff --next verifier"],
   ["Outbound", "board", "Dual-write remediation via Ready"],
   ["Outbound", "implementer", "Dual-write remediation via Ready"],
   ["Inbound", "implementer", "Invokes on P0/P1 after drift-validate"],
@@ -255,14 +256,16 @@ export default function AgentDriftGuardCanvas() {
           <Text>1. project entry (prefer over unfiltered list; board required when on).</Text>
           <Text>2. Run drift validate; check DRIFT-009…012 board subset (full catalog DRIFT-001…017).</Text>
           <Text>3. Goal pulse: board Acceptance/Notes + plan pointers + roster.</Text>
-          <Text>4. project export --reuse-if-fresh for DRIFT-010 when needed.</Text>
+          <Text>4. project export --reuse-if-fresh 900 for DRIFT-010 when needed.</Text>
           <Text>
             5. Write drift-audit.md + drift-todos.md under
             .local/workflow-artifacts/drift/.
           </Text>
           <Text>
-            6. drift-pass card done/in_review; gaps → Notes or handoff to
-            board/implementer via Ready; updates-log.
+            6. Shippable (PR / [AUDIT] / P0|P1) → handoff --next verifier --to
+            in_review; hygiene chores may →Done; cite DRIFT-017 WARN in Notes when
+            Commissioned-By missing or equals Audited-By; gaps → Notes/Ready — no
+            silent tracker dual-write; updates-log.
           </Text>
         </Stack>
       </CollapsibleSection>
@@ -297,7 +300,7 @@ export default function AgentDriftGuardCanvas() {
               Entry MUST: project entry when board SSOT enabled; scoped list only in live mode.
             </Text>
             <Text>
-              Exit: shippable P0|P1 drift-pass → handoff --next verifier --to
+              Exit: shippable (PR / [AUDIT] / P0|P1) drift-pass → handoff --next verifier --to
               in_review; hygiene may done/in_review; dual-write findings → Notes
               or handoff to board/implementer via Ready.
             </Text>

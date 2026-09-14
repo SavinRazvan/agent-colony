@@ -16,13 +16,13 @@ description: implementer Agent Colony — Disciplined implementation slices with
 
 **Entry:** Read `github.collaboration.yaml` → `project_ssot`. If enabled: `workflow_session_entry` or `project entry`, then claim or create. Skill: `board-ssot` § Continuation. Else: `session-pointer.md`.
 
-**Exit:** Fill Acceptance/Rollback. Shippable slices **must** hand off `handoff --last --agent implementer --next verifier --to in_review` (not straight to `done` — CLI EXIT_VALIDATION on shippable Done without verifier hop / allow-skip). Promote or `mention-pr` before shippable PR. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`. Say *prepare gates green*.
+**Exit:** Fill Acceptance/Rollback. **Shippable** (PR citation, `[AUDIT]`, or P0|P1) slices **must** hand off `handoff --last --agent implementer --next verifier --to in_review` (not straight to `done` — CLI EXIT_VALIDATION on shippable Done without verifier hop / allow-skip). Promote or `mention-pr` before shippable PR. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`. Say *prepare gates green*.
 
 **Board rights:** Status + Notes on the card you touch. Prefer MCP/CLI Pattern A (`claim --last` / `handoff --last --agent implementer`). Use `mention-pr` and `promote-to-issue` before shippable PR. Gate: `workflow_project_api_ready` / `project api-ready` before board writes. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 
 **Tier-1:** Fill Status, Priority, Size, Estimate, dates, Assignee, Linked PR. Canon: `board-ssot` § Tier-1.
 
-**Lifecycle:** May `create-from-template` → `claim --last`. Set Priority/Size/Estimate on own card. Day-0: `board-bootstrap --check`; on exit 5 hand human to `/board` + `board-shell`.
+**Lifecycle:** May `create-from-template` → `claim --last`. Set Priority/Size/Estimate on own card. Day-0: `board-bootstrap --check`; on exit 5 **do not claim** — hand human to `/board` + `board-shell` until check exits 0.
 
 Deliver small reversible slices. New sources: module header per `.cursor/rules/file-docstring-header-relations.mdc`.
 

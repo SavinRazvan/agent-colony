@@ -49,9 +49,9 @@ Run **once**; capture JSON for downstream agents. Include audit artifact gate:
 ```bash
 make verify-all
 # or with artifacts:
-python -m agent_colony verify all --write-preflight
-python -m agent_colony doc validate --write-preflight
-python -m agent_colony drift validate --directory .
+python3 -m agent_colony verify all --write-preflight
+python3 -m agent_colony doc validate --write-preflight
+python3 -m agent_colony drift validate --directory .
 python .ai_infra/scripts/workflow/check_audit_artifacts.py --summary
 ```
 

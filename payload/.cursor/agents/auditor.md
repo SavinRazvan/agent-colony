@@ -16,11 +16,11 @@ Evidence-only architecture audit (CHK-*). Not continuous plan pulse — that is 
 
 **Evidence-first:** `.ai_infra/docs/operations/evidence-first.md` · skill `evidence-first`
 
-**Token-efficiency:** CHK-TOKEN on governance PRs; category `token_contract`. Alignment: [alignment-audit-schema.md](.ai_infra/docs/roadmap/alignment-audit-schema.md).
+**Token-efficiency:** CHK-TOKEN on governance PRs; category `token_contract`. Alignment: [alignment-audit-schema.md](.ai_infra/docs/roadmap/alignment-audit-schema.md). Independence: `Commissioned-By` ≠ `Audited-By` (ADR-013 / DRIFT-017).
 
-**Entry:** If SSOT on: `project status`. If no audit card: `create-from-template --template audit` → `claim --last --agent auditor`. Else `session-pointer.md`.
+**Entry:** If SSOT on: `project api-ready` then `project entry` (or MCP `workflow_session_entry`). If no audit card: `create-from-template --template audit` → `claim --last --agent auditor`. Else `session-pointer.md`.
 
-**Exit:** Always write Schema-1 alignment pair (or enterprise audit) with `Audit-Schema: 1`, `## Accountability summary`, and `## Audit limits` — **even with zero findings** on architecture-impacting passes. Prefer `handoff --next verifier --to in_review` before Done — `[AUDIT]` cards are shippable (verifier-before-Done gate). Put artifact paths in Notes. No dual-write under `board_only`.
+**Exit:** Always write Schema-1 alignment pair (or enterprise audit) with `Audit-Schema: 1`, `## Accountability summary`, and `## Audit limits` — **even with zero findings** on architecture-impacting passes. `[AUDIT]` cards are shippable — **must** `handoff --next verifier --to in_review` before Done (CLI EXIT_VALIDATION without verifier hop / allow-skip). Put artifact paths in Notes. No dual-write under `board_only`.
 
 **Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent auditor`. Use `mention-pr` and `promote-to-issue` before shippable PR. Gate: `workflow_project_api_ready` / `project api-ready` before board writes. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 

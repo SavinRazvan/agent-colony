@@ -22,7 +22,7 @@ import {
 
 type FlowMode = "slice" | "side";
 
-const VERIFIED = "2026-09-13";
+const VERIFIED = "2026-09-14";
 const SOURCES =
   "project-board-collaboration.md · token-efficiency.md · board-ssot/SKILL.md · board-shell/SKILL.md · agent-relations · agent-roster · .cursor/agents/*.md · ADR-007 · ADR-008";
 
@@ -149,7 +149,7 @@ const PER_AGENT_ENTRY_EXIT = [
   [
     "board",
     "project entry",
-    "Full triage; handoff to implementer",
+    "Full triage; handoff to implementer; shippable (PR / [AUDIT] / P0|P1) → verifier before Done",
   ],
   [
     "implementer",
@@ -159,7 +159,7 @@ const PER_AGENT_ENTRY_EXIT = [
   [
     "test-runner",
     "project entry → slice card",
-    "→In review or →Done; shippable P0|P1 → verifier before Done",
+    "→In review if tests gate PR; shippable (PR / [AUDIT] / P0|P1) → verifier before Done",
   ],
   [
     "verifier",
@@ -179,12 +179,12 @@ const PER_AGENT_ENTRY_EXIT = [
   [
     "drift-guard",
     "Must project entry (then scoped list if live)",
-    "Shippable P0|P1 → verifier hop; hygiene may →Done; DRIFT-001…017; remediation via Notes/Ready",
+    "Shippable (PR / [AUDIT] / P0|P1) → verifier hop; hygiene may →Done; DRIFT-001…017; remediation via Notes/Ready",
   ],
   [
     "researcher",
     "project entry (+ research card)",
-    "Research card →Done; --agent researcher + AGENT_BRIEF / pack paths",
+    "Non-shippable research →Done + pack paths; shippable (PR / [AUDIT] / P0|P1) → verifier before Done",
   ],
 ];
 
@@ -331,7 +331,7 @@ const SLICE_FLOW = [
 const SIDE_FLOW = [
   "auditor: audit card → CHK-* / enterprise-architecture-audit/ + alignment/ → Notes paths → implementer (Phase 3: drift-guard goal pulse / verifier)",
   "implementer: make drift-validate → P0/P1 or goal-pulse gaps → hand off drift-guard",
-  "drift-guard: board In progress + Acceptance/Notes → drift validate (DRIFT-001…017 kit-dev) → .local/workflow-artifacts/drift/ → shippable P0|P1 → verifier; remediation via Notes/Ready",
+  "drift-guard: board In progress + Acceptance/Notes → drift validate (DRIFT-001…017 kit-dev) → .local/workflow-artifacts/drift/ → shippable (PR/[AUDIT]/P0|P1) → verifier; remediation via Notes/Ready",
   "integrator: integration card → integrate validate → escalate to implementer | test-runner | auditor",
 ];
 
@@ -548,6 +548,20 @@ export default function AgentBoardCollaborationCanvas() {
             .local/generated-data/board-outbox.jsonl = EXIT_QUEUED buffer;
             board-api-cooldown.json = circuit-breaker. Gate with api-ready;
             triage list|drop; flush later — not a second Status SSOT.
+          </Text>
+        </Stack>
+      </Callout>
+
+      <Callout tone="danger" title="Machine gate — verifier-before-Done">
+        <Stack gap={6}>
+          <Text>
+            item_is_shippable (PR citation / [AUDIT] / P0|P1): Status→Done returns
+            EXIT_VALIDATION (5) unless --agent verifier, prior Notes next=…/verifier,
+            or --allow-skip-verifier + rationale.
+          </Text>
+          <Text>
+            PR prepare: resolve_gates() (2 universal / 6 kit-dev). Arch merge needs
+            Schema-1. Canon: gate-matrix.md · README § How we enforce.
           </Text>
         </Stack>
       </Callout>
