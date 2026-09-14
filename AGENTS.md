@@ -63,7 +63,7 @@ Product rules: [`overlays/rules/`](overlays/README.md). Say *prepare gates green
 | Promote | `project promote-to-issue --last --agent <name>` | Draft→Issue |
 | PR link | `project mention-pr --pr N --last --agent <name>` | Notes + auto-promote |
 | Handoff | `project handoff --last --agent <name> --next <peer> --to in_review` | Status + Notes |
-| Rate-limit | `project api-ready` · `outbox status\|list\|drop` · `cooldown status` · `queue` · `outbox flush` | EXIT_QUEUED(6); no retry |
+| Rate-limit | `project api-ready` · `outbox status\|list\|drop\|purge` · `cooldown status` · `queue` · `outbox flush` | EXIT_QUEUED(6); no retry |
 
 Do not leave shippable work as Draft. Handoff: [workflow-complete.md](.ai_infra/docs/operations/workflow-complete.md) §F.
 

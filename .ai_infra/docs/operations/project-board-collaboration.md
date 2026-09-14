@@ -50,7 +50,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 
 **Incomplete cards WARN:** `doctor` / `heal-cards --check` often flag **Done** cards missing **End date** (historical hygiene). That is **not** blocked Ready work. Repair with human consent: `heal-cards --apply` (sets End date on Done). Use `--fill-tier1` only when you want Priority→p2 / Size defaults on gaps. Do **not** invent Acceptance/Rollback on old Done cards. Empty Ready → `create-from-template` + `claim`. During `heal-cards --apply [--fill-tier1]`, each live write goes through `guard_write_or_queue` — individual field ops may return **EXIT_QUEUED (6)** mid-sweep; continue local work, then `project api-ready` && re-run apply / `outbox flush` (do not retry-loop).
 
-**Owner hygiene:** `project_ssot.owner` must be a **bare login** for `gh --owner` (e.g. `SavinRazvan`). `load_project_ssot` runs `normalize_project_owner`, which strips `@` and `users/`|`user/`|`orgs/`|`org/` prefixes. Paths like `users/a/b` fail load. Prefer bare login in YAML; `project doctor` WARNs when the raw YAML value still looks URL-shaped after normalize (prefix was stripped for runtime). Wrong prefix historically produced `unknown owner type` on `gh project` calls and failed outbox rows — fix YAML, then triage with `outbox drop --force` for stale failed rows (do not blind-flush).
+**Owner hygiene:** `project_ssot.owner` must be a **bare login** for `gh --owner` (e.g. `SavinRazvan`). `load_project_ssot` runs `normalize_project_owner`, which strips `@` and `users/`|`user/`|`orgs/`|`org/` prefixes. Paths like `users/a/b` fail load. Prefer bare login in YAML; `project doctor` WARNs when the raw YAML value still looks URL-shaped after normalize (prefix was stripped for runtime). Wrong prefix historically produced `unknown owner type` on `gh project` calls and failed outbox rows — fix YAML, then triage with `outbox drop --force` and clear tombstones with `outbox purge --status failed --force` (do not blind-flush).
 
 **Entry modes:** Prefer `project api-ready` then `project entry` (or `--digest`). `live` / `conserve` when GraphQL works; `offline_artifacts` only when remaining is known-low or no usable snapshot. On EXIT_QUEUED (6): `project api-ready` then `outbox flush` after quota recovers — do not retry-loop.
 
@@ -139,6 +139,7 @@ All subcommands registered in `.ai_infra/install/agent_colony/project_parser.py`
 | `outbox status` | Outbox counts + GraphQL remaining | Any |
 | `outbox list` | List outbox rows (`--status pending\|failed\|done`) for triage | board, maintainer |
 | `outbox drop` | Mark a row failed/triaged (`--id` + `--force`; smoke/stale only) | board, maintainer |
+| `outbox purge` | Remove `failed`/`done` tombstones from JSONL (`--force`; archives by default) | board, maintainer |
 | `outbox flush` | Apply pending outbox ops when quota allows | implementer, board |
 
 ## Three coordination layers (do not conflate)
@@ -186,7 +187,7 @@ Who flushes: any agent/human after `api-ready` recovers; prefer implementer or b
 ### Outbox triage
 
 1. `project api-ready` must exit 0.
-2. `project outbox list --status pending` — drop fake/smoke with `project outbox drop --id <uuid> --force`.
+2. `project outbox list --status pending` — drop fake/smoke with `project outbox drop --id <uuid> --force`. Purge failed tombstones with `project outbox purge --status failed --force` when triage is done.
 3. Do not blind-flush claims that would wrong-transition Status.
 4. Then `project outbox flush` once (capped).
 
