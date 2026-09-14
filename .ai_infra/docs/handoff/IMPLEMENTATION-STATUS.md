@@ -20,7 +20,7 @@ Notes:
 Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
-**Last updated:** 2026-09-14 (AA-DOC batch A — board CLI 29 leaves)
+**Last updated:** 2026-09-14 (MCP inventory — 29 tools + 7 resources)
 **Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1653
 
 ## Shipped (confirmed in repo)
@@ -55,7 +55,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Kit canvases | **15** files under `canvases/`; DOC-008 counts **11** roster/agent canvases (excludes concept hubs `board-ssot-vs-trackers.canvas.tsx`, `agents-artifacts-board.canvas.tsx`, `github-api-safety.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
-| MCP tools + resources | 29 tools + 6 resources (ADR-012 Pattern A board tools + `workflow_check_audit_artifacts` + `workflow_project_validate_item`) | `.ai_infra/mcp_servers/agent_colony_mcp/` |
+| MCP tools + resources | 29 tools + 7 resources (ADR-012 Pattern A board tools + `workflow_check_audit_artifacts` + `workflow_project_validate_item`) | `.ai_infra/mcp_servers/agent_colony_mcp/` |
 | Install scaffold + contract | `install-contract.json`; idempotent trackers/`AGENTS.md` on re-activate; kit 0.7.3 deletes leftover `.local/agents-control-center/` if present | `.ai_infra/scripts/install/scaffold.py` |
 | Local artifact tiers | Tier 1 scaffold: all `workflow-artifacts/*` buckets + README stubs; SSOT `local_workflow_paths.py` | `.ai_infra/templates/local-workspace/` |
 | Integrate validate | INT-001…014; INT-009/011 plugin parity **kit-dev only** | `.ai_infra/scripts/integration/validate.py` |
