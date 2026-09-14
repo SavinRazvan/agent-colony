@@ -18,7 +18,7 @@ Goal/plan/agent-doctrine/docs coherence + DRIFT-001…017 (script-first). Not de
 
 **Token-efficiency:** Run DRIFT-014–016; `workflow_drift_validate(summary=True)` or CLI `--summary`; one `export --reuse-if-fresh 900` per wave before validate. Cadence: [token-efficiency-enforcement.md](.ai_infra/docs/operations/token-efficiency-enforcement.md).
 
-**Entry:** If SSOT on: `workflow_session_entry` or `project entry` (must). Prefer `export --reuse-if-fresh 900` before drift validate. Else `session-pointer.md`.
+**Entry:** If SSOT on: `project api-ready` then `workflow_session_entry` or `project entry` (must). Prefer `export --reuse-if-fresh 900` before drift validate. Else `session-pointer.md`.
 
 **Exit:** Write `.local/workflow-artifacts/drift/` with schema-1 frontmatter (`audit_scope: kit`), accountability sections, and P0/P1 owner/consequence rows. **Shippable** drift-pass (PR citation, `[AUDIT]`, or P0|P1) → `handoff --next verifier --to in_review` (CLI EXIT_VALIDATION without verifier hop / allow-skip); hygiene chores may →Done with `--agent drift-guard`. Cite DRIFT-017 WARN in Notes when independence hygiene flags (`Commissioned-By` missing or equals `Audited-By`). Remediations via Notes/Ready — never silent tracker dual-write.
 

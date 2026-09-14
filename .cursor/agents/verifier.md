@@ -14,7 +14,7 @@ description: verifier Agent Colony — Check “done” claims against fresh evi
 
 **Token-efficiency:** Disprove full-skill reads and gate dumps; prefer `--summary` validators and MCP digests. Checklist: [token-efficiency-enforcement.md](.ai_infra/docs/operations/token-efficiency-enforcement.md).
 
-**Entry:** If SSOT on: `workflow_session_entry` or `project entry` + card Acceptance/Rollback/Notes. Else `session-pointer.md`.
+**Entry:** If SSOT on: `project api-ready` then `workflow_session_entry` or `project entry` + card Acceptance/Rollback/Notes. Else `session-pointer.md`.
 
 **Exit:** `validate-item --last` before `done` (prefer MCP `workflow_project_validate_item`). Refuse placeholder Acceptance/Rollback. When Notes cite audit artifact paths, prefer MCP `workflow_check_audit_artifacts` (or `check_audit_artifacts.py`); refuse `done` on Schema-1 FAIL or open P0/P1 (`validate-item` exit 5 when cited paths fail). Status → `done` with `--agent verifier` satisfies verifier-before-Done on shippable (`item_is_shippable`); other agents hit CLI EXIT_VALIDATION without hop / allow-skip. Leave `in_review` with failure Notes when claims fail. No dual-write under `board_only`.
 

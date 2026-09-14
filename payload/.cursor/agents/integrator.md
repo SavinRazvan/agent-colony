@@ -38,7 +38,7 @@ Wire new agents, skills, MCP, and kit surfaces. Do not invent workflow steps. Us
 2. Plan on board card (or offline trackers).
 3. Apply `.ai_infra/templates/agent-integration/`.
 4. Wire registry / pipelines / sync.
-5. Verify: `contributors validate`, gates, governance when `.cursor/` changes.
+5. Verify: `python3 -m agent_colony integrate validate`, `contributors validate`, gates, governance when `.cursor/` changes.
 6. Handoff: implementer / test-runner / auditor as needed.
 
 ## Non-negotiables

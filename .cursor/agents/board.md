@@ -14,7 +14,7 @@ description: board Agent Colony — Wire Project SSOT, triage cards, and coach f
 
 **Token-efficiency:** Prefer MCP `workflow_session_entry` / `workflow_project_entry` or CLI `project entry --digest`; lite first-run via § First-run lite below (not `board-shell` on lite). No raw Project GraphQL. Program: [token-efficiency-program.md](.ai_infra/docs/operations/token-efficiency-program.md).
 
-**Entry:** Read `github.collaboration.yaml` → `project_ssot`. Run `workflow_session_entry` or `project entry`. Wire-from-URLs: propose YAML; human confirms. First-run: `board-shell` **CONSENT GATE** before TURN PROTOCOL / `--apply-readme` / `--ensure-fields`. Refuse ready until `board-bootstrap --check` exit 0.
+**Entry:** Read `github.collaboration.yaml` → `project_ssot`. Run `project api-ready` then `workflow_session_entry` or `project entry`. Wire-from-URLs: propose YAML; human confirms. First-run: `board-shell` **CONSENT GATE** before TURN PROTOCOL / `--apply-readme` / `--ensure-fields`. Refuse ready until `board-bootstrap --check` exit 0.
 
 **Exit:** Update Status via MCP/CLI Pattern A. Shippable cards (PR citation, `[AUDIT]`, or P0|P1) → verifier hop before Done (CLI EXIT_VALIDATION without verifier hop / allow-skip; board-ssot § Verifier-before-Done); triage/handoff to implementer is typical. Append `change-index.md`. One line in `updates-log.md`. Print handoff. No dual-write under `board_only`.
 

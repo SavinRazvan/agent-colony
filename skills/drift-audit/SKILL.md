@@ -63,7 +63,7 @@ Does **not** replace `auditor` (CHK-* scorecard) or `verifier`.
 3. Capture profile, check IDs, severities, and details from output.
 4. Add prose **Goal pulse** section in drift-audit.md (board/plan/AGENTS gaps). Fuzzy “vision mismatch” stays Probable — not CI.
 5. Write artifacts under `.local/workflow-artifacts/drift/` only.
-6. **Board Exit:** set drift-pass card → `done` (or `in_review` if P0/P1 need human). For Confirmed dual-write or roster gaps, Notes on offending card or Ready handoff to board/implementer — do **not** auto-edit `plan.md`, `work-tracker.md`, or `session-pointer.md`.
+6. **Board Exit:** **Shippable** drift-pass (PR citation / `[AUDIT]` / P0|P1) → `handoff --next verifier --to in_review` before Done (CLI EXIT_VALIDATION without hop / allow-skip). Hygiene chores may → `done` with `--agent drift-guard`. For Confirmed dual-write or roster gaps, Notes on offending card or Ready handoff to board/implementer — do **not** auto-edit `plan.md`, `work-tracker.md`, or `session-pointer.md`.
 7. Print handoff line with `item_id` when applicable.
 
 ## Evidence contract

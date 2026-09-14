@@ -40,6 +40,7 @@ Evidence-only architecture audit (CHK-*). Deep agent doc/canvas vs machine truth
 1. `enterprise-architecture-audit/enterprise-architecture-audit.md`
 2. `enterprise-architecture-audit/enterprise-audit-actions.md`
 3. Alignment files when architecture-impacting (Schema-1 pair **mandatory**, even with zero findings — not advisory for the merge gate)
+4. Agent surface parity: `.local/workflow-artifacts/audit/agent-surface/<id>.md` depth matrices when running `agent-surface-parity`
 
 ## Handoff
 
