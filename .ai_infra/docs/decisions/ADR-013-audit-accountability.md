@@ -42,6 +42,6 @@ Related: [ADR-007](ADR-007-workflow-drift-guard.md), [alignment-audit-schema.md]
 
 ## References
 
-- Birhane et al., “AI auditing: The Broken Bus on the Road to AI Accountability,” arXiv:2401.14462
+- Abeba Birhane, Briana Vecchione, Ryan Steed, Victor Ojewale, Inioluwa Deborah Raji — “AI auditing: The Broken Bus on the Road to AI Accountability,” [arXiv:2401.14462](https://arxiv.org/abs/2401.14462). Local copy + credit: [`assets/other/`](../../../assets/other/README.md). Kit adaptation (process only): Savin Ionuț Răzvan.
 - [gate-matrix.md](../operations/gate-matrix.md)
 - [check_audit_artifacts.py](../../scripts/workflow/check_audit_artifacts.py)
