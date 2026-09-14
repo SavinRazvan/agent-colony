@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-09-13";
+const VERIFIED = "2026-09-14";
 const SOURCES =
   ".cursor/agents/auditor.md · auditor-protocol/SKILL.md · board-ssot/SKILL.md";
 
@@ -113,12 +113,12 @@ const ARTIFACTS = [
   ],
   [
     ".local/workflow-artifacts/alignment/alignment-audit.md",
-    "Optional (merge workflow)",
-    "implementer / maintainers",
+    "Required (arch-impacting merge)",
+    "merge Schema-1 / maintainers",
   ],
   [
     ".local/workflow-artifacts/alignment/alignment-todos.md",
-    "Optional (merge workflow)",
+    "Required (arch-impacting merge)",
     "implementer applies",
   ],
   ["change-index.md", "Exit", "Next agents / humans"],
@@ -143,9 +143,9 @@ const ARTIFACTS = [
 ];
 
 const PEERS = [
+  ["Outbound", "verifier", "must handoff --next verifier on [AUDIT] (EXIT_VALIDATION)"],
   ["Outbound", "implementer", "Continue from Notes with artifact paths"],
   ["Outbound", "drift-guard", "orch Phase 3 — goal pulse + DRIFT validate"],
-  ["Outbound", "verifier", "audit-orchestration Phase 3 — spot-check top claims"],
 ];
 
 function DagPanel({
@@ -242,7 +242,7 @@ export default function AgentAuditorCanvas() {
 
       <Grid columns={3} gap={12}>
         <Stat value="Entry→Exit" label="Board-first Anchor" />
-        <Stat value="implementer" label="Typical next (Notes)" />
+        <Stat value="verifier" label="Must next when [AUDIT]" tone="warning" />
         <Stat value="EXIT_QUEUED" label="Outbox on rate-limit" tone="warning" />
       </Grid>
 
@@ -272,6 +272,10 @@ export default function AgentAuditorCanvas() {
             ? "Entry: project entry; may create-from-template --template audit then claim."
             : "Fallback: session-pointer. Audits write .local/ artifacts only."}
         </Callout>
+        <Callout tone="danger" title="Machine gate — [AUDIT] is shippable">
+          Must handoff --next verifier --to in_review before Done. CLI EXIT_VALIDATION
+          (5) without verifier hop / allow-skip. Commissioned-By ≠ Audited-By (ADR-013).
+        </Callout>
         <DagPanel mode={mode} tokens={tokens} />
       </Stack>
 
@@ -291,9 +295,9 @@ export default function AgentAuditorCanvas() {
           </Text>
           <Text>4. Propose tracker edits in audit-actions — implementer applies.</Text>
           <Text>
-            5. Exit: artifacts + change-index + updates-log; handoff --next
-            verifier --to in_review on shippable [AUDIT] cards; Notes with
-            artifact paths; orch Phase 3 → drift-guard goal pulse as needed.
+            5. Exit: artifacts + change-index + updates-log; must handoff --next
+            verifier --to in_review on [AUDIT] (EXIT_VALIDATION without hop);
+            Notes with artifact paths; orch Phase 3 → drift-guard goal pulse as needed.
           </Text>
         </Stack>
       </CollapsibleSection>
@@ -328,8 +332,8 @@ export default function AgentAuditorCanvas() {
               May create-from-template --template audit then claim --last.
             </Text>
             <Text>
-              Exit: Status in_review or done; Notes with artifact paths for
-              implementer.
+              Exit: prefer handoff --next verifier --to in_review — [AUDIT] cards
+              are shippable (PR / [AUDIT] / P0|P1 gate); Notes with artifact paths.
             </Text>
             <Text>
               Rate-limit: api-ready → EXIT_QUEUED (6) → cooldown/outbox status|list → flush; do not hammer

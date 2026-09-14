@@ -58,7 +58,7 @@ Product rules: [`overlays/rules/`](overlays/README.md). Say *prepare gates green
 |------|---------|--------|
 | Entry | `project api-ready` then `project entry` | Quota/cooldown gate + scoped read |
 | Claim | `project claim --last --agent <name>` | In progress; Start date |
-| Done | `project set-status --to done` / `handoff --to done` | End date; shippable needs `--agent verifier` (or prior hop / allow-skip) |
+| Done | `project set-status --to done` / `handoff --to done` | End date; **shippable** (PR citation / `[AUDIT]` / P0\|P1) needs `--agent verifier` (or prior hop / allow-skip) |
 | Triage | `project set-field --field priority\|size\|estimate --to … --last` | Own/triage cards |
 | Promote | `project promote-to-issue --last --agent <name>` | Draft→Issue |
 | PR link | `project mention-pr --pr N --last --agent <name>` | Notes + auto-promote |
@@ -70,6 +70,8 @@ Do not leave shippable work as Draft. Handoff: [workflow-complete.md](.ai_infra/
 Sequence: `plan → interfaces → implementation → tests → evidence → docs`.
 
 ## Quality gates
+
+**Verifier-before-Done:** shippable cards (`item_is_shippable` — PR citation / `[AUDIT]` / P0|P1) Status→Done → **EXIT_VALIDATION (5)** unless `--agent verifier`, prior Notes hop, or `--allow-skip-verifier` + rationale. Canon: `board-ssot` § Verifier-before-Done · [gate-matrix.md](.ai_infra/docs/operations/gate-matrix.md).
 
 Merge gate order: `resolve_gates()` in `.ai_infra/scripts/pr/prepare.py` — **two** universal + **four** kit-dev append (**six** total). Also run `check_governance_consistency.py` and `check_debrand.py` when changing governance, `.cursor/`, `.agents/`, or policy docs.
 

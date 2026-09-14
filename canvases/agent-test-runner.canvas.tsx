@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-09-13";
+const VERIFIED = "2026-09-14";
 const SOURCES =
   ".cursor/agents/test-runner.md · test-coverage/SKILL.md · board-ssot/SKILL.md";
 
@@ -80,7 +80,7 @@ const BOARD_LABELS: Record<string, string> = {
   coverage: "coverage.json",
   artifacts: "test-plan + change-index",
   handoff: "handoff",
-  next: "verifier (if tests gate)",
+  next: "verifier when shippable or tests gate",
 };
 
 const FALLBACK_LABELS: Record<string, string> = {
@@ -103,7 +103,7 @@ const READ_FIRST = [
 
 const PATTERNS = [
   ["Consume only", "No create-from-template"],
-  ["Board lifecycle", "Exit in_review if tests gate PR else done; shippable P0|P1 → verifier"],
+  ["Board lifecycle", "Exit in_review if tests gate PR; non-shippable may done; shippable (PR/[AUDIT]/P0|P1) → verifier"],
   ["Tier-1", "Shared Board rights; promote only if opening a shippable PR"],
   ["Module layout", "tests/modules/<module>/ matching source boundaries"],
   ["Coverage evidence", "pytest --cov writes coverage.json only — do not invent alternate names"],
@@ -283,8 +283,9 @@ export default function AgentTestRunnerCanvas() {
             make doc-validate.
           </Text>
           <Text>
-            7. Exit: Status in_review if tests gate PR else done; shippable P0|P1
-            → verifier even when tests do not gate PR; update change-index +
+            7. Exit: Status in_review if tests gate PR; non-shippable may done;
+            shippable (PR citation, [AUDIT], or P0|P1) → verifier before Done;
+            update change-index +
             test-index/test-plan.
           </Text>
         </Stack>
@@ -319,7 +320,8 @@ export default function AgentTestRunnerCanvas() {
           <Stack gap={6}>
             <Text>Entry: project entry + claim. Consume only — no create-from-template.</Text>
             <Text>
-              Exit: in_review if tests gate PR else done; shippable P0|P1 → verifier;
+              Exit: in_review if tests gate PR; non-shippable may done; shippable
+              (PR / [AUDIT] / P0|P1) → verifier before Done;
               change-index + test-index/test-plan.
             </Text>
             <Text>

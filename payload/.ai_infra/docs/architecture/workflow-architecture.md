@@ -26,6 +26,17 @@ Notes:
 
 **Install** scaffolds Tier 1 base paths (trackers, `workflow-artifacts/*` buckets, README stubs). Agents and PR scripts write Tier 2 runtime content during work. Path SSOT: `.ai_infra/scripts/pr/local_workflow_paths.py`.
 
+## Enforcement (fail-closed)
+
+| Surface | Behavior |
+|---------|----------|
+| **Board Done** | Shippable (`item_is_shippable`) → **EXIT_VALIDATION (5)** without verifier hop / allow-skip |
+| **PR prepare** | `resolve_gates()` — 2 universal; 6 on kit-dev |
+| **PR merge (arch)** | Schema-1 alignment pair; open P0/P1 fail |
+| **Rate-limit** | **EXIT_QUEUED (6)** → outbox; not a second Status SSOT |
+
+Canon: [gate-matrix.md](../operations/gate-matrix.md) · [README § How we enforce](../../../README.md#how-we-enforce-real-gates).
+
 ## Activation
 
 Enabling the **plugin** loads agents/skills/rules in the IDE only — it does **not** write files to your project. Run activate to install all three planes on disk:
@@ -63,7 +74,7 @@ Shippable implementer slices hand off to **verifier** (`in_review`) before `done
 
 ## Anchoring
 
-**When `project_ssot.enabled`** (see `github.collaboration.yaml`, [ADR-008](../decisions/ADR-008-project-board-ssot.md)): session backlog/status is the **GitHub Project** via `python -m agent_colony project …` and `.cursor/skills/board-ssot/SKILL.md`. **Day-0:** `/board` + `board-shell` until `board-bootstrap --check` matches `board-shell.schema.yaml` (Playground six-view default) — before `/implementer`; audit is not day-0. Local `session-pointer.md` / `plan.md` / `work-tracker.md` are **offline fallback only** under `sync_policy: board_only` (no dual-write; DRIFT-009). Rate-limit layer: `project api-ready` / cooldown / local outbox (`EXIT_QUEUED` 6) — see [project-board-collaboration.md § Three coordination layers](../operations/project-board-collaboration.md#three-coordination-layers-do-not-conflate).
+**When `project_ssot.enabled`** (see `github.collaboration.yaml`, [ADR-008](../decisions/ADR-008-project-board-ssot.md)): session backlog/status is the **GitHub Project** via `python -m agent_colony project …` and `.cursor/skills/board-ssot/SKILL.md`. **Day-0:** `/board` + `board-shell` until `board-bootstrap --check` matches `board-shell.schema.yaml` (Playground six-view default) — before `/implementer`; audit is not day-0. On **`consumer_lite`**, first-run coaching is inline in `board.md` (no `board-shell` skill) — see `board.md` § First-run (lite). Local `session-pointer.md` / `plan.md` / `work-tracker.md` are **offline fallback only** under `sync_policy: board_only` (no dual-write; DRIFT-009). Rate-limit layer: `project api-ready` / cooldown / local outbox (`EXIT_QUEUED` 6) — see [project-board-collaboration.md § Three coordination layers](../operations/project-board-collaboration.md#three-coordination-layers-do-not-conflate).
 
 **Otherwise:** every session → `.local/index-and-planning/current/session-pointer.md` → `plan.md` → `work-tracker.md`.
 

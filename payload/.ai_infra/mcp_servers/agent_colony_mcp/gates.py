@@ -1,13 +1,13 @@
 """
 File: gates.py
 Path: .ai_infra/mcp_servers/agent_colony_mcp/gates.py
-Role: Load GATES from `.ai_infra/scripts/pr/prepare.py` — never duplicate gate lists in MCP.
+Role: Load gates via prepare.py `resolve_gates()` — never duplicate gate lists in MCP.
 Used By:
  - agent_colony_mcp/server.py
 Depends On:
  - agent_colony_mcp/workspace.py
 Notes:
- - Single source of truth remains prepare.py GATES.
+ - Prefer resolve_gates(repo); fall back to GATES (2-gate alias) if missing.
 """
 
 from __future__ import annotations
@@ -42,5 +42,5 @@ def load_gates(root: Path | None = None) -> list[list[str]]:
         return [list(cmd) for cmd in resolve(repo)]
     gates = getattr(module, "GATES", None)
     if not isinstance(gates, list):
-        raise ValueError("prepare.py GATES must be a list")
+        raise ValueError("prepare.py resolve_gates()/GATES must yield a list")
     return [list(cmd) for cmd in gates]

@@ -30,7 +30,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Status drifts from reality | Status column = truth (DRIFT-009 watches dual-write) |
 | Humans cannot see progress | Project UI is the shared dashboard |
 
-**Rule:** Entry = read board. Exit = update Status and **attributed Notes** for the card you touched. `validate-item` checks the card body, Tier-1 fields (including Assignee when present on the snapshot), and status-scoped Notes; it is not just a section-presence check. **Enforcement:** `handoff` and `set-status` to `in_review`|`done` call the same checks and return EXIT_VALIDATION (5) while Acceptance/Rollback are empty or `(TBD)` (including `- (TBD)` list form). Fill via `create-from-template --acceptance/--rollback` or `project set-section --section acceptance|rollback --text '…' --last`. Prefer Pattern A recipes: `project claim` / `project handoff` (one command each). Atomics (`append-notes --agent`, `set-section`) remain for power use. **Never** paste Project settings UI text into a shell — humans **follow** `.ai_infra/templates/project-board/views-setup.md` and paste **contents of** `project-readme.md` (board brief — not a CLI dump) into Project README settings (or opt-in `board-bootstrap --check --apply-readme`). Day-to-day CLI: `project guide`.
+**Rule:** Entry = read board. Exit = update Status and **attributed Notes** for the card you touched. `validate-item` checks the card body, Tier-1 fields (including Assignee when present on the snapshot), and status-scoped Notes; it is not just a section-presence check. **Enforcement:** `handoff` and `set-status` to `in_review`|`done` call the same checks and return EXIT_VALIDATION (5) while Acceptance/Rollback are empty or `(TBD)` (including `- (TBD)` list form). Fill via `create-from-template --acceptance/--rollback` or `project set-section --section acceptance|rollback --text '…' --last`. **Verifier-before-Done:** shippable cards (`item_is_shippable` — PR citation / `[AUDIT]` / P0|P1) Status→Done also return EXIT_VALIDATION unless `--agent verifier`, prior Notes `next=…/verifier`, or `--allow-skip-verifier` + rationale — see `board-ssot` § Verifier-before-Done · [gate-matrix.md](gate-matrix.md). Prefer Pattern A recipes: `project claim` / `project handoff` (one command each). Atomics (`append-notes --agent`, `set-section`) remain for power use. **Never** paste Project settings UI text into a shell — humans **follow** `.ai_infra/templates/project-board/views-setup.md` and paste **contents of** `project-readme.md` (board brief — not a CLI dump) into Project README settings (or opt-in `board-bootstrap --check --apply-readme`). Day-to-day CLI: `project guide`.
 
 ### Board shell starter (first-run)
 
@@ -82,14 +82,14 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 
 | Agent | Entry | Exit (board) |
 |-------|-------|--------------|
-| **board** | status + list | Full triage; handoff to implementer |
-| **implementer** | status + `claim --agent implementer` | Shippable: `handoff --next verifier --to in_review` (CLI blocks Done without verifier hop). Chores may →Done |
-| **test-runner** | status + slice card | →In review or →Done (`--agent test-runner`); shippable P0\|P1 → verifier before Done |
-| **verifier** | status + related card | →Done with `--agent verifier` (machine gate on shippable); or leave In review |
-| **integrator** | status + claim | Shippable → `handoff --next verifier --to in_review`; chores may →Done (`--agent integrator`) |
-| **auditor** | status + audit card | →In review (`--agent auditor`); Done via verifier (`[AUDIT]` shippable); Notes + artifact paths |
-| **drift-guard** | **Must** status + list In progress | Shippable P0\|P1 → verifier hop; hygiene chores may →Done (`--agent drift-guard`); remediation via Notes/Ready — no silent tracker edits |
-| **researcher** | status (+ research card) | Research card →Done; `--agent researcher` + `AGENT_BRIEF` / pack paths (adaptive intake from chat/Notes) |
+| **board** | `api-ready` → `entry` + list | Full triage; handoff to implementer. Shippable (PR / `[AUDIT]` / P0\|P1) → verifier before Done |
+| **implementer** | `api-ready` → `entry` + `claim --agent implementer` | Shippable: `handoff --next verifier --to in_review` (CLI EXIT_VALIDATION without verifier hop). Chores may →Done |
+| **test-runner** | `api-ready` → `entry` + slice card | →In review if tests gate PR; non-shippable may →Done; **shippable** (PR / `[AUDIT]` / P0\|P1) → verifier before Done |
+| **verifier** | `api-ready` → `entry` + related card | →Done with `--agent verifier` (machine gate on shippable); or leave In review |
+| **integrator** | `api-ready` → `entry` + claim | Shippable → `handoff --next verifier --to in_review`; chores may →Done (`--agent integrator`) |
+| **auditor** | `api-ready` → `entry` + audit card | →In review then Done via verifier (`[AUDIT]` shippable); Notes + artifact paths |
+| **drift-guard** | **Must** `api-ready` → `entry` (+ list In progress) | Shippable (PR / `[AUDIT]` / P0\|P1) → verifier hop; hygiene chores may →Done (`--agent drift-guard`); remediation via Notes/Ready — no silent tracker edits |
+| **researcher** | `api-ready` → `entry` (+ research card) | Non-shippable research →Done + pack paths; shippable → verifier before Done |
 
 ## Status path
 

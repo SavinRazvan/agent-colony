@@ -20,7 +20,7 @@ import {
   useHostTheme,
 } from "cursor/canvas";
 
-const VERIFIED = "2026-09-13";
+const VERIFIED = "2026-09-14";
 const SOURCES =
   "agent-relations edges · audit-orchestration (quarterly CHK-* vs PR focused) · board-ssot § Continuation · per-agent canvas PEERS";
 
@@ -41,7 +41,7 @@ type AgentId =
 const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
   {
     id: "board",
-    role: "board Agent Colony · wire SSOT + coach board-shell · skill board-ssot",
+    role: "board Agent Colony · wire SSOT + coach board-shell (full; lite: inline views-setup) · skill board-ssot",
     lane: "Coordination",
   },
   {
@@ -56,7 +56,7 @@ const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
   },
   {
     id: "verifier",
-    role: "verifier Agent Colony · check done claims vs evidence; no code fixes (no primary skill folder)",
+    role: "verifier Agent Colony · check done claims vs evidence; no code fixes · evidence-first skill",
     lane: "Delivery",
   },
   {
@@ -163,8 +163,20 @@ const RELATIONS: {
   {
     from: "test-runner",
     to: "verifier",
-    via: "handoff --to in_review",
-    when: "Tests gate the PR",
+    via: "handoff --next verifier --to in_review",
+    when: "Shippable or tests gate the PR",
+  },
+  {
+    from: "integrator",
+    to: "verifier",
+    via: "handoff --next verifier --to in_review",
+    when: "Shippable integration card (PR / [AUDIT] / P0|P1)",
+  },
+  {
+    from: "drift-guard",
+    to: "verifier",
+    via: "handoff --next verifier --to in_review",
+    when: "Shippable drift-pass (PR / [AUDIT] / P0|P1)",
   },
   {
     from: "verifier",
@@ -464,11 +476,15 @@ export default function AgentRelationsCanvas() {
 
       <Callout tone="info" title="Shared board contract">
         Every agent: Entry = project entry / claim; Exit = Status + Notes.
-        Tier-1: Start date on first In progress; Size/Estimate per skill table. Promote
-        Draft→Issue via promote-to-issue or mention-pr (auto when
-        promote_to_issue_on_pr) before shippable PR — claim does not auto-promote.
-        Notes: @owner.github_user/&lt;agent&gt; · YYYY-MM-DDTHH:MM:SSZ · … via
-        append-notes --agent. Board is the only writable Status SSOT when board_only.
+        Shippable (PR citation / [AUDIT] / P0|P1) → verifier hop before Done —
+        CLI EXIT_VALIDATION (5) without hop / allow-skip (board-ssot §
+        Verifier-before-Done). Tier-1: Start date on first In progress;
+        Size/Estimate per skill table. Promote Draft→Issue via promote-to-issue
+        or mention-pr (auto when promote_to_issue_on_pr) before shippable PR —
+        claim does not auto-promote. Notes:
+        @owner.github_user/&lt;agent&gt; · YYYY-MM-DDTHH:MM:SSZ · … via
+        append-notes --agent. Board is the only writable Status SSOT when
+        board_only.
       </Callout>
 
       <Text size="small" tone="tertiary">

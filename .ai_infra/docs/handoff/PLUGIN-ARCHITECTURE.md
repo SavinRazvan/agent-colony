@@ -11,9 +11,9 @@
 | **Kit maintainer** | [repository-map.md](repository-map.md) → [IMPLEMENTATION-STATUS.md](IMPLEMENTATION-STATUS.md) → [Docs index](../README.md) |
 | **Consumer app dev** | [PLUGIN-USER-GUIDE.md](../operations/PLUGIN-USER-GUIDE.md) → [consumer-quickstart.md](../operations/consumer-quickstart.md) → [workflow-architecture.md](../architecture/workflow-architecture.md) |
 
-**Product:** installable **multi-agent workflow infrastructure** for any Cursor project (not a PyPI package, not an MCP-first product).
+**Product:** installable **multi-agent workflow infrastructure** for any Cursor project (not a PyPI package, not an MCP-first product) — a **coordination and accountability** system with board SSOT (when enabled), evidence under `.local/`, and **machine gates** (verifier-before-Done / EXIT_VALIDATION, prepare `resolve_gates()`, Schema-1 arch merge, EXIT_QUEUED outbox). Pitch: [README](../../../README.md) · [gate-matrix.md](../operations/gate-matrix.md).
 
-**User journey:** plugin unpacks the full **consumer infrastructure** → user completes `.local/user_settings/` (GitHub + MCP worksheets) → **`/integrator`** extends agents/skills/MCP while preserving Pattern A, gates, and three-plane layout.
+**User journey:** plugin unpacks the full **consumer infrastructure** → user completes `.local/user_settings/` (GitHub + MCP worksheets) → board Entry/Exit + claim/handoff when SSOT on → **`/integrator`** extends agents/skills/MCP while preserving Pattern A, gates, and three-plane layout.
 
 **Optional add-on:** MCP server under `.ai_infra/mcp_servers/` — wraps the same scripts; agents do not require it.
 

@@ -14,9 +14,9 @@ description: researcher Agent Colony — Brief-driven multi-round research (GitH
 
 **Token-efficiency:** Pack rows need source refs; no product code dumps in chat. Not installed on `consumer_lite` — upgrade for `/researcher`.
 
-**Entry:** If SSOT on: `project status` (+ research card). Else `session-pointer.md`.
+**Entry:** If SSOT on: `project api-ready` then `project entry` (or MCP `workflow_session_entry`) (+ research card). Else `session-pointer.md`.
 
-**Exit:** Packs under `_research_results/sources/<slug>/`. Research card → `done` + paths in Notes. P0|P1 shippable cards follow verifier-before-Done when PR-cited. No dual-write under `board_only`.
+**Exit:** Packs under `_research_results/sources/<slug>/`. Non-shippable research card → `done` + paths in Notes. **Shippable** (PR citation, `[AUDIT]`, or P0|P1): `handoff --next verifier --to in_review` before Done (CLI EXIT_VALIDATION without verifier hop / allow-skip; board-ssot § Verifier-before-Done). No dual-write under `board_only`.
 
 **Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent researcher`. Use `mention-pr` and `promote-to-issue` before shippable PR. Gate: `workflow_project_api_ready` / `project api-ready` before board writes. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 
@@ -38,7 +38,7 @@ No edits to product `src/` / `tests/` / scripts without explicit ask. No git com
 
 ## Read first
 
-`.cursor/skills/research-corpus/SKILL.md` · `RESEARCH_BOUNDARIES.md` · pack `BRIEF.md`
+`.cursor/skills/research-corpus/SKILL.md` · `.ai_infra/templates/research-corpus/RESEARCH_BOUNDARIES.md` · pack `BRIEF.md`
 
 ## CLI
 

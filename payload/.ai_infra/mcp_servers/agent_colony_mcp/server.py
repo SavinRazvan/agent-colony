@@ -8,7 +8,7 @@ Depends On:
  - mcp.server.mcpserver
  - agent_colony_mcp/gates.py, runner.py, workspace.py
 Notes:
- - Does not reimplement GATES; full prepare uses prepare.py subprocess.
+ - Does not reimplement resolve_gates(); full prepare uses prepare.py subprocess.
 """
 
 from __future__ import annotations
@@ -77,7 +77,7 @@ def workflow_run_prepare(
     skip_gates_rationale: str = "",
     summary: bool = False,
 ) -> str:
-    """Run `.ai_infra/scripts/pr/prepare.py` (all GATES unless skip_gates)."""
+    """Run `.ai_infra/scripts/pr/prepare.py` (`resolve_gates()`; skip_gates optional)."""
     root = workspace_root()
     if skip_gates and not str(skip_gates_rationale or "").strip():
         return "exit=2\n--skip-gates requires skip_gates_rationale"
@@ -145,11 +145,11 @@ def workflow_run_merge_check(
 
 @mcp.tool()
 def workflow_run_gate(index: int) -> str:
-    """Verifier-only: run a single gate from prepare.py GATES by zero-based index."""
+    """Verifier-only: run one gate from `resolve_gates()` by zero-based index."""
     root = workspace_root()
     gates = load_gates(root)
     if index < 0 or index >= len(gates):
-        return f"exit=1\nInvalid gate index {index}; GATES has {len(gates)} entries"
+        return f"exit=1\nInvalid gate index {index}; resolve_gates() has {len(gates)} entries"
     code, out = run_cmd(gates[index], root)
     return f"exit={code}\n{out}"
 
@@ -206,7 +206,7 @@ def workflow_get_tracker(name: str) -> str:
 
 @mcp.tool()
 def workflow_gate_count() -> str:
-    """Return number of gates in prepare.py GATES (no command list in output)."""
+    """Return len(`resolve_gates()`) from prepare.py (no command list in output)."""
     return str(len(load_gates()))
 
 

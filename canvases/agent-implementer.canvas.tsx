@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-09-13";
+const VERIFIED = "2026-09-14";
 const SOURCES =
   ".cursor/agents/implementer.md · implementer-loop/SKILL.md · board-shell · board-ssot § Continuation";
 
@@ -274,9 +274,14 @@ export default function AgentImplementerCanvas() {
 
       <Grid columns={3} gap={12}>
         <Stat value="Entry→Exit" label="Board-first Anchor" />
-        <Stat value="verifier" label="Typical next (Exit recipe)" />
+        <Stat value="verifier" label="Must next when shippable" tone="warning" />
         <Stat value="EXIT_QUEUED" label="Outbox on rate-limit" tone="warning" />
       </Grid>
+
+      <Callout tone="danger" title="Machine gate — shippable Done">
+        Shippable (PR / [AUDIT] / P0|P1) → handoff --next verifier --to in_review.
+        Straight Status→Done without verifier hop / allow-skip → CLI EXIT_VALIDATION (5).
+      </Callout>
 
       <Stack gap={8}>
         <H2>Goals</H2>
@@ -318,7 +323,7 @@ export default function AgentImplementerCanvas() {
             (file-docstring-header-relations.mdc).
           </Text>
           <Text>
-            3. Gates: python .ai_infra/scripts/pr/prepare.py (resolve_gates() SSOT;
+            3. Gates: python3 .ai_infra/scripts/pr/prepare.py (resolve_gates() SSOT;
             GATES = 2-gate back-compat alias). Add
             check_governance_consistency.py if governance/policy docs changed.
           </Text>
@@ -327,8 +332,10 @@ export default function AgentImplementerCanvas() {
             tool-generated human sign-off.
           </Text>
           <Text>
-            5. Close: board Status via CLI; change-index + updates-log; make
-            drift-validate; hand off to drift-guard on P0/P1 findings.
+            5. Close: shippable (PR / [AUDIT] / P0|P1) → handoff --next verifier
+            --to in_review (must; EXIT_VALIDATION on straight Done); change-index
+            + updates-log; make drift-validate; hand off to drift-guard on P0/P1
+            findings.
           </Text>
         </Stack>
       </CollapsibleSection>
@@ -369,8 +376,9 @@ export default function AgentImplementerCanvas() {
               handoff --last --agent implementer → @owner.github_user/implementer.
             </Text>
             <Text>
-              Exit recipe: project handoff --last --agent implementer --next
-              verifier --to in_review (not straight to done).
+              Exit recipe: shippable (PR / [AUDIT] / P0|P1) → project handoff
+              --last --agent implementer --next verifier --to in_review (not
+              straight to done).
             </Text>
             <Text>
               Templates: create-from-template --template slice|bug then claim

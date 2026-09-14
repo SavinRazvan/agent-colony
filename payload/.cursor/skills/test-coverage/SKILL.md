@@ -2,6 +2,20 @@
 name: test-coverage
 description: Module-focused tests and coverage evidence for workflow scripts and project code.
 ---
+<!--
+File: SKILL.md
+Path: .cursor/skills/test-coverage/SKILL.md
+Role: Module-aligned pytest and coverage evidence for test-runner / implementer.
+Used By:
+ - .cursor/agents/test-runner.md
+ - .cursor/agents/implementer.md
+Depends On:
+ - .ai_infra/scripts/pr/check_testing_artifacts.py
+ - .ai_infra/scripts/pr/prepare.py
+ - .cursor/skills/evidence-first/SKILL.md
+Notes:
+ - Gates via prepare.py resolve_gates(); prefer scoped pytest first.
+-->
 
 # Test coverage
 

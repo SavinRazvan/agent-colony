@@ -2,6 +2,19 @@
 name: mcp-connect
 description: Connect external MCP servers to Agent Colony agents via mcp.user.json and mcp.registry.yaml.
 ---
+<!--
+File: SKILL.md
+Path: .cursor/skills/mcp-connect/SKILL.md
+Role: Wire external MCP servers into kit agents via registry + user JSON.
+Used By:
+ - .cursor/agents/integrator.md
+ - Maintainers enabling DeepWiki or custom MCP
+Depends On:
+ - .ai_infra/docs/handoff/PLUGIN-ARCHITECTURE.md
+ - .cursor/mcp.registry.yaml
+Notes:
+ - Kit agent-colony-mcp is separate; this skill is for external servers.
+-->
 
 # MCP connect
 

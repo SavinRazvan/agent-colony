@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-09-13";
+const VERIFIED = "2026-09-14";
 const SOURCES =
   ".cursor/agents/integrator.md · integrator-protocol/SKILL.md · board-ssot/SKILL.md";
 
@@ -116,6 +116,7 @@ const ARTIFACTS = [
 ];
 
 const PEERS = [
+  ["Outbound", "verifier", "shippable → handoff --next verifier --to in_review"],
   ["Escalation", "auditor", "Architecture-impacting → auditor-protocol"],
   ["Escalation", "test-runner", "Coverage → test-coverage"],
   ["Escalation", "implementer", "Product src/ → implementer-loop"],
@@ -246,6 +247,10 @@ export default function AgentIntegratorCanvas() {
             ? "Entry: project entry + integrator-protocol skill; claim/create card."
             : "Fallback: session-pointer. Resume board sync when available."}
         </Callout>
+        <Callout tone="danger" title="Machine gate — shippable Done">
+          Shippable (PR / [AUDIT] / P0|P1) → handoff --next verifier --to in_review.
+          Straight Done without hop / allow-skip → EXIT_VALIDATION (5).
+        </Callout>
         <DagPanel mode={mode} tokens={tokens} />
       </Stack>
 
@@ -259,7 +264,8 @@ export default function AgentIntegratorCanvas() {
             validate; check_governance_consistency when policy docs change.
           </Text>
           <Text>
-            5. Handoff: Status done or in_review if verify failed; Notes with
+            5. Handoff: shippable (PR / [AUDIT] / P0|P1) → handoff --next verifier
+            --to in_review; chores may →Done with --agent integrator; Notes with
             validate outcomes; change-index; updates-log.
           </Text>
         </Stack>
@@ -296,8 +302,9 @@ export default function AgentIntegratorCanvas() {
               claim/create card.
             </Text>
             <Text>
-              Exit: Shippable → handoff --next verifier --to in_review; chores may
-              done or in_review if verify failed; Notes with validate outcomes.
+              Exit: shippable (PR / [AUDIT] / P0|P1) → handoff --next verifier
+              --to in_review; chores may done or in_review if verify failed; Notes
+              with validate outcomes.
             </Text>
             <Text>
               Rate-limit: api-ready → EXIT_QUEUED (6) → cooldown/outbox status|list → flush; do not hammer

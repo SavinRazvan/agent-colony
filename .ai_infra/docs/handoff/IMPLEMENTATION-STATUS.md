@@ -20,13 +20,14 @@ Notes:
 Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
-**Last updated:** 2026-09-13 (board docs/canvases aligned to rate-limit safety + owner hygiene)
+**Last updated:** 2026-09-14 (README enforce pitch + verifier-before-Done status/docs parity)
 **Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1652
 
 ## Shipped (confirmed in repo)
 
 | Area | Status | Location |
 |------|--------|----------|
+| Verifier-before-Done (machine gate) | Shippable cards (`item_is_shippable`: PR citation / `[AUDIT]` / P0\|P1) Status→Done → **EXIT_VALIDATION (5)** unless `--agent verifier`, prior Notes `next=…/verifier`, or `--allow-skip-verifier` + rationale (`require_verifier_before_done`, default true) | `project_atomics.assert_verifier_ready_for_done` · board-ssot § Verifier-before-Done · PR #275 |
 | Universal rules | 7 `.mdc` (4 alwaysApply + 3 requestable) | `.cursor/rules/` |
 | Agents | 8 core; `model: auto`; audit agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` |
 | Canonical skills | 15 folders | `.cursor/skills/` |

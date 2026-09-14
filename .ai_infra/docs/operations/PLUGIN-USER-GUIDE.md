@@ -139,7 +139,7 @@ This loads agents, skills, and rules into Cursor. Your project may only get `.cu
 | 3b. GitHub auth | `gh auth status` — refresh Project scopes only if missing (`gh auth refresh -h github.com -s read:project,project`) |
 | 3c. Wire board | Agent chat **`/board`** + **Project URL + repo URL** → confirm proposed `project_ssot` ids → `project doctor` + `project status` |
 | 4. Board shell | **Minimal 2-view** ([Playground #3](https://github.com/users/SavinRazvan/projects/3)) or **six-view default** → `/board` CONSENT + TURN → `board-bootstrap --check` exit **0** |
-| 5. Build | **`/implementer`** · Entry = `python3 -m agent_colony project status` when board SSOT on |
+| 5. Build | **`/implementer`** · Entry = `project api-ready` then `project entry` when board SSOT on |
 
 **Step 2 — in Agent chat (not the terminal):**
 
@@ -155,7 +155,11 @@ Use this when your team opts into **GitHub Project as the only writable SSOT** (
 
 #### Product promise
 
-Install the **Agent Colony** plugin, open **your app repo** (not the kit product repo), and run **`/workflow-activate`**. Activate copies the **full kit infrastructure** — the same three planes kit maintainers use: Cursor contract (`.cursor/` agents, skills, rules; `.agents/skills/`; `AGENTS.md`), infrastructure (`.ai_infra/`, `agent_colony/` CLI), and runtime scaffold (`.local/` including `user_settings/` exemplars). You then wire **your** identity and **your** GitHub Project in `.local/user_settings/github.collaboration.yaml`.
+**Agent Colony** is a coordination and accountability system — not a prompt pack. Activate installs the **full kit infrastructure** (three planes: Cursor contract, `.ai_infra/` + CLI, `.local/` evidence). When `project_ssot` is on, GitHub Projects is the writable Status SSOT: **Entry → work → evidence → Exit** (Status + attributed Notes).
+
+**Machine enforcement (not vibes):** verifier-before-Done on shippable cards (`item_is_shippable` → **EXIT_VALIDATION** unless verifier hop / allow-skip); `prepare.py` → `resolve_gates()`; Schema-1 on architecture-impacting merge; **EXIT_QUEUED (6)** + outbox under GraphQL throttle. Canon: [README § How we enforce](../../../README.md#how-we-enforce-real-gates) · [gate-matrix.md](gate-matrix.md).
+
+Install the plugin, open **your app repo** (not the kit product repo), and run **`/workflow-activate`**. Wire **your** identity and **your** GitHub Project in `.local/user_settings/github.collaboration.yaml`.
 
 **Ready for `/implementer` requires:** `contributors validate` + `project doctor` + **`project board-bootstrap --check` exit 0** (Tier-1 columns on Status board + Prioritized backlog + non-empty README). Accept either:
 
@@ -253,7 +257,7 @@ python3 -m agent_colony project status
 
 If `gh` reports **missing required scopes `[read:project]` / `[project]`**, re-run `gh auth refresh -h github.com -s read:project,project` and complete the device link again.
 
-Daily Entry after onboarding: `project status` (board first) — see [project-board-collaboration.md](project-board-collaboration.md).
+Daily Entry after onboarding: `project api-ready` then `project entry` (board first) — see [project-board-collaboration.md](project-board-collaboration.md).
 
 ---
 
@@ -466,7 +470,7 @@ Cursor may also auto-delegate subagents when the task matches their `description
 
 Every session:
 
-1. When `project_ssot.enabled`: `python3 -m agent_colony project status` (board first); else `.local/index-and-planning/current/session-pointer.md`
+1. When `project_ssot.enabled`: `python3 -m agent_colony project api-ready` then `project entry` (board first); else `.local/index-and-planning/current/session-pointer.md`
 2. Board card Status/Notes — attribution `@user/agent · <ISO-8601-UTC> · …` (CLI stamps); local `history/continuity-index.md` rolls ≥3 days (local `plan.md` / `work-tracker.md` = offline fallback under `board_only`)
 3. Rate-limit / precheck: `project api-ready` first; EXIT_QUEUED (6) → do not retry-loop; triage with `outbox list` / `outbox drop --force` when needed; after quota recovers `project api-ready` then `outbox flush` (`project_ssot.outbox` in collaboration YAML — includes `precheck_writes` / `dedupe_pending`)
 4. **`/implementer`** (or specialist agent from §6)

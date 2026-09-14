@@ -58,8 +58,8 @@ Does **not** replace `auditor` (CHK-* scorecard) or `verifier`.
 
 ## Steps
 
-1. **Board first (when enabled):** `python -m agent_colony project status` and `project list --status in_progress` — cite board Status in artifacts. Optionally refresh the read-only snapshot: `python -m agent_colony project export` (never writes Status).
-2. **Script:** `python -m agent_colony drift validate --directory .` (or `make drift-validate`). On **consumer app projects**, use `--profile consumer`. Include **DRIFT-004b** / **DRIFT-009** / **DRIFT-010** / **DRIFT-011** / **DRIFT-012** / **DRIFT-013** when kit-dev / board_only as applicable (ADR-007/008/010). Consumers always get **DRIFT-013** + **DRIFT-011b** on `consumer` / `consumer-board` profiles.
+1. **Board first (when enabled):** `python3 -m agent_colony project status` and `project list --status in_progress` — cite board Status in artifacts. Optionally refresh the read-only snapshot: `python3 -m agent_colony project export` (never writes Status).
+2. **Script:** `python3 -m agent_colony drift validate --directory .` (or `make drift-validate`). On **consumer app projects**, use `--profile consumer`. Include **DRIFT-004b** / **DRIFT-009** / **DRIFT-010** / **DRIFT-011** / **DRIFT-012** / **DRIFT-013** when kit-dev / board_only as applicable (ADR-007/008/010). Consumers always get **DRIFT-013** + **DRIFT-011b** on `consumer` / `consumer-board` profiles.
 3. Capture profile, check IDs, severities, and details from output.
 4. Add prose **Goal pulse** section in drift-audit.md (board/plan/AGENTS gaps). Fuzzy “vision mismatch” stays Probable — not CI.
 5. Write artifacts under `.local/workflow-artifacts/drift/` only.
@@ -82,14 +82,14 @@ Does **not** replace `auditor` (CHK-* scorecard) or `verifier`.
 Audit-Schema: 1
 Audit-Scope: kit
 Named-Target: <repo or profile under review>
-Commissioned-By: drift-guard
+Commissioned-By: maintainer
 Audit-Type: workflow-drift-pass
 Audited-By: drift-guard
 Action-By: <name>
 GitHub-User: <handle>
 Date: <ISO-8601>
 Profile: kit-dev | consumer
-Command: python -m agent_colony drift validate --directory . [--profile consumer]
+Command: python3 -m agent_colony drift validate --directory . [--profile consumer]
 ```
 
 Include **`## Accountability summary`** and mandatory **`## Audit limits`**. P0/P1 script findings mirrored in `drift-todos.md` need `owner`, `due_slice`, `consequence_if_ignored`, **`status`** (missing/`open` → Schema-1 FAIL), **`category`**, paths, **`recommendation`**, and **`evidence`** when stamped `Audit-Schema: 1`.

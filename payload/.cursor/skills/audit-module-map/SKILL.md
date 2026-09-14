@@ -2,6 +2,20 @@
 name: audit-module-map
 description: Builds a deep per-module workflow map with importance, goals, and visual architecture output.
 ---
+<!--
+File: SKILL.md
+Path: .cursor/skills/audit-module-map/SKILL.md
+Role: Depth topology map for auditor enterprise / alignment passes.
+Used By:
+ - .cursor/agents/auditor.md
+ - .cursor/skills/auditor-protocol/SKILL.md
+Depends On:
+ - .cursor/skills/auditor-protocol/SKILL.md
+ - .cursor/skills/evidence-first/SKILL.md
+ - AGENTS.md
+Notes:
+ - Advisory-only; fold outputs into parent audit citations.
+-->
 
 # Audit module map (advisory-only)
 

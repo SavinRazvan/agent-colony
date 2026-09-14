@@ -2,6 +2,19 @@
 name: integrator-protocol
 description: Procedural integration of new agents, skills, MCP servers, and kit expansions into Agent Colony — templates, scripts, three-plane discipline.
 ---
+<!--
+File: SKILL.md
+Path: .cursor/skills/integrator-protocol/SKILL.md
+Role: Procedural integration checklist for agents, skills, MCP, and kit expansions.
+Used By:
+ - .cursor/agents/integrator.md
+Depends On:
+ - .ai_infra/docs/operations/mas-infrastructure-integration.md
+ - .cursor/skills/board-ssot/SKILL.md
+ - .cursor/skills/evidence-first/SKILL.md
+Notes:
+ - Prefer python3 -m agent_colony; shippable integrations hand off to verifier.
+-->
 
 # Integrator protocol
 
@@ -81,8 +94,8 @@ Agent + skill with **boundaries**; optional scoped MCP; no core PR pipeline unle
 ## Phase 4 — Verify
 
 ```bash
-python -m agent_colony contributors validate
-python -m agent_colony integrate validate
+python3 -m agent_colony contributors validate
+python3 -m agent_colony integrate validate
 python .ai_infra/scripts/architecture/check_governance_consistency.py   # if .cursor/ changed
 pytest -q tests/modules/<relevant>/
 make gates && make check-plugin    # if payload touched

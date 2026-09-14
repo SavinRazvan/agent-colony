@@ -14,7 +14,7 @@ Depends On:
  - .local/user_settings/github.collaboration.yaml (project_ssot)
  - .ai_infra/install/agent_colony/project_cli.py
  - .ai_infra/docs/operations/project-board-collaboration.md
- - ADR-008-project-board-ssot.md
+ - .ai_infra/docs/decisions/ADR-008-project-board-ssot.md
 Notes:
  - Pattern A: prefer recipes (claim/handoff/create-from-template); no dual-write when board_only.
 -->
@@ -52,7 +52,7 @@ Work is **indexed on the Project**, not chat alone.
 
 | Phase | Required |
 |-------|----------|
-| **Entry** | Prefer `python3 -m agent_colony project api-ready` then `project entry` (live \| conserve \| offline_artifacts). Then `get` / `claim` **one** card. Read Acceptance / Rollback / Notes. Avoid unfiltered `list` / full `export` every turn — use `export --reuse-if-fresh`. One export refresh per parent wave. |
+| **Entry** | Prefer `python3 -m agent_colony project api-ready` then `project entry` (live \| conserve \| offline_artifacts). Then `get` / `claim` **one** card. Read Acceptance / Rollback / Notes. Avoid unfiltered `list` / full `export` every turn — use `export --reuse-if-fresh 900`. One export refresh per parent wave. |
 | **During** | **One** In progress card for your assignee. Mid-slice progress → card Notes. Do not re-touch every non-done card. |
 | **Exit** | Update Status → `in_review` / `done`, or stay `in_progress` with **Notes** naming next agent. Notes via `append-notes --agent <this-agent>` → `@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · …` (CLI stamps UTC). Print handoff line. **EXIT_QUEUED (6)** / rate-limit / Forbidden / precheck low quota / open cooldown: **do not** retry-loop — op in `.local/generated-data/board-outbox.jsonl`; check `project cooldown status` / `project api-ready`; later `project outbox flush`. |
 | **Never** | Chat-only completion with stale Status. No dual-write tracker `in_progress` under `board_only`. No bare `Agent: implementer` without `@user/` namespace. |
@@ -159,12 +159,14 @@ Plain `project create` needs follow-up `set-field` for Priority/Size/Estimate. E
 
 | Agent | Exit (must update board) |
 |-------|--------------------------|
+| board | Triage Status; handoff to implementer; shippable (PR / `[AUDIT]` / P0\|P1) → verifier before Done |
 | implementer | In progress → In review (PR) → Done via verifier; fields on own card; CLI EXIT_VALIDATION if shippable skips hop |
-| test-runner | Stay on slice card; → In review or Done; shippable P0\|P1 → verifier before Done (`--agent test-runner`) |
+| test-runner | Stay on slice card; → In review if tests gate PR; shippable (PR / `[AUDIT]` / P0\|P1) → verifier before Done |
 | verifier | Stay on card; → Done with `--agent verifier` (machine gate on shippable); or leave In review with failure Notes |
 | integrator | Integration card → In review or Done; shippable → `handoff --next verifier --to in_review`; chores may Done |
-| drift-guard | Drift-pass: shippable P0\|P1 → verifier hop; hygiene chores may → Done; cite board Status; remediation via Notes/Ready — **no** silent tracker edits |
+| drift-guard | Drift-pass: shippable (PR / `[AUDIT]` / P0\|P1) → verifier hop; hygiene chores may → Done; cite board Status; remediation via Notes/Ready — **no** silent tracker edits |
 | auditor | Audit card → In review (`--agent auditor`) then verifier for Done (`[AUDIT]` shippable); Notes → artifact paths |
+| researcher | Non-shippable research → Done + pack paths; shippable → verifier before Done |
 
 Status path: `Ready → In progress → In review → Done`
 

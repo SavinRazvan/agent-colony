@@ -23,7 +23,7 @@ import {
 
 type SsotMode = "board" | "fallback";
 
-const VERIFIED = "2026-09-13";
+const VERIFIED = "2026-09-14";
 const SOURCES =
   ".cursor/agents/researcher.md · research-corpus/SKILL.md · research_cli.py · live pack flexiai-toolsmith + verifier";
 
@@ -69,7 +69,7 @@ const BOARD_LABELS: Record<string, string> = {
   intake: "adaptive Brief",
   cli: "research init/fetch",
   rounds: "rounds 1-6 + validate",
-  done: "set-status done",
+  done: "Done (non-shippable) or verifier hop",
   notes: "AGENT_BRIEF paths",
 };
 
@@ -228,7 +228,7 @@ export default function AgentResearcherCanvas() {
             kit agent
           </Pill>
           <Pill tone="neutral" size="sm">
-            independent-governed
+            hard-stop: no product code
           </Pill>
         </Row>
         <Text tone="secondary">
@@ -321,8 +321,9 @@ export default function AgentResearcherCanvas() {
             _research_results/sources/&lt;slug&gt;/.
           </Text>
           <Text>
-            4. If research card: set-status done + Notes with AGENT_BRIEF / INDEX
-            paths; handoff to named consumer.
+            4. If research card: non-shippable → set-status done + Notes with
+            AGENT_BRIEF / INDEX paths; shippable (PR / [AUDIT] / P0|P1) → handoff
+            --next verifier --to in_review before Done.
           </Text>
           <Text>5. Do not touch product code, tests, scripts, or git/PR workflows.</Text>
         </Stack>
@@ -361,8 +362,9 @@ export default function AgentResearcherCanvas() {
             </Text>
             <Text>Entry: project entry + research card when board on.</Text>
             <Text>
-              Exit: pack under _research_results/sources/&lt;slug&gt;/; research card
-              done + Notes with AGENT_BRIEF paths.
+              Exit: pack under _research_results/sources/&lt;slug&gt;/; non-shippable
+              research card → done + Notes; shippable (PR / [AUDIT] / P0|P1) →
+              verifier before Done.
             </Text>
             <Text>
               Rate-limit: api-ready → EXIT_QUEUED (6) → cooldown/outbox status|list → flush; do not hammer

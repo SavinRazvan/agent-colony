@@ -50,5 +50,5 @@ def test_load_gates_invalid_gates_type_raises(tmp_path: Path) -> None:
     canonical = tmp_path / ".ai_infra" / "scripts" / "pr" / "prepare.py"
     canonical.parent.mkdir(parents=True)
     canonical.write_text("GATES = 'not-a-list'\n", encoding="utf-8")
-    with pytest.raises(ValueError, match="GATES must be a list"):
+    with pytest.raises(ValueError, match="resolve_gates\\(\\)/GATES must yield a list"):
         gates.load_gates(tmp_path)
