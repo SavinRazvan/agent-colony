@@ -65,6 +65,41 @@ def test_drift015_warns_on_plugin_workspace_rule_overlap(
     assert "test-rule.mdc" in result.detail
 
 
+def test_drift015_skips_when_agent_colony_plugin_disabled(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    rules = tmp_path / ".cursor" / "rules"
+    rules.mkdir(parents=True)
+    (rules / "test-rule.mdc").write_text("---\nalwaysApply: true\n---\n", encoding="utf-8")
+    (tmp_path / ".cursor" / "settings.json").write_text(
+        json.dumps(
+            {
+                "plugins": {
+                    "agent-colony/agent-colony": {
+                        "enabled": False,
+                        "gitUrl": "https://github.com/example/agent-colony",
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    cache_path = "/fake/cache/agent-colony/agent-colony/abc/rules/test-rule.mdc"
+
+    def fake_glob(pattern: str) -> list[str]:
+        if "plugins/cache" in pattern:
+            return [cache_path]
+        return []
+
+    monkeypatch.setattr(glob, "glob", fake_glob)
+    paths = drift_checks.drift_paths(tmp_path)
+    result = drift_checks.check_drift015(paths)
+    assert result.check_id == "DRIFT-015"
+    assert result.passed
+    assert "WARN" not in result.detail
+    assert "disabled" in result.detail
+
+
 def test_drift016_skips_skills_outside_lite_allowlist(tmp_path: Path) -> None:
     scaffold.scaffold(
         tmp_path,

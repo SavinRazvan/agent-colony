@@ -204,7 +204,7 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 ### Submitted listing copy (2026-09-01)
 
-Submitted to Cursor Marketplace publisher application (status: pending review). **Canon pitch (2026-09-14):** match README § How we enforce + Collaboration loop; refresh counts to **1652** tests (see listing refresh below). Re-submit when Marketplace allows edit.
+Submitted to Cursor Marketplace publisher application (status: pending review). **Canon pitch (2026-09-14):** match README § How we enforce + Collaboration loop; refresh counts to **1653** tests (see listing refresh below). Re-submit when Marketplace allows edit.
 
 > Agent Colony is a coordination and accountability system for multi-agent work in Cursor — not a prompt pack. When enabled, GitHub Projects is the writable state engine (SSOT): agents enter by reading the board and exit by updating Status and attributed Notes.
 >
@@ -252,7 +252,9 @@ Submitted to Cursor Marketplace publisher application (status: pending review). 
 
 **Listing copy refresh (2026-08-21 ASD-STE100 + board Entry reliability):** ASD-STE100 banners + governance; Entry false-offline fix; `--last` PVTI_ validation; heal Day-N playbook; **1514** tests; **8** / **14** / **7**; kit version **0.6.4**.
 
-**Listing copy refresh (2026-09-14 agent-surface-parity):** New auditor skill `agent-surface-parity`; canonical skills **16**; thin-index + doctrine wired; **1652** tests; **8** / **16** / **7** (lite: **6** / **6**); kit **0.7.3**.
+**Listing copy refresh (2026-09-14 kit-dev plugin disable / DRIFT-015):** Kit-dev `.cursor/settings.json` keeps `agent-colony/agent-colony` disabled; DRIFT-015 skips when disabled; **1653** tests; **8** / **16** / **7** (lite: **6** / **6**); kit **0.7.3**.
+
+**Listing copy refresh (2026-09-14 agent-surface-parity):** New auditor skill `agent-surface-parity`; canonical skills **16**; thin-index + doctrine wired; **1652** tests; **8** / **16** / **7** (lite: **6** / **6**); kit **0.7.3** — test count **superseded** by kit-dev plugin disable refresh (**1653**).
 
 **Listing copy refresh (2026-09-14 README enforce + verifier-before-Done):** README leads with coordination/accountability/machine gates; listing + `plugin.json` aligned; shipped row in IMPLEMENTATION-STATUS; **1652** tests; **8** / **15** / **7** (lite: **6** / **6**); MCP **29** tools; kit version **0.7.3** — skill count **superseded** by agent-surface-parity refresh (**16**).
 

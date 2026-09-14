@@ -50,7 +50,7 @@ Program to close the gap between **documented** token contracts ([token-efficien
 
 ## Kit-dev workflow
 
-1. **Disable duplicate plugin** — when working inside the kit repo, workspace `.cursor/` is SSOT; disable agent-colony marketplace plugin to avoid DRIFT-015 duplication.
+1. **Disable duplicate plugin** — kit-dev `.cursor/settings.json` keeps `agent-colony/agent-colony` **enabled: false** so workspace `.cursor/` is SSOT; DRIFT-015 skips the basename-overlap WARN when that flag is false (cache may still exist). Re-enable only when testing Marketplace install UX.
 2. **Baseline measurement** — record byte totals for rules, skills, `AGENTS.md` before/after slices.
 3. **Sync discipline** — edit `.cursor/` SSOT → `make sync-plugin` → `make check-plugin` before push.
 

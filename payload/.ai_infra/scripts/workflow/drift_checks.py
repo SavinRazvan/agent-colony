@@ -13,6 +13,7 @@ Notes:
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import sys
@@ -20,6 +21,7 @@ import time
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+from typing import Any
 
 _AI_INFRA = Path(__file__).resolve().parents[2]
 if str(_AI_INFRA) not in sys.path:
@@ -1117,9 +1119,42 @@ def check_drift014(paths: DriftPaths) -> CheckResult:
     )
 
 
+def _agent_colony_plugin_disabled(root: Path) -> bool:
+    """True when workspace `.cursor/settings.json` disables agent-colony/agent-colony."""
+    settings_path = root / ".cursor" / "settings.json"
+    if not settings_path.is_file():
+        return False
+    try:
+        data: Any = json.loads(settings_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    if not isinstance(data, dict):
+        return False
+    plugins = data.get("plugins")
+    if not isinstance(plugins, dict):
+        return False
+    entry = plugins.get("agent-colony/agent-colony")
+    if entry is None:
+        entry = plugins.get("agent-colony")
+    if not isinstance(entry, dict):
+        return False
+    return entry.get("enabled") is False
+
+
 def check_drift015(paths: DriftPaths) -> CheckResult:
     """Kit-dev: WARN when plugin cache rules duplicate workspace rule basenames."""
     import glob
+
+    if _agent_colony_plugin_disabled(paths.root):
+        return CheckResult(
+            check_id="DRIFT-015",
+            severity=Severity.P2,
+            passed=True,
+            detail=(
+                "plugin/workspace rule dup check skipped "
+                "(agent-colony plugin disabled in .cursor/settings.json)"
+            ),
+        )
     home = Path.home()
     cache_glob = str(home / ".cursor" / "plugins" / "cache" / "agent-colony" / "agent-colony" / "*" / "rules" / "*.mdc")
     cache_rules = {Path(p).name for p in glob.glob(cache_glob)}
