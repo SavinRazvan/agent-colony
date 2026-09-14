@@ -97,7 +97,7 @@ const READ_FIRST = [
 
 const PATTERNS = [
   ["Write scope", "Drift artifacts only — no product-code"],
-  ["Board lifecycle", "list --status in_progress; close drift-pass → done"],
+  ["Board lifecycle", "list --status in_progress; shippable P0|P1 → verifier; hygiene may done"],
   ["Tier-1", "Shared Board rights; no silent tracker dual-write"],
   ["Dual-write remediation", "Notes or handoff to board / implementer via Ready"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
@@ -108,7 +108,7 @@ const ARTIFACTS = [
   [".local/workflow-artifacts/drift/drift-audit.md", "Exit", "Maintainers / implementer"],
   [".local/workflow-artifacts/drift/drift-todos.md", "Exit", "Maintainers / implementer"],
   ["history/updates-log.md", "Exit", "Continuity readers"],
-  ["Board drift-pass card Status", "done / in_review", "board / implementer"],
+  ["Board drift-pass card Status", "verifier hop when shippable; else done / in_review", "verifier / board"],
   [
     ".local/generated-data/project-board-snapshot.json",
     "project export",
@@ -297,7 +297,8 @@ export default function AgentDriftGuardCanvas() {
               Entry MUST: project entry when board SSOT enabled; scoped list only in live mode.
             </Text>
             <Text>
-              Exit: drift-pass card Status done/in_review; dual-write findings → Notes
+              Exit: shippable P0|P1 drift-pass → handoff --next verifier --to
+              in_review; hygiene may done/in_review; dual-write findings → Notes
               or handoff to board/implementer via Ready.
             </Text>
             <Text>

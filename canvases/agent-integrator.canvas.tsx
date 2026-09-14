@@ -296,8 +296,8 @@ export default function AgentIntegratorCanvas() {
               claim/create card.
             </Text>
             <Text>
-              Exit: Status done or in_review if verify failed; Notes with validate
-              outcomes.
+              Exit: Shippable → handoff --next verifier --to in_review; chores may
+              done or in_review if verify failed; Notes with validate outcomes.
             </Text>
             <Text>
               Rate-limit: api-ready → EXIT_QUEUED (6) → cooldown/outbox status|list → flush; do not hammer

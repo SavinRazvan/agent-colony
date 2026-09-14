@@ -58,11 +58,11 @@ Product rules: [`overlays/rules/`](overlays/README.md). Say *prepare gates green
 |------|---------|--------|
 | Entry | `project api-ready` then `project entry` | Quota/cooldown gate + scoped read |
 | Claim | `project claim --last --agent <name>` | In progress; Start date |
-| Done | `project set-status --to done` / `handoff --to done` | End date |
+| Done | `project set-status --to done` / `handoff --to done` | End date; shippable needs `--agent verifier` (or prior hop / allow-skip) |
 | Triage | `project set-field --field priority\|size\|estimate --to … --last` | Own/triage cards |
 | Promote | `project promote-to-issue --last --agent <name>` | Draft→Issue |
 | PR link | `project mention-pr --pr N --last --agent <name>` | Notes + auto-promote |
-| Handoff | `project handoff --last --agent <name> --next <peer> --to in_review` | Status + Notes |
+| Handoff | `project handoff --last --agent <name> --next <peer> --to in_review` | Status + Notes; shippable → verifier before Done |
 | Rate-limit | `project api-ready` · `outbox status\|list\|drop\|purge` · `cooldown status` · `queue` · `outbox flush` | EXIT_QUEUED(6); no retry |
 
 Do not leave shippable work as Draft. Handoff: [workflow-complete.md](.ai_infra/docs/operations/workflow-complete.md) §F.

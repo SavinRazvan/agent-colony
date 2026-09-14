@@ -20,7 +20,7 @@ Wire new agents, skills, MCP, and kit surfaces. Do not invent workflow steps. Us
 
 **Entry:** If SSOT on: `project status` + `integrator-protocol`. Claim/create integration card. Else `session-pointer.md`.
 
-**Exit:** Status → `done` or `in_review`. Notes with validate outcomes. `change-index.md` + `updates-log.md`. No dual-write under `board_only`.
+**Exit:** Status → `done` or `in_review`. Shippable integration cards → `handoff --next verifier --to in_review`; chores/non-shippable may →Done with `--agent integrator`. Notes with validate outcomes. `change-index.md` + `updates-log.md`. No dual-write under `board_only`.
 
 **Board rights:** Status + Notes on the card you touch. Prefer `claim --last` / `handoff --last --agent integrator`. Use `mention-pr` and `promote-to-issue` before shippable PR. Gate: `workflow_project_api_ready` / `project api-ready` before board writes. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 

@@ -2,7 +2,7 @@
 
 **Canonical path:** `.ai_infra/mcp_servers/agent_colony_mcp/`
 
-Stdio MCP server that **wraps existing scripts/CLI** — it does not duplicate `resolve_gates()` or Project GraphQL (ADR-012). **28 tools** + 6 resources (kit inventory), including board Pattern A and `workflow_check_audit_artifacts`.
+Stdio MCP server that **wraps existing scripts/CLI** — it does not duplicate `resolve_gates()` or Project GraphQL (ADR-012). **29 tools** + 6 resources (kit inventory), including board Pattern A and `workflow_check_audit_artifacts`.
 
 ## Run locally
 
@@ -26,7 +26,8 @@ JSON envelope: `exit_code`, `summary`, `next_recommended_tool`, `detail`. EXIT_Q
 | `workflow_session_entry` | entry digest + last item + change-index tail |
 | `workflow_project_entry` | `project entry` (`digest=True` default) |
 | `workflow_project_claim` | `project claim --last --agent` |
-| `workflow_project_handoff` | `project handoff --last --agent --next [--to]` |
+| `workflow_project_handoff` | `project handoff --last --agent --next [--to]` (+ optional allow-skip verifier) |
+| `workflow_project_validate_item` | `project validate-item --last` (or item id) |
 | `workflow_project_outbox_status` | `project outbox status` |
 | `workflow_project_api_ready` | `project api-ready` |
 | `workflow_doc_skill_section` | `doc skill-section` |

@@ -136,6 +136,8 @@ def run_project_handoff(
     next_agent: str,
     to: str = "",
     text: str = "",
+    allow_skip_verifier: bool = False,
+    skip_verifier_rationale: str = "",
 ) -> str:
     _ensure_install_path(root)
     import project_cli as pc
@@ -155,8 +157,29 @@ def run_project_handoff(
         to=to or "",
         text=text or "",
         limit=200,
+        allow_skip_verifier=bool(allow_skip_verifier),
+        skip_verifier_rationale=str(skip_verifier_rationale or ""),
     )
     return _run_cmd(root, pc.cmd_handoff, args, next_ok="workflow_session_entry")
+
+
+def run_project_validate_item(root: Path, *, use_last: bool = True, item_id: str = "") -> str:
+    """Board Pattern A: `project validate-item --last` (or `--id`). JSON envelope."""
+    _ensure_install_path(root)
+    import project_cli as pc
+
+    args = argparse.Namespace(
+        directory=root,
+        last=bool(use_last and not item_id),
+        id=item_id or "",
+        limit=200,
+    )
+    return _run_cmd(
+        root,
+        pc.cmd_validate_item,
+        args,
+        next_ok="workflow_project_handoff",
+    )
 
 
 def run_project_outbox_status(root: Path) -> str:

@@ -177,7 +177,17 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     set_status.add_argument(
         "--agent",
         default="project-cli",
-        help="Agent id for outbox attribution if rate-limited",
+        help="Agent id for outbox attribution if rate-limited; verifier for shippable Done",
+    )
+    set_status.add_argument(
+        "--allow-skip-verifier",
+        action="store_true",
+        help="Escape hatch: skip verifier-before-Done (requires --skip-verifier-rationale)",
+    )
+    set_status.add_argument(
+        "--skip-verifier-rationale",
+        default="",
+        help="Required with --allow-skip-verifier (non-empty reason)",
     )
     set_status.set_defaults(func=pc.cmd_set_status)
 
@@ -296,6 +306,16 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
     handoff_cmd.add_argument("--to", default="", help="Optional status: in_review|done|…")
     handoff_cmd.add_argument("--text", default="", help="Optional extra Notes text")
     handoff_cmd.add_argument("--limit", type=int, default=200)
+    handoff_cmd.add_argument(
+        "--allow-skip-verifier",
+        action="store_true",
+        help="Escape hatch: skip verifier-before-Done (requires --skip-verifier-rationale)",
+    )
+    handoff_cmd.add_argument(
+        "--skip-verifier-rationale",
+        default="",
+        help="Required with --allow-skip-verifier (non-empty reason)",
+    )
     handoff_cmd.set_defaults(func=pc.cmd_handoff)
 
     val_cmd = project_sub.add_parser(

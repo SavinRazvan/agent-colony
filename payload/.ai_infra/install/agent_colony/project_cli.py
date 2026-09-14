@@ -882,6 +882,18 @@ def cmd_set_status(args: argparse.Namespace) -> int:
             "field_id"
         ):
             queue_payload["end_date"] = utc_today_iso()
+    agent = (getattr(args, "agent", None) or "project-cli").strip() or "project-cli"
+    allow_skip = bool(getattr(args, "allow_skip_verifier", False))
+    skip_rationale = str(getattr(args, "skip_verifier_rationale", None) or "").strip()
+    if allow_skip and not skip_rationale:
+        return fail(
+            "set-status",
+            EXIT_USAGE,
+            "--allow-skip-verifier requires --skip-verifier-rationale TEXT",
+        )
+    if allow_skip:
+        queue_payload["allow_skip_verifier"] = True
+        queue_payload["skip_verifier_rationale"] = skip_rationale
     # Body gate before precheck/queue so EXIT_VALIDATION never enqueues a doomed close.
     if _normalize_status(str(args.to)) in BODY_GATE_STATUSES:
         items, list_err = fetch_project_items(ssot, limit=200)
@@ -890,7 +902,14 @@ def cmd_set_status(args: argparse.Namespace) -> int:
         item = find_item_by_id(items, item_id)
         if item is None:
             return fail("set-status", EXIT_NOT_FOUND, f"item not found: {item_id}")
-        ok_body, body_detail = assert_body_ready_for_status(ssot, item, str(args.to))
+        ok_body, body_detail = assert_body_ready_for_status(
+            ssot,
+            item,
+            str(args.to),
+            agent=agent,
+            allow_skip_verifier=allow_skip,
+            skip_verifier_rationale=skip_rationale,
+        )
         if not ok_body:
             return fail("set-status", EXIT_VALIDATION, body_detail)
     pre = guard_write_or_queue(
@@ -899,7 +918,7 @@ def cmd_set_status(args: argparse.Namespace) -> int:
         cmd="set-status",
         op="set-status",
         item_id=item_id,
-        agent=(getattr(args, "agent", None) or "project-cli"),
+        agent=agent,
         payload=queue_payload,
     )
     if pre is not None:

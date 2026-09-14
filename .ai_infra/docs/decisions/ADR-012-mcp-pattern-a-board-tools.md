@@ -25,6 +25,7 @@ Related: [ADR-003](ADR-003-plugin-mcp-boundaries.md), [ADR-008](ADR-008-project-
 | `workflow_project_entry` | `project entry` (`digest=True` default) |
 | `workflow_project_claim` | `project claim --last` |
 | `workflow_project_handoff` | `project handoff --last` |
+| `workflow_project_validate_item` | `project validate-item --last` |
 | `workflow_project_outbox_status` | `project outbox status` |
 | `workflow_session_entry` | entry digest + last item + change-index row |
 | `workflow_doc_skill_section` | `doc skill-section` |
@@ -35,7 +36,7 @@ Related: [ADR-003](ADR-003-plugin-mcp-boundaries.md), [ADR-008](ADR-008-project-
 - Module: `.ai_infra/mcp_servers/agent_colony_mcp/project_tools.py`
 - Agents prefer MCP/CLI Pattern A; ban raw Project GraphQL when tools exist
 - Schema tax amortized by replacing multi-read / wrong-retry paths
-- Full kit MCP inventory (28 tools) also includes PR/audit wrappers such as `workflow_check_audit_artifacts` — see [ADR-013](ADR-013-audit-accountability.md) and MCP README; this ADR scopes board Pattern A only
+- Full kit MCP inventory (29 tools) also includes PR/audit wrappers such as `workflow_check_audit_artifacts` and `workflow_project_validate_item` — see [ADR-013](ADR-013-audit-accountability.md) and MCP README; this ADR scopes board Pattern A only
 
 ## Alternatives rejected
 

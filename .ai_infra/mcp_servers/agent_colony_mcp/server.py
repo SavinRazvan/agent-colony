@@ -28,6 +28,7 @@ from agent_colony_mcp.project_tools import (
     run_project_entry,
     run_project_handoff,
     run_project_outbox_status,
+    run_project_validate_item,
     run_session_entry,
 )
 from agent_colony_mcp.resources import (
@@ -434,11 +435,34 @@ def workflow_project_claim(agent: str, text: str = "claimed") -> str:
 
 @mcp.tool()
 def workflow_project_handoff(
-    agent: str, next: str, to: str = "", text: str = ""
+    agent: str,
+    next: str,
+    to: str = "",
+    text: str = "",
+    allow_skip_verifier: bool = False,
+    skip_verifier_rationale: str = "",
 ) -> str:
-    """Board Pattern A: `project handoff --last --agent --next [--to]`. JSON envelope."""
+    """Board Pattern A: `project handoff --last --agent --next [--to]`. JSON envelope.
+
+    Optional allow_skip_verifier + skip_verifier_rationale mirror CLI escape hatch
+    for shippable Done (require non-empty rationale when allow_skip_verifier is true).
+    """
     return run_project_handoff(
-        workspace_root(), agent=agent, next_agent=next, to=to, text=text
+        workspace_root(),
+        agent=agent,
+        next_agent=next,
+        to=to,
+        text=text,
+        allow_skip_verifier=allow_skip_verifier,
+        skip_verifier_rationale=skip_verifier_rationale,
+    )
+
+
+@mcp.tool()
+def workflow_project_validate_item(item_id: str = "") -> str:
+    """Board Pattern A: `project validate-item --last` (or item_id). JSON envelope."""
+    return run_project_validate_item(
+        workspace_root(), use_last=not bool(item_id.strip()), item_id=item_id.strip()
     )
 
 

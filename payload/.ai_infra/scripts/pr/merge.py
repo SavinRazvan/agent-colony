@@ -179,7 +179,12 @@ def sync_board_after_merge(
         print(f"[WARN] board sync: item not found: {resolved}", file=sys.stderr)
         return f"board sync: warn — item not found ({resolved})"
     ok_body, body_detail = project_cli.assert_body_ready_for_status(
-        ssot, item, done_logical
+        ssot,
+        item,
+        done_logical,
+        agent="merge.py",
+        allow_skip_verifier=True,
+        skip_verifier_rationale="post-merge board sync (Pattern A merge.py)",
     )
     if not ok_body:
         print(
@@ -202,7 +207,11 @@ def sync_board_after_merge(
         op="set-status",
         item_id=resolved,
         agent="merge.py",
-        payload={"to": done_logical},
+        payload={
+            "to": done_logical,
+            "allow_skip_verifier": True,
+            "skip_verifier_rationale": "post-merge board sync (Pattern A merge.py)",
+        },
     )
     if pre is not None:
         pr_url_q = _pr_url(root, pr, str(ssot.get("default_repo") or ""))

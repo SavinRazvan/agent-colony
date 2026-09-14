@@ -16,7 +16,7 @@ Related: [ADR-007](ADR-007-workflow-drift-guard.md), [alignment-audit-schema.md]
 1. **Kit-process accountability** — Kit audits target Agent Colony workflow surfaces (agents, skills, gates, board contracts). They are not societal-harm, legal-compliance, fairness, or product-ML model audits.
 2. **Named target + limits** — Schema-1 artifacts (`Audit-Schema: 1`) require `Audit-Scope`, `Named-Target`, `## Accountability summary`, and `## Audit limits`. Default scope is `kit` (enum: `kit | product | model | dataset | ecosystem | meta`).
 3. **P0/P1 consequence + field parity** — Findings at P0/P1 require `owner`, `due_slice` (or `deadline`), non-placeholder `consequence_if_ignored`, **`status`** (missing or `open` → machine **FAIL**), **`category`** (allowlist), **`source_path`**, **`target_path`**, **`recommendation`**, and **`evidence`**. Finding rows require severity `P0|P1|P2`.
-4. **Machine gate (kit-dev)** — `check_audit_artifacts.py` is the 6th `resolve_gates()` append on kit-dev. Files without `Audit-Schema: 1` skip. Consumer universal gates stay at two. MCP: `workflow_check_audit_artifacts` (28 kit tools total). Board `validate-item`: WARN if audit Notes lack artifact path; exit 5 if cited path fails Schema-1.
+4. **Machine gate (kit-dev)** — `check_audit_artifacts.py` is the 6th `resolve_gates()` append on kit-dev. Files without `Audit-Schema: 1` skip. Consumer universal gates stay at two. MCP: `workflow_check_audit_artifacts` (29 kit tools total). Board `validate-item`: WARN if audit Notes lack artifact path; exit 5 if cited path fails Schema-1.
 5. **Architecture-impacting** — `check_audit_artifacts.py --arch-impacting` (via `merge.py`) requires `alignment-audit.md` and `alignment-todos.md` to **exist**, carry `Audit-Schema: 1`, and **pass** validation (no skip). Forced when CLI flag, pipeline `architecture_impacting` / `requires_alignment_artifacts`, or kit-dev path-trigger (rules/skills/agents/ADRs/arch docs/PR+audit scripts). Open P0/P1 `status` fails. Prepare refuses `--skip-gates` on architecture_impacting pipelines.
 6. **Independence** — Role contracts (auditor ≠ implementer) plus DRIFT-017 WARN when `Commissioned-By` is missing/placeholder or `Audited-By` equals `Commissioned-By`. No agent sandbox.
 7. **Assurance labels** — ICO-style `high | reasonable | limited | very_limited` are labels only; no merge FAIL on `very_limited`.
@@ -27,6 +27,7 @@ Related: [ADR-007](ADR-007-workflow-drift-guard.md), [alignment-audit-schema.md]
 - Architecture-impacting merges require schema-1 alignment artifacts that pass the validator.
 - Pipeline / path-trigger auto-enforcement at merge; ordinary prepare still skips unstamped leftovers.
 - Default prepare scan still skips unstamped leftover `.local` files.
+- **Verifier-before-Done:** `conventions.require_verifier_before_done` (default true) machine-blocks Status→Done on shippable cards (PR citation, `[AUDIT]`, or P0/P1) unless `--agent verifier`, prior Notes `next=…/verifier`, or `--allow-skip-verifier` + rationale. Chores and heal-cards stay ungated.
 - Paper reference: `assets/other/paper-arxiv-2401.14462v1.txt`.
 
 ## Alternatives rejected

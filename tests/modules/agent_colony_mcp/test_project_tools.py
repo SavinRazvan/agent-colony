@@ -119,6 +119,8 @@ def test_project_handoff_ok(monkeypatch: pytest.MonkeyPatch) -> None:
     def fake_handoff(args: argparse.Namespace) -> int:
         assert args.next == "verifier"
         assert args.to == "in_review"
+        assert args.allow_skip_verifier is False
+        assert args.skip_verifier_rationale == ""
         print("handoff: ok")
         return 0
 
@@ -131,6 +133,33 @@ def test_project_handoff_ok(monkeypatch: pytest.MonkeyPatch) -> None:
     assert data["exit_code"] == 0
     assert data["summary"].startswith("handoff:")
     assert data["detail"] is None
+
+
+def test_project_handoff_passes_allow_skip(monkeypatch: pytest.MonkeyPatch) -> None:
+    pc = _load_project_cli()
+
+    def fake_ready(args: argparse.Namespace) -> int:
+        print("api-ready=yes")
+        return 0
+
+    def fake_handoff(args: argparse.Namespace) -> int:
+        assert args.allow_skip_verifier is True
+        assert args.skip_verifier_rationale == "emergency"
+        print("handoff: ok")
+        return 0
+
+    monkeypatch.setattr(pc, "cmd_api_ready", fake_ready)
+    monkeypatch.setattr(pc, "cmd_handoff", fake_handoff)
+    raw = pt.run_project_handoff(
+        REPO_ROOT,
+        agent="implementer",
+        next_agent="board",
+        to="done",
+        allow_skip_verifier=True,
+        skip_verifier_rationale="emergency",
+    )
+    data = _parse(raw)
+    assert data["exit_code"] == 0
 
 
 def test_project_outbox_status(monkeypatch: pytest.MonkeyPatch) -> None:
