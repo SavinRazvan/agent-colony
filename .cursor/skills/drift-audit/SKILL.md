@@ -51,14 +51,14 @@ Does **not** replace `auditor` (CHK-* scorecard) or `verifier`.
 
 ## Entry checklist (goal pulse)
 
-1. Board (when enabled): `project status` + `list --status in_progress` — read Acceptance / Notes on In progress cards.
+1. Board (when enabled): `project api-ready` then `project entry` (or `project status` + scoped `list --status in_progress`) — read Acceptance / Notes on In progress cards.
 2. Plan pointers: `.local/index-and-planning/current/plan.md` (or board card body as SSOT) — Current focus / goals.
 3. Doctrine: `AGENTS.md` skills/agents table vs `.cursor/agents/*.md` (script: DRIFT-011).
 4. Docs freshness vs goals: note Probable if AGENTS.md / IMPLEMENTATION-STATUS look stale relative to Current focus (prose only).
 
 ## Steps
 
-1. **Board first (when enabled):** `python3 -m agent_colony project status` and `project list --status in_progress` — cite board Status in artifacts. Optionally refresh the read-only snapshot: `python3 -m agent_colony project export` (never writes Status).
+1. **Board first (when enabled):** `python3 -m agent_colony project api-ready` then `project entry` (or `project status` + `project list --status in_progress`) — cite board Status in artifacts. Optionally refresh the read-only snapshot: `python3 -m agent_colony project export` (never writes Status).
 2. **Script:** `python3 -m agent_colony drift validate --directory .` (or `make drift-validate`). On **consumer app projects**, use `--profile consumer`. Include **DRIFT-004b** / **DRIFT-009** / **DRIFT-010** / **DRIFT-011** / **DRIFT-012** / **DRIFT-013** when kit-dev / board_only as applicable (ADR-007/008/010). Consumers always get **DRIFT-013** + **DRIFT-011b** on `consumer` / `consumer-board` profiles.
 3. Capture profile, check IDs, severities, and details from output.
 4. Add prose **Goal pulse** section in drift-audit.md (board/plan/AGENTS gaps). Fuzzy “vision mismatch” stays Probable — not CI.

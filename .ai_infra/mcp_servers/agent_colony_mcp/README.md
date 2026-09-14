@@ -2,7 +2,7 @@
 
 **Canonical path:** `.ai_infra/mcp_servers/agent_colony_mcp/`
 
-Stdio MCP server that **wraps existing scripts/CLI** — it does not duplicate `resolve_gates()` or Project GraphQL (ADR-012). **29 tools** + 6 resources (kit inventory), including board Pattern A and `workflow_check_audit_artifacts`.
+Stdio MCP server that **wraps existing scripts/CLI** — it does not duplicate `resolve_gates()` or Project GraphQL (ADR-012). **29 tools** + **7** resources (kit inventory), including board Pattern A and `workflow_check_audit_artifacts`.
 
 ## Run locally
 
