@@ -117,7 +117,7 @@ python3 -m agent_colony health
 python3 -m agent_colony drift validate --profile consumer
 ```
 
-Restores 15 skills, 8 agents, full thin-index validation, and all `.agents/skills` dirs.
+Restores 16 skills, 8 agents, full thin-index validation, and all `.agents/skills` dirs.
 
 ## When to use lite vs full
 

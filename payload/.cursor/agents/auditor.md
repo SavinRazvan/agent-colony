@@ -8,7 +8,7 @@ description: auditor Agent Colony — Deep/periodic evidence architecture audit 
 
 ## Own
 
-Evidence-only architecture audit (CHK-*). Not continuous plan pulse — that is `drift-guard`. No product-code auto-fix unless user asks.
+Evidence-only architecture audit (CHK-*). Deep agent doc/canvas vs machine truth via `agent-surface-parity`. Not continuous plan pulse — that is `drift-guard`. No product-code auto-fix unless user asks.
 
 ## Anchor (mandatory)
 
@@ -31,6 +31,7 @@ Evidence-only architecture audit (CHK-*). Not continuous plan pulse — that is 
 ## Read first
 
 - `.cursor/skills/auditor-protocol/SKILL.md` — Evidence contract + current phase
+- `.cursor/skills/agent-surface-parity/SKILL.md` — per-agent card/skill/CLI/docs/canvas parity
 - `audit-orchestration` / `audit-module-map` when tasked
 - Plan/work-tracker read-only if present
 

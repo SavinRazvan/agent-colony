@@ -105,6 +105,18 @@ When maintainer workflow requires alignment files but not full enterprise report
 - Merge forces Schema-1 via `--arch-impacting`, pipeline `architecture_impacting` / `requires_alignment_artifacts`, or kit-dev path-trigger (`arch_impacting_paths.py`).
 - Plan/doctrine pulse remains **`drift-guard`** — do not duplicate DRIFT-011 here.
 
+### Agent surface parity pass
+
+When docs/canvases may not match how an agent works (Exit, gates, MCP, hard boundaries):
+
+- Stay on **`auditor`**; keep **Evidence contract**.
+- Run **`agent-surface-parity`** (Inventory → Steps → Artifacts).
+- Write depth matrices under `.local/workflow-artifacts/audit/agent-surface/<id>.md`.
+- Archive prior alignment tip if needed, then write Schema-1 `alignment-audit.md` + `alignment-todos.md` (`Audit-Type: agent-surface-parity`).
+- Short **CHK-SEC-AGENT** / **CHK-DOCS** tick for touched agents; N/A elsewhere.
+- Do **not** replace focused arch alignment or full enterprise scorecard.
+- Remediations → **implementer**; disproof → **verifier**. Content parity is **not** `drift-guard`.
+
 ## Context block (paste at start)
 
 ```text

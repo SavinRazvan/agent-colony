@@ -114,7 +114,7 @@ Open findings with id, severity, evidence, recommendation, status (`open` | `fix
 
 ## Overlap (do NOT duplicate)
 
-Governance/debrand → `check_governance_consistency.py`. Agent/registry deep structure → `integrate validate`. Architecture / CHK-* → `auditor`. Claims → `verifier`.
+Governance/debrand → `check_governance_consistency.py`. Agent/registry deep structure → `integrate validate`. Architecture / CHK-* → `auditor`. Claims → `verifier`. Agent doc/canvas **content** parity vs machine truth → `auditor` + `agent-surface-parity` (not this skill).
 
 ## Exit criteria
 

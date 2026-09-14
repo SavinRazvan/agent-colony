@@ -5,7 +5,7 @@
 
 ## Context
 
-Fixed Cursor overhead per turn includes always-applied rules (~10 KB at full tier), `AGENTS.md` (~6.5 KB), skill catalog, and MCP tool schemas. Full kit ships 15 skills, 7 rules (4 always-on + 3 requestable after kit 0.7.0), and 8 agents — more than day-to-day consumer implement/verify loops need.
+Fixed Cursor overhead per turn includes always-applied rules (~10 KB at full tier), `AGENTS.md` (~6.5 KB), skill catalog, and MCP tool schemas. Full kit ships 15 skills (at 0.7.0; **16** after `agent-surface-parity`), 7 rules (4 always-on + 3 requestable after kit 0.7.0), and 8 agents — more than day-to-day consumer implement/verify loops need.
 
 Related: [token-efficiency-program.md](../operations/token-efficiency-program.md), [ADR-001](ADR-001-distribution-activation.md), [ADR-008](ADR-008-project-board-ssot.md).
 

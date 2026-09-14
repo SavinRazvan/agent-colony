@@ -25,6 +25,8 @@ Notes:
 
 Depth tool for **`auditor`**, not a separate audit authority. Run when enterprise audit (or focused alignment pass) needs module topology evidence. Fold outputs into parent audit citations.
 
+**Agent behavioral surfaces** (card / skill / CLI / canvas content parity) → skill `agent-surface-parity`, not this map.
+
 ## When
 
 - **`auditor`** requests deep module topology

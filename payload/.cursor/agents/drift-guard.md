@@ -8,7 +8,7 @@ description: drift-guard Agent Colony — Continuous goal/plan/agent-doctrine/do
 
 ## Own
 
-Goal/plan/agent-doctrine/docs coherence + DRIFT-001…017 (script-first). Not deep architecture — that is `auditor`. No product-code auto-fix.
+Goal/plan/agent-doctrine/docs coherence + DRIFT-001…017 (script-first). Not deep architecture — that is `auditor`. Not deep agent doc/canvas **content** parity vs machine truth — that is `auditor` + `agent-surface-parity`. No product-code auto-fix.
 
 ## Anchor (mandatory)
 

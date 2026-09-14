@@ -47,6 +47,7 @@ Load the section you need. Do not load whole skills by default. Machine-backed v
 | `integrator-protocol` | New agent/skill/MCP | Evidence contract + current phase |
 | `drift-audit` | drift-guard pass | Steps 1–3 |
 | `auditor-protocol` | Audit task | Evidence contract + current phase |
+| `agent-surface-parity` | Per-agent doc/canvas vs machine | Inventory · Artifacts |
 | `audit-orchestration` | Full audit closure | Phase 0 preflight + delegation rules |
 | `audit-module-map` | Deep module topology | Constraints + output contract |
 | `mcp-connect` | External MCP setup | Intents table + Pattern A CLI |

@@ -28,9 +28,10 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Area | Status | Location |
 |------|--------|----------|
 | Verifier-before-Done (machine gate) | Shippable cards (`item_is_shippable`: PR citation / `[AUDIT]` / P0\|P1) Status→Done → **EXIT_VALIDATION (5)** unless `--agent verifier`, prior Notes `next=…/verifier`, or `--allow-skip-verifier` + rationale (`require_verifier_before_done`, default true) | `project_atomics.assert_verifier_ready_for_done` · board-ssot § Verifier-before-Done · PR #275 |
+| Agent surface parity skill | Auditor-owned deep per-agent card/skill/CLI/docs/canvas vs machine; Schema-1 findings | `.cursor/skills/agent-surface-parity/` · `auditor-protocol` § Agent surface parity pass |
 | Universal rules | 7 `.mdc` (4 alwaysApply + 3 requestable) | `.cursor/rules/` |
 | Agents | 8 core; `model: auto`; audit agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` |
-| Canonical skills | 15 folders | `.cursor/skills/` |
+| Canonical skills | 16 folders | `.cursor/skills/` |
 | Maintainer skills | 6 folders (additive plugin merge; includes `full-pr-workflow`) | `.agents/skills/` |
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
