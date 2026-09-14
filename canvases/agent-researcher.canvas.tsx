@@ -115,7 +115,10 @@ const PATTERNS = [
   ["Terse chat", "/researcher https://github.com/owner/repo OK"],
   ["Anti-loop", "≤6 deepen rounds; no re-fetch without --force; exit on complete"],
   ["GitHub auth", "Public: network; private: consumer gh/git credentials"],
-  ["Board lifecycle", "create-from-template research → done + pack paths"],
+  [
+    "Board lifecycle",
+    "create-from-template research → pack paths; shippable → handoff --next verifier --to in_review (chores may Done)",
+  ],
   ["Consumers", "implementer / integrator / chat-user read AGENT_BRIEF.md"],
 ];
 
