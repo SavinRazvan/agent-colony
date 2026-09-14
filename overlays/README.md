@@ -11,7 +11,7 @@ Per-project rules and optional docs that **extend** the universal **Agent Colony
 | `overlays/rules/*.mdc` | Product- or domain-specific Cursor rules (install → `.cursor/rules/`) |
 | `overlays/docs/` | Optional ops docs merged into project `docs/` at install |
 
-**Kit-dev** ships **7** rules in `.cursor/rules/` (6 universal + `project-ssot-precedence.mdc`). Consumer activate copies the same **7** from `payload/.cursor/rules/`. Add app-domain `.mdc` files here when needed.
+**Kit-dev** ships **7** rules in `.cursor/rules/` (**4** always-on + **3** requestable, including `project-ssot-precedence.mdc` as always-on). Consumer activate copies the same **7** from `payload/.cursor/rules/`. Add app-domain `.mdc` files here when needed.
 
 ## Install
 

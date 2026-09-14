@@ -104,7 +104,7 @@ servers:
   deepwiki:
     tier: external
     description: Public GitHub repo docs/Q&A (no auth) — Cognition DeepWiki
-    agents: [implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard, board]
+    agents: [implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard]
     tools_hint: [read_wiki_structure, read_wiki_contents, ask_question]
 ```
 
