@@ -898,6 +898,42 @@ def count_outbox(path: Path) -> dict[str, int]:
     return counts
 
 
+def purge_outbox_entries(
+    path: Path,
+    *,
+    status: str,
+    archive: bool = True,
+    archive_path: Path | None = None,
+) -> tuple[int, int, Path | None]:
+    """
+    Remove outbox rows with the given status from *path*.
+
+    Only ``failed`` or ``done`` may be purged (never ``pending``).
+    When *archive* is True, write removed rows to *archive_path* (or a
+    timestamped sibling of *path*) before rewriting the live file.
+
+    Returns ``(removed_count, kept_count, archive_path_or_none)``.
+    """
+    want = str(status or "").strip().lower()
+    if want not in ("failed", "done"):
+        raise ValueError("purge status must be 'failed' or 'done' (pending forbidden)")
+    entries = read_outbox_entries(path)
+    remove = [e for e in entries if str(e.get("status") or "") == want]
+    keep = [e for e in entries if str(e.get("status") or "") != want]
+    if not remove:
+        return 0, len(keep), None
+    dest: Path | None = None
+    if archive:
+        if archive_path is None:
+            stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+            dest = path.with_name(f"{path.stem}-purged-{want}-{stamp}{path.suffix}")
+        else:
+            dest = archive_path
+        write_outbox_entries(dest, remove)
+    write_outbox_entries(path, keep)
+    return len(remove), len(keep), dest
+
+
 def apply_outbox_entry(
     root: Path,
     ssot: dict[str, Any],

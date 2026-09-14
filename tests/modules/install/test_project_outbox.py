@@ -2275,3 +2275,86 @@ def test_api_ready_fail_open_on_bare_forbidden_probe(
     assert "api-ready=yes" in msg
     active, _ = project_outbox.cooldown_active(tmp_path, ssot)
     assert active is False
+
+
+def test_purge_outbox_entries_failed_archives(tmp_path: Path) -> None:
+    path = tmp_path / "board-outbox.jsonl"
+    pending = _valid_entry(id="11111111-1111-4111-8111-111111111111", status="pending")
+    failed = _valid_entry(
+        id="22222222-2222-4222-8222-222222222222",
+        status="failed",
+        last_error="dropped by outbox drop --force (triage)",
+    )
+    done = _valid_entry(id="33333333-3333-4333-8333-333333333333", status="done")
+    project_outbox.write_outbox_entries(path, [pending, failed, done])
+    removed, kept, dest = project_outbox.purge_outbox_entries(
+        path, status="failed", archive=True
+    )
+    assert removed == 1
+    assert kept == 2
+    assert dest is not None and dest.is_file()
+    archived = project_outbox.read_outbox_entries(dest)
+    assert len(archived) == 1
+    assert archived[0]["id"] == failed["id"]
+    live = project_outbox.read_outbox_entries(path)
+    assert [e["status"] for e in live] == ["pending", "done"]
+
+
+def test_purge_outbox_entries_rejects_pending(tmp_path: Path) -> None:
+    path = tmp_path / "board-outbox.jsonl"
+    project_outbox.write_outbox_entries(path, [_valid_entry()])
+    with pytest.raises(ValueError, match="pending forbidden"):
+        project_outbox.purge_outbox_entries(path, status="pending")
+
+
+def test_run_outbox_purge_requires_force(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    _write_collab(tmp_path, ssot)
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    path = _outbox_file(tmp_path, ssot)
+    project_outbox.write_outbox_entries(
+        path,
+        [_valid_entry(status="failed", last_error="stale")],
+    )
+    args = argparse.Namespace(
+        directory=str(tmp_path), status="failed", force=False, no_archive=False
+    )
+    from project_handlers import run_outbox_purge
+
+    code = run_outbox_purge(args)
+    assert code == project_cli.EXIT_USAGE
+    assert len(project_outbox.read_outbox_entries(path)) == 1
+
+
+def test_run_outbox_purge_failed_force(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    ssot = _outbox_ssot(tmp_path)
+    _write_collab(tmp_path, ssot)
+    monkeypatch.setattr(project_cli, "load_project_ssot", lambda root: (ssot, []))
+    path = _outbox_file(tmp_path, ssot)
+    project_outbox.write_outbox_entries(
+        path,
+        [
+            _valid_entry(id="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", status="pending"),
+            _valid_entry(
+                id="bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+                status="failed",
+                last_error="item not found",
+            ),
+        ],
+    )
+    args = argparse.Namespace(
+        directory=str(tmp_path), status="failed", force=True, no_archive=False
+    )
+    from project_handlers import run_outbox_purge
+
+    code = run_outbox_purge(args)
+    assert code == project_cli.EXIT_OK
+    live = project_outbox.read_outbox_entries(path)
+    assert len(live) == 1
+    assert live[0]["status"] == "pending"
+    archives = list(path.parent.glob("*-purged-failed-*.jsonl"))
+    assert len(archives) == 1

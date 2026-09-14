@@ -567,6 +567,29 @@ def register_project_subparser(sub: argparse._SubParsersAction) -> None:
         help="Required to drop an outbox row",
     )
     ob_drop.set_defaults(func=pc.cmd_outbox_drop)
+    ob_purge = outbox_sub.add_parser(
+        "purge",
+        help="Remove failed/done tombstones from local JSONL (archives by default)",
+    )
+    ob_purge.add_argument("--directory", type=Path, default=".")
+    ob_purge.add_argument(
+        "--status",
+        default="failed",
+        choices=("failed", "done"),
+        help="Which status to remove (default failed; pending forbidden)",
+    )
+    ob_purge.add_argument(
+        "--force",
+        action="store_true",
+        required=True,
+        help="Required to purge outbox rows",
+    )
+    ob_purge.add_argument(
+        "--no-archive",
+        action="store_true",
+        help="Do not write a sibling archive JSONL before deleting",
+    )
+    ob_purge.set_defaults(func=pc.cmd_outbox_purge)
     ob_flush = outbox_sub.add_parser(
         "flush",
         help="Apply pending outbox ops (refuses if GraphQL remaining too low)",

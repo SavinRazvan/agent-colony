@@ -1446,6 +1446,11 @@ def cmd_outbox_drop(args: argparse.Namespace) -> int:
     return run_outbox_drop(args)
 
 
+def cmd_outbox_purge(args: argparse.Namespace) -> int:
+    from project_handlers import run_outbox_purge
+    return run_outbox_purge(args)
+
+
 def cmd_api_ready(args: argparse.Namespace) -> int:
     from project_handlers import run_api_ready
     return run_api_ready(args)

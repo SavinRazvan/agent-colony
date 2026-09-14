@@ -21,7 +21,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
 **Last updated:** 2026-09-13 (board docs/canvases aligned to rate-limit safety + owner hygiene)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1633
+**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1637
 
 ## Shipped (confirmed in repo)
 
@@ -69,7 +69,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Consumer update stamp | Scaffold + `update` write `.kit-version` from source manifest; CLI fallback `ensure_kit_version_stamp` | `scaffold.py` · `update_cli.py` · tests |
 | Multi-consumer isolation | Model A contract doc; DRIFT-013 tracked-runtime guard; DRIFT-011b advisory; `update --check` + `kit_managed_globs`; consumer CI template | `multi-consumer-isolation.md` · `drift_checks.py` · `update_cli.py` · `templates/ci/consumer-gates.yml` |
 | Dashboard removal | Documentation now points to GitHub Project board + Cursor Open Canvas; `.local/index-and-planning/` remains offline markdown only | operations docs · skills · canvases |
-| Tests | 1633 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1637 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

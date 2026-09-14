@@ -1256,6 +1256,7 @@ def run_outbox_list(args: argparse.Namespace) -> int:
     if want == 'pending':
         print(
             'triage: drop fake/smoke with `project outbox drop --id UUID --force`; '
+            'purge tombstones with `project outbox purge --status failed --force`; '
             'then `project api-ready` && `project outbox flush`'
         )
     return pc.EXIT_OK
@@ -1287,6 +1288,39 @@ def run_outbox_drop(args: argparse.Namespace) -> int:
         return pc.fail('outbox drop', pc.EXIT_NOT_FOUND, f'no entry id={entry_id}')
     _outbox.write_outbox_entries(path, entries)
     print(f'outbox drop: id={entry_id} → failed (triage)')
+    return pc.EXIT_OK
+
+
+def run_outbox_purge(args: argparse.Namespace) -> int:
+    import project_cli as pc
+    import project_outbox as _outbox
+    root = Path(args.directory).resolve()
+    ssot, code = pc._load_enabled_ssot(root, 'outbox')
+    if ssot is None:
+        return code
+    if not bool(getattr(args, 'force', False)):
+        return pc.fail('outbox purge', pc.EXIT_USAGE, '--force required')
+    want = str(getattr(args, 'status', '') or 'failed').strip().lower()
+    if want not in ('failed', 'done'):
+        return pc.fail(
+            'outbox purge',
+            pc.EXIT_USAGE,
+            "status must be 'failed' or 'done' (pending cannot be purged)",
+        )
+    cfg = _outbox.load_outbox_config(ssot)
+    path = _outbox.outbox_path(root, cfg)
+    archive = not bool(getattr(args, 'no_archive', False))
+    try:
+        removed, kept, dest = _outbox.purge_outbox_entries(
+            path, status=want, archive=archive
+        )
+    except ValueError as exc:
+        return pc.fail('outbox purge', pc.EXIT_USAGE, str(exc))
+    if removed == 0:
+        print(f'outbox purge: status={want} removed=0 kept={kept} (nothing to purge)')
+        return pc.EXIT_OK
+    arch_msg = f' archive={dest}' if dest is not None else ' archive=skipped'
+    print(f'outbox purge: status={want} removed={removed} kept={kept}{arch_msg}')
     return pc.EXIT_OK
 
 
