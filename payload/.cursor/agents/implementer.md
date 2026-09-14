@@ -16,7 +16,7 @@ description: implementer Agent Colony — Disciplined implementation slices with
 
 **Entry:** Read `github.collaboration.yaml` → `project_ssot`. If enabled: `workflow_session_entry` or `project entry`, then claim or create. Skill: `board-ssot` § Continuation. Else: `session-pointer.md`.
 
-**Exit:** Fill Acceptance/Rollback. Shippable slices **must** hand off `handoff --last --agent implementer --next verifier --to in_review` (not straight to `done`). Promote or `mention-pr` before shippable PR. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`. Say *prepare gates green*.
+**Exit:** Fill Acceptance/Rollback. Shippable slices **must** hand off `handoff --last --agent implementer --next verifier --to in_review` (not straight to `done` — CLI EXIT_VALIDATION on shippable Done without verifier hop / allow-skip). Promote or `mention-pr` before shippable PR. Append `change-index.md`; one line in `updates-log.md`. No dual-write under `board_only`. Say *prepare gates green*.
 
 **Board rights:** Status + Notes on the card you touch. Prefer MCP/CLI Pattern A (`claim --last` / `handoff --last --agent implementer`). Use `mention-pr` and `promote-to-issue` before shippable PR. Gate: `workflow_project_api_ready` / `project api-ready` before board writes. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 

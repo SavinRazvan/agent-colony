@@ -154,32 +154,32 @@ const PER_AGENT_ENTRY_EXIT = [
   [
     "implementer",
     "project entry → claim --agent implementer",
-    "handoff --agent implementer --next … --to in_review or →Done",
+    "handoff --next verifier --to in_review (shippable); chores may →Done",
   ],
   [
     "test-runner",
     "project entry → slice card",
-    "→In review or →Done; --agent test-runner",
+    "→In review or →Done; shippable P0|P1 → verifier before Done",
   ],
   [
     "verifier",
     "project entry → related card",
-    "→Done or leave In review; --agent verifier",
+    "→Done or leave In review; --agent verifier (shippable gate)",
   ],
   [
     "integrator",
     "project entry → claim",
-    "→Done; --agent integrator",
+    "Shippable → verifier in_review; chores may →Done",
   ],
   [
     "auditor",
     "project entry → audit card",
-    "→In review/Done; --agent auditor + CHK-* / alignment artifact paths",
+    "→In review (--agent auditor) then verifier for Done; CHK-* / alignment paths in Notes",
   ],
   [
     "drift-guard",
     "Must project entry (then scoped list if live)",
-    "Drift card →Done; goal pulse + DRIFT-001…017; remediation via Notes/Ready — no silent tracker edits",
+    "Shippable P0|P1 → verifier hop; hygiene may →Done; DRIFT-001…017; remediation via Notes/Ready",
   ],
   [
     "researcher",
@@ -331,7 +331,7 @@ const SLICE_FLOW = [
 const SIDE_FLOW = [
   "auditor: audit card → CHK-* / enterprise-architecture-audit/ + alignment/ → Notes paths → implementer (Phase 3: drift-guard goal pulse / verifier)",
   "implementer: make drift-validate → P0/P1 or goal-pulse gaps → hand off drift-guard",
-  "drift-guard: board In progress + Acceptance/Notes → drift validate (DRIFT-001…017 kit-dev) → .local/workflow-artifacts/drift/ → card done; remediation via Notes/Ready",
+  "drift-guard: board In progress + Acceptance/Notes → drift validate (DRIFT-001…017 kit-dev) → .local/workflow-artifacts/drift/ → shippable P0|P1 → verifier; remediation via Notes/Ready",
   "integrator: integration card → integrate validate → escalate to implementer | test-runner | auditor",
 ];
 

@@ -202,6 +202,11 @@
               "type": "boolean",
               "description": "When true, project append-notes requires --agent"
             },
+            "require_verifier_before_done": {
+              "type": "boolean",
+              "default": true,
+              "description": "When true (default), Status→Done on shippable cards (PR citation in body/Notes, [AUDIT] card, or Priority P0|P1) requires --agent verifier, a prior Notes next=…/verifier hop, or --allow-skip-verifier with --skip-verifier-rationale. Chores and heal-cards CLOSED→Done stay ungated."
+            },
             "body_sections": {
               "type": "array",
               "items": { "type": "string" }

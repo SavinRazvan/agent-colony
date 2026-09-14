@@ -83,12 +83,12 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Agent | Entry | Exit (board) |
 |-------|-------|--------------|
 | **board** | status + list | Full triage; handoff to implementer |
-| **implementer** | status + `claim --agent implementer` | `handoff --agent implementer --next … --to in_review` or →Done |
-| **test-runner** | status + slice card | →In review or →Done; `--agent test-runner` |
-| **verifier** | status + related card | →Done or leave In review; `--agent verifier` |
-| **integrator** | status + claim | →Done; `--agent integrator` |
-| **auditor** | status + audit card | →In review/Done; `--agent auditor` + artifact paths |
-| **drift-guard** | **Must** status + list In progress | Drift card →Done; `--agent drift-guard`; remediation via Notes/Ready — no silent tracker edits |
+| **implementer** | status + `claim --agent implementer` | Shippable: `handoff --next verifier --to in_review` (CLI blocks Done without verifier hop). Chores may →Done |
+| **test-runner** | status + slice card | →In review or →Done (`--agent test-runner`); shippable P0\|P1 → verifier before Done |
+| **verifier** | status + related card | →Done with `--agent verifier` (machine gate on shippable); or leave In review |
+| **integrator** | status + claim | Shippable → `handoff --next verifier --to in_review`; chores may →Done (`--agent integrator`) |
+| **auditor** | status + audit card | →In review (`--agent auditor`); Done via verifier (`[AUDIT]` shippable); Notes + artifact paths |
+| **drift-guard** | **Must** status + list In progress | Shippable P0\|P1 → verifier hop; hygiene chores may →Done (`--agent drift-guard`); remediation via Notes/Ready — no silent tracker edits |
 | **researcher** | status (+ research card) | Research card →Done; `--agent researcher` + `AGENT_BRIEF` / pack paths (adaptive intake from chat/Notes) |
 
 ## Status path

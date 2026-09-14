@@ -141,6 +141,14 @@ def run_handoff(args: argparse.Namespace) -> int:
         return pc.fail('handoff', pc.EXIT_USAGE, '--agent required')
     if not next_agent:
         return pc.fail('handoff', pc.EXIT_USAGE, '--next required (agent name)')
+    allow_skip = bool(getattr(args, 'allow_skip_verifier', False))
+    skip_rationale = str(getattr(args, 'skip_verifier_rationale', None) or '').strip()
+    if allow_skip and not skip_rationale:
+        return pc.fail(
+            'handoff',
+            pc.EXIT_USAGE,
+            '--allow-skip-verifier requires --skip-verifier-rationale TEXT',
+        )
     try:
         next_attr = pc.format_agent_attribution(root, next_agent)
         self_attr = pc.format_agent_attribution(root, agent)
@@ -148,7 +156,10 @@ def run_handoff(args: argparse.Namespace) -> int:
         return pc.fail('handoff', pc.EXIT_USAGE, str(exc))
     extra = (getattr(args, 'text', None) or '').strip()
     status_to = (getattr(args, 'to', None) or '').strip()
-    handoff_payload = {'next': next_agent, 'to': status_to, 'note': extra}
+    handoff_payload: dict = {'next': next_agent, 'to': status_to, 'note': extra}
+    if allow_skip:
+        handoff_payload['allow_skip_verifier'] = True
+        handoff_payload['skip_verifier_rationale'] = skip_rationale
     items, err = pc.fetch_project_items(ssot, limit=args.limit)
     if err:
         if status_to and pc._normalize_status(status_to) in pc.BODY_GATE_STATUSES:
@@ -167,7 +178,14 @@ def run_handoff(args: argparse.Namespace) -> int:
             return pc.fail('handoff', pc.EXIT_GH, detail)
     before = pc._normalize_status(str(item.get('status') or ''))
     if status_to and pc._normalize_status(status_to) in pc.BODY_GATE_STATUSES:
-        ok_body, body_detail = pc.assert_body_ready_for_status(ssot, item, status_to)
+        ok_body, body_detail = pc.assert_body_ready_for_status(
+            ssot,
+            item,
+            status_to,
+            agent=agent,
+            allow_skip_verifier=allow_skip,
+            skip_verifier_rationale=skip_rationale,
+        )
         if not ok_body:
             return pc.fail('handoff', pc.EXIT_VALIDATION, body_detail)
     pre = pc.guard_write_or_queue(
@@ -566,6 +584,10 @@ def run_doctor(args: argparse.Namespace) -> int:
     conventions = ssot.get('conventions') if isinstance(ssot.get('conventions'), dict) else {}
     print(f"set_start_date_on_claim: {conventions.get('set_start_date_on_claim', True)}")
     print(f"set_end_date_on_done: {conventions.get('set_end_date_on_done', True)}")
+    print(
+        f"require_verifier_before_done: "
+        f"{conventions.get('require_verifier_before_done', True)}"
+    )
     print('doctor: note — Size/Estimate use points table in board-ssot skill (not hours)')
     print(f"item_kind_default: {conventions.get('item_kind_default', 'issue')}")
     print(f'promote_to_issue_on_pr: {conventions.get('promote_to_issue_on_pr', True)}')
@@ -717,6 +739,13 @@ def run_heal_cards(args: argparse.Namespace) -> int:
             applied += 1
             continue
         if row.get('heal_done_candidate'):
+            # Live apply bypasses body gate; queued flush must allow-skip verifier
+            # (CLOSED→Done hygiene is intentionally ungated — ADR-013 / plan).
+            heal_status_payload = {
+                'to': done_logical,
+                'allow_skip_verifier': True,
+                'skip_verifier_rationale': 'heal-cards CLOSED→Done hygiene',
+            }
             pre = pc.guard_write_or_queue(
                 root,
                 ssot,
@@ -724,7 +753,7 @@ def run_heal_cards(args: argparse.Namespace) -> int:
                 op='set-status',
                 item_id=item_id,
                 agent=agent,
-                payload={'to': done_logical},
+                payload=heal_status_payload,
             )
             if pre is not None:
                 queued += 1
@@ -740,7 +769,7 @@ def run_heal_cards(args: argparse.Namespace) -> int:
                     op='set-status',
                     item_id=item_id,
                     agent=agent,
-                    payload={'to': done_logical},
+                    payload=heal_status_payload,
                 )
                 if q is not None:
                     queued += 1

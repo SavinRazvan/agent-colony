@@ -107,6 +107,8 @@ Honesty: prefer smaller cards; if Size=`l`/`xl`, split. If table mismatch, expla
 
 **End date:** UTC day finished. Set on `done` if empty — `set-status --to done`, `handoff --to done`, merge sync, or `heal-cards --apply` (`conventions.set_end_date_on_done`). Never on create or In progress / In review.
 
+**Verifier-before-Done:** When `conventions.require_verifier_before_done` is true (default), Status→Done on **shippable** cards (PR citation in body/Notes, `[AUDIT]` card, or Priority P0|P1) requires `--agent verifier`, a prior Notes `next=…/verifier` hop, or `--allow-skip-verifier` + `--skip-verifier-rationale`. Chores and `heal-cards` CLOSED→Done stay ungated. Same-command `handoff --next verifier --to done` from a non-verifier still fails (gate runs before Notes append).
+
 ### Field checklist
 
 | Field | When | CLI |
@@ -157,10 +159,12 @@ Plain `project create` needs follow-up `set-field` for Priority/Size/Estimate. E
 
 | Agent | Exit (must update board) |
 |-------|--------------------------|
-| implementer | In progress → In review (PR) → Done; fields on own card |
-| test-runner / verifier | Stay on card; → In review or Done with Notes |
-| drift-guard | Drift-pass → Done; cite board Status; hand remediation via Notes/Ready — **no** silent tracker edits |
-| auditor | Audit card → In review/Done; Notes → artifact paths |
+| implementer | In progress → In review (PR) → Done via verifier; fields on own card; CLI EXIT_VALIDATION if shippable skips hop |
+| test-runner | Stay on slice card; → In review or Done; shippable P0\|P1 → verifier before Done (`--agent test-runner`) |
+| verifier | Stay on card; → Done with `--agent verifier` (machine gate on shippable); or leave In review with failure Notes |
+| integrator | Integration card → In review or Done; shippable → `handoff --next verifier --to in_review`; chores may Done |
+| drift-guard | Drift-pass: shippable P0\|P1 → verifier hop; hygiene chores may → Done; cite board Status; remediation via Notes/Ready — **no** silent tracker edits |
+| auditor | Audit card → In review (`--agent auditor`) then verifier for Done (`[AUDIT]` shippable); Notes → artifact paths |
 
 Status path: `Ready → In progress → In review → Done`
 

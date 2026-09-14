@@ -72,7 +72,7 @@ const BOARD_LABELS: Record<string, string> = {
   audit: "evidence-only audit",
   artifacts: "audit + alignment",
   notes: "artifact paths",
-  handoff: "→ implementer",
+  handoff: "→ verifier (in_review)",
 };
 
 const FALLBACK_LABELS: Record<string, string> = {
@@ -93,7 +93,7 @@ const READ_FIRST = [
 
 const PATTERNS = [
   ["create-from-template", "--template audit then claim --last"],
-  ["Board lifecycle", "Notes = artifact paths; Status in_review/done"],
+  ["Board lifecycle", "Notes = artifact paths; in_review then verifier for Done"],
   ["Tier-1", "Shared Board rights; Start date on claim / first In progress"],
   ["Tracker etiquette", "Propose edits in audit-actions; implementer applies"],
   ["Notes timestamp", "@owner.github_user/<agent> · YYYY-MM-DDTHH:MM:SSZ · … via --agent"],
@@ -123,7 +123,7 @@ const ARTIFACTS = [
   ],
   ["change-index.md", "Exit", "Next agents / humans"],
   ["history/updates-log.md", "Exit", "Continuity readers"],
-  ["Board Status + Notes", "in_review / done", "implementer"],
+  ["Board Status + Notes", "in_review then verifier for Done", "verifier"],
   [
     ".local/generated-data/project-board-snapshot.json",
     "project export (read-only)",
@@ -291,9 +291,9 @@ export default function AgentAuditorCanvas() {
           </Text>
           <Text>4. Propose tracker edits in audit-actions — implementer applies.</Text>
           <Text>
-            5. Exit: artifacts + change-index + updates-log; Status in_review/done;
-            Notes with artifact paths; orch Phase 3 → drift-guard goal pulse /
-            verifier as needed.
+            5. Exit: artifacts + change-index + updates-log; handoff --next
+            verifier --to in_review on shippable [AUDIT] cards; Notes with
+            artifact paths; orch Phase 3 → drift-guard goal pulse as needed.
           </Text>
         </Stack>
       </CollapsibleSection>
@@ -347,7 +347,7 @@ export default function AgentAuditorCanvas() {
       <Callout tone="neutral" title="MCP">
         Prefer workflow_check_audit_artifacts for Schema-1 scans; agent_colony
         project for board. External: only servers listed for this agent in
-        mcp.registry.yaml. Kit inventory: 28 tools.
+        mcp.registry.yaml. Kit inventory: 29 tools.
       </Callout>
 
       <Text tone="tertiary" size="small">

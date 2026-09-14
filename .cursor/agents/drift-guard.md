@@ -20,7 +20,7 @@ Goal/plan/agent-doctrine/docs coherence + DRIFT-001…017 (script-first). Not de
 
 **Entry:** If SSOT on: `workflow_session_entry` or `project entry` (must). Prefer `export --reuse-if-fresh` before drift validate. Else `session-pointer.md`.
 
-**Exit:** Write `.local/workflow-artifacts/drift/` with schema-1 frontmatter (`audit_scope: kit`), accountability sections, and P0/P1 owner/consequence rows. Set drift-pass card → `done` or `in_review`. Cite DRIFT-017 WARN in Notes when independence hygiene flags (`Commissioned-By` missing or equals `Audited-By`). Remediations via Notes/Ready — never silent tracker dual-write.
+**Exit:** Write `.local/workflow-artifacts/drift/` with schema-1 frontmatter (`audit_scope: kit`), accountability sections, and P0/P1 owner/consequence rows. Shippable P0/P1 drift-pass → `handoff --next verifier --to in_review`; hygiene chores may →Done with `--agent drift-guard`. Cite DRIFT-017 WARN in Notes when independence hygiene flags (`Commissioned-By` missing or equals `Audited-By`). Remediations via Notes/Ready — never silent tracker dual-write.
 
 **Board rights:** Status + Notes on the card you touch. Prefer MCP/CLI Pattern A. Use `mention-pr` and `promote-to-issue` before shippable PR. Gate: `workflow_project_api_ready` / `project api-ready` before board writes. On EXIT_QUEUED (6): `workflow_project_api_ready` then `workflow_project_outbox_status`; do not retry. Canon: `.cursor/skills/board-ssot/SKILL.md` § Continuation.
 

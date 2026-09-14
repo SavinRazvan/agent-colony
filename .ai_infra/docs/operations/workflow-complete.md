@@ -33,6 +33,7 @@ Notes:
 5. **Prepare gates (before merge / push)** — run **`python .ai_infra/scripts/pr/prepare.py`** (executes **`resolve_gates()`** — see `.ai_infra/scripts/pr/prepare.py`; `GATES` is the 2-gate back-compat alias). Additionally run **`python .ai_infra/scripts/architecture/check_governance_consistency.py`** when changing governance/workflows.
 6. **Skills order (do not skip)** — see `.agents/skills/pr-workflow/SKILL.md`:
    - `review-pr` → **verifier hop** (shippable) → `prepare-pr` → `merge-pr`
+   - Shippable board cards: CLI machine-blocks Status→Done without verifier hop (`require_verifier_before_done`; see [gate-matrix.md](gate-matrix.md)).
    - Architecture-impacting: Schema-1 alignment before review/prepare (see §B). `--skip-gates` refused on `architecture_impacting` (exit 2).
 7. **Artifacts** (must exist before merge; fill with real content):
    - `.local/workflow-artifacts/pr/review.md` — `python .ai_infra/scripts/pr/review.py --pr <id|url> --actor "<name>" --agents "review-pr"` then edit findings.
@@ -96,7 +97,7 @@ This is the **implementation agent** end-of-loop on top of sections **C** and **
 
 **When `project_ssot.enabled` (board-first):**
 
-1. **Board Status** — `set-status --to in_review|done` (Done also auto-sets **End date** UTC when configured); card Notes name next agent; print handoff line (`item_id=… · Status=… · next=…`).
+1. **Board Status** — Shippable slices: `handoff --next verifier --to in_review` before Done (CLI blocks shippable Done without verifier hop — see [gate-matrix.md](gate-matrix.md) and board-ssot § Verifier-before-Done). `set-status --to in_review|done` (Done also auto-sets **End date** UTC when configured); card Notes name next agent; print handoff line (`item_id=… · Status=… · next=…`).
 2. **`.local/index-and-planning/history/updates-log.md`** — one top entry (no gate dumps).
 3. **`change-index.md`** — one row; do **not** dual-write tracker `in_progress` under `board_only`.
 4. **`test-plan.md` / `test-index.md`** — when tests changed.

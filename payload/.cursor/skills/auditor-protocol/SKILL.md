@@ -232,3 +232,4 @@ Audit as Principal Enterprise Architect: inventory → implemented architecture 
 - Evidence contract: §2 reproducible; Confirmed/scorecard cite paths; §7/actions have Evidence or **Unknown**.  
 - Scorecard with justification; `enterprise-audit-actions.md` with repo-tied items (full audit).  
 - Unknowns and human-validation items listed.
+- After Schema-1 alignment write on shippable `[AUDIT]` cards: `handoff --next verifier --to in_review` before Done (verifier-before-Done gate; same-command `handoff --next verifier --to done` from non-verifier fails).

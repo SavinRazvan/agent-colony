@@ -371,7 +371,7 @@ def test_assert_body_ready_ignores_missing_end_date() -> None:
         "content": {
             "body": (
                 "## Acceptance\n\n- ok\n\n## Rollback\n\n- revert\n\n"
-                "## Notes\n\n- @u/a · note\n"
+                "## Notes\n\n- @u/a · next=@u/verifier\n"
             ),
         },
     }

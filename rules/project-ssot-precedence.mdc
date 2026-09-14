@@ -22,3 +22,4 @@ alwaysApply: true
 - Canon: ADR-008, `project-board-collaboration.md`, `AGENTS.md`.
 - Notes: `@owner.github_user/<agent> · <ISO-8601-UTC> · …` via `append-notes --agent`.
 - Tier-1: create as **Issue**; Start date on first In progress; End date on Done; Priority/Size/Estimate via `set-field` (see board-ssot skill); Draft→Issue via `promote-to-issue` or `mention-pr`; PR via `mention-pr`. Iteration, Labels, Reviewers out of scope by default.
+- **Verifier-before-Done:** shippable cards (PR citation, `[AUDIT]`, P0|P1) require `--agent verifier`, prior Notes `next=…/verifier`, or allow-skip — see board-ssot § Verifier-before-Done.

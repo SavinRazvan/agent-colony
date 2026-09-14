@@ -111,3 +111,4 @@ Duplicate GATES in prose · agents without Anchor/MCP · skip `change-index.md` 
 - [ ] Manifest if consumer tree changed
 - [ ] Verify commands run; blockers logged
 - [ ] Board Notes when `board_only`; `change-index.md` always
+- [ ] Shippable integration cards: `handoff --next verifier --to in_review` before Done (chores/non-shippable may Done with `--agent integrator`)

@@ -247,7 +247,7 @@ export default function MCPOnboardingCanvas() {
           <Text weight="semibold">agent_colony mcp</Text> (validate → seed /
           link → doctor → smoke → list-tools → call). Cursor IDE host loading is
           optional convenience. Board Pattern A tools surface EXIT_QUEUED (6)
-          via envelope — see ADR-012. Kit inventory **28 tools** includes
+          via envelope — see ADR-012. Kit inventory **29 tools** includes
           workflow_check_audit_artifacts and pipeline-aware merge_check.
         </Text>
         <Text tone="tertiary" size="small">

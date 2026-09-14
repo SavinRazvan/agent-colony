@@ -126,13 +126,13 @@ const WHO_WRITES: string[][] = [
   ],
   [
     "drift-guard",
-    "Drift-pass card Done; remediation via Ready",
+    "Shippable P0|P1 → verifier; hygiene may Done; remediation via Ready",
     ".local/workflow-artifacts/drift/drift-audit.md · drift-todos.md",
     "Goal pulse + DRIFT scripts; never silent dual-write Status",
   ],
   [
     "integrator",
-    "Integration card → Done",
+    "Shippable → verifier in_review; chores may Done",
     "integrate validate evidence in Notes",
     "Escalate product/coverage/arch",
   ],

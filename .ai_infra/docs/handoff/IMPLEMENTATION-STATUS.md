@@ -21,7 +21,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
 **Last updated:** 2026-09-13 (board docs/canvases aligned to rate-limit safety + owner hygiene)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1637
+**Product:** `agent-colony` · CLI: `agent-colony` 0.7.3 · **Tests:** 1652
 
 ## Shipped (confirmed in repo)
 
@@ -53,7 +53,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Kit canvases | **15** files under `canvases/`; DOC-008 counts **11** roster/agent canvases (excludes concept hubs `board-ssot-vs-trackers.canvas.tsx`, `agents-artifacts-board.canvas.tsx`, `github-api-safety.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
-| MCP tools + resources | 28 tools + 6 resources (ADR-012 Pattern A board tools + `workflow_check_audit_artifacts`) | `.ai_infra/mcp_servers/agent_colony_mcp/` |
+| MCP tools + resources | 29 tools + 6 resources (ADR-012 Pattern A board tools + `workflow_check_audit_artifacts` + `workflow_project_validate_item`) | `.ai_infra/mcp_servers/agent_colony_mcp/` |
 | Install scaffold + contract | `install-contract.json`; idempotent trackers/`AGENTS.md` on re-activate; kit 0.7.3 deletes leftover `.local/agents-control-center/` if present | `.ai_infra/scripts/install/scaffold.py` |
 | Local artifact tiers | Tier 1 scaffold: all `workflow-artifacts/*` buckets + README stubs; SSOT `local_workflow_paths.py` | `.ai_infra/templates/local-workspace/` |
 | Integrate validate | INT-001…014; INT-009/011 plugin parity **kit-dev only** | `.ai_infra/scripts/integration/validate.py` |
@@ -69,7 +69,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Consumer update stamp | Scaffold + `update` write `.kit-version` from source manifest; CLI fallback `ensure_kit_version_stamp` | `scaffold.py` · `update_cli.py` · tests |
 | Multi-consumer isolation | Model A contract doc; DRIFT-013 tracked-runtime guard; DRIFT-011b advisory; `update --check` + `kit_managed_globs`; consumer CI template | `multi-consumer-isolation.md` · `drift_checks.py` · `update_cli.py` · `templates/ci/consumer-gates.yml` |
 | Dashboard removal | Documentation now points to GitHub Project board + Cursor Open Canvas; `.local/index-and-planning/` remains offline markdown only | operations docs · skills · canvases |
-| Tests | 1637 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1652 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

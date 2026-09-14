@@ -45,6 +45,18 @@ _AUDIT_ARTIFACT_PATH_RE = re.compile(
     r"(\.local/workflow-artifacts/(?:alignment|drift|audit)/[A-Za-z0-9._/-]+\.md)"
 )
 _AUDIT_TITLE_RE = re.compile(r"\[AUDIT\]", re.IGNORECASE)
+# Body/Notes PR citations (no GraphQL Linked-PR field).
+_PR_CITATION_RE = re.compile(
+    r"(?:#\d+\b|/pull/\d+\b|github\.com/[^/\s]+/[^/\s]+/pull/\d+)",
+    re.IGNORECASE,
+)
+# Prior handoff trail: next=@user/verifier or next=…/verifier
+_VERIFIER_HOP_RE = re.compile(
+    r"next\s*=\s*(?:@[^\s/]+/)?verifier\b",
+    re.IGNORECASE,
+)
+
+
 def fail(cmd: str, code: int, reason: str) -> int:
     """Print structured FAIL and return exit code."""
     print(f"project {cmd}: FAIL — CODE={code} · {reason}", file=sys.stderr)
@@ -158,10 +170,86 @@ def replace_section_content(body: str, section_name: str, text: str) -> tuple[st
     return new_body, True
 
 
+def verifier_before_done_required(ssot: dict[str, Any]) -> bool:
+    """True when conventions.require_verifier_before_done is enabled (default True)."""
+    conventions = ssot.get("conventions") if isinstance(ssot.get("conventions"), dict) else {}
+    return bool(conventions.get("require_verifier_before_done", True))
+
+
+def item_is_shippable(item: dict[str, Any] | None, body: str | None = None) -> bool:
+    """
+    Shippable heuristic: PR citation in body/Notes, audit card, or Priority P0|P1.
+
+    No GraphQL Linked-PR field — body/Notes regex only.
+    """
+    if not isinstance(item, dict):
+        return False
+    text = body if body is not None else _item_body(item)
+    if _PR_CITATION_RE.search(text or ""):
+        return True
+    if _item_looks_like_audit_card(item, text or ""):
+        return True
+    priority = item_field_value(item, "priority", "Priority").strip().casefold()
+    if priority in ("p0", "p1", "0", "1"):
+        return True
+    # Display forms like "P0 — Critical"
+    if priority.startswith("p0") or priority.startswith("p1"):
+        return True
+    return False
+
+
+def notes_show_verifier_hop(body: str | None) -> bool:
+    """True when Notes/body already contain next=…/verifier (prior hop)."""
+    return bool(_VERIFIER_HOP_RE.search(body or ""))
+
+
+def assert_verifier_ready_for_done(
+    ssot: dict[str, Any],
+    item: dict[str, Any] | None,
+    *,
+    agent: str = "",
+    allow_skip: bool = False,
+    skip_rationale: str = "",
+) -> tuple[bool, str]:
+    """
+    Machine gate: shippable cards need a verifier hop before Status→Done.
+
+    Pass when agent is verifier, Notes show prior next=…/verifier, or
+    allow_skip with non-empty skip_rationale. Callers must EXIT_USAGE when
+    allow_skip is set without rationale before reaching this helper.
+    """
+    if not verifier_before_done_required(ssot):
+        return True, ""
+    if not isinstance(item, dict):
+        return False, "item snapshot is not a mapping"
+    body = _item_body(item)
+    if not item_is_shippable(item, body):
+        return True, ""
+    agent_id = str(agent or "").strip().lstrip("@").casefold()
+    if "/" in agent_id:
+        agent_id = agent_id.rsplit("/", 1)[-1]
+    if agent_id == "verifier":
+        return True, ""
+    if notes_show_verifier_hop(body):
+        return True, ""
+    if allow_skip and str(skip_rationale or "").strip():
+        return True, ""
+    return (
+        False,
+        "shippable card requires verifier hop before Done "
+        "(handoff --next verifier --to in_review, or set-status --agent verifier; "
+        "or --allow-skip-verifier with --skip-verifier-rationale)",
+    )
+
+
 def assert_body_ready_for_status(
     ssot: dict[str, Any],
     item: dict[str, Any] | None,
     target_status: str,
+    *,
+    agent: str = "",
+    allow_skip_verifier: bool = False,
+    skip_verifier_rationale: str = "",
 ) -> tuple[bool, str]:
     """
     Gate Status → in_review|done using collect_validate_item_problems on a target snapshot.
@@ -170,6 +258,9 @@ def assert_body_ready_for_status(
 
     End date is omitted from the gate when targeting Done — callers set it via
     ensure_end_date_if_done after the status write (mirror of Start date on In progress).
+
+    When targeting Done, also enforces verifier-before-Done on shippable cards
+    (conventions.require_verifier_before_done, default True).
     """
     target = _normalize_status(str(target_status or ""))
     if target not in BODY_GATE_STATUSES:
@@ -182,6 +273,15 @@ def assert_body_ready_for_status(
     # Auto-filled after Status→Done; requiring it here deadlocks the transition.
     if target == done_status_logical(ssot):
         problems = [p for p in problems if p != "missing End date"]
+        ok_v, detail_v = assert_verifier_ready_for_done(
+            ssot,
+            item,
+            agent=agent,
+            allow_skip=allow_skip_verifier,
+            skip_rationale=skip_verifier_rationale,
+        )
+        if not ok_v:
+            problems.append(detail_v)
     if not problems:
         return True, ""
     rem = (

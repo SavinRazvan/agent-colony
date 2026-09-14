@@ -73,10 +73,23 @@ _SCOPE_MISS_RE = re.compile(
 )
 _DEDUPE_PAYLOAD_KEYS: dict[str, tuple[str, ...]] = {
     "append-notes": ("text",),
-    "set-status": ("to", "start_date", "end_date"),
+    "set-status": (
+        "to",
+        "start_date",
+        "end_date",
+        "allow_skip_verifier",
+        "skip_verifier_rationale",
+    ),
     "set-section": ("section", "text"),
     "claim": ("to", "text", "start_date"),
-    "handoff": ("next", "to", "note", "text"),
+    "handoff": (
+        "next",
+        "to",
+        "note",
+        "text",
+        "allow_skip_verifier",
+        "skip_verifier_rationale",
+    ),
     "set-assignee": ("login",),
     "set-field": ("field", "to", "name", "value"),
     "promote-to-issue": ("repo",),
@@ -1033,7 +1046,20 @@ def apply_outbox_entry(
             item = find_item_by_id(items, item_id)
             if item is None:
                 return False, f"item not found: {item_id}"
-            ok_body, body_detail = assert_body_ready_for_status(ssot, item, to)
+            allow_skip = bool(payload.get("allow_skip_verifier"))
+            skip_rationale = str(payload.get("skip_verifier_rationale") or "").strip()
+            if allow_skip and not skip_rationale:
+                return False, (
+                    "allow_skip_verifier requires skip_verifier_rationale TEXT"
+                )
+            ok_body, body_detail = assert_body_ready_for_status(
+                ssot,
+                item,
+                to,
+                agent=agent,
+                allow_skip_verifier=allow_skip,
+                skip_verifier_rationale=skip_rationale,
+            )
             if not ok_body:
                 return False, body_detail
         ok, detail = set_item_status(ssot, item_id, to)
@@ -1152,7 +1178,20 @@ def apply_outbox_entry(
             item = find_item_by_id(items, item_id)
             if item is None:
                 return False, f"item not found: {item_id}"
-            ok_body, body_detail = assert_body_ready_for_status(ssot, item, status_to)
+            allow_skip = bool(payload.get("allow_skip_verifier"))
+            skip_rationale = str(payload.get("skip_verifier_rationale") or "").strip()
+            if allow_skip and not skip_rationale:
+                return False, (
+                    "allow_skip_verifier requires skip_verifier_rationale TEXT"
+                )
+            ok_body, body_detail = assert_body_ready_for_status(
+                ssot,
+                item,
+                status_to,
+                agent=agent,
+                allow_skip_verifier=allow_skip,
+                skip_verifier_rationale=skip_rationale,
+            )
             if not ok_body:
                 return False, body_detail
         if status_to:

@@ -370,7 +370,7 @@ export default function AgentImplementerCanvas() {
             </Text>
             <Text>
               Exit recipe: project handoff --last --agent implementer --next
-              verifier --to in_review (or --to done).
+              verifier --to in_review (not straight to done).
             </Text>
             <Text>
               Templates: create-from-template --template slice|bug then claim

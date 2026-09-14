@@ -103,7 +103,7 @@ const READ_FIRST = [
 
 const PATTERNS = [
   ["Consume only", "No create-from-template"],
-  ["Board lifecycle", "Exit in_review if tests gate PR else done"],
+  ["Board lifecycle", "Exit in_review if tests gate PR else done; shippable P0|P1 → verifier"],
   ["Tier-1", "Shared Board rights; promote only if opening a shippable PR"],
   ["Module layout", "tests/modules/<module>/ matching source boundaries"],
   ["Coverage evidence", "pytest --cov writes coverage.json only — do not invent alternate names"],
@@ -283,8 +283,9 @@ export default function AgentTestRunnerCanvas() {
             make doc-validate.
           </Text>
           <Text>
-            7. Exit: Status in_review if tests gate PR else done; update
-            change-index + test-index/test-plan.
+            7. Exit: Status in_review if tests gate PR else done; shippable P0|P1
+            → verifier even when tests do not gate PR; update change-index +
+            test-index/test-plan.
           </Text>
         </Stack>
       </CollapsibleSection>
@@ -318,8 +319,8 @@ export default function AgentTestRunnerCanvas() {
           <Stack gap={6}>
             <Text>Entry: project entry + claim. Consume only — no create-from-template.</Text>
             <Text>
-              Exit: must Status in_review if tests gate PR else done; change-index +
-              test-index/test-plan.
+              Exit: in_review if tests gate PR else done; shippable P0|P1 → verifier;
+              change-index + test-index/test-plan.
             </Text>
             <Text>
               Rate-limit: api-ready → EXIT_QUEUED (6) → cooldown/outbox status|list → flush; do not hammer
