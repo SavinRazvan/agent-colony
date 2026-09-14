@@ -65,7 +65,7 @@ const FALLBACK_EDGES = [
 ];
 
 const BOARD_LABELS: Record<string, string> = {
-  status: "project entry",
+  status: "api-ready → project entry",
   intake: "adaptive Brief",
   cli: "research init/fetch",
   rounds: "rounds 1-6 + validate",
@@ -314,7 +314,7 @@ export default function AgentResearcherCanvas() {
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
           <Text>
-            1. Entry: project entry (+ research card); else session-pointer.
+            1. Entry: project api-ready then project entry (+ research card); else session-pointer.
           </Text>
           <Text>
             2. Adaptive intake → normalize source (HTTPS | github: | path) → Brief.
@@ -363,7 +363,7 @@ export default function AgentResearcherCanvas() {
               Create: create-from-template --template research --priority p2
               --size m --estimate 3 --agent researcher (or claim Ready card).
             </Text>
-            <Text>Entry: project entry + research card when board on.</Text>
+            <Text>Entry: project api-ready then project entry + research card when board on.</Text>
             <Text>
               Exit: pack under _research_results/sources/&lt;slug&gt;/; non-shippable
               research card → done + Notes; shippable (PR / [AUDIT] / P0|P1) →

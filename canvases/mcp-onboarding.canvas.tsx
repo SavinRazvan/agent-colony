@@ -28,7 +28,7 @@ import {
   Text,
 } from "cursor/canvas";
 
-const VERIFIED = "2026-09-13";
+const VERIFIED = "2026-09-14";
 const SOURCES =
   "ADR-009 · ADR-012 · ADR-004 · connect-external-mcp.md · mcp-connect/SKILL.md · mcp.registry.yaml.example · mcp.user.example.json";
 

@@ -73,7 +73,7 @@ const FALLBACK_EDGES = [
 ];
 
 const BOARD_LABELS: Record<string, string> = {
-  status: "project entry",
+  status: "api-ready → project entry",
   claim: "claim card",
   index: "test-index.md",
   tests: "tests/modules/",
@@ -328,7 +328,7 @@ export default function AgentTestRunnerCanvas() {
         <CardHeader>Board interaction</CardHeader>
         <CardBody>
           <Stack gap={6}>
-            <Text>Entry: project entry + claim. Consume only — no create-from-template.</Text>
+            <Text>Entry: project api-ready then project entry + claim. Consume only — no create-from-template.</Text>
             <Text>
               Exit: in_review if tests gate PR; non-shippable may done; shippable
               (PR / [AUDIT] / P0|P1) → verifier before Done;

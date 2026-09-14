@@ -19,7 +19,7 @@ import {
 /**
  * Inventory of GitHub API hammering / safety protections in Agent Colony.
  * Source: project_outbox.py, project_cli (api-ready/entry/export/list/outbox), agent Board-rights, ADR-008/012.
- * Verified: 2026-09-13 — G1–G6 + G7 cooldown/api-ready + outbox list|drop triage + owner normalize.
+ * Verified: 2026-09-14 — G1–G6 + G7 cooldown/api-ready + outbox list|drop triage + owner normalize.
  */
 
 const FIXED = [

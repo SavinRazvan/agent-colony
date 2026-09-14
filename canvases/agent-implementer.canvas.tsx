@@ -81,7 +81,7 @@ const FALLBACK_EDGES = [
 const BOARD_LABELS: Record<string, string> = {
   yaml: "project_ssot YAML",
   bootstrap: "board-bootstrap --check",
-  status: "project entry",
+  status: "api-ready → project entry",
   claim: "claim (+ Start date if empty)",
   code: "contracts → code → tests",
   gates: "prepare.py resolve_gates()",
@@ -306,8 +306,8 @@ export default function AgentImplementerCanvas() {
           title={mode === "board" ? "project_ssot.enabled" : "Offline / disabled"}
         >
           {mode === "board"
-            ? "GitHub Project is the only writable Status SSOT. Do not dual-write work-tracker in_progress."
-            : "Read session-pointer then plan/work-tracker. Resume board sync when available."}
+            ? "Entry: project api-ready then project entry + claim. GitHub Project is the only writable Status SSOT. Do not dual-write work-tracker in_progress."
+            : "Entry: session-pointer then plan/work-tracker. Resume board sync when available."}
         </Callout>
         <DagPanel mode={mode} tokens={tokens} />
       </Stack>
@@ -315,8 +315,9 @@ export default function AgentImplementerCanvas() {
       <CollapsibleSection title="Loop steps (canon)" defaultOpen>
         <Stack gap={6}>
           <Text>
-            1. One primary claimed card (in_progress) when SSOT on; else one
-            in_progress in work-tracker.md. Scope on card body or plan.md.
+            1. Entry: project api-ready then project entry + claim one primary
+            card (in_progress) when SSOT on; else one in_progress in
+            work-tracker.md. Scope on card body or plan.md.
           </Text>
           <Text>
             2. Contracts → implementation → tests. New sources: module header
@@ -372,8 +373,9 @@ export default function AgentImplementerCanvas() {
         <CardBody>
           <Stack gap={6}>
             <Text>
-              Rights: Status + Notes on the card you touch. Prefer claim --last /
-              handoff --last --agent implementer → @owner.github_user/implementer.
+              Entry: project api-ready then project entry + claim. Rights: Status +
+              Notes on the card you touch. Prefer claim --last / handoff --last
+              --agent implementer → @owner.github_user/implementer.
             </Text>
             <Text>
               Exit recipe: shippable (PR / [AUDIT] / P0|P1) → project handoff
