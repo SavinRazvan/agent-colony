@@ -475,6 +475,9 @@ _CANVAS_NON_AGENT_TOKENS = frozenset(
         "entry",
         "offline",
         "compare",
+        "layout",
+        "skills",
+        "modes",
     }
 )
 
