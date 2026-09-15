@@ -57,7 +57,7 @@ DEEPWIKI_TOOLS_HINT: tuple[str, ...] = (
 
 KIT_REGISTRY_SERVER: dict[str, Any] = {
     "tier": "kit",
-    "description": "PR workflow, trackers, gates",
+    "description": "PR workflow, board Pattern A, trackers, gates",
     "agents": [
         "implementer",
         "test-runner",
@@ -66,6 +66,8 @@ KIT_REGISTRY_SERVER: dict[str, Any] = {
         "researcher",
         "integrator",
         "drift-guard",
+        "board",
+        "debugger",
     ],
     "tools_hint": [
         "workflow_run_prepare",

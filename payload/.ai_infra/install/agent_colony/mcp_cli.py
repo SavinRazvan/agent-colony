@@ -424,6 +424,6 @@ def register_mcp_subcommands(mcp_sub: Any) -> None:
     seed.add_argument(
         "--force-registry-agents",
         action="store_true",
-        help="Overwrite deepwiki.agents in live registry with kit default seven",
+        help="Overwrite deepwiki.agents in live registry with kit DeepWiki default allowlist",
     )
     seed.set_defaults(func=cmd_mcp_seed)

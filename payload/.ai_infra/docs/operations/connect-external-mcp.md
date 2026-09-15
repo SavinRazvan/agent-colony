@@ -84,7 +84,7 @@ Cursor IDE MCP loading is optional. Registry YAML is the allowlist for `call` / 
 fastest way to validate the two-tier flow end-to-end (also the kit's live demo script).
 
 **Preferred:** consumer activate or `mcp seed --deepwiki` writes the user fragment + registry
-entry (seven Pattern A agents). Manual worksheet:
+entry (DeepWiki default agent allowlist — not the full nine-agent kit roster). Manual worksheet:
 
 1. **User server** — add the URL-based entry to `.cursor/mcp.user.json` (no `command`/`args`,
    just a `url`):
