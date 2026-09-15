@@ -147,6 +147,7 @@ const PEERS = [
   ["Use instead", "pr-workflow", "Git commit/push/PR (maintainer skills)"],
   ["Consumes from", "any agent", "Notes / handoff / cited pack path"],
   ["Proven with", "verifier", "Post-pack Claim A/B check (optional)"],
+  ["Inbound", "debugger", "May cite research brief only — keep packs separate"],
 ];
 
 function DagPanel({

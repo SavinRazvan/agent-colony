@@ -42,3 +42,9 @@ Validation boundaries · error/reason codes · retry/replay · async cleanup · 
 ## Output
 
 `Coverage summary` → `Tests added/updated` → `Edge cases` → `Gaps` → `Index/plan updates`.
+
+## Peers (debugger)
+
+| Direction | Agent | When |
+|-----------|-------|------|
+| Inbound | debugger | TR rows from `debug handoff` — treat captures as **leads**; rerun fresh pytest for durable suite proof |

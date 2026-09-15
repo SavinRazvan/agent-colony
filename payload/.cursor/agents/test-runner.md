@@ -39,6 +39,16 @@ Report: tests · scope · gaps · tracker updates.
 item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
 ```
 
+## Peers
+
+| Direction | Agent | When |
+|-----------|-------|------|
+| Outbound | verifier | Shippable or tests gate PR — `handoff --next verifier --to in_review` |
+| Outbound | next (generic) | handoff format per card when not gating |
+| Inbound | implementer | Handoff when tests/coverage needed before merge |
+| Inbound | integrator | Escalates coverage work to test-runner |
+| Inbound | debugger | TR findings from `debug handoff` — captures are leads; rerun fresh pytest for durable proof |
+
 ## MCP integration
 
 | Tier | Server | Use when |

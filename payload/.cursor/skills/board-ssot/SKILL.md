@@ -167,8 +167,25 @@ Plain `project create` needs follow-up `set-field` for Priority/Size/Estimate. E
 | drift-guard | Drift-pass: shippable (PR / `[AUDIT]` / P0\|P1) → verifier hop; hygiene chores may → Done; cite board Status; remediation via Notes/Ready — **no** silent tracker edits |
 | auditor | Audit card → In review (`--agent auditor`) then verifier for Done (`[AUDIT]` shippable); Notes → artifact paths |
 | researcher | Non-shippable research → Done + pack paths; shippable → verifier before Done |
+| debugger | Forensic DEBUG card → `ready_for_consumer` then `debug close`; shippable → verifier before Done |
 
 Status path: `Ready → In progress → In review → Done`
+
+### Debugger cards (`--template debug`)
+
+Use **`create-from-template --template debug`** for forensic campaigns (Acceptance/Rollback on the DEBUG card). Use **`--template bug`** for a single behavioral fix after handoff — not for open-ended investigation.
+
+| Moment | Board | Campaign |
+|--------|-------|----------|
+| Create | `--template debug` · `--agent debugger` · fill Acceptance (repro, scope) on DEBUG card | `debug init --slug <slug> --item-id <PVTI_…>` |
+| During | Notes: `@user/debugger · … · campaign=<slug>` | `debug status --digest`; lazy-load debug-* skills |
+| Handoff | Child **`bug`** (DBG) or **`slice`** (TR/SG) cards via board; forensic Acceptance stays on DEBUG card | `debug handoff --next …`; publish manifest hash in Notes |
+| In review | Notes cite `publish/` path, outcome, **`debug validate --final` PASS**, manifest sha256 | campaign `ready_for_consumer` |
+| Done | **`handoff --next verifier --to in_review`** then verifier → Done with `--agent verifier` | `debug close`; campaign `closed` |
+
+**Notes must carry:** campaign id/slug, outcome, publish path or manifest hash, validation PASS (portable for cross-clone review). **`validate-item`** checks debug packs separately from Schema-1 audit artifacts.
+
+**Child routing:** DBG → implementer (`bug`); TR → test-runner (`slice` + test plan); SG → implementer/integrator (`slice`). Do not put product fixes on the DEBUG card.
 
 ## Procedure (Pattern A)
 
@@ -178,6 +195,7 @@ Never paste placeholder `--id`. After create, use `--last`. `project guide --age
 |------|-------------------|
 | slice / feature / chore | `create-from-template --template slice` |
 | bug / fix | `create-from-template --template bug` |
+| forensic debug | `create-from-template --template debug` then `claim --last --agent debugger` |
 | research | `--template research` |
 | audit pass | `create-from-template --template audit` then `claim --last` |
 | test-runner / verifier | claim/continue only — **no** create |

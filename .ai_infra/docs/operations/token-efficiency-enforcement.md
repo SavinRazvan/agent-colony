@@ -39,7 +39,7 @@ Verifier-owned disproof checklist. Label each claim: **Verified** | **Partial** 
 
 | # | Label | Evidence |
 |---|-------|----------|
-| 1 | **Verified** | `doc validate-thin-index --summary` → PASS · checked=17 · fail=0 |
+| 1 | **Verified** | `doc validate-thin-index --summary` → PASS · fail=0 (re-run after thin-index edits; checked count varies with § rows) |
 | 2 | **Verified** | `du -sb .cursor` after dry-run: lite **67,032 B** vs full **118,597 B** (~**43%** smaller). *Byte counts vary slightly by payload sync date; re-run `make install-dry-run*` before release audits.* |
 | 3 | **Verified** | `rg 'alwaysApply: true' .cursor/rules \| wc -l` → **4** |
 | 4 | **Verified** | `test_drift_token_efficiency.py` — missing anchor → DRIFT-014 FAIL |

@@ -245,3 +245,7 @@ Audit as Principal Enterprise Architect: inventory → implemented architecture 
 - Scorecard with justification; `enterprise-audit-actions.md` with repo-tied items (full audit).  
 - Unknowns and human-validation items listed.
 - After Schema-1 alignment write on shippable `[AUDIT]` cards: `handoff --next verifier --to in_review` before Done (verifier-before-Done gate; same-command `handoff --next verifier --to done` from non-verifier fails).
+
+## Peers (debugger)
+
+Debugger publish packs may cite structural gaps — treat as **input**, not Schema-1 alignment. Do not merge debug vault dumps into audit artifacts.

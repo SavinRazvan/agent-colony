@@ -125,3 +125,7 @@ Duplicate GATES in prose · agents without Anchor/MCP · skip `change-index.md` 
 - [ ] Verify commands run; blockers logged
 - [ ] Board Notes when `board_only`; `change-index.md` always
 - [ ] Shippable integration cards: `handoff --next verifier --to in_review` before Done (chores/non-shippable may Done with `--agent integrator`)
+
+## Peers (debugger)
+
+Promote reusable helpers from `vault/scripts/` or repeated campaign tooling into kit scripts/skills — do not copy whole vault trees into product paths.

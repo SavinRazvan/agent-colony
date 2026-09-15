@@ -24,6 +24,7 @@ if str(PKG_DIR) not in sys.path:
     sys.path.insert(0, str(PKG_DIR))
 
 import debug_campaign  # noqa: E402
+import debug_storage  # noqa: E402
 
 
 def _workspace(tmp_path: Path) -> Path:
@@ -73,3 +74,53 @@ def test_closed_campaign_is_immutable(tmp_path: Path) -> None:
     debug_campaign.close_campaign(root, "closed")
     with pytest.raises(debug_campaign.DebugCampaignError):
         debug_campaign.finding_add(root, "closed", kind="DBG", summary="after close")
+
+
+def test_close_blocked_on_open_finding(tmp_path: Path) -> None:
+    root = _workspace(tmp_path)
+    debug_campaign.init_campaign(root, slug="open-bug", mode="incident", item_id="PVTI_test")
+    debug_campaign.finding_add(
+        root,
+        "open-bug",
+        kind="DBG",
+        summary="Needs child card before close",
+    )
+    with pytest.raises(debug_campaign.DebugCampaignError, match="still open"):
+        debug_campaign.close_campaign(root, "open-bug")
+
+
+def test_finding_add_redacts_secrets_in_campaign_write(tmp_path: Path) -> None:
+    root = _workspace(tmp_path)
+    camp = debug_campaign.init_campaign(root, slug="redact", mode="incident", item_id="PVTI_test")
+    secret = "finding-secret-canary-abcdefghijklmnopqrstuvwxyz"
+    debug_campaign.finding_add(
+        root,
+        "redact",
+        kind="TR",
+        summary=f"Authorization: Bearer {secret} in trace",
+    )
+    raw = (camp / "publish" / "findings" / "index.json").read_text(encoding="utf-8")
+    assert secret not in raw
+    assert "[REDACTED]" in raw
+
+
+def test_status_digest_includes_budgets_and_next_action(tmp_path: Path) -> None:
+    root = _workspace(tmp_path)
+    debug_campaign.init_campaign(root, slug="digest", mode="incident", item_id="PVTI_test")
+    digest = debug_campaign.status_digest(root, "digest")
+    assert "runs=0/" in digest
+    assert "latest_run=" in digest
+    assert "findings=open:" in digest
+    assert "next_action=" in digest
+
+
+def test_repair_apply_requires_campaign_ack(tmp_path: Path) -> None:
+    root = _workspace(tmp_path)
+    camp = debug_campaign.init_campaign(root, slug="repair", mode="incident", item_id="PVTI_test")
+    index = json.loads((camp / "INDEX.json").read_text(encoding="utf-8"))
+    index["counters"]["runs_used"] = 99
+    debug_storage.atomic_write_json(camp / "INDEX.json", index)
+    assert debug_campaign.repair_check(root, "repair")
+    with pytest.raises(debug_campaign.DebugCampaignError, match="--acknowledge"):
+        debug_campaign.repair_apply(root, "repair", acknowledge="wrong-id")
+    debug_campaign.repair_apply(root, "repair", acknowledge=str(index["campaign_id"]))

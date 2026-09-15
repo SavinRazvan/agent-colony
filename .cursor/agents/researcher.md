@@ -63,6 +63,14 @@ GitHub clone uses machine auth. DeepWiki MCP uses `repoName` — does not replac
 item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
 ```
 
+## Peers
+
+| Direction | Agent | When |
+|-----------|-------|------|
+| Outbound | implementer | Consumer handoff from `AGENT_BRIEF.md` |
+| Outbound | integrator | Host deepen via `mode: self` backlog |
+| Inbound | debugger | May cite research brief only — external research stays separate from forensic vault |
+
 ## MCP integration
 
 | Tier | Server | Use when |

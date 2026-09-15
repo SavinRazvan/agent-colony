@@ -31,6 +31,7 @@ Notes:
 | **integrator** | Document lite profile; no duplicated gate lists |
 | **test-runner** | Cite pytest counts from this run only — not full green output |
 | **researcher** | Pack refs only; no product code reads in chat dumps |
+| **debugger** | Forensic campaigns; load `debug-protocol` first; lazy `doc skill-section` on debug-* skills; cite `publish/` paths and manifest hash — not vault dumps |
 
 Program overview: [token-efficiency-program.md](token-efficiency-program.md).
 
@@ -56,6 +57,17 @@ Load the section you need. Do not load whole skills by default. Machine-backed v
 | `test-coverage` | Tests / coverage slice | Procedure steps 1–7 |
 | `update-agent-colony` | Consumer kit upgrade | Commands + version gate |
 | `workflow-activate` | Consumer install | “When user just installed” |
+| `debug-protocol` | Forensic campaign start / orchestration | When · Read first · Allowed scope |
+| `debug-vault` | Vault reads, redaction, protected paths | When · Allowed scope · CLI evidence |
+| `debug-scripts` | `debug capture` / ingest / analyze runs | When · CLI evidence · Completion evidence |
+| `debug-module-map` | Campaign topology / module inventory | When · Read first · CLI evidence |
+| `debug-file-ledger` | File-level evidence ledger | When · Allowed scope · CLI evidence |
+| `debug-observability-standard` | Logging / tracing standards gap | When · Allowed scope · CLI evidence |
+| `debug-error-surface` | Error surface / exit-code mapping | When · Allowed scope · CLI evidence |
+| `debug-instrumentation` | Probe placement / temporary instrumentation | When · Allowed scope · CLI evidence |
+| `debug-run-ledger` | Run summaries and by-run evidence | When · Allowed scope · CLI evidence |
+| `debug-lenses` | Lens choice for experiment waves | When · Read first · Allowed scope |
+| `debug-handoff` | Publish handoff and child-card routing | When · CLI evidence · Handoff |
 
 ## Read set (default)
 

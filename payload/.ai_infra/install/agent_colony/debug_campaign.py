@@ -1113,12 +1113,18 @@ def structural_validate(root: Path, slug: str) -> list[str]:
             "findings"
         ) or []
         for finding in findings:
-            if finding.get("status") == "open" and not finding.get("owner"):
-                errors.append(f"unowned open finding {finding.get('id')}")
-            if finding.get("status") == "open":
+            fid = finding.get("id")
+            status_f = finding.get("status")
+            if status_f == "open":
                 errors.append(
-                    f"finding {finding.get('id')} still open — need queued|handed_off with owner"
+                    f"finding {fid} still open — need queued|handed_off with owner"
                 )
+            if status_f in {"queued", "handed_off"} and not finding.get("owner"):
+                errors.append(f"finding {fid} ({status_f}) missing owner")
+            if status_f == "handed_off" and not finding.get("child_card"):
+                errors.append(f"finding {fid} handed_off without child_card")
+            if status_f == "open" and not finding.get("owner"):
+                errors.append(f"unowned open finding {fid}")
     _ = events
     return errors
 
@@ -1217,11 +1223,41 @@ def status_digest(root: Path, slug: str) -> str:
     ) or []
     probes = debug_storage.read_json(camp / "vault" / "probes" / "index.json").get("probes") or []
     active = [p for p in probes if p.get("status") == "active"]
+    counters = index.get("counters") or {}
+    budgets = index.get("budgets") or {}
+    runs_used = counters.get("runs_used", 0)
+    run_limit = budgets.get("run_limit", "?")
+    bytes_used = counters.get("bytes_used", 0)
+    runs_dir = camp / "vault" / "logs" / "by-run"
+    latest_run = "(none)"
+    if runs_dir.is_dir():
+        run_names = sorted(
+            p.name for p in runs_dir.iterdir() if p.is_dir() and p.name.startswith("run-")
+        )
+        if run_names:
+            latest_run = run_names[-1]
+    open_count = sum(1 for f in findings if f.get("status") == "open")
+    queued_count = sum(1 for f in findings if f.get("status") == "queued")
+    handed_off_count = sum(1 for f in findings if f.get("status") == "handed_off")
+    dbg_count = sum(1 for f in findings if f.get("kind") == "DBG")
+    tr_count = sum(1 for f in findings if f.get("kind") == "TR")
+    sg_count = sum(1 for f in findings if f.get("kind") == "SG")
+    camp_status = index.get("status")
+    next_agent = index.get("next_agent") or "(unset)"
+    if camp_status == "ready_for_consumer":
+        next_action = f"child cards or debug close; next={next_agent}"
+    elif camp_status == "closed":
+        next_action = "none"
+    elif camp_status == "blocked":
+        next_action = f"unblock or handoff; reason={index.get('blocked_reason') or '(none)'}"
+    else:
+        next_action = f"experiment/handoff; next={next_agent}"
     return (
-        f"slug={slug} status={index.get('status')} mode={index.get('mode')} "
-        f"runs={index.get('counters', {}).get('runs_used')} "
-        f"findings={len(findings)} active_probes={len(active)} "
-        f"next={index.get('next_agent')}"
+        f"slug={slug} status={camp_status} mode={index.get('mode')} "
+        f"runs={runs_used}/{run_limit} bytes={bytes_used} latest_run={latest_run} "
+        f"findings=open:{open_count} queued:{queued_count} handed_off:{handed_off_count} "
+        f"DBG:{dbg_count} TR:{tr_count} SG:{sg_count} active_probes={len(active)} "
+        f"next_action={next_action}"
     )
 
 

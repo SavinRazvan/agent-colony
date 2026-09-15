@@ -144,6 +144,11 @@ const PEERS = [
   ["Outbound", "next (generic)", "handoff format per card when not gating"],
   ["Inbound", "implementer", "Handoff when tests/coverage needed before merge"],
   ["Inbound", "integrator", "Escalates coverage work to test-runner"],
+  [
+    "Inbound",
+    "debugger",
+    "TR findings from debug handoff — captures are leads; rerun fresh pytest",
+  ],
 ];
 
 function DagPanel({

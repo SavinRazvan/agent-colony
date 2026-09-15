@@ -121,6 +121,7 @@ const PEERS = [
   ["Escalation", "test-runner", "Coverage → test-coverage"],
   ["Escalation", "implementer", "Product src/ → implementer-loop"],
   ["Escalation", "pr-workflow", "Maintainer PR pipeline (.agents/skills)"],
+  ["Inbound", "debugger", "Promote reusable vault/scripts helpers into kit"],
 ];
 
 function DagPanel({

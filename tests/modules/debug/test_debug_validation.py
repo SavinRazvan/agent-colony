@@ -86,3 +86,70 @@ def test_validation_blocks_closed_with_active_probe(tmp_path: Path) -> None:
     debug_storage.atomic_write_json(camp / "INDEX.json", index)
     errors = debug_campaign.structural_validate(root, "probe")
     assert any("active probes" in error for error in errors)
+
+
+def test_closed_campaign_rejects_handed_off_without_child_card(tmp_path: Path) -> None:
+    root = _workspace(tmp_path)
+    camp = debug_campaign.init_campaign(root, slug="handoff-gap", mode="incident", item_id="PVTI_test")
+    fid = debug_campaign.finding_add(
+        root,
+        "handoff-gap",
+        kind="DBG",
+        summary="queued for implementer",
+    )
+    debug_campaign.update_finding(root, "handoff-gap", fid, status="handed_off")
+    index = json.loads((camp / "INDEX.json").read_text(encoding="utf-8"))
+    index["status"] = "closed"
+    debug_storage.atomic_write_json(camp / "INDEX.json", index)
+    errors = debug_campaign.structural_validate(root, "handoff-gap")
+    assert any("handed_off without child_card" in error for error in errors)
+
+
+def test_validate_for_board_done_requires_closed_campaign(tmp_path: Path) -> None:
+    root = _workspace(tmp_path)
+    debug_campaign.init_campaign(root, slug="board-done", mode="incident", item_id="PVTI_test")
+    errors = debug_campaign.validate_for_board(root, "board-done", board_status="done")
+    assert any("need closed" in error for error in errors)
+
+
+def test_project_atomics_debug_card_checks_pack_status(tmp_path: Path) -> None:
+    root = _workspace(tmp_path)
+    debug_campaign.init_campaign(root, slug="vcard", mode="incident", item_id="PVTI_test")
+    debug_campaign.handoff_campaign(root, "vcard")
+    body = (
+        "## Acceptance\n\nok\n\n## Rollback\n\nok\n\n## Notes\n\n"
+        "- `.local/workflow-artifacts/debug/vcard/publish/HANDOFF.json`\n"
+        "- debug validate PASS\n"
+    )
+    item = {
+        "id": "PVTI_test",
+        "status": "In review",
+        "content": {"body": body, "title": "[DEBUG] forensic"},
+    }
+    install_dir = REPO_ROOT / ".ai_infra" / "install" / "agent_colony"
+    if str(install_dir) not in sys.path:
+        sys.path.insert(0, str(install_dir))
+    import project_atomics as pa  # noqa: E402
+
+    problems: list[str] = []
+    warnings: list[str] = []
+    pa._append_debug_artifact_checks(
+        problems=problems,
+        warnings=warnings,
+        item=item,
+        body=body,
+        status="in_review",
+        root=root,
+    )
+    assert not any("need ready_for_consumer" in problem for problem in problems)
+
+    problems_done: list[str] = []
+    pa._append_debug_artifact_checks(
+        problems=problems_done,
+        warnings=[],
+        item=item,
+        body=body,
+        status="done",
+        root=root,
+    )
+    assert any("need closed" in problem for problem in problems_done)

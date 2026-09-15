@@ -67,7 +67,7 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | Estimate | Yes (UI) | Triage + own card — `set-field --field estimate --to N` (points; Size↔Estimate table in skill) | — |
 | Promote Draft→Issue | Yes (UI) | `promote-to-issue --last --agent <name> [--repo owner/repo]` | GraphQL `convertProjectV2DraftIssueItemToIssue`; same `PVTI_`; Assignees + Linked PRs after promote; Notes `promoted to Issue #N`; fine-grained PAT caveat (`doctor` / `guide`); claim does **not** auto-promote |
 | Linked PRs | Yes (UI link) | `mention-pr --pr N` → Notes with PR URL; auto-promotes Draft when `promote_to_issue_on_pr` (default true) — FAIL if promote fails; WARN-only if false | GitHub **Linked pull requests** column derived from Issue↔PR (works after Issue) |
-| Create cards | Yes | board, implementer, integrator | — |
+| Create cards | Yes | board, implementer, integrator, debugger (`--template debug`) | — |
 | Ready prioritization | **Owner** | Consume; create agreed work | — |
 | Views / workflows / Insights / status updates | **Owner only** | Never mutate views | Insights auto |
 | Project README | **Owner** (paste) | Opt-in `board-bootstrap --apply-readme` only | — |
@@ -90,6 +90,16 @@ When `project_ssot.enabled` and `sync_policy: board_only`, the **GitHub Project 
 | **auditor** | `api-ready` → `entry` + audit card | →In review then Done via verifier (`[AUDIT]` shippable); Notes + artifact paths |
 | **drift-guard** | **Must** `api-ready` → `entry` (+ list In progress) | Shippable (PR / `[AUDIT]` / P0\|P1) → verifier hop; hygiene chores may →Done (`--agent drift-guard`); remediation via Notes/Ready — no silent tracker edits |
 | **researcher** | `api-ready` → `entry` (+ research card) | Non-shippable research →Done + pack paths; shippable → verifier before Done |
+| **debugger** | `api-ready` → `entry` + `claim --agent debugger` on DEBUG card | Forensic Acceptance on DEBUG card; `debug handoff` + child `bug\|slice` cards; Notes: campaign slug, outcome, publish/manifest hash, validate PASS; shippable → verifier before Done |
+
+### Debugger vs bug cards
+
+| Template | When | Child cards |
+|----------|------|-------------|
+| **`debug`** | Open-ended forensic campaign; repro unknown or multi-hypothesis | DBG → `bug`; TR → `slice` (test-runner); SG → `slice` (implementer/integrator) |
+| **`bug`** | Single known behavioral fix after debugger handoff | None required on parent |
+
+Forensic **Acceptance/Rollback** stay on the DEBUG card. Product edits and durable tests belong on child cards — not on the DEBUG card. **`validate-item`** runs debug-pack checks (`validate_for_board`) — not Audit-Schema 1.
 
 ## Status path
 
@@ -113,7 +123,7 @@ All subcommands registered in `.ai_infra/install/agent_colony/project_parser.py`
 | `entry` | Quota-aware Continuation Entry (live \| conserve \| offline_artifacts) | **Any (preferred Entry)** |
 | `list` | List project items (optional `--status` filter); WARN if unfiltered high `--limit` | Any (prefer `entry`) |
 | `create` | Create Issue (or Draft if `item_kind_default: draft`) | board, implementer, integrator |
-| `create-from-template` | Create Issue from slice/bug body template (default `item_kind_default: issue`) | board, implementer |
+| `create-from-template` | Create Issue from slice/bug/debug/research/audit body template (default `item_kind_default: issue`) | board, implementer, debugger |
 | `set-status` | Set item Status from YAML option ids; gates `in_review`\|`done` on body (exit 5) | Power use (prefer `handoff --to`) |
 | `set-field` | Set Priority, Size, or Estimate | **Mandatory** on create/claim/own (`priority` + `size` + `estimate`); see skill § Tier-1 card fields contract |
 | `set-section` | Replace ## Acceptance or ## Rollback (Notes stay append-only) | implementer, integrator (before handoff) |
@@ -123,7 +133,7 @@ All subcommands registered in `.ai_infra/install/agent_colony/project_parser.py`
 | `mention-pr` | Notes with PR URL; auto-promote Draft when configured | implementer |
 | `promote-to-issue` | Convert DraftIssue → Issue (same `PVTI_`) | implementer (before shippable PR) |
 | `handoff` | Pattern A: Notes `next=@user/agent` + optional set-status; gates `in_review`\|`done` | Any (Exit) |
-| `validate-item` | Check body + Tier-1 + Status + Notes; **audit cards:** WARN if Notes lack `.local/workflow-artifacts/` path; **exit 5** if cited path fails Schema-1 | verifier, board |
+| `validate-item` | Check body + Tier-1 + Status + Notes; **audit cards:** WARN if Notes lack `.local/workflow-artifacts/` path; **exit 5** if cited path fails Schema-1; **debug cards:** debug-pack checks via `validate_for_board` (not Schema-1) | verifier, board, debugger |
 | `heal-cards` | Inventory incomplete Status/Tier-1; `--apply` sets Done when Issue CLOSED + Status empty/non-done; per-op queue on throttle | board, maintainer |
 | `last` | Print last saved item_id (after create/claim) | Any (with `--last` recipes) |
 | `guide` | Print safe recipes using `--last` (no placeholder ids) | Any (Entry) |

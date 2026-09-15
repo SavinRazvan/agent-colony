@@ -123,6 +123,7 @@ const PEERS = [
   ["Outbound", "implementer", "Dual-write remediation via Ready"],
   ["Inbound", "implementer", "Invokes on P0/P1 after drift-validate"],
   ["Inbound", "auditor", "audit-orchestration Phase 3 — after tracker/doc edits"],
+  ["Inbound", "debugger", "SG rows in publish pack — not DRIFT unless doctrine drift confirmed"],
 ];
 
 function DagPanel({

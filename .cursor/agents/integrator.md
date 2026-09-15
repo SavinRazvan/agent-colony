@@ -51,6 +51,15 @@ Pattern A. No duplicated gate lists. Facts only. No invented MCP tools.
 item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
 ```
 
+## Peers
+
+| Direction | Agent | When |
+|-----------|-------|------|
+| Outbound | implementer | Product code / tests after integration slice |
+| Outbound | test-runner | New module tests when scripts change |
+| Outbound | auditor | Architecture-impacting integration |
+| Inbound | debugger | Promote reusable campaign scripts/helpers from `vault/scripts/` into kit |
+
 ## MCP integration
 
 | Tier | Server | Use when |
