@@ -135,7 +135,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 
 ---
 
-## Agents (8) — all active
+## Agents (9) — all active
 
 | Agent | `.cursor/agents/` | Consumer | Invoke |
 |-------|:-----------------:|:--------:|--------|
@@ -147,6 +147,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `drift-guard` | Yes | Yes | `/drift-guard` |
 | `board` | Yes | Yes | `/board` |
 | `researcher` | Yes | Yes (opt-in packs after `research init`) | `/researcher` (adaptive Brief + HTTPS; shipped/proven) |
+| `debugger` | Yes | Yes (full profile only; excluded on `consumer_lite`) | `/debugger` (forensic campaigns; `agent_colony debug` CLI) |
 
 **Deprecated agents:** none.
 
@@ -154,7 +155,7 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 
 ## Skills
 
-### Canonical — `.cursor/skills/` (16) → consumer `.cursor/skills/`
+### Canonical — `.cursor/skills/` (27) → consumer `.cursor/skills/`
 
 | Skill | Paired agent |
 |-------|----------------|
@@ -174,6 +175,17 @@ Filter SSOT: `.ai_infra/scripts/architecture/consumer_bundle_paths.py` (e.g. exc
 | `update-agent-colony` | Version-gated consumer upgrade |
 | `mcp-connect` | MCP setup |
 | `research-corpus` | `researcher` |
+| `debug-protocol` | `debugger` (orchestration hub; lazy-loads `debug-*`) |
+| `debug-handoff` | `debugger` (campaign exit + publish manifest) |
+| `debug-vault` | `debugger` (redaction + vault surfaces) |
+| `debug-scripts` | `debugger` (capture / ingest helpers) |
+| `debug-module-map` | `debugger` (topology) |
+| `debug-file-ledger` | `debugger` (file ledger) |
+| `debug-observability-standard` | `debugger` (standards assessment) |
+| `debug-error-surface` | `debugger` (error surfaces) |
+| `debug-instrumentation` | `debugger` (instrumentation) |
+| `debug-run-ledger` | `debugger` (run ledger) |
+| `debug-lenses` | `debugger` (investigation lenses) |
 
 ### Maintainer slash — `.agents/skills/` → consumer `.agents/skills/`
 
@@ -190,7 +202,7 @@ Also under `.agents/skills/`: `README.md`, `PR_WORKFLOW.md` (legacy redirect), `
 
 ### Repo-root `skills/` — Marketplace plugin mirror only
 
-Cursor loads repo-root `agents/`, `rules/`, and `skills/` from the GitHub plugin URL. Those trees are **generated mirrors** of `.cursor/` + `.agents/skills/` (via `sync_plugin_bundle.py`) — **not** a second authoring SSOT. Edit canonical `.cursor/skills/` (16) and `.agents/skills/` (6); then `make sync-plugin`. Consumers receive skills under `.cursor/skills/` and `.agents/skills/` via `payload/` after activate — never as a single root `skills/` tree on disk.
+Cursor loads repo-root `agents/`, `rules/`, and `skills/` from the GitHub plugin URL. Those trees are **generated mirrors** of `.cursor/` + `.agents/skills/` (via `sync_plugin_bundle.py`) — **not** a second authoring SSOT. Edit canonical `.cursor/skills/` (27) and `.agents/skills/` (6); then `make sync-plugin`. Consumers receive skills under `.cursor/skills/` and `.agents/skills/` via `payload/` after activate — never as a single root `skills/` tree on disk.
 
 ---
 
