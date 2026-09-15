@@ -87,6 +87,7 @@ Shippable implementer slices hand off to **verifier** (`in_review`) before `done
 | `verifier` | Evidence checks; board Done / In review |
 | `auditor` | Architecture audits; audit card Status + Notes |
 | `researcher` | **Shipped/proven** adaptive Brief multi-round packs under `_research_results/` (opt-in after init); chat/agent/card intake; research card Done + `AGENT_BRIEF` paths |
+| `debugger` | Forensic debug campaigns (`--template debug`); vault+publish under `.local/workflow-artifacts/debug/`; `agent_colony debug` CLI; child `bug|slice` handoffs — not an assurance gate owner |
 | `integrator` | Add agents/skills/MCP; integration card Status |
 | `drift-guard` | Drift + DRIFT-009; **reads board**, closes drift card |
 | `board` | Board triage + **first-run shell coach** (`board-shell`; ADR-006); not in default PR pipelines |
@@ -100,7 +101,7 @@ Drift validation: `make drift-validate` — see [gate-matrix.md](../operations/g
 
 | Root | Contents |
 |------|----------|
-| `.cursor/skills/` | Canonical protocols (**16**): `workflow-activate`, `update-agent-colony`, `board-ssot`, `board-shell`, `canvas-artifacts`, `implementer-loop`, `auditor-protocol`, `agent-surface-parity`, `drift-audit`, … — full list in [repository-map.md](../handoff/repository-map.md) |
+| `.cursor/skills/` | Canonical protocols (**27**): `workflow-activate`, `update-agent-colony`, `board-ssot`, `board-shell`, `canvas-artifacts`, `implementer-loop`, `auditor-protocol`, `agent-surface-parity`, `drift-audit`, eleven `debug-*`, … — full list in [repository-map.md](../handoff/repository-map.md) |
 | `.agents/skills/` | Maintainer slash skills: `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `full-pr-workflow`, `audit-alignment` (redirect) |
 
 Plugin bundle copies `.cursor/skills/` first; maintainer skills are **additive only** (no overwrite).

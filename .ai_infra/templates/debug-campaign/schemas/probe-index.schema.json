@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-colony.local/schemas/debug/probe-index.schema.json",
+  "title": "DebugProbeIndex",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "probes"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1"
+    },
+    "probes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "id",
+          "status",
+          "path",
+          "note",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1"
+          },
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "resolved",
+              "promoted"
+            ]
+          },
+          "path": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

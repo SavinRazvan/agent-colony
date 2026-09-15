@@ -77,6 +77,7 @@ ARTIFACT_TAB_STUBS: dict[str, tuple[str, ...]] = {
         "enterprise-architecture-audit.md",
         "enterprise-audit-actions.md",
     ),
+    "debug": ("DEBUG_BOUNDARIES.md",),
 }
 ADAPTER_WALL_RULE = "provider-neutral-adapter-wall.mdc"
 PREPARE_REL = Path(".ai_infra") / "scripts" / "pr" / "prepare.py"
@@ -669,7 +670,10 @@ def _create_venv(target: Path, dry_run: bool, log: list[str]) -> None:
     if req.is_file():
         subprocess.run([str(pip), "install", "-q", "-r", str(req)], check=True)
     else:
-        subprocess.run([str(pip), "install", "-q", "pytest", "mcp>=2.0,<3", "pyyaml"], check=True)
+        subprocess.run(
+            [str(pip), "install", "-q", "pytest", "mcp>=2.0,<3", "pyyaml", "jsonschema>=4"],
+            check=True,
+        )
     mcp_req = target / "requirements-mcp.txt"
     if mcp_req.is_file() and not req.is_file():
         subprocess.run([str(pip), "install", "-q", "-r", str(mcp_req)], check=True)

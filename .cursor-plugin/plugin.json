@@ -2,7 +2,7 @@
   "name": "agent-colony",
   "displayName": "Agent Colony",
   "version": "0.8.0",
-  "description": "Coordination and accountability for Cursor multi-agent work \u2014 GitHub Projects as writable SSOT; full kit 8 agents / 16 skills or optional consumer_lite (6/6); falsification-first verifier; evidence in .local/; machine gates (verifier-before-Done, prepare/merge Schema-1, EXIT_QUEUED outbox); MCP 29 tools + 7 resources.",
+  "description": "Coordination and accountability for Cursor multi-agent work \u2014 GitHub Projects as writable SSOT; full kit 9 agents / 27 skills (marketplace 33 incl. maintainer slash) or optional consumer_lite (6/6); falsification-first verifier; evidence in .local/; machine gates (verifier-before-Done, prepare/merge Schema-1, EXIT_QUEUED outbox); MCP 29 tools + 7 resources.",
   "author": {
     "name": "Savin Ionu\u021b R\u0103zvan",
     "email": "razvan.i.savin@gmail.com"

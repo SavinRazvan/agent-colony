@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-colony.local/schemas/debug/file-record.schema.json",
+  "title": "DebugFileRecord",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "path",
+    "language",
+    "module",
+    "content_hash",
+    "reviewed_source_revision",
+    "public_interfaces",
+    "dependency_edges",
+    "logger_patterns",
+    "error_patterns",
+    "tests",
+    "observed_signals",
+    "refs",
+    "disposition",
+    "owner",
+    "evidence",
+    "next_action"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1"
+    },
+    "path": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string"
+    },
+    "module": {
+      "type": "string"
+    },
+    "content_hash": {
+      "type": "string"
+    },
+    "reviewed_source_revision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "public_interfaces": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dependency_edges": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "logger_patterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "error_patterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "observed_signals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "disposition": {
+      "type": "string",
+      "enum": [
+        "unreviewed",
+        "compliant",
+        "gap",
+        "instrumented",
+        "changed_awaiting_test",
+        "changed_and_tested",
+        "bug_queued",
+        "exempt_with_reason",
+        "queued_with_owner",
+        "blocked"
+      ]
+    },
+    "owner": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "next_action": {
+      "type": "string"
+    }
+  }
+}

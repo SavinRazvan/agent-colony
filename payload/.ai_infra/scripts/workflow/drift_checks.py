@@ -845,6 +845,7 @@ LIVE_KIT_AGENT_IDS: frozenset[str] = frozenset(
     {
         "auditor",
         "board",
+        "debugger",
         "drift-guard",
         "implementer",
         "integrator",
@@ -858,7 +859,7 @@ LIVE_KIT_AGENT_IDS: frozenset[str] = frozenset(
 def check_drift011(paths: DriftPaths) -> CheckResult:
     """
     Goal/doctrine pulse (falsifiable): `.cursor/agents/*.md` basenames must equal
-    the eight live kit agent ids. Missing/extra agents = doctrine drift.
+    the live kit agent ids. Missing/extra agents = doctrine drift.
     """
     agents_dir = paths.root / ".cursor" / "agents"
     if not agents_dir.is_dir():

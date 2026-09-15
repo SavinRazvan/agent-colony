@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-colony.local/schemas/debug/manifest.schema.json",
+  "title": "DebugManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "campaign_id",
+    "generated_at",
+    "source_revision",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1"
+    },
+    "campaign_id": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "source_revision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "bytes",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

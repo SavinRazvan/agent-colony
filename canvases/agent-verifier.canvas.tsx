@@ -126,6 +126,7 @@ const ARTIFACTS = [
 
 const PEERS = [
   ["Inbound", "implementer", "Exit recipe prefers --next verifier"],
+  ["Inbound", "debugger", "Shippable debug campaigns after debug close + publish manifest"],
   ["Inbound", "test-runner", "When tests gate the PR"],
   ["Outbound", "implementer", "Not verified — stay in_review + failure Notes"],
   ["Outbound", "next (generic)", "handoff format per card when verified"],

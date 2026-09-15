@@ -29,7 +29,7 @@ Verifier-owned disproof checklist. Label each claim: **Verified** | **Partial** 
 | 3 | Rules tiering | `rg 'alwaysApply: true' .cursor/rules \| wc -l` = **4** | PR-4 | P0 |
 | 4 | DRIFT anchors | Fixture agent missing `token-efficiency.md` anchor → DRIFT-014 FAIL | PR-3 | P0 |
 | 5 | Profile marker | `activate --profile consumer_lite` → `.local/generated-data/install-profile.json` exists | PR-4 | P0 |
-| 6 | Upgrade path | lite → `update --force --profile with_mcp` → 8 agents on disk | PR-4 | P1 |
+| 6 | Upgrade path | lite → `update --force --profile with_mcp` → **9 agents** on disk | PR-4 | P1 |
 | 7 | No gate list duplication | `python3 .ai_infra/scripts/architecture/check_governance_consistency.py` GOV-TOKEN-002 PASS | PR-3 | P1 |
 | 8 | Validator summaries | `health --summary`, `drift validate --summary`, `project doctor --digest`, `doc validate --summary` emit one-line output | PR-2 | P1 |
 | 9 | MCP section URI | `workflow://skills/board-ssot/continuation-contract` returns section only | PR-2 | P1 |
@@ -39,12 +39,12 @@ Verifier-owned disproof checklist. Label each claim: **Verified** | **Partial** 
 
 | # | Label | Evidence |
 |---|-------|----------|
-| 1 | **Verified** | `doc validate-thin-index --summary` → PASS · checked=17 · fail=0 |
+| 1 | **Verified** | `doc validate-thin-index --summary` → PASS · fail=0 (re-run after thin-index edits; checked count varies with § rows) |
 | 2 | **Verified** | `du -sb .cursor` after dry-run: lite **67,032 B** vs full **118,597 B** (~**43%** smaller). *Byte counts vary slightly by payload sync date; re-run `make install-dry-run*` before release audits.* |
 | 3 | **Verified** | `rg 'alwaysApply: true' .cursor/rules \| wc -l` → **4** |
 | 4 | **Verified** | `test_drift_token_efficiency.py` — missing anchor → DRIFT-014 FAIL |
 | 5 | **Verified** | `test_scaffold_profile_prune.py` · marker `.local/generated-data/install-profile.json` |
-| 6 | **Verified** | `test_update_profile_restore.py` — lite scaffold → with_mcp → 8 agents |
+| 6 | **Verified** | `test_update_profile_restore.py` — lite scaffold → with_mcp → **9 agents** |
 | 7 | **Verified** | `check_governance_consistency.py` PASS |
 | 8 | **Verified** | `test_cmd_doctor_digest` + summary CLIs PASS |
 | 9 | **Verified** | `test_read_skill_section_returns_h2_only` · MCP URI in `server.py` |

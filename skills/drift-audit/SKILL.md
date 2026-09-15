@@ -119,3 +119,7 @@ Governance/debrand → `check_governance_consistency.py`. Agent/registry deep st
 ## Exit criteria
 
 Script run captured; both artifacts written; P0 count explicit; Goal pulse noted; handoff names next agent if blocked.
+
+## Peers (debugger)
+
+SG rows in debugger publish packs are **standards gaps**, not DRIFT findings — open DRIFT only when doctrine/docs drift is confirmed by script output.

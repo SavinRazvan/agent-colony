@@ -16,7 +16,7 @@ When `project_ssot` is on, **GitHub Projects** is the writable state engine. Age
 
 | | |
 |--|--|
-| **Version** | [`0.8.0`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.8.0) · **Tests** · 1653 · **Agents** · 8 (6 on `consumer_lite`) · **Skills** · 16 (6 on lite) · **Rules** · 7 (4 always-on + 3 requestable) · **MCP** · 29 tools + 7 resources · **License** · [Apache-2.0](LICENSE) |
+| **Version** | [`0.8.0`](https://github.com/SavinRazvan/agent-colony/releases/tag/v0.8.0) · **Tests** · 1678 · **Agents** · 9 (6 on `consumer_lite`) · **Skills** · 27 (6 on lite) · **Rules** · 7 (4 always-on + 3 requestable) · **MCP** · 29 tools + 7 resources · **License** · [Apache-2.0](LICENSE) |
 | **Reference board** | [AI Project Playground](https://github.com/users/SavinRazvan/projects/3) |
 
 ---
@@ -41,14 +41,14 @@ Same plugin release (**0.8.0**). Profiles change Cursor footprint, not a second 
 
 | Surface | Both profiles | Full only (`with_mcp` default) | Lite only notes |
 |---------|---------------|--------------------------------|-----------------|
-| **Agents** | `board`, `implementer`, `test-runner`, `verifier`, `drift-guard`, `integrator` | + `auditor`, `researcher` | 6 total |
-| **Skills** | `board-ssot`, `implementer-loop`, `evidence-first`, `test-coverage`, `workflow-activate`, `mcp-connect` | + `board-shell`, `integrator-protocol`, `auditor-protocol`, `drift-audit`, `audit-orchestration`, `audit-module-map`, `agent-surface-parity`, `research-corpus`, `canvas-artifacts`, `update-agent-colony` (**16** total) | **6** total; first-run coach inline in `board.md` |
+| **Agents** | `board`, `implementer`, `test-runner`, `verifier`, `drift-guard`, `integrator` | + `auditor`, `debugger`, `researcher` | 6 total |
+| **Skills** | `board-ssot`, `implementer-loop`, `evidence-first`, `test-coverage`, `workflow-activate`, `mcp-connect` | + `board-shell`, `integrator-protocol`, `auditor-protocol`, `drift-audit`, `audit-orchestration`, `audit-module-map`, `agent-surface-parity`, `research-corpus`, `canvas-artifacts`, `update-agent-colony`, eleven `debug-*` protocols (**27** total) | **6** total; first-run coach inline in `board.md` |
 | **Rules** | 7 (4 always-on + 3 requestable) | same | same |
 | **MCP** | 29 tools + 7 resources | same | lite extends `with_mcp` |
 | **PR slash skills** | `review-pr`, `prepare-pr`, `merge-pr`, `pr-workflow`, `full-pr-workflow` | + maintainer extras pruned on lite | kept on lite (0.7.1+) |
 | **Enforcement** | Board CLI, verifier-before-Done, prepare/merge gates, EXIT_QUEUED outbox | Schema-1 audits via `/auditor` | drift validate is profile-aware |
 
-Proof: **1653** tests · live reference on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
+Proof: **1678** tests · live reference on [Playground #3](https://github.com/users/SavinRazvan/projects/3).
 
 ---
 
@@ -103,6 +103,7 @@ Canon: [gate-matrix.md](.ai_infra/docs/operations/gate-matrix.md) · [project-bo
 | `board` | both | Wire SSOT, triage, first-run board shell | Coaches bootstrap; humans own views/Insights |
 | `auditor` | full | Deep CHK-* architecture audit → Schema-1 artifacts | Independent of commissioner (`Commissioned-By` ≠ `Audited-By`) |
 | `researcher` | full | Multi-round research packs under `_research_results/` | **No product code** |
+| `debugger` | full | Forensic campaigns under `.local/workflow-artifacts/debug/`; `python3 -m agent_colony debug` | **No behavioral product fixes** — routes DBG/TR to peers |
 
 Slash skills: activate, board protocols, PR lifecycle (`/review-pr` → `/prepare-pr` → `/merge-pr`). Full kit also ships update/audit/research/canvas skills — [Plugin User Guide](.ai_infra/docs/operations/PLUGIN-USER-GUIDE.md) § Full `/` menu · [consumer-lite-profile.md](.ai_infra/docs/operations/consumer-lite-profile.md).
 

@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-colony.local/schemas/debug/handoff.schema.json",
+  "title": "DebugHandoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "campaign_id",
+    "slug",
+    "status",
+    "mode",
+    "source_revision",
+    "outcome",
+    "next_agent",
+    "validation",
+    "human_status",
+    "findings",
+    "active_probes",
+    "publish_root",
+    "vault_root",
+    "child_card_payloads"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1"
+    },
+    "campaign_id": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "source_revision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string"
+    },
+    "outcome": {
+      "type": "string"
+    },
+    "next_agent": {
+      "type": "string"
+    },
+    "validation": {
+      "type": "string"
+    },
+    "human_status": {
+      "type": "string"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "active_probes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "publish_root": {
+      "type": "string",
+      "const": "publish"
+    },
+    "vault_root": {
+      "type": "string",
+      "const": "vault"
+    },
+    "child_card_payloads": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "template",
+          "finding_id",
+          "summary",
+          "owner"
+        ],
+        "properties": {
+          "template": {
+            "type": "string"
+          },
+          "finding_id": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

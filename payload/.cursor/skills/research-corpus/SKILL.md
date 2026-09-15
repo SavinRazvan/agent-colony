@@ -110,3 +110,7 @@ slug · mode · rounds · curated_count · AGENT_BRIEF path · validate PASS/FAI
 ```
 
 Canvas: `canvases/agent-researcher.canvas.tsx`.
+
+## Peers (debugger)
+
+External research packs stay under `_research_results/`. Debugger may cite a research brief in Notes — do not merge research fetch into forensic vault writes.

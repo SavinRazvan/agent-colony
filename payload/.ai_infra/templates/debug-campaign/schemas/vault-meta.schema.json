@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-colony.local/schemas/debug/vault-meta.schema.json",
+  "title": "DebugVaultMeta",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "campaign_id",
+    "slug",
+    "created_at",
+    "agent"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1"
+    },
+    "campaign_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "agent": {
+      "type": "string"
+    }
+  }
+}

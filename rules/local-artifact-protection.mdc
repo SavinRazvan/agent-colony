@@ -7,7 +7,8 @@ alwaysApply: true
 
 **Use ASD-STE100:** `.ai_infra/docs/operations/asd-ste100-prose.md`
 
-- Protected: `.coverage`, `.env`, and paths in `overlays/` or project README.
-- Do not delete, reset, or clean protected paths without explicit user confirmation.
+- Protected: `.coverage`, `.env`, paths in `overlays/` or project README, and every campaign vault under `.local/workflow-artifacts/debug/*/vault/`.
+- Do not delete, reset, clean, overwrite, unlock-repair, archive, or purge protected paths without explicit user confirmation.
 - Before cleanup, list targets; ask if protected paths are included.
 - If removed by mistake, restore from project baseline immediately.
+- `.gitignore` keeps `.local/` out of git; that is not a confidentiality boundary for vault evidence.

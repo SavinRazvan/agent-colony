@@ -48,6 +48,15 @@ Evidence-only architecture audit (CHK-*). Deep agent doc/canvas vs machine truth
 item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
 ```
 
+## Peers
+
+| Direction | Agent | When |
+|-----------|-------|------|
+| Outbound | verifier | must handoff --next verifier on [AUDIT] (EXIT_VALIDATION) |
+| Outbound | implementer | Continue from Notes with artifact paths |
+| Outbound | drift-guard | orch Phase 3 — goal pulse + DRIFT validate |
+| Inbound | debugger | Structural findings in publish pack — debug artifacts are **not** Schema-1 alignment |
+
 ## MCP integration
 
 | Tier | Server | Use when |

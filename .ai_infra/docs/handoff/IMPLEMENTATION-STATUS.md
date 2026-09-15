@@ -21,7 +21,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
 **Last updated:** 2026-09-14 (kit release 0.8.0)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.8.0 · **Tests:** 1653
+**Product:** `agent-colony` · CLI: `agent-colony` 0.8.0 · **Tests:** 1678
 
 ## Shipped (confirmed in repo)
 
@@ -30,8 +30,8 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Verifier-before-Done (machine gate) | Shippable cards (`item_is_shippable`: PR citation / `[AUDIT]` / P0\|P1) Status→Done → **EXIT_VALIDATION (5)** unless `--agent verifier`, prior Notes `next=…/verifier`, or `--allow-skip-verifier` + rationale (`require_verifier_before_done`, default true) | `project_atomics.assert_verifier_ready_for_done` · board-ssot § Verifier-before-Done · PR #275 |
 | Agent surface parity skill | Auditor-owned deep per-agent card/skill/CLI/docs/canvas vs machine; Schema-1 findings | `.cursor/skills/agent-surface-parity/` · `auditor-protocol` § Agent surface parity pass |
 | Universal rules | 7 `.mdc` (4 alwaysApply + 3 requestable) | `.cursor/rules/` |
-| Agents | 8 core on full (`with_mcp`); **6** on `consumer_lite` (no `auditor`, `researcher`); `model: auto`; audit agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` · [consumer-lite-profile.md](../operations/consumer-lite-profile.md) |
-| Canonical skills | 16 folders on full; **6** allowlisted on `consumer_lite` | `.cursor/skills/` · ADR-011 |
+| Agents | 9 core on full (`with_mcp`); **6** on `consumer_lite` (no `auditor`, `debugger`, `researcher`); `model: auto`; audit/debug agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` · [consumer-lite-profile.md](../operations/consumer-lite-profile.md) |
+| Canonical skills | **27** folders on full; **6** allowlisted on `consumer_lite` (excludes `debug-*`, audit, research, canvas, etc.) | `.cursor/skills/` · ADR-011 |
 | Maintainer skills | 6 folders on full; lite keeps PR slash skills only (`review-pr`…`full-pr-workflow`) | `.agents/skills/` |
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
 | workflow-activate skill | Kit dev + plugin | `.cursor/skills/workflow-activate/` |
@@ -52,7 +52,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | GraphQL-efficient Entry | `project entry` live \| conserve \| offline_artifacts; `export --reuse-if-fresh` | `project_cli.py` · `project_ssot.efficiency` |
 | EA-001 residual thin CLI | `project_cli.py` facade (~660 LOC) + parser/handlers split; board CLI modules under `.ai_infra/install/agent_colony/`: `project_cli.py`, `project_parser.py`, `project_handlers.py`, `project_atomics.py`, `gh_project_adapter.py`, `project_recipes.py`, `project_outbox.py` | PR #36 |
 | Doc facts validate | DOC-001…008 | `.ai_infra/scripts/architecture/check_doc_facts.py` |
-| Kit canvases | **15** files under `canvases/`; DOC-008 counts **11** roster/agent canvases (excludes concept hubs `board-ssot-vs-trackers.canvas.tsx`, `agents-artifacts-board.canvas.tsx`, `github-api-safety.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
+| Kit canvases | **16** files under `canvases/`; DOC-008 counts **12** roster/agent canvases (excludes concept hubs `board-ssot-vs-trackers.canvas.tsx`, `agents-artifacts-board.canvas.tsx`, `github-api-safety.canvas.tsx`) | `canvases/` · `doc_facts_checks._canvas_paths` |
 | Verify-all matrix | Maintainer preflight | `.ai_infra/scripts/architecture/verify_all.py` |
 | Anchoring | session-pointer, change-index | `.local/.../current/` |
 | MCP tools + resources | 29 tools + 7 resources on both `with_mcp` and `consumer_lite` (ADR-012 Pattern A board tools + `workflow_check_audit_artifacts` + `workflow_project_validate_item`) | `.ai_infra/mcp_servers/agent_colony_mcp/` |
@@ -71,7 +71,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Consumer update stamp | Scaffold + `update` write `.kit-version` from source manifest; CLI fallback `ensure_kit_version_stamp` | `scaffold.py` · `update_cli.py` · tests |
 | Multi-consumer isolation | Model A contract doc; DRIFT-013 tracked-runtime guard; DRIFT-011b advisory; `update --check` + `kit_managed_globs`; consumer CI template | `multi-consumer-isolation.md` · `drift_checks.py` · `update_cli.py` · `templates/ci/consumer-gates.yml` |
 | Dashboard removal | Documentation now points to GitHub Project board + Cursor Open Canvas; `.local/index-and-planning/` remains offline markdown only | operations docs · skills · canvases |
-| Tests | 1653 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1678 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

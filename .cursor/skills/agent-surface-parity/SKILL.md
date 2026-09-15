@@ -120,3 +120,4 @@ Minimum machine/doc roots — cite or mark Unknown:
 | `board` | `board-ssot`, `board-shell` | `board-bootstrap`, doctor, heal-cards; human-owned views |
 | `integrator` | `integrator-protocol` | `integrate validate` INT-*; registry parity |
 | `researcher` | `research-corpus` | research CLI; `_research_results/`; **no product code** hard boundary |
+| `debugger` | `debug-protocol`, `debug-handoff`, lazy `debug-*` | `agent_colony debug` CLI; `.local/workflow-artifacts/debug/`; not on consumer_lite |

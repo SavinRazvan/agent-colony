@@ -38,13 +38,17 @@ EXIT_GH = 3
 EXIT_NOT_FOUND = 4
 EXIT_VALIDATION = 5
 EXIT_QUEUED = 6
-_TEMPLATE_NAMES = ("slice", "bug", "research", "audit")
+_TEMPLATE_NAMES = ("slice", "bug", "research", "audit", "debug")
 _PLACEHOLDER_RE = re.compile(r"\{\{(\w+)\}\}")
 _SESSION_REL = Path(".local") / "generated-data" / "project-last-item.json"
 _AUDIT_ARTIFACT_PATH_RE = re.compile(
     r"(\.local/workflow-artifacts/(?:alignment|drift|audit)/[A-Za-z0-9._/-]+\.md)"
 )
+_DEBUG_ARTIFACT_PATH_RE = re.compile(
+    r"(\.local/workflow-artifacts/debug/[A-Za-z0-9._/-]+)"
+)
 _AUDIT_TITLE_RE = re.compile(r"\[AUDIT\]", re.IGNORECASE)
+_DEBUG_TITLE_RE = re.compile(r"\[DEBUG\]", re.IGNORECASE)
 # Body/Notes PR citations (no GraphQL Linked-PR field).
 _PR_CITATION_RE = re.compile(
     r"(?:#\d+\b|/pull/\d+\b|github\.com/[^/\s]+/[^/\s]+/pull/\d+)",
@@ -269,7 +273,7 @@ def assert_body_ready_for_status(
         return False, "item snapshot is not a mapping"
     snapshot = dict(item)
     snapshot["status"] = target
-    problems, _warnings = collect_validate_item_problems(ssot, snapshot)
+    problems, _warnings = collect_validate_item_problems(ssot, snapshot, root=None)
     # Auto-filled after Status→Done; requiring it here deadlocks the transition.
     if target == done_status_logical(ssot):
         problems = [p for p in problems if p != "missing End date"]
@@ -732,7 +736,10 @@ def item_content_kind(item: dict[str, Any]) -> str:
 
 
 def collect_validate_item_problems(
-    ssot: dict[str, Any], item: dict[str, Any] | None
+    ssot: dict[str, Any],
+    item: dict[str, Any] | None,
+    *,
+    root: Path | None = None,
 ) -> tuple[list[str], list[str]]:
     """Collect validate-item problems and warnings for an item snapshot."""
     problems: list[str] = []
@@ -740,6 +747,7 @@ def collect_validate_item_problems(
     if not isinstance(item, dict):
         return ["item snapshot is not a mapping"], warnings
 
+    resolve_root = Path(root) if root is not None else Path.cwd()
     body = _item_body(item)
     sections = list((ssot.get("conventions") or {}).get("body_sections") or [])
     missing_section_list = validate_card_body(body, sections)
@@ -846,7 +854,15 @@ def collect_validate_item_problems(
         item=item,
         body=body,
         status=status,
-        root=Path.cwd(),
+        root=resolve_root,
+    )
+    _append_debug_artifact_checks(
+        problems=problems,
+        warnings=warnings,
+        item=item,
+        body=body,
+        status=status,
+        root=resolve_root,
     )
 
     return problems, warnings
@@ -858,6 +874,14 @@ def _item_looks_like_audit_card(item: dict[str, Any], body: str) -> bool:
         return True
     lower = (body or "").lower()
     return "## audit scope" in lower or "audit_scope" in lower
+
+
+def _item_looks_like_debug_card(item: dict[str, Any], body: str) -> bool:
+    title = str(item.get("title") or "")
+    if _DEBUG_TITLE_RE.search(title):
+        return True
+    lower = (body or "").lower()
+    return "## debug brief" in lower or "**mode**" in lower and "incident" in lower
 
 
 def cited_audit_artifact_paths(body: str) -> list[str]:
@@ -872,12 +896,38 @@ def cited_audit_artifact_paths(body: str) -> list[str]:
     return ordered
 
 
-def _validate_audit_file(path: Path) -> list[str]:
+def cited_debug_artifact_paths(body: str) -> list[str]:
+    """Return unique debug campaign paths cited in Notes/body."""
+    found = _DEBUG_ARTIFACT_PATH_RE.findall(body or "")
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for path in found:
+        if path not in seen:
+            seen.add(path)
+            ordered.append(path)
+    return ordered
+
+
+def _debug_slug_from_path(rel: str) -> str | None:
+    parts = Path(rel).parts
+    try:
+        idx = parts.index("debug")
+    except ValueError:
+        return None
+    if idx + 1 >= len(parts):
+        return None
+    slug = parts[idx + 1]
+    if slug in {"README.md", "DEBUG_BOUNDARIES.md"}:
+        return None
+    return slug
+
+
+def _validate_audit_file(path: Path, *, root: Path) -> list[str]:
     """Return Schema-1 validation errors for one file (empty if skip or pass)."""
     if not path.is_file():
         return [f"missing audit artifact: {path.as_posix()}"]
     text = path.read_text(encoding="utf-8")
-    workflow_dir = Path.cwd() / ".ai_infra" / "scripts" / "workflow"
+    workflow_dir = root / ".ai_infra" / "scripts" / "workflow"
     if str(workflow_dir) not in sys.path:
         sys.path.insert(0, str(workflow_dir))
     try:
@@ -888,6 +938,18 @@ def _validate_audit_file(path: Path) -> list[str]:
     if skip:
         return [f"cited audit artifact lacks Audit-Schema: 1: {path.as_posix()}"]
     return [f"{path.as_posix()}: {err}" for err in errors]
+
+
+def _validate_debug_pack(root: Path, slug: str, *, status: str) -> list[str]:
+    """Validate a local debug campaign via debug_campaign helpers (not Schema-1)."""
+    try:
+        import debug_campaign as dc
+    except ImportError:
+        return [f"cannot import debug_campaign to validate slug={slug}"]
+    try:
+        return list(dc.validate_for_board(root, slug, board_status=status))
+    except Exception as exc:  # noqa: BLE001 — surface pack errors to validate-item
+        return [f"debug pack {slug}: {exc}"]
 
 
 def _append_audit_artifact_checks(
@@ -909,9 +971,89 @@ def _append_audit_artifact_checks(
             "cite alignment/drift/audit artifact after the pass"
         )
     for rel in cited:
-        errors = _validate_audit_file(root / rel)
+        errors = _validate_audit_file(root / rel, root=root)
         for err in errors:
             problems.append(err)
+
+
+def _append_debug_artifact_checks(
+    *,
+    problems: list[str],
+    warnings: list[str],
+    item: dict[str, Any],
+    body: str,
+    status: str,
+    root: Path,
+) -> None:
+    """Separate debug pack checks — never Audit-Schema 1."""
+    if status not in ACTIVE_STATUSES:
+        return
+    cited = cited_debug_artifact_paths(body)
+    looks_debug = _item_looks_like_debug_card(item, body)
+    if looks_debug and not cited and status in {"in_progress", "in_review", "done"}:
+        warnings.append(
+            "debug card Notes lack `.local/workflow-artifacts/debug/` path — "
+            "cite publish pack after campaign init"
+        )
+    if not cited:
+        return
+
+    # Portable Notes evidence required on review/done even when pack is absent.
+    if status in {"in_review", "done"}:
+        lower = (body or "").lower()
+        for token in (
+            "campaign",
+            "outcome",
+            "source revision",
+            "manifest",
+            "validate",
+        ):
+            if token not in lower and f"{token.replace(' ', '_')}" not in lower:
+                # Soft: require at least campaign id / validate PASS language in Notes.
+                pass
+        if "validate" not in lower and "debug validate" not in lower:
+            warnings.append(
+                "debug card Notes should cite validation PASS / campaign outcome "
+                "for cross-clone review"
+            )
+
+    for rel in cited:
+        slug = _debug_slug_from_path(rel)
+        if not slug:
+            continue
+        pack_root = root / ".local" / "workflow-artifacts" / "debug" / slug
+        if not pack_root.is_dir():
+            if status in {"in_review", "done"}:
+                warnings.append(
+                    f"debug pack missing locally ({pack_root.as_posix()}) — "
+                    "cross-clone: rely on Notes campaign/outcome/manifest hash"
+                )
+            else:
+                warnings.append(f"debug pack not found yet: {pack_root.as_posix()}")
+            continue
+        for err in _validate_debug_pack(root, slug, status=status):
+            problems.append(err)
+        index_path = pack_root / "INDEX.json"
+        if index_path.is_file() and status in {"in_review", "done"}:
+            try:
+                data = json.loads(index_path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError as exc:
+                problems.append(f"{index_path.as_posix()}: invalid JSON ({exc})")
+                continue
+            camp_status = str(data.get("status") or "")
+            if status == "in_review" and camp_status not in {
+                "ready_for_consumer",
+                "closed",
+            }:
+                problems.append(
+                    f"debug campaign {slug} status={camp_status!r} "
+                    "(need ready_for_consumer|closed for In review)"
+                )
+            if status == "done" and camp_status != "closed":
+                problems.append(
+                    f"debug campaign {slug} status={camp_status!r} "
+                    "(need closed for Done)"
+                )
 
 
 def classify_card_completeness(

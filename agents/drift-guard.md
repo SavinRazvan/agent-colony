@@ -47,6 +47,14 @@ Goal/plan/agent-doctrine/docs coherence + DRIFT-001…017 (script-first). Not de
 item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
 ```
 
+## Peers
+
+| Direction | Agent | When |
+|-----------|-------|------|
+| Outbound | board | Dual-write or goal-pulse remediation via Ready / Notes |
+| Outbound | implementer | P0/P1 drift remediations via Notes / Ready |
+| Inbound | debugger | SG rows in publish pack — **not** DRIFT unless doctrine/docs drift is confirmed |
+
 ## MCP integration
 
 | Tier | Server | Use when |

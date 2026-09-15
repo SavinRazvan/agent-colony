@@ -147,6 +147,11 @@ const PEERS = [
   ["Outbound", "verifier", "must handoff --next verifier on [AUDIT] (EXIT_VALIDATION)"],
   ["Outbound", "implementer", "Continue from Notes with artifact paths"],
   ["Outbound", "drift-guard", "orch Phase 3 — goal pulse + DRIFT validate"],
+  [
+    "Inbound",
+    "debugger",
+    "Structural findings in publish pack — not Schema-1 alignment",
+  ],
 ];
 
 function DagPanel({

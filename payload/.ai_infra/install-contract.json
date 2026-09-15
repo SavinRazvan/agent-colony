@@ -25,11 +25,14 @@
         ".local/workflow-artifacts/drift/README.md",
         ".local/workflow-artifacts/enterprise-architecture-audit/README.md",
         ".local/workflow-artifacts/release/README.md",
-        ".local/workflow-artifacts/audit/README.md"
+        ".local/workflow-artifacts/audit/README.md",
+        ".local/workflow-artifacts/debug/README.md",
+        ".local/workflow-artifacts/debug/DEBUG_BOUNDARIES.md"
       ],
       "kit_managed_globs": [
         ".cursor/agents/auditor.md",
         ".cursor/agents/board.md",
+        ".cursor/agents/debugger.md",
         ".cursor/agents/drift-guard.md",
         ".cursor/agents/implementer.md",
         ".cursor/agents/integrator.md",
@@ -63,6 +66,7 @@
       ],
       "forbidden_paths": [
         ".cursor/agents/auditor.md",
+        ".cursor/agents/debugger.md",
         ".cursor/agents/researcher.md",
         ".cursor/skills/board-shell/SKILL.md",
         ".agents/skills/audit-alignment/SKILL.md"

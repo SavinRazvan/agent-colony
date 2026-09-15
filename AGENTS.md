@@ -87,8 +87,8 @@ PR artifacts: `Action-By` / `GitHub-User` / `Agent/s` via `--pipeline` (`.agents
 
 | Root | Role |
 |------|------|
-| `.cursor/agents/` | 8 agent cards — `auditor`, `board`, `drift-guard`, `implementer`, `integrator`, `researcher`, `test-runner`, `verifier` |
-| `.cursor/skills/` | 16 canonical protocols — see [repository-map](.ai_infra/docs/handoff/repository-map.md) |
+| `.cursor/agents/` | 9 agent cards — `auditor`, `board`, `debugger`, `drift-guard`, `implementer`, `integrator`, `researcher`, `test-runner`, `verifier` |
+| `.cursor/skills/` | 27 canonical protocols — see [repository-map](.ai_infra/docs/handoff/repository-map.md) |
 | `.agents/skills/` | 6 maintainer slash skills (PR workflow) |
 | `.cursor/rules/` | 7 rules (4 always-on + 3 requestable) |
 

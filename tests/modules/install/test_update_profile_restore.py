@@ -46,8 +46,9 @@ def test_lite_to_full_profile_restores_eight_agents(tmp_path: Path) -> None:
         verify=False,
     )
     full_agents = {p.stem for p in (target / ".cursor" / "agents").glob("*.md")}
-    assert len(full_agents) == 8
+    assert len(full_agents) == 9
     assert "auditor" in full_agents
+    assert "debugger" in full_agents
     assert "researcher" in full_agents
     marker = target / ".local" / "generated-data" / "install-profile.json"
     assert marker.is_file()
