@@ -21,7 +21,7 @@ python3 -m agent_colony mcp validate
 python3 -m agent_colony mcp smoke --server deepwiki
 ```
 
-Optional: `--force-registry-agents` to reset `deepwiki.agents` to the seven Pattern A agents.
+Optional: `--force-registry-agents` to reset `deepwiki.agents` to the kit DeepWiki default allowlist (research peers; does not add `board`/`debugger`).
 
 ### 2. Link custom (auth or private)
 

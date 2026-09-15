@@ -32,7 +32,7 @@ const VERIFIED = "2026-09-14";
 const SOURCES =
   "ADR-009 · ADR-012 · ADR-004 · connect-external-mcp.md · mcp-connect/SKILL.md · mcp.registry.yaml.example · mcp.user.example.json";
 
-/** Seven Pattern A agents (board is not on DeepWiki allowlist by default). */
+/** DeepWiki default allowlist (research peers; does not add board/debugger). */
 const PATTERN_A_AGENTS = [
   "implementer",
   "test-runner",
@@ -269,7 +269,8 @@ export default function MCPOnboardingCanvas() {
             users can explore MCP end-to-end before wiring private/auth servers.
           </Text>
           <Text>
-            Mapped by default to seven Pattern A agents (not board):
+            Mapped by default to the kit DeepWiki allowlist (research peers; not
+            board/debugger):
           </Text>
           <Row gap={6} wrap>
             {PATTERN_A_AGENTS.map((a) => (

@@ -678,7 +678,7 @@ Auto-detect defaults to **`kit-dev`** unless `work-tracker.md` contains `STARTER
 | **DRIFT-005** | IMPLEMENTATION-STATUS test count — **not shipped to consumer installs** |
 | **DRIFT-008** | Scaffold trackers (`session-pointer`, `plan`, `work-tracker`) present |
 | **DRIFT-013** | Git must not track `.local/`, `.venv/`, `.env`, or `mcp.user.json` — see [multi-consumer-isolation.md](multi-consumer-isolation.md) |
-| **DRIFT-011b** | Advisory: extra integrator agents beyond eight kit ids |
+| **DRIFT-011b** | Advisory: extra integrator agents beyond nine kit ids |
 | **DRIFT-014** | Token-efficiency anchor in installed agent cards (profile-aware count) |
 | **DRIFT-016** | Thin-index § headings exist for skills on disk (profile-aware skip) |
 

@@ -204,13 +204,13 @@ Pre-filled values for [Become a plugin publisher](https://cursor.com/marketplace
 
 ### Submitted listing copy (2026-09-01)
 
-Submitted to Cursor Marketplace publisher application (status: pending review). **Canon pitch (2026-09-14):** match README § How we enforce + Collaboration loop; refresh counts to **1653** tests (see listing refresh below). Re-submit when Marketplace allows edit.
+Submitted to Cursor Marketplace publisher application (status: pending review). **Canon pitch (2026-09-15):** match README § How we enforce + Collaboration loop; refresh counts to **1678** tests, **9** agents / **27** skills (lite **6** / **6**). Re-submit when Marketplace allows edit.
 
 > Agent Colony is a coordination and accountability system for multi-agent work in Cursor — not a prompt pack. When enabled, GitHub Projects is the writable state engine (SSOT): agents enter by reading the board and exit by updating Status and attributed Notes.
 >
-> Eight specialized agents (implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard, board) ship with hard role boundaries. The researcher never writes product code. The verifier is falsification-first (tries to disprove “done”; no code fixes). The auditor stays independent (`Commissioned-By` ≠ `Audited-By`). Agents produce evidence under `.local/` — no peer trusts word-of-mouth.
+> Nine specialized agents (implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard, board, debugger) ship with hard role boundaries. The researcher never writes product code. The verifier is falsification-first (tries to disprove “done”; no code fixes). The auditor stays independent (`Commissioned-By` ≠ `Audited-By`). The debugger runs forensic campaigns under `.local/workflow-artifacts/debug/` (no durable product fixes on the DEBUG card). Agents produce evidence under `.local/` — no peer trusts word-of-mouth.
 >
-> Enforcement is machine-backed: verifier-before-Done (`item_is_shippable` → EXIT_VALIDATION unless verifier hop / allow-skip), `prepare.py` → `resolve_gates()` (2 universal / 6 kit-dev), Schema-1 alignment on architecture-impacting merge, and EXIT_QUEUED (6) + local outbox under GraphQL throttle. Bundles 16 skills, 7 rules (4 always-on + 3 requestable), 29 MCP tools wrapping the same CLI, drift detection, and health checks.
+> Enforcement is machine-backed: verifier-before-Done (`item_is_shippable` → EXIT_VALIDATION unless verifier hop / allow-skip), `prepare.py` → `resolve_gates()` (2 universal / 6 kit-dev), Schema-1 alignment on architecture-impacting merge, and EXIT_QUEUED (6) + local outbox under GraphQL throttle. Bundles 27 canonical skills (6 on `consumer_lite`), 7 rules (4 always-on + 3 requestable), 29 MCP tools wrapping the same CLI, drift detection, and health checks.
 >
 > Result: Cursor agents + GitHub Projects + PR gates as a coordinated, fail-closed pipeline — discipline, coordination, and accountability you can audit.
 
@@ -256,7 +256,7 @@ Submitted to Cursor Marketplace publisher application (status: pending review). 
 
 **Listing copy refresh (2026-09-14 release 0.8.0):** Accountability & fail-closed kit process — ADR-013 Schema-1 / 6th prepare gate / DRIFT-017; board `api-ready` + outbox purge; verifier-before-Done; agent-surface-parity (skills **16**); board CLI **29**; MCP **29** tools + **7** resources; **1653** tests; **8** / **16** / **7** (lite: **6** / **6**); kit **0.8.0**.
 
-**Listing copy refresh (2026-09-15 debugger agent / PR #303):** Re-verified filesystem — **9** agents (incl. `debugger`), **27** canonical skills (11 `debug-*`), marketplace **33** skill folders (27 + 6 maintainer PR slash); lite **6/6** unchanged; kit **0.8.0**. `plugin.json` + consumer-lite-profile + PLUGIN-USER-GUIDE counts aligned; `agent-debugger.canvas.tsx` + hub canvases updated (DOC-008).
+**Listing copy refresh (2026-09-15 debugger agent / PR #303 + residual hygiene #305):** Re-verified filesystem — **9** agents (incl. `debugger`), **27** canonical skills (11 `debug-*`), marketplace **33** skill folders (27 + 6 maintainer PR slash); lite **6/6** unchanged; **1678** tests; kit **0.8.0**. MCP roster + DeepWiki allowlist prose + `agent-debugger` / `mcp-onboarding` canvases aligned; DRIFT-011 docs say nine live kit ids.
 
 **Listing copy refresh (2026-09-14 kit-dev plugin disable / DRIFT-015):** Kit-dev `.cursor/settings.json` keeps `agent-colony/agent-colony` disabled; DRIFT-015 skips when disabled; **1653** tests; **8** / **16** / **7** (lite: **6** / **6**); kit **0.7.3**.
 

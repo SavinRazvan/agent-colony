@@ -88,6 +88,7 @@ When scope includes **version bump** or **release**:
 | **implementer** | Slice closes with evidence step before docs; say *prepare gates green* only after run |
 | **test-runner** | Cite pytest command + pass/fail counts from this run |
 | **researcher** | Pack rows need source refs — `research-corpus` |
+| **debugger** | Cite `publish/` run Signals + manifest hash; vault is oversight only — `debug-protocol` / `debug-handoff` |
 
 ## Token-efficiency extensions
 
@@ -101,6 +102,7 @@ When scope includes **version bump** or **release**:
 | **integrator** | Lite profile docs; no gate duplication |
 | **test-runner** | Pass/fail counts from this run only |
 | **researcher** | Source refs in packs; not on lite profile |
+| **debugger** | Load `debug-protocol` first; lazy `doc skill-section` on other `debug-*`; cite publish paths not vault dumps |
 
 Program: `.ai_infra/docs/operations/token-efficiency-program.md`.
 

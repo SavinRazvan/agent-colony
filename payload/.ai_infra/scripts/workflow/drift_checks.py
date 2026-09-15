@@ -998,7 +998,7 @@ def check_drift013(paths: DriftPaths) -> CheckResult:
 
 def check_drift011b(paths: DriftPaths) -> CheckResult:
     """
-    Consumer advisory: extra `.cursor/agents/*.md` beyond the eight kit ids.
+    Consumer advisory: extra `.cursor/agents/*.md` beyond the nine kit ids.
     Always passes; surfaces integrator extensions that full upgrade may overwrite.
     """
     agents_dir = paths.root / ".cursor" / "agents"
