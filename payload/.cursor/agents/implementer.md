@@ -47,6 +47,17 @@ Deliver small reversible slices. New sources: module header per `.cursor/rules/f
 item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
 ```
 
+## Peers
+
+| Direction | Agent | When |
+|-----------|-------|------|
+| Outbound | verifier | Shippable Exit — `handoff --next verifier --to in_review` |
+| Outbound | test-runner | When tests or coverage gate the PR before merge |
+| Outbound | drift-guard | P0/P1 after `make drift-validate` or goal-pulse gaps |
+| Inbound | board | Triage hands Ready cards for implementation |
+| Inbound | debugger | Child `bug\|slice` cards from `debug handoff` with publish/ citations |
+| Inbound | auditor | Audit Notes and artifact paths to apply in a slice |
+
 ## MCP integration
 
 | Tier | Server | Use when |

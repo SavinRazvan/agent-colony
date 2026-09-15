@@ -64,8 +64,8 @@ All use `disable-model-invocation`. `README.md` is kept.
 
 | Excluded | Why | Upgrade |
 |----------|-----|---------|
-| Skills: `board-shell`, `auditor-protocol`, `drift-audit`, `audit-*`, `research-corpus`, `canvas-artifacts`, `update-agent-colony` | Size / maintainer / day-0 non-critical | `update --force --profile with_mcp` |
-| Agents: `researcher`, `auditor` | Research + deep audit | Full profile |
+| Skills: `board-shell`, `auditor-protocol`, `drift-audit`, `audit-*`, `research-corpus`, `canvas-artifacts`, `update-agent-colony`, `debug-*` (11 skills) | Size / maintainer / day-0 non-critical | `update --force --profile with_mcp` |
+| Agents: `researcher`, `auditor`, `debugger` | Research + deep audit + forensic campaigns | Full profile |
 
 ## First-run board (no `board-shell` skill)
 
@@ -127,7 +127,7 @@ python3 -m agent_colony health
 python3 -m agent_colony drift validate --profile consumer
 ```
 
-Restores 16 skills, 8 agents, full thin-index validation, and all `.agents/skills` dirs.
+Restores **27** skills, **9** agents, full thin-index validation, and all `.agents/skills` dirs.
 
 ## When to use lite vs full
 

@@ -67,6 +67,14 @@ Do **not** document `doc skill-section --skill board-shell` as lite default — 
 item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
 ```
 
+## Peers
+
+| Direction | Agent | When |
+|-----------|-------|------|
+| Outbound | implementer | Typical triage — handoff next=implementer after create-from-template + claim |
+| Outbound | debugger | Forensic cards — `create-from-template --template debug` + claim --agent debugger |
+| Inbound | drift-guard | Dual-write or goal-pulse remediation via Ready / Notes |
+
 ## MCP integration
 
 | Tier | Server | Use when |

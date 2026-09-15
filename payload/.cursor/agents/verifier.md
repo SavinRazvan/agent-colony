@@ -42,6 +42,16 @@ Do not approve merge without `.local/workflow-artifacts/pr/` when maintainer wor
 item_id=<PVTI_…> · @owner.github_user/<agent> · Status=<before>→<after> · next=@owner.github_user/<next>
 ```
 
+## Peers
+
+| Direction | Agent | When |
+|-----------|-------|------|
+| Inbound | implementer | Exit recipe prefers `--next verifier` on shippable slices |
+| Inbound | debugger | Shippable debug campaigns after `debug close` + publish manifest hash in Notes |
+| Inbound | test-runner | When tests gate the PR |
+| Outbound | implementer | Not verified — stay `in_review` with failure Notes |
+| Outbound | next (generic) | Verified — handoff per card Notes |
+
 ## MCP integration
 
 | Tier | Server | Use when |

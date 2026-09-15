@@ -142,6 +142,12 @@ const WHO_WRITES: string[][] = [
     "_research_results packs (gitignored)",
     "No product PRs",
   ],
+  [
+    "debugger",
+    "Shippable debug → verifier in_review; Notes cite publish/ manifest hash",
+    ".local/workflow-artifacts/debug/<slug>/ (vault + publish)",
+    "Forensic campaigns — child bug|slice to implementer; not on consumer_lite",
+  ],
 ];
 
 const ARTIFACT_LANES: string[][] = [
@@ -174,6 +180,12 @@ const ARTIFACT_LANES: string[][] = [
     ".local/workflow-artifacts/drift/",
     "drift-guard",
     "Goal pulse + DRIFT-009…012 board subset (011 roster; 012 plan snapshots; full DRIFT-001…017)",
+  ],
+  [
+    "Debug campaigns",
+    ".local/workflow-artifacts/debug/<slug>/",
+    "debugger",
+    "vault/ redacted · publish/ curated · validate --final before close",
   ],
   [
     "Release / smoke",
@@ -430,7 +442,7 @@ function ThreePlanes() {
     {
       title: "Agents",
       tone: "Actors",
-      body: "8 Cursor agents. Entry reads board; Exit updates Status. Parent Task-delegates.",
+      body: "9 Cursor agents. Entry reads board; Exit updates Status. Parent Task-delegates.",
       highlight: false,
     },
     {
@@ -483,7 +495,7 @@ export default function AgentsArtifactsBoardCanvas() {
           Whole picture for board_only SSOT — who writes Status, who writes
           evidence, and how they meet on Exit. Live agent ids only (board ·
           implementer · test-runner · verifier · integrator · auditor ·
-          drift-guard · researcher).
+          drift-guard · researcher · debugger).
         </Text>
         <Row gap={8} style={{ flexWrap: "wrap" }}>
           <Pill size="sm" tone="neutral" active>
@@ -493,7 +505,7 @@ export default function AgentsArtifactsBoardCanvas() {
             ADR-010
           </Pill>
           <Pill size="sm" tone="neutral">
-            8 agents
+            9 agents
           </Pill>
           <Pill size="sm" tone="neutral">
             Pattern A CLI
@@ -594,6 +606,11 @@ export default function AgentsArtifactsBoardCanvas() {
             implementer makes drift-validate → P0/P1 or goal-pulse gaps →
             drift-guard writes drift artifacts (DRIFT-001…017 kit-dev) →
             remediation via Notes/Ready (never silent tracker Status).
+          </Text>
+          <Text size="small">
+            debugger → campaign under .local/workflow-artifacts/debug/&lt;slug&gt; →
+            publish manifest in Notes → child bug|slice to implementer; shippable
+            → verifier before Done. Not installed on consumer_lite.
           </Text>
           <Text size="small">
             Rate-limit: api-ready → EXIT_QUEUED (6) → board-outbox.jsonl → outbox list|drop → flush

@@ -60,6 +60,11 @@ const AGENTS = [
     description:
       "researcher Agent Colony — Brief-driven multi-round research (GitHub/local) into _research_results packs; hard-stop on product code.",
   },
+  {
+    id: "debugger",
+    description:
+      "debugger Agent Colony — Master forensic investigation with redacted vault evidence, experiments, and curated publish handoffs.",
+  },
 ];
 
 type RosterId =
@@ -70,7 +75,8 @@ type RosterId =
   | "integrator"
   | "auditor"
   | "drift-guard"
-  | "researcher";
+  | "researcher"
+  | "debugger";
 
 type EdgeKind = "primary" | "side" | "back";
 type DagView = "slice" | "all";
@@ -90,6 +96,7 @@ const NODE_POS: Record<RosterId, { x: number; y: number }> = {
   auditor: { x: 400, y: 28 },
   "drift-guard": { x: 300, y: 256 },
   researcher: { x: 580, y: 256 },
+  debugger: { x: 24, y: 256 },
 };
 
 type RosterEdge = {
@@ -177,6 +184,24 @@ const ROSTER_EDGES: RosterEdge[] = [
     to: "auditor",
     kind: "side",
     label: "escalate architecture",
+  },
+  {
+    from: "board",
+    to: "debugger",
+    kind: "side",
+    label: "create-from-template debug",
+  },
+  {
+    from: "debugger",
+    to: "implementer",
+    kind: "side",
+    label: "child bug|slice via debug handoff",
+  },
+  {
+    from: "debugger",
+    to: "verifier",
+    kind: "side",
+    label: "shippable debug → verifier",
   },
 ];
 
@@ -385,7 +410,7 @@ export default function AgentRosterCanvas() {
             hub · not an agent
           </Pill>
           <Pill tone="neutral" size="sm">
-            8 agents
+            9 agents
           </Pill>
         </Row>
         <Text tone="secondary">
@@ -394,16 +419,17 @@ export default function AgentRosterCanvas() {
           graph: agent-relations. Per-agent Entry/Exit: agent-board-collaboration.
         </Text>
         <Callout tone="info" title="Live ids (post B-safe rename)">
-          auditor · board · drift-guard · implementer · integrator · researcher ·
-          test-runner · verifier — skills: board-ssot, implementer-loop,
-          test-coverage, auditor-protocol (CHK-*), drift-audit (goal pulse +
-          DRIFT-001…017), integrator-protocol, …
+          auditor · board · debugger · drift-guard · implementer · integrator ·
+          researcher · test-runner · verifier — skills: board-ssot,
+          implementer-loop, test-coverage, debug-protocol (+ 10 debug-*),
+          auditor-protocol (CHK-*), drift-audit (goal pulse + DRIFT-001…017),
+          integrator-protocol, …
         </Callout>
         <Callout tone="neutral" title="Quality lane split (2026-08-04)">
           Continuous plan/agent/docs coherence → drift-guard. Deep
           security/perf/granularity/docs scorecard → auditor. No extra agents.
         </Callout>
-        <Callout tone="neutral" title="Board lifecycle (all 8)">
+        <Callout tone="neutral" title="Board lifecycle (all 9)">
           Tier-1: Start date on claim or first In progress; Size↔Estimate points
           table in board-ssot skill. Promote Draft→Issue via promote-to-issue or
           mention-pr (auto when promote_to_issue_on_pr) before shippable PR —
@@ -495,6 +521,16 @@ export default function AgentRosterCanvas() {
               "integrator",
               "implementer | test-runner | auditor",
               "Escalation table on integrator card",
+            ],
+            [
+              "board",
+              "debugger",
+              "create-from-template --template debug",
+            ],
+            [
+              "debugger",
+              "implementer | verifier",
+              "debug handoff child cards; shippable → verifier",
             ],
           ]}
         />

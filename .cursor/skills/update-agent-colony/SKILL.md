@@ -89,11 +89,11 @@ python3 -m agent_colony update --profile consumer_lite --force --directory .
 
 Debug — skip pre/post cleanup: `python3 -m agent_colony update --directory . --no-clean`.
 
-> **Warning — plain `update` upgrades lite to full.** `update --directory .` (no `--profile`) uses default **`with_mcp`**. On version bump it restores 16 skills and 8 agents. To **preserve lite**, pass `--profile consumer_lite` on update or re-run activate with that profile.
+> **Warning — plain `update` upgrades lite to full.** `update --directory .` (no `--profile`) uses default **`with_mcp`**. On version bump it restores **27 skills** and **9 agents**. To **preserve lite**, pass `--profile consumer_lite` on update or re-run activate with that profile.
 
 | Command (after `cd` + `source .venv/bin/activate`) | Profile used | Lite tree after version upgrade |
 |---------|--------------|--------------------------------|
-| `python3 -m agent_colony update --directory .` | `with_mcp` (default) | **Full kit** (16 skills, 8 agents) |
+| `python3 -m agent_colony update --directory .` | `with_mcp` (default) | **Full kit** (**27 skills**, **9 agents**) |
 | `python3 -m agent_colony update --profile consumer_lite --force --directory .` | `consumer_lite` | **Lite** (6 skills, 6 agents) |
 | `python3 -m agent_colony update --force --profile with_mcp --directory .` | `with_mcp` | **Full kit** (explicit upgrade) |
 

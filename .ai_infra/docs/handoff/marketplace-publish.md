@@ -256,6 +256,8 @@ Submitted to Cursor Marketplace publisher application (status: pending review). 
 
 **Listing copy refresh (2026-09-14 release 0.8.0):** Accountability & fail-closed kit process — ADR-013 Schema-1 / 6th prepare gate / DRIFT-017; board `api-ready` + outbox purge; verifier-before-Done; agent-surface-parity (skills **16**); board CLI **29**; MCP **29** tools + **7** resources; **1653** tests; **8** / **16** / **7** (lite: **6** / **6**); kit **0.8.0**.
 
+**Listing copy refresh (2026-09-15 debugger agent / PR #303):** Re-verified filesystem — **9** agents (incl. `debugger`), **27** canonical skills (11 `debug-*`), marketplace **33** skill folders (27 + 6 maintainer PR slash); lite **6/6** unchanged; kit **0.8.0**. `plugin.json` + consumer-lite-profile + PLUGIN-USER-GUIDE counts aligned; `agent-debugger.canvas.tsx` + hub canvases updated (DOC-008).
+
 **Listing copy refresh (2026-09-14 kit-dev plugin disable / DRIFT-015):** Kit-dev `.cursor/settings.json` keeps `agent-colony/agent-colony` disabled; DRIFT-015 skips when disabled; **1653** tests; **8** / **16** / **7** (lite: **6** / **6**); kit **0.7.3**.
 
 **Listing copy refresh (2026-09-14 agent-surface-parity):** New auditor skill `agent-surface-parity`; canonical skills **16**; thin-index + doctrine wired; **1652** tests; **8** / **16** / **7** (lite: **6** / **6**); kit **0.7.3** — test count **superseded** by kit-dev plugin disable refresh (**1653**).

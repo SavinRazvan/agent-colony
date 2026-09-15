@@ -123,6 +123,7 @@ const ARTIFACTS = [
 
 const PEERS = [
   ["Outbound", "implementer", "handoff next=implementer (typical)"],
+  ["Outbound", "debugger", "create-from-template --template debug (forensic triage)"],
   ["Inbound", "drift-guard", "Dual-write remediation via Ready"],
 ];
 

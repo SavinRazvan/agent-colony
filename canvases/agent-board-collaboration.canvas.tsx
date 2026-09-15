@@ -41,7 +41,8 @@ type RosterId =
   | "verifier"
   | "integrator"
   | "auditor"
-  | "drift-guard";
+  | "drift-guard"
+  | "debugger";
 
 /** Centers: x,y of node box top-left. Lane: primary slice across mid-row. */
 const NODE_POS: Record<RosterId, { x: number; y: number; lane: "primary" | "side" }> =
@@ -53,6 +54,7 @@ const NODE_POS: Record<RosterId, { x: number; y: number; lane: "primary" | "side
     integrator: { x: 200, y: 28, lane: "side" },
     auditor: { x: 400, y: 28, lane: "side" },
     "drift-guard": { x: 300, y: 256, lane: "side" },
+    debugger: { x: 500, y: 256, lane: "side" },
   };
 
 type RosterEdge = {
@@ -141,6 +143,24 @@ const ROSTER_EDGES: RosterEdge[] = [
     kind: "side",
     label: "escalate architecture",
   },
+  {
+    from: "board",
+    to: "debugger",
+    kind: "side",
+    label: "create-from-template debug",
+  },
+  {
+    from: "debugger",
+    to: "implementer",
+    kind: "side",
+    label: "child bug|slice handoff",
+  },
+  {
+    from: "debugger",
+    to: "verifier",
+    kind: "side",
+    label: "shippable debug → verifier",
+  },
 ];
 
 type DagView = "slice" | "all";
@@ -185,6 +205,11 @@ const PER_AGENT_ENTRY_EXIT = [
     "researcher",
     "project entry (+ research card)",
     "Non-shippable research →Done + pack paths; shippable (PR / [AUDIT] / P0|P1) → verifier before Done",
+  ],
+  [
+    "debugger",
+    "create-from-template --template debug → claim --agent debugger",
+    "debug close + publish manifest in Notes; shippable → handoff --next verifier --to in_review",
   ],
 ];
 
@@ -333,6 +358,7 @@ const SIDE_FLOW = [
   "implementer: make drift-validate → P0/P1 or goal-pulse gaps → hand off drift-guard",
   "drift-guard: board In progress + Acceptance/Notes → drift validate (DRIFT-001…017 kit-dev) → .local/workflow-artifacts/drift/ → shippable (PR/[AUDIT]/P0|P1) → verifier; remediation via Notes/Ready",
   "integrator: integration card → integrate validate → escalate to implementer | test-runner | auditor",
+  "debugger: debug card → campaign under .local/workflow-artifacts/debug/<slug>/ → child bug|slice to implementer; shippable → verifier",
 ];
 
 function anchor(

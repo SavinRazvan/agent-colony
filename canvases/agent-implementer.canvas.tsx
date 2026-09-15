@@ -177,6 +177,7 @@ const PEERS = [
   ["Outbound", "test-runner", "When tests/coverage needed before merge"],
   ["Outbound", "drift-guard", "When make drift-validate finds P0/P1 needing artifacts"],
   ["Inbound", "board", "Triage hands Ready cards for implementation"],
+  ["Inbound", "debugger", "Child bug|slice cards from debug handoff + publish citations"],
   ["Inbound", "auditor", "Audit Notes / artifact paths for implementer to apply"],
   ["Escalation (integrator)", "integrator may hand product src/ to implementer", "integrator card"],
 ];

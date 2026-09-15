@@ -74,7 +74,7 @@ flowchart LR
 
 **Lite allowlist (names):** agents `board`, `implementer`, `test-runner`, `verifier`, `drift-guard`, `integrator` · skills `board-ssot`, `implementer-loop`, `evidence-first`, `test-coverage`, `workflow-activate`, `mcp-connect`. Full inventory: § [Full `/` menu](#full--menu-8-agents--skills) · [Lite `/` menu](#lite--menu-6-agents--6-skills).
 
-**Lite + `update` (0.7.1+):** Plain `python3 -m agent_colony update --directory .` defaults to profile **`with_mcp`** and upgrades lite to **16 skills / 8 agents** on version bump. To stay lite, use `--profile consumer_lite`. See [consumer-lite-profile.md](consumer-lite-profile.md) § Upgrade.
+**Lite + `update` (0.7.1+):** Plain `python3 -m agent_colony update --directory .` defaults to profile **`with_mcp`** and upgrades lite to **27 skills / 9 agents** on version bump. To stay lite, use `--profile consumer_lite`. See [consumer-lite-profile.md](consumer-lite-profile.md) § Upgrade.
 
 **Rules (all profiles):** 7 files — **4** always-on + **3** requestable. See [consumer-lite-profile.md](consumer-lite-profile.md) and [token-efficiency-program.md](token-efficiency-program.md).
 
@@ -446,7 +446,7 @@ Skill: `.cursor/skills/canvas-artifacts/SKILL.md`
 | **Check install health** | — | `python3 -m agent_colony health` | [gate-matrix.md](gate-matrix.md) |
 | **Dry-run install preview** | — | `python3 -m agent_colony install --target <dir> --dry-run` | [install-dry-run.md](install-dry-run.md) |
 
-### Full `/` menu (8 agents + skills)
+### Full `/` menu (9 agents + 27 skills)
 
 | Chat name | Disk path |
 |-----------|-----------|
@@ -459,6 +459,7 @@ Skill: `.cursor/skills/canvas-artifacts/SKILL.md`
 | `/drift-guard` | `.cursor/agents/drift-guard.md` |
 | `/researcher` | `.cursor/agents/researcher.md` — **shipped/proven**; adaptive Brief; public/private GitHub (private needs `gh`/git auth); anti-loop ≤6 rounds; `research init\|fetch\|validate`; corpus opt-in after init |
 | `/integrator` | `.cursor/agents/integrator.md` |
+| `/debugger` | `.cursor/agents/debugger.md` + `debug-protocol` (+ lazy `debug-*` skills) — **full profile only** |
 | `/board` | `.cursor/agents/board.md` + `board-ssot` + first-run `board-shell` |
 | `/board-shell` | `.cursor/skills/board-shell/` — first-run coach (also via `/board`) |
 | `/review-pr`, `/prepare-pr`, `/merge-pr` | `.agents/skills/` |

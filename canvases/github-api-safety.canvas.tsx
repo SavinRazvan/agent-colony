@@ -168,7 +168,7 @@ const SOFT = [
   {
     layer: "Agent Board rights",
     what: "api-ready gate; EXIT_QUEUED → outbox_status; do not hammer; flush later",
-    where: "All 8 agent cards",
+    where: "All 9 agent cards",
   },
   {
     layer: "Skill checklist (G3)",

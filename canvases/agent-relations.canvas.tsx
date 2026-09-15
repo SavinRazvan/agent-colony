@@ -36,6 +36,7 @@ type AgentId =
   | "auditor"
   | "drift-guard"
   | "researcher"
+  | "debugger"
   | "all";
 
 const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
@@ -78,6 +79,11 @@ const AGENTS: { id: Exclude<AgentId, "all">; role: string; lane: string }[] = [
     id: "researcher",
     role: "researcher Agent Colony · skill research-corpus (opt-in packs)",
     lane: "Research (opt-in corpus)",
+  },
+  {
+    id: "debugger",
+    role: "debugger Agent Colony · debug-protocol (+ lazy debug-* skills)",
+    lane: "Forensics (full profile)",
   },
 ];
 
@@ -184,6 +190,24 @@ const RELATIONS: {
     via: "stay in_review + failure Notes",
     when: "Not verified — implementer fixes",
   },
+  {
+    from: "board",
+    to: "debugger",
+    via: "create-from-template --template debug",
+    when: "Forensic investigation card after triage",
+  },
+  {
+    from: "debugger",
+    to: "implementer",
+    via: "debug handoff → child bug|slice",
+    when: "Behavioral fixes with publish citations",
+  },
+  {
+    from: "debugger",
+    to: "verifier",
+    via: "handoff --next verifier --to in_review",
+    when: "Shippable debug campaign after debug close",
+  },
 ];
 
 const RESEARCHER_REDIRECTS: [string, string][] = [
@@ -209,6 +233,7 @@ const LANES: [string, string][] = [
   ["Infrastructure", "integrator"],
   ["Quality", "auditor · drift-guard"],
   ["Research (opt-in corpus)", "researcher"],
+  ["Forensics (full profile)", "debugger"],
 ];
 
 const DAG_NODES = AGENTS.filter((a) => a.id !== "researcher").map((a) => ({
@@ -350,7 +375,7 @@ export default function AgentRelationsCanvas() {
             hub · not an agent
           </Pill>
           <Pill tone="neutral" size="sm">
-            8 agents
+            9 agents
           </Pill>
         </Row>
         <Text tone="secondary">
@@ -358,7 +383,8 @@ export default function AgentRelationsCanvas() {
           audit-orchestration (full CHK-* quarterly; focused alignment on
           arch-impacting PRs; Phase 3 → drift-guard goal pulse). Live ids only.
           Primary skills: board-ssot, implementer-loop, test-coverage,
-          integrator-protocol, auditor-protocol, drift-audit, research-corpus.
+          debug-protocol, integrator-protocol, auditor-protocol, drift-audit,
+          research-corpus.
           Select an agent to highlight its neighbors.
         </Text>
         <Callout tone="info" title="Quality lane (no trash agents)">
@@ -397,7 +423,7 @@ export default function AgentRelationsCanvas() {
           label={focus === "all" ? "Handoff edges" : "Outbound"}
         />
         <Stat
-          value={String(focus === "all" ? "5" : inbound)}
+          value={String(focus === "all" ? "6" : inbound)}
           label={focus === "all" ? "Lanes" : "Inbound"}
         />
       </Grid>
