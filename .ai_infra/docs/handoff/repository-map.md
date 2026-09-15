@@ -67,11 +67,11 @@ Deep dive: [PLUGIN-ARCHITECTURE.md](PLUGIN-ARCHITECTURE.md).
 
 | Path | Role | Edit where |
 |------|------|------------|
-| `.cursor/agents/*.md` | 8 agent cards | **Here** |
+| `.cursor/agents/*.md` | 9 agent cards | **Here** |
 | `.cursor/rules/*.mdc` | 7 kit-dev rules | **Here** |
-| `.cursor/skills/*/` | 16 canonical protocols | **Here** |
+| `.cursor/skills/*/` | 27 canonical protocols | **Here** |
 | `.agents/skills/*/` | Maintainer slash skills | **Here** |
-| `agents/`, `rules/`, `skills/` (repo root) | Marketplace discovery (22 skill folders = 16 canonical + 6 maintainer PR slash skills, incl. `full-pr-workflow`) | `make sync-plugin` from `.cursor/` + `.agents/skills/` |
+| `agents/`, `rules/`, `skills/` (repo root) | Marketplace discovery (33 skill folders = 27 canonical + 6 maintainer PR slash skills, incl. `full-pr-workflow`) | `make sync-plugin` from `.cursor/` + `.agents/skills/` |
 | `payload/` | Consumer install bundle | `make sync-plugin` from above + manifest |
 | `skills/audit-alignment/` | Deprecated stub in merged `skills/` | `.agents/skills/audit-alignment/` |
 
@@ -85,9 +85,9 @@ What **`/workflow-activate`** copies into **your app** (e.g. Smart-Notes):
 my-app/
 ├── AGENTS.md                       Stub router (from template; stub_lite for consumer_lite)
 ├── .cursor/
-│   ├── agents/                     8 agents (6 on consumer_lite)
+│   ├── agents/                     9 agents (6 on consumer_lite)
 │   ├── rules/                      7 rules (4 alwaysApply + 3 requestable after kit 0.7.0)
-│   └── skills/                     16 canonical (6 on consumer_lite)
+│   └── skills/                     27 canonical (6 on consumer_lite)
 ```
 
 **Profiles:** `default`, `with_mcp`, `consumer_lite` — see [consumer-lite-profile.md](../operations/consumer-lite-profile.md). **CLI:** `doc skill-section`, `doc validate-thin-index`, `health --summary`, `drift validate --summary`.
@@ -98,9 +98,9 @@ Full tree (default profile):
 my-app/
 ├── AGENTS.md                       Stub router (from template)
 ├── .cursor/
-│   ├── agents/                     8 agents (from payload; incl. board)
+│   ├── agents/                     9 agents (from payload; incl. board, debugger)
 │   ├── rules/                      7 rules (4 always-on + 3 requestable)
-│   └── skills/                     16 canonical skills only (no repo-root skills/ merge)
+│   └── skills/                     27 canonical skills only (no repo-root skills/ merge)
 ├── .agents/skills/                 6 maintainer slash folders (incl. full-pr-workflow; + audit-alignment stub)
 ├── .ai_infra/                      Slim bundle (manifest copy_ai_infra only)
 │   ├── scripts/pr|architecture|integration|workflow|install/

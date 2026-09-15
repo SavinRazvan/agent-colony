@@ -21,7 +21,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 
 
 **Last updated:** 2026-09-14 (kit release 0.8.0)
-**Product:** `agent-colony` · CLI: `agent-colony` 0.8.0 · **Tests:** 1653
+**Product:** `agent-colony` · CLI: `agent-colony` 0.8.0 · **Tests:** 1671
 
 ## Shipped (confirmed in repo)
 
@@ -30,7 +30,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Verifier-before-Done (machine gate) | Shippable cards (`item_is_shippable`: PR citation / `[AUDIT]` / P0\|P1) Status→Done → **EXIT_VALIDATION (5)** unless `--agent verifier`, prior Notes `next=…/verifier`, or `--allow-skip-verifier` + rationale (`require_verifier_before_done`, default true) | `project_atomics.assert_verifier_ready_for_done` · board-ssot § Verifier-before-Done · PR #275 |
 | Agent surface parity skill | Auditor-owned deep per-agent card/skill/CLI/docs/canvas vs machine; Schema-1 findings | `.cursor/skills/agent-surface-parity/` · `auditor-protocol` § Agent surface parity pass |
 | Universal rules | 7 `.mdc` (4 alwaysApply + 3 requestable) | `.cursor/rules/` |
-| Agents | 8 core on full (`with_mcp`); **6** on `consumer_lite` (no `auditor`, `researcher`); `model: auto`; audit agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` · [consumer-lite-profile.md](../operations/consumer-lite-profile.md) |
+| Agents | 9 core on full (`with_mcp`); **6** on `consumer_lite` (no `auditor`, `debugger`, `researcher`); `model: auto`; audit/debug agents write `.local/` artifacts only (no `readonly`) | `.cursor/agents/` · [consumer-lite-profile.md](../operations/consumer-lite-profile.md) |
 | Canonical skills | 16 folders on full; **6** allowlisted on `consumer_lite` | `.cursor/skills/` · ADR-011 |
 | Maintainer skills | 6 folders on full; lite keeps PR slash skills only (`review-pr`…`full-pr-workflow`) | `.agents/skills/` |
 | Cursor skill merge | Canonical wins in plugin sync | `sync_plugin_bundle.py` |
@@ -71,7 +71,7 @@ Agent prose: [token-efficiency.md](../operations/token-efficiency.md).
 | Consumer update stamp | Scaffold + `update` write `.kit-version` from source manifest; CLI fallback `ensure_kit_version_stamp` | `scaffold.py` · `update_cli.py` · tests |
 | Multi-consumer isolation | Model A contract doc; DRIFT-013 tracked-runtime guard; DRIFT-011b advisory; `update --check` + `kit_managed_globs`; consumer CI template | `multi-consumer-isolation.md` · `drift_checks.py` · `update_cli.py` · `templates/ci/consumer-gates.yml` |
 | Dashboard removal | Documentation now points to GitHub Project board + Cursor Open Canvas; `.local/index-and-planning/` remains offline markdown only | operations docs · skills · canvases |
-| Tests | 1653 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
+| Tests | 1671 collected (intentional live-smoke skips on full green run) | `tests/modules/` |
 
 ## Coverage scope (shipped source)
 

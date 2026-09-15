@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-colony.local/schemas/debug/run-meta.schema.json",
+  "title": "DebugRunMeta",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "capture_kind",
+    "status",
+    "started_at",
+    "finished_at",
+    "child_exit_code",
+    "termination_reason",
+    "stdout",
+    "stderr",
+    "combined_bytes",
+    "evidence_sha256",
+    "redaction"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^run-[0-9]{6}$"
+    },
+    "capture_kind": {
+      "type": "string",
+      "enum": [
+        "command",
+        "ingest"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "running",
+        "complete"
+      ]
+    },
+    "started_at": {
+      "type": "string"
+    },
+    "finished_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "child_exit_code": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "termination_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "stdout": {
+      "$ref": "#/$defs/stream"
+    },
+    "stderr": {
+      "$ref": "#/$defs/stream"
+    },
+    "combined_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evidence_sha256": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "argv": {
+      "type": "string"
+    },
+    "cwd": {
+      "type": "string"
+    },
+    "timeout_s": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 7200
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stream_limit_bytes",
+        "combined_limit_bytes"
+      ],
+      "properties": {
+        "stream_limit_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "combined_limit_bytes": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "source": {
+      "type": "string"
+    },
+    "source_sha256": {
+      "type": "string"
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "redaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_version",
+        "replacement_counts"
+      ],
+      "properties": {
+        "rule_version": {
+          "type": "string"
+        },
+        "replacement_counts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "stream": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "bytes",
+        "sha256",
+        "invalid_utf8_bytes"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "invalid_utf8_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

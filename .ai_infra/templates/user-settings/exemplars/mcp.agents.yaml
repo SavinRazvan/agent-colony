@@ -25,6 +25,7 @@ kit:
     - integrator
     - drift-guard
     - board
+    - debugger
   tools_hint:
     - workflow_run_prepare
     - workflow_get_tracker
@@ -113,6 +114,9 @@ agent_defaults:
     primary_servers: [agent-colony-mcp]
     optional_servers: []
   board:
+    primary_servers: [agent-colony-mcp]
+    optional_servers: []
+  debugger:
     primary_servers: [agent-colony-mcp]
     optional_servers: []
 

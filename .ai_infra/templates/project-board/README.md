@@ -21,6 +21,7 @@ Notes:
 | `card-body-bug.md` | Agents | `create-from-template --template bug --priority p1` |
 | `card-body-research.md` | researcher / board | `create-from-template --template research --priority p2` |
 | `card-body-audit.md` | auditor / drift-guard | `create-from-template --template audit --priority p2` |
+| `card-body-debug.md` | debugger / board | `create-from-template --template debug --priority p2` (forensic; P1/P0 only when shippable) |
 | `board-shell.schema.yaml` | Coach / CLI | Desired-state Playground parity; overlay `.local/user_settings/board-shell.schema.yaml` |
 | `outbox-entry.schema.json` | Agents / CLI | Validate lines in `.local/generated-data/board-outbox.jsonl` |
 | `outbox-entry.example.json` | Docs | Exemplar outbox line (never paste fake `item_id` as `--id`) |
@@ -40,6 +41,7 @@ Card bodies always include `## Acceptance`, `## Rollback`, and `## Notes` so `va
 | bug fix | `create-from-template --template bug --priority p1` |
 | external / corpus research | `create-from-template --template research --priority p2` |
 | audit / accountability pass | `create-from-template --template audit --priority p2` |
+| forensic debug campaign | `create-from-template --template debug --priority p2` |
 | Project board bootstrap | `project doctor` → `/board` first-run (`board-shell`) → follow `views-setup.md` → paste `project-readme.md` → `project board-bootstrap --check` → `project status` |
 | Project README | **Humans** paste **contents of** `project-readme.md` (board brief), or opt-in `board-bootstrap --check --apply-readme`. CLI: `project guide` |
 

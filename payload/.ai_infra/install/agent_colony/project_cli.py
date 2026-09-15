@@ -1344,7 +1344,7 @@ def cmd_validate_item(args: argparse.Namespace) -> int:
     item = find_item_by_id(items, item_id)
     if item is None:
         return fail("validate-item", EXIT_NOT_FOUND, f"item not found: {item_id}")
-    problems, warnings = collect_validate_item_problems(ssot, item)
+    problems, warnings = collect_validate_item_problems(ssot, item, root=root)
     for warning in warnings:
         print(f"project validate-item: WARN — {warning}", file=sys.stderr)
     if problems:

@@ -1,0 +1,263 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-colony.local/schemas/debug/INDEX.schema.json",
+  "title": "DebugCampaignIndex",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "campaign_id",
+    "slug",
+    "status",
+    "mode",
+    "item_id",
+    "created_at",
+    "updated_at",
+    "tool_version",
+    "source_revision",
+    "supersedes",
+    "lenses",
+    "budgets",
+    "counters",
+    "wave",
+    "modules",
+    "human_status",
+    "human_approver",
+    "blocked_reason",
+    "next_agent",
+    "vault_root",
+    "publish_root",
+    "inventory_digest",
+    "include",
+    "exclude"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1"
+    },
+    "campaign_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "init",
+        "in_progress",
+        "blocked",
+        "ready_for_consumer",
+        "closed"
+      ]
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "incident",
+        "standardize",
+        "structural",
+        "deep"
+      ]
+    },
+    "item_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "updated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tool_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_revision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "supersedes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "lenses": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stream_limit_bytes",
+        "combined_limit_bytes",
+        "campaign_limit_bytes",
+        "root_limit_bytes",
+        "min_free_bytes",
+        "run_limit"
+      ],
+      "properties": {
+        "stream_limit_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "combined_limit_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "campaign_limit_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "root_limit_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "min_free_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "run_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        }
+      }
+    },
+    "counters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runs_used",
+        "bytes_used"
+      ],
+      "properties": {
+        "runs_used": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bytes_used": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "wave": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "modules"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "modules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "modules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "done",
+        "todo",
+        "blocked"
+      ],
+      "properties": {
+        "done": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "todo": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blocked": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "human_status": {
+      "type": "string"
+    },
+    "human_approver": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "blocked_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "next_agent": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "vault_root": {
+      "type": "string",
+      "const": "vault"
+    },
+    "publish_root": {
+      "type": "string",
+      "const": "publish"
+    },
+    "inventory_digest": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "include": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "exclude": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "outcome": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

@@ -62,6 +62,7 @@ The `.local/` directory is **gitignored**. This document is the **versioned cont
 | `workflow-artifacts/drift/` | `drift-audit.md`, `drift-todos.md` (drift-guard) |
 | `workflow-artifacts/release/` | Optional RC sign-off (`rc-signoff.md`) |
 | `workflow-artifacts/audit/` | `preflight.json`, `doc-facts-preflight.json` (verify-all / doc validate) |
+| `workflow-artifacts/debug/` | Debugger campaigns: `<slug>/{INDEX.json,DEBUG-BRIEF.md,vault/,publish/}` (redacted evidence + curated handoffs) |
 | `user_settings/` | Gitignored YAML worksheets: GitHub collaboration + MCP agent wiring (from kit exemplars) |
 | `generated-data/` | Coverage JSON, `project-board-snapshot.json` (read-only board export for DRIFT-010 / drift-guard), and similar machine output |
 | `canvases/` | Ephemeral session canvases (gitignored); index at `index.md`; sync via `agent_colony canvas` |

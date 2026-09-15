@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-colony.local/schemas/debug/inventory.schema.json",
+  "title": "DebugInventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_revision",
+    "files",
+    "categories",
+    "digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1"
+    },
+    "source_revision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "path",
+          "category",
+          "module",
+          "disposition"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1"
+          },
+          "path": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "tracked",
+              "untracked",
+              "ignored",
+              "generated",
+              "inaccessible",
+              "excluded"
+            ]
+          },
+          "module": {
+            "type": "string"
+          },
+          "disposition": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "categories": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tracked",
+        "untracked",
+        "ignored",
+        "generated",
+        "inaccessible",
+        "excluded"
+      ],
+      "properties": {
+        "tracked": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "untracked": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ignored": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "generated": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "inaccessible": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excluded": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "digest": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

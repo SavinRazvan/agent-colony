@@ -23,6 +23,7 @@ profiles:
       - templates/agent-integration
       - templates/project-board
       - templates/research-corpus
+      - templates/debug-campaign
       - templates/ci
       - workflows
     copy_files:

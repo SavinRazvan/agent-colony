@@ -3,7 +3,7 @@ servers:
   agent-colony-mcp:
     tier: kit
     description: PR workflow, board Pattern A, trackers, gates
-    agents: [implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard, board]
+    agents: [implementer, test-runner, verifier, auditor, researcher, integrator, drift-guard, board, debugger]
     tools_hint:
       - workflow_session_entry
       - workflow_project_entry

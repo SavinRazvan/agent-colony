@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-colony.local/schemas/debug/event.schema.json",
+  "title": "DebugEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event",
+    "timestamp"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1"
+    },
+    "event": {
+      "type": "string",
+      "enum": [
+        "capture_started",
+        "capture_finished",
+        "ingest_finished",
+        "analysis_recorded",
+        "artifact_registered",
+        "probe_changed",
+        "finding_changed",
+        "note_appended",
+        "recovery_applied"
+      ]
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "exit_code": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "child_exit_code": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "termination_reason": {
+      "type": "string"
+    },
+    "evidence_sha256": {
+      "type": "string"
+    },
+    "source_sha256": {
+      "type": "string"
+    },
+    "verdict": {
+      "type": "string"
+    },
+    "agent": {
+      "type": "string"
+    },
+    "finding_id": {
+      "type": "string"
+    },
+    "probe_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "skill_id": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sha256": {
+      "type": "string"
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

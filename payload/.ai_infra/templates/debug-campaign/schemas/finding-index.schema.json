@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-colony.local/schemas/debug/finding-index.schema.json",
+  "title": "DebugFindingIndex",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "findings"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "id",
+          "kind",
+          "severity",
+          "status",
+          "module",
+          "paths",
+          "summary",
+          "owner",
+          "child_card"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1"
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^(DBG|TR|SG)-[0-9]{3}$"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "DBG",
+              "TR",
+              "SG"
+            ]
+          },
+          "severity": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "module": {
+            "type": "string"
+          },
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reproduction": {
+            "type": "string"
+          },
+          "hypothesis_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "confidence": {
+            "type": "string"
+          },
+          "causal_test": {
+            "type": "string"
+          },
+          "suggested_fix_boundary": {
+            "type": "string"
+          },
+          "probe_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "related_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "owner": {
+            "type": "string"
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "consequence": {
+            "type": "string"
+          },
+          "child_card": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "rollback": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
