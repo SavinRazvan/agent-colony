@@ -58,8 +58,8 @@ Auto-detect profile from `work-tracker.md` unless `--profile` overrides.
 | DRIFT-008 | P2 | consumer | Scaffold trackers present |
 | DRIFT-009 | P1 | kit-dev | When `project_ssot.sync_policy: board_only`, no competing `in_progress` in work-tracker Active (ADR-008) |
 | DRIFT-010 | P1 | kit-dev | When `board_only`, board Status vs open PRs / stale In progress / merged-but-not-Done (uses read-only `project export` snapshot; skips offline) |
-| DRIFT-011 | P1 | kit-dev | Agent roster coherence: `.cursor/agents/*.md` basenames match the eight live kit agent ids (goal/doctrine pulse — falsifiable) |
-| DRIFT-011b | P2 | consumer, consumer-board | Advisory: extra agent files beyond eight kit ids (integrator extensions) |
+| DRIFT-011 | P1 | kit-dev | Agent roster coherence: `.cursor/agents/*.md` basenames match the nine live kit agent ids (goal/doctrine pulse — falsifiable) |
+| DRIFT-011b | P2 | consumer, consumer-board | Advisory: extra agent files beyond nine kit ids (integrator extensions) |
 | DRIFT-012 | P2 | kit-dev | When `board_only`, `.local/plans/` is snapshot-only — no live/current plan SSOT in that dir (ADR-010) |
 | DRIFT-013 | P1 | kit-dev, consumer, consumer-board | Git index must not track `.local/`, `.venv/`, `.env`, `.cursor/mcp.user.json` |
 | DRIFT-014 | P1 | kit-dev, consumer, consumer-board | Token-efficiency anchor in installed agent cards (profile-aware count) |

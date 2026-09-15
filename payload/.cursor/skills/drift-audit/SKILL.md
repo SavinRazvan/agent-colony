@@ -30,7 +30,7 @@ Detect **operational workflow drift** and a **falsifiable goal/doctrine pulse**:
 
 - plan ↔ tracker ↔ session-pointer incoherence
 - **DRIFT-004b** session Board vs export; **DRIFT-009** dual-write; **DRIFT-010** board vs PRs
-- **DRIFT-011** `.cursor/agents` basenames == eight live kit agent ids
+- **DRIFT-011** `.cursor/agents` basenames == nine live kit agent ids
 - **DRIFT-011b** (consumer) extra integrator agents — advisory only
 - **DRIFT-012** `.local/plans/` snapshot-only under `board_only` (no live/current plan SSOT in that dir)
 - **DRIFT-013** git index must not track `.local/`, secrets, or `.venv/` (consumer + kit-dev)
